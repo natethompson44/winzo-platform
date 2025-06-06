@@ -1,5 +1,4 @@
 const sequelize = require('../../config/database');
-
 /**
  * Initialize connection to the PostgreSQL database and synchronize models.
  * Exits the process if authentication fails because the app cannot work
