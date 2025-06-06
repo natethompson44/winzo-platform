@@ -7,15 +7,20 @@ const Login: React.FC = () => {
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      navigate('/dashboard');
+    const ok = await login(email, password);
+    if (ok) {
+      setError('');
+      setSuccess(true);
+      setTimeout(() => navigate('/dashboard'), 800);
     } else {
-      alert('Invalid credentials or invite code.');
+      setSuccess(false);
+      setError('Invalid credentials.');
     }
   };
 
@@ -23,7 +28,9 @@ const Login: React.FC = () => {
     <div className="container">
       <h1>WINZO</h1>
       <p>Big Win Energy.</p>
-      <form onSubmit={handleSubmit}>
+      {error && <div className="error">{error}</div>}
+      {success && <div className="success-msg">Big Win Energy! ✨</div>}
+      <form onSubmit={handleSubmit} className={success ? 'success' : ''}>
         <input
           type="email"
           placeholder="Email"
