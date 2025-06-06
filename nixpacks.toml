@@ -1,9 +1,0 @@
-# winzo-platform/nixpacks.toml
-[phases.setup]
-nixpkgsArchive = "https://github.com/NixOS/nixpkgs/archive/nixos-23.05.tar.gz"
-
-[phases.build]
-cmds = ["cd winzo-backend && npm install"]
-
-[phases.start]
-cmd = "cd winzo-backend && node src/server.js"
