@@ -8,15 +8,20 @@ const Register: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [inviteCode, setInviteCode] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await register(email, password, inviteCode);
-    if (success) {
-      navigate('/dashboard');
+    const ok = await register(email, password, inviteCode);
+    if (ok) {
+      setError('');
+      setSuccess(true);
+      setTimeout(() => navigate('/dashboard'), 800);
     } else {
-      alert('Registration failed. Check your invite code.');
+      setSuccess(false);
+      setError('Registration failed. Check your invite code.');
     }
   };
 
@@ -24,7 +29,9 @@ const Register: React.FC = () => {
     <div className="container">
       <h1>WINZO</h1>
       <p>Big Win Energy.</p>
-      <form onSubmit={handleSubmit}>
+      {error && <div className="error">{error}</div>}
+      {success && <div className="success-msg">Big Win Energy! ✨</div>}
+      <form onSubmit={handleSubmit} className={success ? 'success' : ''}>
         <input
           type="email"
           placeholder="Email"

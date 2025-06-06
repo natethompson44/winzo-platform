@@ -1,5 +1,7 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL || '';
 
 interface User {
   email: string;
@@ -23,10 +25,21 @@ export const AuthContext = createContext<AuthContextProps>({
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.get(`${API_URL}/auth/me`).then(res => setUser(res.data.user)).catch(() => {
+        localStorage.removeItem('token');
+      });
+    }
+  }, []);
+
   const login = async (email: string, password: string) => {
     try {
-      const res = await axios.post('/api/auth/login', { email, password });
+      const res = await axios.post(`${API_URL}/auth/login`, { email, password });
       localStorage.setItem('token', res.data.token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       setUser(res.data.user);
       return true;
     } catch (err) {
@@ -37,8 +50,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const register = async (email: string, password: string, inviteCode: string) => {
     try {
-      const res = await axios.post('/api/auth/register', { email, password, inviteCode });
+      const res = await axios.post(`${API_URL}/auth/register`, { email, password, inviteCode });
       localStorage.setItem('token', res.data.token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       setUser(res.data.user);
       return true;
     } catch (err) {
@@ -49,6 +63,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
     setUser(null);
   };
 
