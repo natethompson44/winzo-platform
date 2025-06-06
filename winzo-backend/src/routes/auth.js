@@ -1,9 +1,9 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
-require('dotenv').config();
 
 const router = express.Router();
 
@@ -16,13 +16,22 @@ function generateInviteCode() {
 }
 
 // Register a new user using an existing invite code or a master code.
-router.post('/register', async (req, res) => {
-  const { username, password, inviteCode } = req.body;
-  if (!username || !password || !inviteCode) {
-    return res
-      .status(400)
-      .json({ message: 'Username, password and invite code are required' });
-  }
+router.post(
+  '/register',
+  [
+    body('username').notEmpty().withMessage('Username is required'),
+    body('password')
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters'),
+    body('inviteCode').notEmpty().withMessage('Invite code is required'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, password, inviteCode } = req.body;
 
   try {
     // Invite code must match the master code or belong to an existing user.
@@ -55,11 +64,19 @@ router.post('/register', async (req, res) => {
 });
 
 // Authenticate user credentials and issue a JWT token.
-router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required' });
-  }
+router.post(
+  '/login',
+  [
+    body('username').notEmpty().withMessage('Username is required'),
+    body('password').notEmpty().withMessage('Password is required'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, password } = req.body;
 
   try {
     const user = await User.findOne({ where: { username } });

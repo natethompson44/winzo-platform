@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
 /**
  * Middleware that verifies JWT tokens present in the Authorization header.

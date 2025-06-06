@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const initDatabase = require('./database/init');
@@ -9,8 +10,18 @@ const authRoutes = require('./routes/auth');
 const app = express();
 
 // Global security middleware
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',')
+  : ['http://localhost:3000'];
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
 app.use(helmet());
-app.use(cors());
+app.use(cors({ origin: allowedOrigins }));
+app.use(limiter);
 app.use(express.json());
 
 // Initialize database connection

@@ -1,4 +1,4 @@
-require('dotenv').config();
+const { Sequelize } = require('sequelize');
 
 // Centralized database configuration. Supports DATABASE_URL for Railway or
 // individual connection parameters for local development.
