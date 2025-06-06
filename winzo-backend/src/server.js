@@ -8,6 +8,7 @@ const initDatabase = require('./database/init');
 const authRoutes = require('./routes/auth');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Global security middleware
 const allowedOrigins = process.env.CORS_ORIGIN
