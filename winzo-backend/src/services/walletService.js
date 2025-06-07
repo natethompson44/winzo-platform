@@ -171,20 +171,20 @@ class WalletService {
       }
 
       // Get betting statistics
-      const totalBets = await Bet.count({ where: { userId } });
-      const pendingBets = await Bet.count({ where: { userId, status: 'pending' } });
-      const wonBets = await Bet.count({ where: { userId, status: 'won' } });
-      const lostBets = await Bet.count({ where: { userId, status: 'lost' } });
+      const totalBets = await Bet.count({ where: { user_id: userId } });
+      const pendingBets = await Bet.count({ where: { user_id: userId, status: 'pending' } });
+      const wonBets = await Bet.count({ where: { user_id: userId, status: 'won' } });
+      const lostBets = await Bet.count({ where: { user_id: userId, status: 'lost' } });
 
       // Calculate total amounts
-      const totalWagered = await Bet.sum('amount', { where: { userId } }) || 0;
-      const totalWinnings = await Bet.sum('actualPayout', { 
-        where: { userId, status: 'won' } 
+      const totalWagered = await Bet.sum('amount', { where: { user_id: userId } }) || 0;
+      const totalWinnings = await Bet.sum('actualPayout', {
+        where: { user_id: userId, status: 'won' }
       }) || 0;
 
       // Get recent bets
       const recentBets = await Bet.findAll({
-        where: { userId },
+        where: { user_id: userId },
         order: [['placedAt', 'DESC']],
         limit: 10,
         include: ['sportsEvent']

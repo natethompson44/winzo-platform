@@ -133,7 +133,7 @@ class OddsService {
           where: { externalId: eventData.id },
           defaults: {
             externalId: eventData.id,
-            sportId: sport.id,
+            sport_id: sport.id,
             homeTeam: eventData.home_team,
             awayTeam: eventData.away_team,
             commenceTime: new Date(eventData.commence_time),
@@ -154,14 +154,14 @@ class OddsService {
         syncedEvents.push(event);
 
         // Clear existing odds for this event to avoid duplicates
-        await Odds.destroy({ where: { eventId: event.id } });
+        await Odds.destroy({ where: { event_id: event.id } });
 
         // Sync odds from all bookmakers
         for (const bookmaker of eventData.bookmakers) {
           for (const market of bookmaker.markets) {
             for (const outcome of market.outcomes) {
               const odds = await Odds.create({
-                eventId: event.id,
+                event_id: event.id,
                 bookmaker: bookmaker.key,
                 bookmakerTitle: bookmaker.title,
                 market: market.key,

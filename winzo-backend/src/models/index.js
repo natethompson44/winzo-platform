@@ -6,20 +6,20 @@ const SportsEvent = require('./SportsEvent');
 const Odds = require('./Odds');
 
 function applyAssociations() {
-  User.hasMany(Bet, { foreignKey: 'userId' });
-  Bet.belongsTo(User, { foreignKey: 'userId' });
+  User.hasMany(Bet, { foreignKey: 'user_id' });
+  Bet.belongsTo(User, { foreignKey: 'user_id' });
 
-  Sport.hasMany(SportsEvent, { foreignKey: 'sportId' });
-  SportsEvent.belongsTo(Sport, { foreignKey: 'sportId' });
+  Sport.hasMany(SportsEvent, { foreignKey: 'sport_id' });
+  SportsEvent.belongsTo(Sport, { foreignKey: 'sport_id' });
 
-  SportsEvent.hasMany(Odds, { foreignKey: 'eventId' });
-  Odds.belongsTo(SportsEvent, { foreignKey: 'eventId' });
+  SportsEvent.hasMany(Odds, { foreignKey: 'event_id' });
+  Odds.belongsTo(SportsEvent, { foreignKey: 'event_id' });
 
-  SportsEvent.hasMany(Bet, { foreignKey: 'eventId' });
-  Bet.belongsTo(SportsEvent, { foreignKey: 'eventId' });
+  SportsEvent.hasMany(Bet, { foreignKey: 'event_id' });
+  Bet.belongsTo(SportsEvent, { foreignKey: 'event_id' });
 
-  Odds.hasMany(Bet, { foreignKey: 'oddsId' });
-  Bet.belongsTo(Odds, { foreignKey: 'oddsId' });
+  Odds.hasMany(Bet, { foreignKey: 'odds_id' });
+  Bet.belongsTo(Odds, { foreignKey: 'odds_id' });
 }
 
 module.exports = {

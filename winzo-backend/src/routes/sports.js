@@ -73,7 +73,7 @@ router.get('/:sportKey/events', auth, async (req, res) => {
       });
     }
 
-    const whereClause = { sportId: sport.id };
+    const whereClause = { sport_id: sport.id };
     if (upcoming === 'true') {
       whereClause.commenceTime = { [require('sequelize').Op.gt]: new Date() };
       whereClause.status = 'upcoming';
@@ -214,10 +214,10 @@ router.post('/place-bet', [
 
     // Create bet record
     const bet = await Bet.create({
-      userId,
-      eventId,
-      oddsId,
-      betType: 'sports',
+      user_id: userId,
+      event_id: eventId,
+      odds_id: oddsId,
+      bet_type: 'sports',
       market,
       outcome,
       point: odds.point,
@@ -281,7 +281,7 @@ router.get('/my-bets', auth, async (req, res) => {
     const userId = req.user.id;
     const { status, limit = 50, page = 1 } = req.query;
 
-    const whereClause = { userId, betType: 'sports' };
+    const whereClause = { user_id: userId, bet_type: 'sports' };
     if (status) {
       whereClause.status = status;
     }
@@ -293,7 +293,7 @@ router.get('/my-bets', auth, async (req, res) => {
       attributes: { exclude: ['updatedAt'] },
       include: [{
         model: SportsEvent,
-        attributes: ['homeTeam', 'awayTeam', 'commenceTime', 'status', 'sportId'],
+        attributes: ['homeTeam', 'awayTeam', 'commenceTime', 'status', 'sport_id'],
         include: [{
           model: Sport,
           attributes: ['title']
