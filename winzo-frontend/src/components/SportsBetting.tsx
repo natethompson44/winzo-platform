@@ -406,10 +406,11 @@ const SportsBetting: React.FC = () => {
               <button
                 onClick={placeBet}
                 disabled={
-                  !betAmount || 
-                  parseFloat(betAmount) <= 0 || 
+                  !betAmount ||
+                  parseFloat(betAmount) <= 0 ||
                   placingBet ||
-                  (walletBalance && parseFloat(betAmount) > walletBalance.balance)
+                  (!!walletBalance &&
+                    parseFloat(betAmount) > walletBalance.balance)
                 }
                 className="place-bet-btn"
               >
