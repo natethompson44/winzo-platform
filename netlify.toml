@@ -10,7 +10,7 @@
 # No functions used, so no functions block needed
 
 [context.production.environment]
-  REACT_APP_API_URL = "https://winzo-platform-production.up.railway.app/api"
+REACT_APP_API_URL = "https://winzo-platform-production.up.railway.app/api"
 
 
 # Optional: redirect API calls to your backend if needed
