@@ -11,9 +11,25 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Global security middleware
-const allowedOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',')
-  : ['http://localhost:3000'];
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(',')
+      : ['http://localhost:3000', 'https://winzo-platform.netlify.app'];
+
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -21,7 +37,7 @@ const limiter = rateLimit({
 });
 
 app.use(helmet());
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors(corsOptions));
 app.use(limiter);
 app.use(express.json());
 
