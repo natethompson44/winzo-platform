@@ -6,6 +6,10 @@ const API_URL = process.env.REACT_APP_API_URL || '';
 interface User {
   username: string;
   balance: number;
+  inviteCode: string;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
 }
 
 interface AuthContextProps {
@@ -29,9 +33,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      axios.get(`${API_URL}/auth/me`).then(res => setUser(res.data.user)).catch(() => {
-        localStorage.removeItem('token');
-      });
+      axios
+        .get(`${API_URL}/auth/me`)
+        .then(res => setUser(res.data))
+        .catch(() => {
+          localStorage.removeItem('token');
+          delete axios.defaults.headers.common['Authorization'];
+        });
     }
   }, []);
 
@@ -40,7 +48,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const res = await axios.post(`${API_URL}/auth/login`, { username, password });
       localStorage.setItem('token', res.data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
-      setUser(res.data.user);
+
+      // Fetch the user data after login
+      const meRes = await axios.get(`${API_URL}/auth/me`);
+      setUser(meRes.data);
+
       return true;
     } catch (err) {
       console.error('Login error:', err);
@@ -53,7 +65,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const res = await axios.post(`${API_URL}/auth/register`, { username, password, inviteCode });
       localStorage.setItem('token', res.data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
-      setUser(res.data.user);
+
+      // Fetch the user data after registration
+      const meRes = await axios.get(`${API_URL}/auth/me`);
+      setUser(meRes.data);
+
       return true;
     } catch (err) {
       console.error('Registration error:', err);

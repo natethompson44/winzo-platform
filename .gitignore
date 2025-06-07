@@ -20,3 +20,8 @@ dist/
 # Logs
 logs
 *.log
+
+# Scripts
+*.ps1
+*.txt
+
