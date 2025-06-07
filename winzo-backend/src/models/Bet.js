@@ -12,8 +12,16 @@ const Odds = require('./Odds');
  */
 class Bet extends Model {}
 
-Bet.init(
+  Bet.init(
   {
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+    },
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
@@ -100,8 +108,9 @@ Bet.init(
     sequelize,
     modelName: 'bet',
     tableName: 'bets',
+    underscored: true,
     indexes: [
-      { fields: ['userId'] },
+      { fields: ['user_id'] },
       { fields: ['eventId'] },
       { fields: ['status'] }
     ]
