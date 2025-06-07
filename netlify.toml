@@ -12,6 +12,11 @@
 [context.production.environment]
 REACT_APP_API_URL = "https://winzo-platform-production.up.railway.app/api"
 
+# SPA (Single Page Application) routing - CRITICAL for React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 # Optional: redirect API calls to your backend if needed
 [[redirects]]
