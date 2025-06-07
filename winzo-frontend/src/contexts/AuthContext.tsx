@@ -4,14 +4,14 @@ import axios from 'axios';
 const API_URL = process.env.REACT_APP_API_URL || '';
 
 interface User {
-  email: string;
+  username: string;
   balance: number;
 }
 
 interface AuthContextProps {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, inviteCode: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<boolean>;
+  register: (username: string, password: string, inviteCode: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -35,9 +35,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (username: string, password: string) => {
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, { email, password });
+      const res = await axios.post(`${API_URL}/auth/login`, { username, password });
       localStorage.setItem('token', res.data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       setUser(res.data.user);
@@ -48,9 +48,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const register = async (email: string, password: string, inviteCode: string) => {
+  const register = async (username: string, password: string, inviteCode: string) => {
     try {
-      const res = await axios.post(`${API_URL}/auth/register`, { email, password, inviteCode });
+      const res = await axios.post(`${API_URL}/auth/register`, { username, password, inviteCode });
       localStorage.setItem('token', res.data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       setUser(res.data.user);
