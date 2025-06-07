@@ -1,19 +1,27 @@
 {
   "name": "winzo-backend",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "2.0.0",
+  "main": "src/server.js",
   "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "winzo",
+    "sports-betting",
+    "gaming",
+    "big-win-energy"
+  ],
+  "author": "WINZO Team",
   "license": "ISC",
-  "description": "",
+  "description": "WINZO Backend API - Sports Betting Platform with Big Win Energy",
   "dependencies": {
+    "axios": "^1.6.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "express-rate-limit": "^6.7.0",
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",

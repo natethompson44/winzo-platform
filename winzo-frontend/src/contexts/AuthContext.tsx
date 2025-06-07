@@ -1,9 +1,7 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useContext } from 'react';
 import axios from 'axios';
 
-const API_URL =
-  process.env.REACT_APP_API_URL ||
-  'https://winzo-platform-production.up.railway.app/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 interface User {
   username: string;
@@ -16,6 +14,7 @@ interface User {
 
 interface AuthContextProps {
   user: User | null;
+  token: string | null;
   login: (username: string, password: string) => Promise<boolean>;
   register: (username: string, password: string, inviteCode: string) => Promise<boolean>;
   logout: () => void;
@@ -23,16 +22,26 @@ interface AuthContextProps {
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
+  token: null,
   login: async () => false,
   register: async () => false,
   logout: () => {},
 });
 
+// Custom hook for using auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       axios
@@ -41,15 +50,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .catch(() => {
           localStorage.removeItem('token');
           delete axios.defaults.headers.common['Authorization'];
+          setToken(null);
         });
     }
-  }, []);
+  }, [token]);
 
   const login = async (username: string, password: string) => {
     try {
       const res = await axios.post(`${API_URL}/auth/login`, { username, password });
-      localStorage.setItem('token', res.data.token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+      const newToken = res.data.token;
+      
+      localStorage.setItem('token', newToken);
+      setToken(newToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
       // Fetch the user data after login
       const meRes = await axios.get(`${API_URL}/auth/me`);
@@ -65,8 +78,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const register = async (username: string, password: string, inviteCode: string) => {
     try {
       const res = await axios.post(`${API_URL}/auth/register`, { username, password, inviteCode });
-      localStorage.setItem('token', res.data.token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+      const newToken = res.data.token;
+      
+      localStorage.setItem('token', newToken);
+      setToken(newToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
       // Fetch the user data after registration
       const meRes = await axios.get(`${API_URL}/auth/me`);
@@ -83,11 +99,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
+    setToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
