@@ -67,9 +67,5 @@ SportsEvent.init(
   }
 );
 
-// Define relationships
-Sport.hasMany(SportsEvent, { foreignKey: 'sportId' });
-SportsEvent.belongsTo(Sport, { foreignKey: 'sportId' });
-
 module.exports = SportsEvent;
 

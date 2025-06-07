@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Bet = require('../models/Bet');
 const { Op } = require('sequelize');
+const sequelize = require('../../config/database');
 
 /**
  * WalletService manages all WINZO Wallet operations including balance updates,
@@ -37,8 +38,9 @@ class WalletService {
    * @returns {Promise<Object>} Updated balance and transaction details
    */
   async addFunds(userId, amount, reason = 'manual_credit') {
+    const t = await sequelize.transaction();
     try {
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(userId, { transaction: t, lock: t.LOCK.UPDATE });
       if (!user) {
         throw new Error('WINZO user not found');
       }
@@ -46,7 +48,9 @@ class WalletService {
       const previousBalance = parseFloat(user.walletBalance);
       const newBalance = previousBalance + parseFloat(amount);
 
-      await user.update({ walletBalance: newBalance });
+      await user.update({ walletBalance: newBalance }, { transaction: t });
+
+      await t.commit();
 
       console.log(`WINZO Wallet: Added $${amount} to user ${user.username} (${reason})`);
       console.log(`WINZO Wallet: Balance updated from $${previousBalance} to $${newBalance}`);
@@ -62,6 +66,7 @@ class WalletService {
       };
 
     } catch (error) {
+      await t.rollback();
       console.error('WINZO Wallet: Error adding funds:', error.message);
       throw new Error('Failed to add funds to WINZO Wallet');
     }
@@ -75,8 +80,9 @@ class WalletService {
    * @returns {Promise<Object>} Updated balance and transaction details
    */
   async deductFunds(userId, amount, reason = 'manual_debit') {
+    const t = await sequelize.transaction();
     try {
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(userId, { transaction: t, lock: t.LOCK.UPDATE });
       if (!user) {
         throw new Error('WINZO user not found');
       }
@@ -89,7 +95,9 @@ class WalletService {
       }
 
       const newBalance = previousBalance - deductAmount;
-      await user.update({ walletBalance: newBalance });
+      await user.update({ walletBalance: newBalance }, { transaction: t });
+
+      await t.commit();
 
       console.log(`WINZO Wallet: Deducted $${amount} from user ${user.username} (${reason})`);
       console.log(`WINZO Wallet: Balance updated from $${previousBalance} to $${newBalance}`);
@@ -105,6 +113,7 @@ class WalletService {
       };
 
     } catch (error) {
+      await t.rollback();
       console.error('WINZO Wallet: Error deducting funds:', error.message);
       throw new Error('Failed to deduct funds from WINZO Wallet');
     }

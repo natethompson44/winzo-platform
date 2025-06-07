@@ -1,4 +1,4 @@
-const sequelize = require('../../config/database');
+const { sequelize, applyAssociations } = require('../models');
 /**
  * Initialize connection to the PostgreSQL database and synchronize models.
  * Exits the process if authentication fails because the app cannot work
@@ -7,6 +7,7 @@ const sequelize = require('../../config/database');
 async function initDatabase() {
   try {
     await sequelize.authenticate();
+    applyAssociations();
     await sequelize.sync();
     console.log('Database connection established and models synchronized');
   } catch (err) {
