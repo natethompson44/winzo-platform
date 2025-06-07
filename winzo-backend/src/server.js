@@ -14,23 +14,15 @@ app.set('trust proxy', 1);
 
 // Global security middleware with WINZO configuration
 const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(',')
-      : ['http://localhost:3000', 'https://winzo-platform.netlify.app'];
-
-    // Allow requests with no origin (mobile apps, etc.)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'http://localhost:3000',
+    'https://winzo-platform.netlify.app',
+    'https://winzo-platform.netlify.app/'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
 };
 
 // Rate limiting with WINZO-specific configuration
@@ -45,6 +37,7 @@ const limiter = rateLimit({
 
 app.use(helmet());
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(limiter);
 app.use(express.json());
 
