@@ -19,7 +19,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="container">
       <h1>WINZO Dashboard</h1>
-      <p>Welcome, {user?.email}</p>
+      <p>Welcome, {user?.username}</p>
       {error && <div className="error">{error}</div>}
       <p>Your WINZO Wallet Balance: ${balance ?? user?.balance ?? 0}</p>
       <h3>Today's Hot Picks:</h3>

@@ -5,7 +5,7 @@ import './Auth.css';
 
 const Register: React.FC = () => {
   const { register } = useContext(AuthContext);
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [error, setError] = useState('');
@@ -14,7 +14,7 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await register(email, password, inviteCode);
+    const ok = await register(username, password, inviteCode);
     if (ok) {
       setError('');
       setSuccess(true);
@@ -33,10 +33,10 @@ const Register: React.FC = () => {
       {success && <div className="success-msg">Big Win Energy! ✨</div>}
       <form onSubmit={handleSubmit} className={success ? 'success' : ''}>
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
           required
         />
         <input
