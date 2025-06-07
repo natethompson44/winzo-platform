@@ -2,7 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || '';
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  'https://winzo-platform-production.up.railway.app/api';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useContext(AuthContext);
