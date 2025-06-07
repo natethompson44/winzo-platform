@@ -51,6 +51,7 @@ Bet.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       comment: 'Amount wagered from WINZO Wallet',
+      validate: { min: 0.01 }
     },
     odds: {
       type: DataTypes.FLOAT,
@@ -99,17 +100,12 @@ Bet.init(
     sequelize,
     modelName: 'bet',
     tableName: 'bets',
+    indexes: [
+      { fields: ['userId'] },
+      { fields: ['eventId'] },
+      { fields: ['status'] }
+    ]
   }
 );
-
-// Define relationships
-User.hasMany(Bet, { foreignKey: 'userId' });
-Bet.belongsTo(User, { foreignKey: 'userId' });
-
-SportsEvent.hasMany(Bet, { foreignKey: 'eventId' });
-Bet.belongsTo(SportsEvent, { foreignKey: 'eventId' });
-
-Odds.hasMany(Bet, { foreignKey: 'oddsId' });
-Bet.belongsTo(Odds, { foreignKey: 'oddsId' });
 
 module.exports = Bet;

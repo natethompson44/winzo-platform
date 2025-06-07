@@ -81,8 +81,10 @@ router.get('/:sportKey/events', auth, async (req, res) => {
 
     const events = await SportsEvent.findAll({
       where: whereClause,
+      attributes: ['id', 'homeTeam', 'awayTeam', 'commenceTime', 'status'],
       include: [{
         model: Odds,
+        attributes: ['id', 'bookmakerTitle', 'market', 'outcome', 'price', 'decimalPrice', 'point'],
         where: { active: true },
         required: false
       }],
@@ -288,9 +290,14 @@ router.get('/my-bets', auth, async (req, res) => {
 
     const { count, rows: bets } = await Bet.findAndCountAll({
       where: whereClause,
+      attributes: { exclude: ['updatedAt'] },
       include: [{
         model: SportsEvent,
-        include: [Sport]
+        attributes: ['homeTeam', 'awayTeam', 'commenceTime', 'status', 'sportId'],
+        include: [{
+          model: Sport,
+          attributes: ['title']
+        }]
       }],
       order: [['placedAt', 'DESC']],
       limit: parseInt(limit),
