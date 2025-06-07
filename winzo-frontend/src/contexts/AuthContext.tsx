@@ -15,6 +15,7 @@ interface User {
 interface AuthContextProps {
   user: User | null;
   token: string | null;
+  loading: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   register: (username: string, password: string, inviteCode: string) => Promise<boolean>;
   logout: () => void;
@@ -23,6 +24,7 @@ interface AuthContextProps {
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
   token: null,
+  loading: false,
   login: async () => false,
   register: async () => false,
   logout: () => {},
@@ -40,6 +42,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (token) {
@@ -51,7 +54,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           localStorage.removeItem('token');
           delete axios.defaults.headers.common['Authorization'];
           setToken(null);
-        });
+        })
+        .finally(() => setLoading(false));
+    }
+    else {
+      setLoading(false);
     }
   }, [token]);
 
@@ -103,7 +110,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
