@@ -1,7 +1,9 @@
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || '';
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  'https://winzo-platform-production.up.railway.app/api';
 
 interface User {
   username: string;
