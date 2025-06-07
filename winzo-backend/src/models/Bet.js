@@ -12,13 +12,29 @@ const Odds = require('./Odds');
  */
 class Bet extends Model {}
 
-  Bet.init(
+Bet.init(
   {
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'users',
+        key: 'id',
+      },
+    },
+    event_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'sports_events',
+        key: 'id',
+      },
+    },
+    odds_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'odds',
         key: 'id',
       },
     },
@@ -34,7 +50,7 @@ class Bet extends Model {}
       comment: 'Legacy game field for non-sports bets',
     },
     // Sports betting specific fields
-    betType: {
+    bet_type: {
       type: DataTypes.ENUM('sports', 'casino', 'other'),
       allowNull: false,
       defaultValue: 'sports',
@@ -111,7 +127,8 @@ class Bet extends Model {}
     underscored: true,
     indexes: [
       { fields: ['user_id'] },
-      { fields: ['eventId'] },
+      { fields: ['event_id'] },
+      { fields: ['odds_id'] },
       { fields: ['status'] }
     ]
   }
