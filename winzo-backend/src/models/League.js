@@ -72,14 +72,17 @@ League.init(
     currentSeason: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      field: 'current_season',
     },
     createdBy: {
       type: DataTypes.UUID,
       allowNull: true,
+      field: 'created_by',
     },
     updatedBy: {
       type: DataTypes.UUID,
       allowNull: true,
+      field: 'updated_by',
     },
   },
   {

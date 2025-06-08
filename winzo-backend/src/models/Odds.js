@@ -32,6 +32,7 @@ Odds.init(
     bookmakerTitle: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: 'bookmaker_title',
       comment: 'Display title of the bookmaker (e.g., FanDuel)',
     },
     market: {
@@ -52,6 +53,7 @@ Odds.init(
     decimalPrice: {
       type: DataTypes.FLOAT,
       allowNull: false,
+      field: 'decimal_price',
       comment: 'Odds price in decimal format for easier calculation',
     },
     point: {
@@ -62,15 +64,17 @@ Odds.init(
     bookmakerId: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      field: 'bookmaker_id',
       comment: 'Bookmaker id from API-Sports',
     },
-    marketType: { type: DataTypes.STRING, allowNull: true },
-    isLiveOdds: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
-    openingPrice: { type: DataTypes.FLOAT, allowNull: true },
+    marketType: { type: DataTypes.STRING, allowNull: true, field: 'market_type' },
+    isLiveOdds: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false, field: 'is_live_odds' },
+    openingPrice: { type: DataTypes.FLOAT, allowNull: true, field: 'opening_price' },
     lastUpdated: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
+      field: 'last_updated',
       comment: 'When these odds were last updated from the API',
     },
     active: {
@@ -79,8 +83,8 @@ Odds.init(
       defaultValue: true,
       comment: 'Whether these odds are currently available for betting',
     },
-    createdBy: { type: DataTypes.UUID, allowNull: true },
-    updatedBy: { type: DataTypes.UUID, allowNull: true },
+    createdBy: { type: DataTypes.UUID, allowNull: true, field: 'created_by' },
+    updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' },
   },
   {
     sequelize,
@@ -91,7 +95,7 @@ Odds.init(
       { fields: ['event_id'] },
       { fields: ['bookmaker'] },
       { fields: ['market'] },
-      { fields: ['isLiveOdds'] },
+      { fields: ['is_live_odds'] },
     ],
     hooks: {
       beforeUpdate(odds) {
