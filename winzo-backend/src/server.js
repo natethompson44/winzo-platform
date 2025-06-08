@@ -6,8 +6,9 @@ require('dotenv').config();
 
 const initDatabase = require('./database/init');
 const authRoutes = require('./routes/auth');
-const sportsRoutes = require('./routes/sports');
-const walletRoutes = require('./routes/wallet');
+const sportsRoutes = require('./routes/sportsEnhanced');
+const walletRoutes = require('./routes/walletEnhanced');
+const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -48,6 +49,7 @@ initDatabase();
 app.use('/api/auth', authRoutes);
 app.use('/api/sports', sportsRoutes);
 app.use('/api/wallet', walletRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Health check endpoint with WINZO branding
 app.get('/health', (req, res) => {
