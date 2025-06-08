@@ -85,16 +85,19 @@ Bet.init(
     decimalOdds: {
       type: DataTypes.FLOAT,
       allowNull: false,
+      field: 'decimal_odds',
       comment: 'Odds in decimal format for calculation',
     },
     potentialPayout: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      field: 'potential_payout',
       comment: 'Potential payout including stake',
     },
     potentialProfit: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      field: 'potential_profit',
       comment: 'Potential profit (payout minus stake)',
     },
     status: {
@@ -106,17 +109,20 @@ Bet.init(
     settledAt: {
       type: DataTypes.DATE,
       allowNull: true,
+      field: 'settled_at',
       comment: 'When the bet was settled',
     },
     actualPayout: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
+      field: 'actual_payout',
       comment: 'Actual amount paid out to WINZO Wallet',
     },
     placedAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
+      field: 'placed_at',
       comment: 'When the bet was placed',
     },
   },

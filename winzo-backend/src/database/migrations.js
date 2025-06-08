@@ -9,8 +9,36 @@ async function migrate() {
   const qi = sequelize.getQueryInterface();
 
   try {
+    // Helper function to safely add columns
+    const addColumnSafely = async (table, column, definition) => {
+      try {
+        await qi.addColumn(table, column, definition);
+        console.log(`Added column ${column} to ${table} table`);
+      } catch (error) {
+        if (error.message.includes('already exists') || error.message.includes('duplicate column')) {
+          console.log(`Column ${column} already exists in ${table} table`);
+        } else {
+          console.log(`Could not add column ${column} to ${table}: ${error.message}`);
+        }
+      }
+    };
+
+    // Helper function to safely create tables
+    const createTableSafely = async (tableName, definition) => {
+      try {
+        await qi.createTable(tableName, definition);
+        console.log(`Created ${tableName} table`);
+      } catch (error) {
+        if (error.message.includes('already exists')) {
+          console.log(`${tableName} table already exists`);
+        } else {
+          console.log(`Could not create ${tableName} table: ${error.message}`);
+        }
+      }
+    };
+
     // countries table
-    await qi.createTable('countries', {
+    await createTableSafely('countries', {
       id: { 
         type: sequelize.Sequelize.UUID, 
         primaryKey: true, 
@@ -19,6 +47,8 @@ async function migrate() {
       name: { type: sequelize.Sequelize.STRING(255), allowNull: false },
       code: { type: sequelize.Sequelize.STRING(3), allowNull: false, unique: true },
       flag_url: { type: sequelize.Sequelize.STRING(255) },
+      created_by: { type: sequelize.Sequelize.UUID, allowNull: true },
+      updated_by: { type: sequelize.Sequelize.UUID, allowNull: true },
       created_at: { 
         type: sequelize.Sequelize.DATE, 
         defaultValue: sequelize.Sequelize.NOW 
@@ -28,12 +58,10 @@ async function migrate() {
         defaultValue: sequelize.Sequelize.NOW 
       },
       deleted_at: { type: sequelize.Sequelize.DATE }
-    }).catch(() => {
-      console.log('Countries table already exists');
     });
 
     // leagues table
-    await qi.createTable('leagues', {
+    await createTableSafely('leagues', {
       id: { 
         type: sequelize.Sequelize.UUID, 
         primaryKey: true, 
@@ -55,6 +83,8 @@ async function migrate() {
       season: { type: sequelize.Sequelize.INTEGER },
       seasons: { type: sequelize.Sequelize.JSONB },
       current_season: { type: sequelize.Sequelize.INTEGER },
+      created_by: { type: sequelize.Sequelize.UUID, allowNull: true },
+      updated_by: { type: sequelize.Sequelize.UUID, allowNull: true },
       created_at: { 
         type: sequelize.Sequelize.DATE, 
         defaultValue: sequelize.Sequelize.NOW 
@@ -64,12 +94,10 @@ async function migrate() {
         defaultValue: sequelize.Sequelize.NOW 
       },
       deleted_at: { type: sequelize.Sequelize.DATE }
-    }).catch(() => {
-      console.log('Leagues table already exists');
     });
 
     // venues table
-    await qi.createTable('venues', {
+    await createTableSafely('venues', {
       id: { 
         type: sequelize.Sequelize.UUID, 
         primaryKey: true, 
@@ -86,6 +114,8 @@ async function migrate() {
       capacity: { type: sequelize.Sequelize.INTEGER },
       surface: { type: sequelize.Sequelize.STRING(255) },
       image: { type: sequelize.Sequelize.STRING(255) },
+      created_by: { type: sequelize.Sequelize.UUID, allowNull: true },
+      updated_by: { type: sequelize.Sequelize.UUID, allowNull: true },
       created_at: { 
         type: sequelize.Sequelize.DATE, 
         defaultValue: sequelize.Sequelize.NOW 
@@ -95,12 +125,10 @@ async function migrate() {
         defaultValue: sequelize.Sequelize.NOW 
       },
       deleted_at: { type: sequelize.Sequelize.DATE }
-    }).catch(() => {
-      console.log('Venues table already exists');
     });
 
     // teams table
-    await qi.createTable('teams', {
+    await createTableSafely('teams', {
       id: { 
         type: sequelize.Sequelize.UUID, 
         primaryKey: true, 
@@ -124,6 +152,8 @@ async function migrate() {
       logo: { type: sequelize.Sequelize.STRING(255) },
       founded: { type: sequelize.Sequelize.INTEGER },
       favorites: { type: sequelize.Sequelize.INTEGER, defaultValue: 0 },
+      created_by: { type: sequelize.Sequelize.UUID, allowNull: true },
+      updated_by: { type: sequelize.Sequelize.UUID, allowNull: true },
       created_at: { 
         type: sequelize.Sequelize.DATE, 
         defaultValue: sequelize.Sequelize.NOW 
@@ -133,12 +163,10 @@ async function migrate() {
         defaultValue: sequelize.Sequelize.NOW 
       },
       deleted_at: { type: sequelize.Sequelize.DATE }
-    }).catch(() => {
-      console.log('Teams table already exists');
     });
 
     // players table
-    await qi.createTable('players', {
+    await createTableSafely('players', {
       id: { 
         type: sequelize.Sequelize.UUID, 
         primaryKey: true, 
@@ -162,6 +190,8 @@ async function migrate() {
       weight: { type: sequelize.Sequelize.STRING(50) },
       injured: { type: sequelize.Sequelize.BOOLEAN },
       photo: { type: sequelize.Sequelize.STRING(255) },
+      created_by: { type: sequelize.Sequelize.UUID, allowNull: true },
+      updated_by: { type: sequelize.Sequelize.UUID, allowNull: true },
       created_at: { 
         type: sequelize.Sequelize.DATE, 
         defaultValue: sequelize.Sequelize.NOW 
@@ -171,64 +201,6 @@ async function migrate() {
         defaultValue: sequelize.Sequelize.NOW 
       },
       deleted_at: { type: sequelize.Sequelize.DATE }
-    }).catch(() => {
-      console.log('Players table already exists');
-    });
-
-    // Add new columns to existing tables (safe to run multiple times)
-    const addColumnSafely = async (table, column, definition) => {
-      try {
-        await qi.addColumn(table, column, definition);
-        console.log(`Added column ${column} to ${table} table`);
-      } catch (error) {
-        if (error.message.includes('already exists')) {
-          console.log(`Column ${column} already exists in ${table} table`);
-        } else {
-          console.log(`Could not add column ${column} to ${table}: ${error.message}`);
-        }
-      }
-    };
-
-    // Add auditing columns to core tables
-    await addColumnSafely('countries', 'created_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('countries', 'updated_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('leagues', 'created_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('leagues', 'updated_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('teams', 'created_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('teams', 'updated_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('players', 'created_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('players', 'updated_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('venues', 'created_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
-    });
-    await addColumnSafely('venues', 'updated_by', {
-      type: sequelize.Sequelize.UUID,
-      allowNull: true
     });
 
     // Add columns to sports table
@@ -269,20 +241,20 @@ async function migrate() {
     });
     await addColumnSafely('sports_events', 'external_id', {
       type: sequelize.Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true
     });
     await addColumnSafely('sports_events', 'home_team', {
       type: sequelize.Sequelize.STRING,
-      allowNull: false
+      allowNull: true
     });
     await addColumnSafely('sports_events', 'away_team', {
       type: sequelize.Sequelize.STRING,
-      allowNull: false
+      allowNull: true
     });
     await addColumnSafely('sports_events', 'commence_time', {
       type: sequelize.Sequelize.DATE,
-      allowNull: false
+      allowNull: true
     });
     await addColumnSafely('sports_events', 'home_team_id', {
       type: sequelize.Sequelize.UUID,
@@ -356,11 +328,11 @@ async function migrate() {
     });
     await addColumnSafely('odds', 'bookmaker_title', {
       type: sequelize.Sequelize.STRING(255),
-      allowNull: false
+      allowNull: true
     });
     await addColumnSafely('odds', 'decimal_price', {
       type: sequelize.Sequelize.FLOAT,
-      allowNull: false
+      allowNull: true
     });
     await addColumnSafely('odds', 'market_type', {
       type: sequelize.Sequelize.STRING(50),
@@ -385,6 +357,32 @@ async function migrate() {
     await addColumnSafely('odds', 'updated_by', {
       type: sequelize.Sequelize.UUID,
       allowNull: true
+    });
+
+    // Add columns to bets table
+    await addColumnSafely('bets', 'decimal_odds', {
+      type: sequelize.Sequelize.FLOAT,
+      allowNull: true
+    });
+    await addColumnSafely('bets', 'potential_payout', {
+      type: sequelize.Sequelize.DECIMAL(10, 2),
+      allowNull: true
+    });
+    await addColumnSafely('bets', 'potential_profit', {
+      type: sequelize.Sequelize.DECIMAL(10, 2),
+      allowNull: true
+    });
+    await addColumnSafely('bets', 'settled_at', {
+      type: sequelize.Sequelize.DATE,
+      allowNull: true
+    });
+    await addColumnSafely('bets', 'actual_payout', {
+      type: sequelize.Sequelize.DECIMAL(10, 2),
+      allowNull: true
+    });
+    await addColumnSafely('bets', 'placed_at', {
+      type: sequelize.Sequelize.DATE,
+      defaultValue: sequelize.Sequelize.NOW
     });
 
     console.log('Migration completed successfully');
