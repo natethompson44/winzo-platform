@@ -53,6 +53,7 @@ Sport.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+      field: 'has_outrights',
       comment: 'Whether this sport supports outright/futures betting',
     },
     apiSportId: {
@@ -79,8 +80,8 @@ Sport.init(
       field: 'big_win_message',
       comment: 'WINZO Big Win Energy celebration message',
     },
-    createdBy: { type: DataTypes.UUID, allowNull: true },
-    updatedBy: { type: DataTypes.UUID, allowNull: true },
+    createdBy: { type: DataTypes.UUID, allowNull: true, field: 'created_by' },
+    updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' },
   },
   {
     sequelize,

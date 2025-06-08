@@ -44,8 +44,8 @@ Team.init(
     logo: { type: DataTypes.STRING, allowNull: true },
     founded: { type: DataTypes.INTEGER, allowNull: true },
     favorites: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    createdBy: { type: DataTypes.UUID, allowNull: true },
-    updatedBy: { type: DataTypes.UUID, allowNull: true },
+    createdBy: { type: DataTypes.UUID, allowNull: true, field: 'created_by' },
+    updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' },
   },
   {
     sequelize,

@@ -189,6 +189,48 @@ async function migrate() {
       }
     };
 
+    // Add auditing columns to core tables
+    await addColumnSafely('countries', 'created_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('countries', 'updated_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('leagues', 'created_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('leagues', 'updated_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('teams', 'created_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('teams', 'updated_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('players', 'created_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('players', 'updated_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('venues', 'created_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('venues', 'updated_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+
     // Add columns to sports table
     await addColumnSafely('sports', 'api_sport_id', { 
       type: sequelize.Sequelize.INTEGER,
@@ -203,25 +245,62 @@ async function migrate() {
       type: sequelize.Sequelize.INTEGER,
       allowNull: true
     });
-    await addColumnSafely('sports', 'big_win_message', { 
+    await addColumnSafely('sports', 'big_win_message', {
       type: sequelize.Sequelize.STRING(255),
+      allowNull: true
+    });
+    await addColumnSafely('sports', 'has_outrights', {
+      type: sequelize.Sequelize.BOOLEAN,
+      defaultValue: false
+    });
+    await addColumnSafely('sports', 'created_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('sports', 'updated_by', {
+      type: sequelize.Sequelize.UUID,
       allowNull: true
     });
 
     // Add columns to sports_events table
-    await addColumnSafely('sports_events', 'league_id', { 
+    await addColumnSafely('sports_events', 'league_id', {
       type: sequelize.Sequelize.UUID,
       allowNull: true
     });
-    await addColumnSafely('sports_events', 'home_team_id', { 
+    await addColumnSafely('sports_events', 'external_id', {
+      type: sequelize.Sequelize.STRING,
+      allowNull: false,
+      unique: true
+    });
+    await addColumnSafely('sports_events', 'home_team', {
+      type: sequelize.Sequelize.STRING,
+      allowNull: false
+    });
+    await addColumnSafely('sports_events', 'away_team', {
+      type: sequelize.Sequelize.STRING,
+      allowNull: false
+    });
+    await addColumnSafely('sports_events', 'commence_time', {
+      type: sequelize.Sequelize.DATE,
+      allowNull: false
+    });
+    await addColumnSafely('sports_events', 'home_team_id', {
       type: sequelize.Sequelize.UUID,
       allowNull: true
     });
-    await addColumnSafely('sports_events', 'away_team_id', { 
+    await addColumnSafely('sports_events', 'away_team_id', {
       type: sequelize.Sequelize.UUID,
       allowNull: true
     });
-    await addColumnSafely('sports_events', 'live_home_score', { 
+    await addColumnSafely('sports_events', 'home_score', {
+      type: sequelize.Sequelize.INTEGER,
+      allowNull: true
+    });
+    await addColumnSafely('sports_events', 'away_score', {
+      type: sequelize.Sequelize.INTEGER,
+      allowNull: true
+    });
+    await addColumnSafely('sports_events', 'live_home_score', {
       type: sequelize.Sequelize.INTEGER,
       allowNull: true
     });
@@ -249,37 +328,61 @@ async function migrate() {
       type: sequelize.Sequelize.STRING(10),
       allowNull: true
     });
-    await addColumnSafely('sports_events', 'elapsed', { 
+    await addColumnSafely('sports_events', 'elapsed', {
       type: sequelize.Sequelize.INTEGER,
       allowNull: true
     });
-    await addColumnSafely('sports_events', 'big_win_message', { 
+    await addColumnSafely('sports_events', 'big_win_message', {
       type: sequelize.Sequelize.STRING(255),
+      allowNull: true
+    });
+    await addColumnSafely('sports_events', 'last_updated', {
+      type: sequelize.Sequelize.DATE,
+      defaultValue: sequelize.Sequelize.NOW
+    });
+    await addColumnSafely('sports_events', 'created_by', {
+      type: sequelize.Sequelize.UUID,
+      allowNull: true
+    });
+    await addColumnSafely('sports_events', 'updated_by', {
+      type: sequelize.Sequelize.UUID,
       allowNull: true
     });
 
     // Add columns to odds table
-    await addColumnSafely('odds', 'bookmaker_id', { 
+    await addColumnSafely('odds', 'bookmaker_id', {
       type: sequelize.Sequelize.INTEGER,
       allowNull: true
     });
-    await addColumnSafely('odds', 'market_type', { 
+    await addColumnSafely('odds', 'bookmaker_title', {
+      type: sequelize.Sequelize.STRING(255),
+      allowNull: false
+    });
+    await addColumnSafely('odds', 'decimal_price', {
+      type: sequelize.Sequelize.FLOAT,
+      allowNull: false
+    });
+    await addColumnSafely('odds', 'market_type', {
       type: sequelize.Sequelize.STRING(50),
       allowNull: true
     });
-    await addColumnSafely('odds', 'is_live_odds', { 
+    await addColumnSafely('odds', 'is_live_odds', {
       type: sequelize.Sequelize.BOOLEAN,
       defaultValue: false
     });
-    await addColumnSafely('odds', 'opening_price', { 
+    await addColumnSafely('odds', 'opening_price', {
       type: sequelize.Sequelize.FLOAT,
       allowNull: true
     });
-    await addColumnSafely('odds', 'created_by', { 
+    await addColumnSafely('odds', 'last_updated', {
+      type: sequelize.Sequelize.DATE,
+      defaultValue: sequelize.Sequelize.NOW
+    });
+    await addColumnSafely('odds', 'created_by', {
       type: sequelize.Sequelize.UUID,
       allowNull: true
     });
-    await addColumnSafely('odds', 'updated_by', { 
+    await addColumnSafely('odds', 'updated_by', {
       type: sequelize.Sequelize.UUID,
       allowNull: true
     });

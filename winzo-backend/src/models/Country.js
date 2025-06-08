@@ -36,14 +36,17 @@ Country.init(
     flagUrl: {
       type: DataTypes.STRING,
       allowNull: true,
+      field: 'flag_url',
     },
     createdBy: {
       type: DataTypes.UUID,
       allowNull: true,
+      field: 'created_by',
     },
     updatedBy: {
       type: DataTypes.UUID,
       allowNull: true,
+      field: 'updated_by',
     },
   },
   {

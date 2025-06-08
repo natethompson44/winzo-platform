@@ -33,8 +33,8 @@ Venue.init(
     capacity: { type: DataTypes.INTEGER, allowNull: true },
     surface: { type: DataTypes.STRING, allowNull: true },
     image: { type: DataTypes.STRING, allowNull: true },
-    createdBy: { type: DataTypes.UUID, allowNull: true },
-    updatedBy: { type: DataTypes.UUID, allowNull: true },
+    createdBy: { type: DataTypes.UUID, allowNull: true, field: 'created_by' },
+    updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' },
   },
   {
     sequelize,
