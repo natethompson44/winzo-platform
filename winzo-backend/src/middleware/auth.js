@@ -15,9 +15,9 @@ module.exports = function authenticate(req, res, next) {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    // Attach the user id to the request in an object so downstream
-    // handlers can safely access `req.user.id`.
-    req.user = { id: payload.id };
+    // Attach the user id directly to the request so downstream
+    // handlers can access `req.user` as the id value.
+    req.user = payload.id;
     return next();
   } catch (err) {
     return res.status(401).json({ message: 'Invalid or expired token' });
