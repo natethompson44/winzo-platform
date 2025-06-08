@@ -47,8 +47,8 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
     return breadcrumbs;
   };
 
-  // Don't show navigation on login/register pages
-  if (location.pathname === '/' || location.pathname === '/register') {
+  // Don't show navigation on public pages
+  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/register') {
     return null;
   }
 

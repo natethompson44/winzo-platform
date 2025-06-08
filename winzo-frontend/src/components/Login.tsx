@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import winzoLogo from '../assets/winzo-logo.png';
 import './Auth.css';
 
 const Login: React.FC = () => {
@@ -25,13 +26,15 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <h1>WINZO</h1>
-      <p>Big Win Energy.</p>
+    <div className="auth-container">
+      <img src={winzoLogo} alt="WINZO" className="auth-logo" />
+      <h1 className="auth-title">Welcome Back</h1>
+      <p className="auth-subtitle">Big Win Energy</p>
       {error && <div className="error">{error}</div>}
       {success && <div className="success-msg">Big Win Energy! ✨</div>}
-      <form onSubmit={handleSubmit} className={success ? 'success' : ''}>
+      <form onSubmit={handleSubmit} className={`auth-form ${success ? 'success' : ''}`}>
         <input
+          className="winzo-input"
           type="text"
           placeholder="Username"
           value={username}
@@ -39,16 +42,17 @@ const Login: React.FC = () => {
           required
         />
         <input
+          className="winzo-input"
           type="password"
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Login</button>
+        <button type="submit" className="winzo-btn winzo-btn-primary">Login</button>
       </form>
-      <p>
-        Don't have an account? <a href="/register">Register</a>
+      <p className="auth-footer">
+        Don't have an account? <Link to="/register">Register</Link>
       </p>
     </div>
   );
