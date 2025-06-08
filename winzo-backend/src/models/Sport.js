@@ -59,6 +59,7 @@ Sport.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       unique: true,
+      field: 'api_sport_id',
       comment: 'API-Sports sport identifier',
     },
     country_id: {
@@ -69,11 +70,13 @@ Sport.init(
     defaultSeason: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      field: 'default_season',
       comment: 'Default season year for API-Sports calls',
     },
     bigWinMessage: {
       type: DataTypes.STRING,
       allowNull: true,
+      field: 'big_win_message',
       comment: 'WINZO Big Win Energy celebration message',
     },
     createdBy: { type: DataTypes.UUID, allowNull: true },
@@ -86,7 +89,7 @@ Sport.init(
     paranoid: true,
     indexes: [
       { fields: ['key'] },
-      { fields: ['apiSportId'] },
+      { fields: ['api_sport_id'] },
       { fields: ['country_id'] },
     ],
   }
