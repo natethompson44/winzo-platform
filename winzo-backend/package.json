@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "node tests/runTests.js"
+    "test": "node tests/runTests.js",
+    "migrate": "node src/database/migrations.js"
   },
   "keywords": [
     "winzo",

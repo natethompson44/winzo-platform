@@ -1,10 +1,17 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../../config/database');
+const Country = require('./Country');
 
 /**
  * Sport model represents different sports available for betting on WINZO.
  * Each sport has a unique key from The Odds API and contains metadata
  * about the sport including its current active status.
+ */
+/**
+ * Sport represents a high level category such as Football or Basketball. It now
+ * includes references to country and season information for API-Sports
+ * compatibility while keeping legacy fields intact.
+ * @typedef {import('../types/models').SportInstance} SportInstance
  */
 class Sport extends Model {}
 
@@ -48,11 +55,40 @@ Sport.init(
       defaultValue: false,
       comment: 'Whether this sport supports outright/futures betting',
     },
+    apiSportId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      unique: true,
+      comment: 'API-Sports sport identifier',
+    },
+    country_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: 'countries', key: 'id' },
+    },
+    defaultSeason: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Default season year for API-Sports calls',
+    },
+    bigWinMessage: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'WINZO Big Win Energy celebration message',
+    },
+    createdBy: { type: DataTypes.UUID, allowNull: true },
+    updatedBy: { type: DataTypes.UUID, allowNull: true },
   },
   {
     sequelize,
     modelName: 'sport',
     tableName: 'sports',
+    paranoid: true,
+    indexes: [
+      { fields: ['key'] },
+      { fields: ['apiSportId'] },
+      { fields: ['country_id'] },
+    ],
   }
 );
 
