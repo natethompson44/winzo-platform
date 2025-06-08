@@ -12,7 +12,7 @@ const HomePage: React.FC = () => {
         <p className="hero-subtitle">Exclusive sports betting for champions only.</p>
         <div className="hero-actions">
           <Link to="/login" className="winzo-btn winzo-btn-primary">Login</Link>
-          <Link to="/register" className="winzo-btn winzo-btn-secondary">Request Invite</Link>
+          <Link to="/register" className="winzo-btn winzo-btn-secondary">Register</Link>
         </div>
       </header>
 

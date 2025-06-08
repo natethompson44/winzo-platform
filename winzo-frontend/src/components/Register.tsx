@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import winzoLogo from '../assets/winzo-logo.png';
 import './Auth.css';
 
 const Register: React.FC = () => {
@@ -26,13 +27,15 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <h1>WINZO</h1>
-      <p>Big Win Energy.</p>
+    <div className="auth-container">
+      <img src={winzoLogo} alt="WINZO" className="auth-logo" />
+      <h1 className="auth-title">Create Account</h1>
+      <p className="auth-subtitle">Invite Only</p>
       {error && <div className="error">{error}</div>}
       {success && <div className="success-msg">Big Win Energy! ✨</div>}
-      <form onSubmit={handleSubmit} className={success ? 'success' : ''}>
+      <form onSubmit={handleSubmit} className={`auth-form ${success ? 'success' : ''}`}>
         <input
+          className="winzo-input"
           type="text"
           placeholder="Username"
           value={username}
@@ -40,6 +43,7 @@ const Register: React.FC = () => {
           required
         />
         <input
+          className="winzo-input"
           type="password"
           placeholder="Password"
           value={password}
@@ -47,16 +51,17 @@ const Register: React.FC = () => {
           required
         />
         <input
+          className="winzo-input"
           type="text"
           placeholder="Invite Code"
           value={inviteCode}
           onChange={e => setInviteCode(e.target.value)}
           required
         />
-        <button type="submit">Register</button>
+        <button type="submit" className="winzo-btn winzo-btn-primary">Register</button>
       </form>
-      <p>
-        Already have an account? <a href="/login">Login</a>
+      <p className="auth-footer">
+        Already have an account? <Link to="/login">Login</Link>
       </p>
     </div>
   );
