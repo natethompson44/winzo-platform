@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
+// Import authentication middleware. The middleware exports a single
+// function, so we require it directly instead of using destructuring.
+const authenticateToken = require('../middleware/auth');
 const { SportsEvent, Bet, User } = require('../models');
 
 /**
