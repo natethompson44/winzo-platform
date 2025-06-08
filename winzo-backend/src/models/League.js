@@ -26,7 +26,7 @@ League.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    apiId: {
+    api_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
