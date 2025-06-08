@@ -5,6 +5,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Navigation from './components/Navigation';
 import Login from './components/Login';
 import Register from './components/Register';
+import HomePage from './components/HomePage';
 import Dashboard from './components/Dashboard';
 import SportsBetting from './components/SportsBetting-Enhanced';
 import WalletDashboard from './components/WalletDashboard';
@@ -27,7 +28,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   }
   
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
   
   return <>{children}</>;
@@ -61,8 +62,9 @@ function App() {
         <Router>
           <div className="App">
             <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Login />} />
+            {/* Public Routes */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
               {/* Protected Routes with Layout */}

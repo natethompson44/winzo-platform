@@ -56,7 +56,7 @@ const Register: React.FC = () => {
         <button type="submit">Register</button>
       </form>
       <p>
-        Already have an account? <a href="/">Login</a>
+        Already have an account? <a href="/login">Login</a>
       </p>
     </div>
   );

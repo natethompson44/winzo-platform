@@ -1,0 +1,121 @@
+/* WINZO Home Page Styles - Big Win Energy Landing */
+
+.home-page {
+  min-height: 100vh;
+  background: var(--winzo-navy);
+  color: var(--white);
+  font-family: var(--font-family-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-section {
+  background: var(--primary-gradient);
+  padding: 4rem 1rem 3rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 180, 216, 0.15);
+}
+
+.hero-logo {
+  width: 100px;
+  margin: 0 auto 1rem;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  color: var(--big-win-gold);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.03em;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sports-preview,
+.community-proof,
+.win-showcase {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.sports-preview {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  color: var(--winzo-teal);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.section-text {
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+  opacity: 0.9;
+}
+
+.proof-grid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.proof-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 180, 216, 0.2);
+  border-radius: 16px;
+  padding: 1rem 2rem;
+  min-width: 120px;
+}
+
+.proof-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--big-win-gold);
+}
+
+.proof-label {
+  font-size: 0.875rem;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.win-feed {
+  list-style: none;
+  padding: 0;
+  margin: 1rem auto 0;
+  max-width: 400px;
+  text-align: left;
+}
+
+.win-feed li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.home-footer {
+  margin-top: auto;
+  padding: 2rem 1rem;
+  background: var(--primary-gradient);
+  text-align: center;
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 640px) {
+  .hero-title { font-size: 2rem; }
+  .hero-logo { width: 80px; }
+}
