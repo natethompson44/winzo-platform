@@ -4,11 +4,18 @@ const SportsEvent = require('./SportsEvent');
 
 /**
  * Odds model stores betting odds for different markets on sporting events.
- * Odds are synchronized from multiple bookmakers via The Odds API to provide
- * competitive pricing for WINZO users. Each odds entry represents a specific
- * betting outcome with its current price.
+ * Enhanced with live tracking and additional bookmaker information.
+ * @typedef {import('../types/models').OddsInstance} OddsInstance
  */
-class Odds extends Model {}
+class Odds extends Model {
+  /**
+   * Determine if the odds are live.
+   * @returns {boolean}
+   */
+  isLive() {
+    return this.isLiveOdds;
+  }
+}
 
 Odds.init(
   {
@@ -52,6 +59,14 @@ Odds.init(
       allowNull: true,
       comment: 'Point spread or total points (for spreads/totals markets)',
     },
+    bookmakerId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'Bookmaker id from API-Sports',
+    },
+    marketType: { type: DataTypes.STRING, allowNull: true },
+    isLiveOdds: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    openingPrice: { type: DataTypes.FLOAT, allowNull: true },
     lastUpdated: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -64,11 +79,25 @@ Odds.init(
       defaultValue: true,
       comment: 'Whether these odds are currently available for betting',
     },
+    createdBy: { type: DataTypes.UUID, allowNull: true },
+    updatedBy: { type: DataTypes.UUID, allowNull: true },
   },
   {
     sequelize,
     modelName: 'odds',
     tableName: 'odds',
+    paranoid: true,
+    indexes: [
+      { fields: ['event_id'] },
+      { fields: ['bookmaker'] },
+      { fields: ['market'] },
+      { fields: ['isLiveOdds'] },
+    ],
+    hooks: {
+      beforeUpdate(odds) {
+        odds.lastUpdated = new Date();
+      },
+    },
   }
 );
 
