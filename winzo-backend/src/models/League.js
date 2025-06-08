@@ -30,6 +30,7 @@ League.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
+      field: 'api_id',
       comment: 'API-Sports league id',
     },
     sport_id: {
@@ -87,7 +88,7 @@ League.init(
     tableName: 'leagues',
     paranoid: true,
     indexes: [
-      { fields: ['apiId'] },
+      { fields: ['api_id'] },
       { fields: ['sport_id'] },
       { fields: ['country_id'] },
     ],

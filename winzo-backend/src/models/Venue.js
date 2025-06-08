@@ -16,7 +16,12 @@ Venue.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    apiId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+    apiId: { 
+      type: DataTypes.INTEGER, 
+      allowNull: false, 
+      unique: true,
+      field: 'api_id'
+    },
     country_id: {
       type: DataTypes.UUID,
       allowNull: true,
@@ -37,7 +42,7 @@ Venue.init(
     tableName: 'venues',
     paranoid: true,
     indexes: [
-      { fields: ['apiId'] },
+      { fields: ['api_id'] },
       { fields: ['country_id'] },
     ],
   }

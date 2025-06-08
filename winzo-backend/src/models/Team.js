@@ -22,6 +22,7 @@ Team.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
+      field: 'api_id',
     },
     league_id: {
       type: DataTypes.UUID,
@@ -52,7 +53,7 @@ Team.init(
     tableName: 'teams',
     paranoid: true,
     indexes: [
-      { fields: ['apiId'] },
+      { fields: ['api_id'] },
       { fields: ['league_id'] },
       { fields: ['country_id'] },
     ],
