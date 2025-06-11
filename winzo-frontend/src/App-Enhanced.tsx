@@ -7,8 +7,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import HomePage from './components/HomePage';
 import Dashboard from './components/Dashboard';
-import SportsBetting from './components/SportsBetting-Enhanced';
-import WalletDashboard from './components/WalletDashboard';
+import SportsBetting from './components/SportsBettingEnhanced';
+import WalletDashboard from './components/WalletDashboardEnhanced';
 import BettingHistory from './components/BettingHistory';
 import './App.css';
 
