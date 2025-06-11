@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
+const { sequelize } = require('../models');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -32,6 +33,7 @@ router.post(
     }
 
     const { username, password, inviteCode } = req.body;
+    const normalizedUsername = username.toLowerCase();
 
   try {
     // Invite code must match the master code or belong to an existing user.
@@ -41,14 +43,19 @@ router.post(
       return res.status(400).json({ message: 'Invalid invite code' });
     }
 
-    const existing = await User.findOne({ where: { username } });
+    const existing = await User.findOne({
+      where: sequelize.where(
+        sequelize.fn('LOWER', sequelize.col('username')),
+        normalizedUsername
+      ),
+    });
     if (existing) {
       return res.status(400).json({ message: 'Username already taken' });
     }
 
     const hashed = await bcrypt.hash(password, 10);
     const newUser = await User.create({
-      username,
+      username: normalizedUsername,
       password: hashed,
       inviteCode: generateInviteCode(),
     });
@@ -77,9 +84,15 @@ router.post(
     }
 
     const { username, password } = req.body;
+    const normalizedUsername = username.toLowerCase();
 
   try {
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne({
+      where: sequelize.where(
+        sequelize.fn('LOWER', sequelize.col('username')),
+        normalizedUsername
+      ),
+    });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
