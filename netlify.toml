@@ -1,7 +1,7 @@
 [build]
 base = "winzo-frontend"
 command = "npm run build"
-publish = "winzo-frontend/build"
+publish = "build"
 
 [build.environment]
 NODE_VERSION = "20"
