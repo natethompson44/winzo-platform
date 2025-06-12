@@ -1,5 +1,23 @@
 const { sequelize } = require('../models');
 
+// Add this function to execute the odds API migration
+async function executeOddsApiMigration() {
+  try {
+    console.log(' Executing Odds API migration...');
+    const fs = require('fs');
+    const path = require('path');
+    // Read the migration SQL file
+    const migrationPath = path.join(__dirname, 'odds_api_migration.sql');
+    const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+    // Execute the migration
+    await sequelize.query(migrationSQL);
+    console.log(' Odds API migration completed successfully');
+  } catch (error) {
+    console.error(' Odds API migration failed:', error);
+    throw error;
+  }
+}
+
 /**
  * Comprehensive migration script to create new tables and columns for API-Sports
  * integration. This script is safe to run multiple times and will only create
@@ -384,6 +402,9 @@ async function migrate() {
       type: sequelize.Sequelize.DATE,
       defaultValue: sequelize.Sequelize.NOW
     });
+
+    // Execute SQL migration for The Odds API schema updates
+    await executeOddsApiMigration();
 
     console.log('Migration completed successfully');
     

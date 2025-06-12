@@ -9,6 +9,7 @@ const League = require('./League');
 const Team = require('./Team');
 const Player = require('./Player');
 const Venue = require('./Venue');
+const Bookmaker = require('./Bookmaker')(sequelize);
 
 function applyAssociations() {
   User.hasMany(Bet, { foreignKey: 'user_id' });
@@ -55,6 +56,10 @@ function applyAssociations() {
   SportsEvent.hasMany(Odds, { foreignKey: 'event_id' });
   Odds.belongsTo(SportsEvent, { foreignKey: 'event_id' });
 
+  // Bookmaker associations
+  Bookmaker.hasMany(Odds, { foreignKey: 'bookmaker_id', as: 'odds' });
+  Odds.belongsTo(Bookmaker, { foreignKey: 'bookmaker_id', as: 'bookmaker' });
+
   SportsEvent.hasMany(Bet, { foreignKey: 'event_id' });
   Bet.belongsTo(SportsEvent, { foreignKey: 'event_id' });
 
@@ -74,5 +79,6 @@ module.exports = {
   Team,
   Player,
   Venue,
+  Bookmaker,
   applyAssociations
 };
