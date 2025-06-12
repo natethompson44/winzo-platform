@@ -1,7 +1,13 @@
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const {
+  compressionMiddleware,
+  securityMiddleware,
+  rateLimitMiddleware,
+  apiRateLimitMiddleware,
+  requestLoggingMiddleware,
+  errorHandlingMiddleware,
+} = require('./middleware/optimization');
 require('dotenv').config();
 
 const initDatabase = require('./database/init');
@@ -30,20 +36,13 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// Rate limiting with WINZO-specific configuration
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Increased for sports betting activity
-  message: {
-    success: false,
-    message: "Whoa! Slow down there, champion. Let's pace that Big Win Energy!"
-  }
-});
-
-app.use(helmet());
+app.use(compressionMiddleware);
+app.use(securityMiddleware);
+app.use(requestLoggingMiddleware);
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
-app.use(limiter);
+app.use(rateLimitMiddleware);
+app.use('/api', apiRateLimitMiddleware);
 app.use(express.json());
 
 // Initialize database connection
@@ -90,21 +89,11 @@ app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
     message: "Oops! That page took a wrong turn. Let's get you back to winning!",
-    suggestion: "Try /api/sports for betting opportunities or /api/wallet for balance info"
+    suggestion: 'Try /api/sports for betting opportunities or /api/wallet for balance info',
   });
 });
 
-// Error handler with WINZO energy
-app.use((error, req, res, next) => {
-  console.error('WINZO Server Error:', error);
-  
-  res.status(error.status || 500).json({
-    success: false,
-    message: "No worries! Our WINZO team is on it. Let's try that again!",
-    error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-    timestamp: new Date().toISOString()
-  });
-});
+app.use(errorHandlingMiddleware);
 
 // Initialize OddsApiService
 const oddsApiService = require('./services/oddsApiService');
