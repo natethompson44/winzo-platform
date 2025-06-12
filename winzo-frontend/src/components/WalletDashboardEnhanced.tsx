@@ -53,7 +53,7 @@ interface Transaction {
  * and comprehensive financial management capabilities.
  */
 const WalletDashboardEnhanced: React.FC = () => {
-  const { user, token, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -81,6 +81,13 @@ const WalletDashboardEnhanced: React.FC = () => {
 
   const fetchWalletData = async () => {
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setError('Authentication required');
+        setLoading(false);
+        return;
+      }
+
       const [balanceResponse, statsResponse] = await Promise.all([
         axios.get(`${API_BASE}/wallet/balance`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -136,6 +143,12 @@ const WalletDashboardEnhanced: React.FC = () => {
   const fetchTransactions = async () => {
     setLoadingTransactions(true);
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setError('Authentication required');
+        return;
+      }
+
       const response = await axios.get(`${API_BASE}/wallet/transactions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -165,6 +178,12 @@ const WalletDashboardEnhanced: React.FC = () => {
 
     setAddingFunds(true);
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Authentication required');
+        return;
+      }
+
       const response = await axios.post(`${API_BASE}/wallet/add-funds`, {
         amount: parseFloat(addFundsAmount),
         method: selectedPaymentMethod
@@ -192,6 +211,12 @@ const WalletDashboardEnhanced: React.FC = () => {
 
     setWithdrawing(true);
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Authentication required');
+        return;
+      }
+
       const response = await axios.post(`${API_BASE}/wallet/withdraw`, {
         amount: parseFloat(withdrawAmount),
         method: selectedWithdrawMethod,

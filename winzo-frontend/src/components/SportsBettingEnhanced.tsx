@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { APIError, WinzoLoading, EmptyState } from './ErrorBoundary';
-import BetSlip from './BetSlip';
+import EnhancedBetSlip from './EnhancedBetSlip';
 import './SportsBetting.css';
 
 interface Sport {
@@ -501,7 +501,7 @@ const SportsBettingEnhanced: React.FC = () => {
         </div>
       )}
 
-      <BetSlip
+      <EnhancedBetSlip
         isOpen={isBetSlipOpen}
         onClose={() => setIsBetSlipOpen(false)}
         bets={betSlipItems}

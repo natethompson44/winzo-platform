@@ -64,6 +64,13 @@ interface ApiResponse<T> {
   };
 }
 
+const formatOdds = (price: number): string => {
+  if (price > 0) {
+    return `+${price}`;
+  }
+  return price.toString();
+};
+
 const SportsBetting: React.FC = () => {
   const [sports, setSports] = useState<Sport[]>([]);
   const [selectedSport, setSelectedSport] = useState<string>('');
@@ -135,13 +142,6 @@ const SportsBetting: React.FC = () => {
     } finally {
       setEventsLoading(false);
     }
-  };
-
-  const formatOdds = (price: number): string => {
-    if (price > 0) {
-      return `+${price}`;
-    }
-    return price.toString();
   };
 
   const handleSportSelect = (sportKey: string) => {

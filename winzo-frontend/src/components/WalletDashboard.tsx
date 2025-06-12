@@ -44,7 +44,7 @@ interface UserStats {
  * management across all devices.
  */
 const WalletDashboard: React.FC = () => {
-  const { user, token, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +57,13 @@ const WalletDashboard: React.FC = () => {
 
   const fetchWalletData = async () => {
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setError('Authentication required');
+        setLoading(false);
+        return;
+      }
+
       const [balanceResponse, statsResponse] = await Promise.all([
         axios.get(`${API_BASE}/wallet/balance`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -80,6 +87,12 @@ const WalletDashboard: React.FC = () => {
 
     setAddingFunds(true);
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Authentication required');
+        return;
+      }
+
       const response = await axios.post(`${API_BASE}/wallet/add-funds`, {
         amount: parseFloat(addFundsAmount),
         method: 'credit_card'
