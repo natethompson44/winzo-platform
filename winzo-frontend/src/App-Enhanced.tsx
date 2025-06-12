@@ -16,9 +16,9 @@ import './App.css';
  * Protected Route Component
  */
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
   
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="app-loading">
         <div className="loading-spinner"></div>
