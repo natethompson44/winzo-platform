@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import './WalletDashboard.css';
@@ -53,7 +53,7 @@ const WalletDashboard: React.FC = () => {
 
   const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  const fetchWalletData = async () => {
+  const fetchWalletData = useCallback(async () => {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -75,7 +75,7 @@ const WalletDashboard: React.FC = () => {
     } catch (error: any) {
       setError(error.response?.data?.message || 'Failed to load wallet data');
     }
-  };
+  }, []);
 
   const addFunds = async () => {
     if (!addFundsAmount || parseFloat(addFundsAmount) <= 0) return;

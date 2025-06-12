@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import apiClient from '../utils/axios';
@@ -35,19 +35,14 @@ interface WalletData {
 }
 
 const Dashboard: React.FC = () => {
-  const { user, refreshUser, isLoading } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { getItemCount, getTotalStake } = useBetSlip();
+  const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentBets, setRecentBets] = useState<RecentBet[]>([]);
   const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    if (user) {
-      fetchDashboardData();
-    }
-  }, [user]);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setError('');
       const [betsResponse, walletResponse] = await Promise.all([
@@ -65,7 +60,13 @@ const Dashboard: React.FC = () => {
       console.error('Error fetching dashboard data:', error);
       setError(handleApiError(error));
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user, fetchDashboardData]);
 
   const formatCurrency = (amount: number): string => {
     return `$${amount.toFixed(2)}`;

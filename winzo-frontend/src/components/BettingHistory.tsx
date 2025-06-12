@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
@@ -48,13 +48,7 @@ const BettingHistory: React.FC = () => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      fetchBettingHistory();
-    }
-  }, [user, filter, fetchBettingHistory]);
-
-  const fetchBettingHistory = async (loadMore = false) => {
+  const fetchBettingHistory = useCallback(async (loadMore = false) => {
     try {
       if (!loadMore) {
         setLoading(true);
@@ -85,7 +79,13 @@ const BettingHistory: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, filter, bets]);
+
+  useEffect(() => {
+    if (user) {
+      fetchBettingHistory();
+    }
+  }, [user, filter, fetchBettingHistory]);
 
   const formatCurrency = (amount: number): string => {
     return `$${amount.toFixed(2)}`;

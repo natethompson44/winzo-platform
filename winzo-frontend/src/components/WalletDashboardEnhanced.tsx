@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import './WalletDashboard.css';
@@ -78,7 +78,7 @@ const WalletDashboardEnhanced: React.FC = () => {
 
   const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  const fetchWalletData = async () => {
+  const fetchWalletData = useCallback(async () => {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -134,7 +134,7 @@ const WalletDashboardEnhanced: React.FC = () => {
         }
       });
     }
-  };
+  }, [user]);
 
   const fetchTransactions = async () => {
     setLoadingTransactions(true);
@@ -239,7 +239,7 @@ const WalletDashboardEnhanced: React.FC = () => {
 
   useEffect(() => {
     fetchWalletData();
-  }, []);
+  }, [fetchWalletData]);
 
   if (isLoading) {
     return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { APIError, WinzoLoading, EmptyState } from './ErrorBoundary';
 import EnhancedBetSlip from './EnhancedBetSlip';
 import './SportsBetting.css';
@@ -48,8 +48,8 @@ interface BetSlipItem {
  */
 const SportsBettingEnhanced: React.FC = () => {
   const [sports, setSports] = useState<Sport[]>([]);
-  const [events, setEvents] = useState<SportsEvent[]>([]);
   const [selectedSport, setSelectedSport] = useState<string>('');
+  const [events, setEvents] = useState<SportsEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [retryCount, setRetryCount] = useState(0);
@@ -140,7 +140,7 @@ const SportsBettingEnhanced: React.FC = () => {
     }
   ];
 
-  const fetchWalletBalance = async () => {
+  const fetchWalletBalance = useCallback(async () => {
     try {
       const response = await fetch('/api/wallet/balance', {
         headers: {
@@ -159,9 +159,9 @@ const SportsBettingEnhanced: React.FC = () => {
       console.error('Error fetching wallet balance:', error);
       setWalletBalance(100.00); // Demo balance
     }
-  };
+  }, []);
 
-  const fetchSports = async () => {
+  const fetchSports = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -186,7 +186,7 @@ const SportsBettingEnhanced: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const fetchEvents = async (sportKey: string) => {
     try {

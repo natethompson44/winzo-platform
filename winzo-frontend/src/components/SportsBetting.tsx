@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
 import { useBetSlip } from '../contexts/BetSlipContext';
@@ -82,17 +82,7 @@ const SportsBetting: React.FC = () => {
 
   const { addToBetSlip } = useBetSlip();
 
-  useEffect(() => {
-    fetchSports();
-  }, []);
-
-  useEffect(() => {
-    if (selectedSport) {
-      fetchOdds(selectedSport);
-    }
-  }, [selectedSport]);
-
-  const fetchSports = async () => {
+  const fetchSports = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -119,9 +109,9 @@ const SportsBetting: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchOdds = async (sportKey: string) => {
+  const fetchOdds = useCallback(async (sportKey: string) => {
     try {
       setEventsLoading(true);
       setError('');
@@ -142,7 +132,17 @@ const SportsBetting: React.FC = () => {
     } finally {
       setEventsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchSports();
+  }, [fetchSports]);
+
+  useEffect(() => {
+    if (selectedSport) {
+      fetchOdds(selectedSport);
+    }
+  }, [selectedSport, fetchOdds]);
 
   const handleSportSelect = (sportKey: string) => {
     setSelectedSport(sportKey);
