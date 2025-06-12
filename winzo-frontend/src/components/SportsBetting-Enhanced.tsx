@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { APIError, WinzoLoading, EmptyState } from './ErrorBoundary';
-import BetSlip from './BetSlip';
+import { useBetSlip } from '../contexts/BetSlipContext';
 import './SportsBetting.css';
 
 interface Sport {
@@ -46,9 +46,8 @@ const SportsBetting: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [retryCount, setRetryCount] = useState(0);
 
-  // Simple bet slip state
-  const [betSlipItems, setBetSlipItems] = useState<BetSlipItem[]>([]);
-  const [isBetSlipOpen, setIsBetSlipOpen] = useState(false);
+  // Use BetSlipContext instead of local state
+  const { addToBetSlip, setIsOpen } = useBetSlip();
   const [walletBalance, setWalletBalance] = useState<number>(100);
 
   // Mock data for fallback when API fails
@@ -220,52 +219,6 @@ const SportsBetting: React.FC = () => {
     setError('');
   };
 
-  // Basic bet slip helpers
-  const addToBetSlip = (
-    eventId: string,
-    oddsId: string,
-    event: string,
-    market: string,
-    outcome: string,
-    odds: string,
-    decimalOdds: number,
-    sport: string
-  ) => {
-    const betId = `${eventId}-${oddsId}`;
-    if (betSlipItems.find(b => b.id === betId)) {
-      setIsBetSlipOpen(true);
-      return;
-    }
-    const newBet: BetSlipItem = {
-      id: betId,
-      eventId,
-      oddsId,
-      event,
-      market,
-      outcome,
-      odds,
-      decimalOdds,
-      sport
-    };
-    setBetSlipItems(prev => [...prev, newBet]);
-    setIsBetSlipOpen(true);
-  };
-
-  const removeBetFromSlip = (betId: string) => {
-    setBetSlipItems(prev => prev.filter(b => b.id !== betId));
-  };
-
-  const clearBetSlip = () => setBetSlipItems([]);
-
-  const placeBets = async (
-    bets: BetSlipItem[],
-    amounts: { [key: string]: number }
-  ) => {
-    alert('Bet placement flow available in the enhanced version.');
-    setIsBetSlipOpen(false);
-    clearBetSlip();
-  };
-
   const fetchWalletBalance = async () => {
     try {
       const response = await fetch('/api/wallet/balance', {
@@ -435,16 +388,6 @@ const SportsBetting: React.FC = () => {
           )}
         </div>
       )}
-
-      <BetSlip
-        isOpen={isBetSlipOpen}
-        onClose={() => setIsBetSlipOpen(false)}
-        bets={betSlipItems}
-        onRemoveBet={removeBetFromSlip}
-        onClearAll={clearBetSlip}
-        onPlaceBets={placeBets}
-        walletBalance={walletBalance}
-      />
     </div>
   );
 };
