@@ -1,27 +1,22 @@
 [build]
-  base = "winzo-frontend"
-  publish = "build"
-  command = "npm run build"
+base = "winzo-frontend"
+command = "npm run build"
+publish = "winzo-frontend/build"
 
 [build.environment]
-  NODE_VERSION = "20" # or your Node version
-  NPM_FLAGS = "--legacy-peer-deps"
+NODE_VERSION = "20"
+NPM_FLAGS = "--legacy-peer-deps"
 
-# No functions used, so no functions block needed
+[[redirects]]
+from = "/api/*"
+to = "https://your-railway-backend-url.railway.app/api/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
 
 [context.production.environment]
-REACT_APP_API_URL = "https://winzo-platform-production.up.railway.app/api"
-
-# SPA (Single Page Application) routing - CRITICAL for React Router
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# Optional: redirect API calls to your backend if needed
-[[redirects]]
-  from = "/api/*"
-  to = "https://winzo-platform-production.up.railway.app/api/:splat"
-  status = 200
-  force = true
-
+REACT_APP_API_URL = "https://your-railway-backend-url.railway.app"

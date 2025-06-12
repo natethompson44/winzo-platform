@@ -3,8 +3,9 @@ const { exec } = require('child_process');
 const path = require('path');
 
 console.log('\n🚀 Starting WINZO Backend on Railway...');
+console.log('\n📊 Environment:', process.env.NODE_ENV || 'development');
 
-// Function to run migration
+// Function to run migration with better error handling
 function runMigration() {
   return new Promise((resolve) => {
     console.log('\n📊 Running database migrations...');
@@ -12,14 +13,12 @@ function runMigration() {
     exec(`node ${migrationPath}`, (error, stdout, stderr) => {
       if (error) {
         console.error('\n❌ Migration failed:', error.message);
-        // Don't reject - continue with server start even if migration fails
-        console.log('\n⚠️ Continuing with server start...');
-        resolve();
+        console.log('\n⚠️ Continuing with server start (migration may have already run)...');
       } else {
         console.log('\n✅ Migration completed successfully');
-        console.log(stdout);
-        resolve();
+        if (stdout) console.log(stdout);
       }
+      resolve(); // Always resolve to continue with server start
     });
   });
 }
@@ -27,16 +26,22 @@ function runMigration() {
 // Function to start the server
 function startServer() {
   console.log('\n🌟 Starting Express server...');
-  const serverPath = path.join(__dirname, 'src', 'server.js');
-  require(serverPath);
+  try {
+    const serverPath = path.join(__dirname, 'src', 'server.js');
+    require(serverPath);
+  } catch (error) {
+    console.error('\n❌ Server startup failed:', error);
+    process.exit(1);
+  }
 }
 
 // Main execution
 async function main() {
   try {
-    // Wait a moment for Railway to fully initialize the environment
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    // Run migrations first
+    // Wait for Railway environment to be ready
+    console.log('\n⏳ Waiting for Railway environment...');
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Run migrations
     await runMigration();
     // Start the server
     startServer();

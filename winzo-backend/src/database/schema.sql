@@ -1,5 +1,4 @@
--- WINZO Platform - Complete Database Schema with Test User Preservation
-
+-- WINZO Platform - Complete Database Schema
 -- Drop existing tables to avoid conflicts
 DROP TABLE IF EXISTS transactions CASCADE;
 DROP TABLE IF EXISTS bets CASCADE;
@@ -137,16 +136,12 @@ INSERT INTO bookmakers (key, title, active, region) VALUES
   ('williamhill', 'William Hill', true, 'us')
 ON CONFLICT (key) DO NOTHING;
 
--- Insert test user with proper password hash for 'testuser2'
--- This ensures testuser2 account is recreated every deployment
+-- Insert test user
 INSERT INTO users (username, email, password_hash, wallet_balance) VALUES
-  ('testuser2', 'test@winzo.com', '$2b$10$rQZ9QmZ9QmZ9QmZ9QmZ9Qu.rQZ9QmZ9QmZ9QmZ9QmZ9QmZ9QmZ9Qm', 1000.00)
-ON CONFLICT (username) DO UPDATE SET
-  wallet_balance = 1000.00,
-  is_active = true,
-  updated_at = CURRENT_TIMESTAMP;
+  ('testuser2', 'test@winzo.com', '$2b$10$rQZ9QmZ9QmZ9QmZ9QmZ9Qu', 1000.00)
+ON CONFLICT (username) DO NOTHING;
 
--- Add comments for documentation
+-- Add comments
 COMMENT ON TABLE users IS 'User accounts and wallet balances';
 COMMENT ON TABLE sports IS 'Available sports from The Odds API';
 COMMENT ON TABLE sports_events IS 'Sports events with live data from The Odds API';
