@@ -1,268 +1,278 @@
 import React, { useState } from 'react';
+import { useBetSlip } from '../contexts/BetSlipContext';
+import apiClient from '../utils/axios';
+import { API_ENDPOINTS, handleApiError } from '../config/api';
 import './BetSlip.css';
 
-interface BetSlipItem {
-  id: string;
-  eventId: string;
-  oddsId: string;
-  event: string;
-  market: string;
-  outcome: string;
-  odds: string;
-  decimalOdds: number;
-  sport: string;
+interface PlaceBetResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    betIds: string[];
+    betType: string;
+    totalStake: number;
+    potentialPayout: number;
+    newBalance: number;
+  };
+  error?: string;
 }
 
-interface BetSlipProps {
-  isOpen: boolean;
-  onClose: () => void;
-  bets: BetSlipItem[];
-  onRemoveBet: (betId: string) => void;
-  onClearAll: () => void;
-  onPlaceBets: (bets: BetSlipItem[], amounts: { [key: string]: number }) => void;
-  walletBalance: number;
-}
+const BetSlip: React.FC = () => {
+  const {
+    betSlipItems,
+    isOpen,
+    betType,
+    totalStake,
+    totalPayout,
+    removeFromBetSlip,
+    updateStake,
+    clearBetSlip,
+    setBetType,
+    setIsOpen,
+    canPlaceBet,
+  } = useBetSlip();
 
-/**
- * BetSlip Component - Interactive betting interface
- * 
- * Handles bet selection, stake input, and bet placement with WINZO energy.
- * Provides real-time payout calculations and wallet balance validation.
- */
-const BetSlip: React.FC<BetSlipProps> = ({
-  isOpen,
-  onClose,
-  bets,
-  onRemoveBet,
-  onClearAll,
-  onPlaceBets,
-  walletBalance
-}) => {
-  const [betAmounts, setBetAmounts] = useState<{ [key: string]: number }>({});
-  const [isPlacing, setIsPlacing] = useState(false);
+  const [isPlacingBet, setIsPlacingBet] = useState(false);
+  const [placeBetError, setPlaceBetError] = useState<string>('');
 
-  const handleAmountChange = (betId: string, amount: string) => {
-    const numAmount = parseFloat(amount) || 0;
-    setBetAmounts(prev => ({
-      ...prev,
-      [betId]: numAmount
-    }));
+  const formatOdds = (odds: number): string => {
+    return odds > 0 ? `+${odds}` : odds.toString();
   };
 
-  const calculatePayout = (betId: string): number => {
-    const bet = bets.find(b => b.id === betId);
-    const amount = betAmounts[betId] || 0;
-    if (!bet || !amount) return 0;
-    return amount * bet.decimalOdds;
+  const formatCurrency = (amount: number): string => {
+    return `$${amount.toFixed(2)}`;
   };
 
-  const calculateTotalStake = (): number => {
-    return Object.values(betAmounts).reduce((sum, amount) => sum + (amount || 0), 0);
-  };
-
-  const calculateTotalPayout = (): number => {
-    return bets.reduce((sum, bet) => {
-      const amount = betAmounts[bet.id] || 0;
-      return sum + (amount * bet.decimalOdds);
-    }, 0);
-  };
-
-  const calculateTotalProfit = (): number => {
-    return calculateTotalPayout() - calculateTotalStake();
-  };
-
-  const canPlaceBets = (): boolean => {
-    const totalStake = calculateTotalStake();
-    const hasValidAmounts = bets.every(bet => {
-      const amount = betAmounts[bet.id] || 0;
-      return amount >= 1; // Minimum $1 bet
-    });
-    return totalStake > 0 && totalStake <= walletBalance && hasValidAmounts && bets.length > 0;
-  };
-
-  const handlePlaceBets = async () => {
-    if (!canPlaceBets()) return;
-
-    setIsPlacing(true);
-    try {
-      await onPlaceBets(bets, betAmounts);
-      // Clear bet slip after successful placement
-      setBetAmounts({});
-      onClearAll();
-    } catch (error) {
-      console.error('Error placing bets:', error);
-    } finally {
-      setIsPlacing(false);
+  const handleStakeChange = (itemId: string, value: string) => {
+    const stake = parseFloat(value) || 0;
+    if (stake >= 0 && stake <= 1000) {
+      updateStake(itemId, stake);
     }
   };
 
-  const getQuickBetAmounts = (balance: number): number[] => {
-    if (balance >= 100) return [5, 10, 25, 50];
-    if (balance >= 50) return [2, 5, 10, 20];
-    if (balance >= 20) return [1, 2, 5, 10];
-    return [1, 2, 5];
+  const setQuickStake = (itemId: string, amount: number) => {
+    updateStake(itemId, amount);
+  };
+
+  const placeBets = async () => {
+    if (!canPlaceBet()) return;
+    setIsPlacingBet(true);
+    setPlaceBetError('');
+    try {
+      const betData = {
+        bets: betSlipItems.map(item => ({
+          eventId: item.eventId,
+          selectedTeam: item.selectedTeam,
+          odds: item.odds,
+          stake: item.stake,
+          marketType: item.marketType,
+          bookmaker: item.bookmaker,
+        })),
+        betType,
+        totalStake,
+        potentialPayout: totalPayout,
+      };
+      const response = await apiClient.post<PlaceBetResponse>(API_ENDPOINTS.PLACE_BET, betData);
+      if (response.data.success) {
+        clearBetSlip();
+        showSuccessNotification(response.data.message, response.data.data?.newBalance);
+      } else {
+        setPlaceBetError(response.data.error || 'Failed to place bets');
+      }
+    } catch (error: any) {
+      const errorMessage = handleApiError(error);
+      setPlaceBetError(errorMessage);
+    } finally {
+      setIsPlacingBet(false);
+    }
+  };
+
+  const showSuccessNotification = (message: string, newBalance?: number) => {
+    const notification = document.createElement('div');
+    notification.className = 'bet-success-notification';
+    notification.innerHTML = `
+      <div style="font-weight: bold; margin-bottom: 8px;">${message}</div>
+      ${newBalance ? `<div>New Balance: $${newBalance.toFixed(2)}</div>` : ''}
+    `;
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      color: white;
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      padding: 16px 24px;
+      border-radius: 12px;
+      z-index: 10000;
+      animation: slideInRight 0.3s ease-out;
+      box-shadow: 0 8px 24px rgba(72, 187, 120, 0.3);
+      max-width: 300px;
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+      notification.style.animation = 'slideOutRight 0.3s ease-in';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 5000);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="bet-slip-overlay">
-      <div className="bet-slip">
+    <div className="bet-slip-overlay" onClick={e => e.target === e.currentTarget && setIsOpen(false)}>
+      <div className="bet-slip-container">
         <div className="bet-slip-header">
-          <h3>🎯 Bet Slip</h3>
+          <h2>Bet Slip</h2>
           <div className="bet-slip-controls">
-            {bets.length > 0 && (
-              <button onClick={onClearAll} className="clear-all-btn">
-                Clear All
-              </button>
-            )}
-            <button onClick={onClose} className="close-btn">
-              ✕
-            </button>
+            <span className="bet-count">{betSlipItems.length} bet{betSlipItems.length !== 1 ? 's' : ''}</span>
+            <button className="close-button" onClick={() => setIsOpen(false)}>✕</button>
           </div>
         </div>
-
-        <div className="bet-slip-content">
-          {bets.length === 0 ? (
-            <div className="empty-bet-slip">
-              <div className="empty-icon">🎲</div>
-              <h4>Your Bet Slip is Empty</h4>
-              <p>Click on odds to add bets and activate your Big Win Energy!</p>
+        {betSlipItems.length === 0 ? (
+          <div className="empty-bet-slip">
+            <div className="empty-icon">🎲</div>
+            <h3>Your bet slip is empty</h3>
+            <p>Click on odds to add bets and start winning!</p>
+          </div>
+        ) : (
+          <>
+            <div className="bet-type-selector">
+              <button
+                className={`bet-type-button ${betType === 'single' ? 'active' : ''}`}
+                onClick={() => setBetType('single')}
+              >
+                Single Bets
+              </button>
+              <button
+                className={`bet-type-button ${betType === 'parlay' ? 'active' : ''}`}
+                onClick={() => setBetType('parlay')}
+                disabled={betSlipItems.length < 2}
+              >
+                Parlay {betSlipItems.length < 2 && '(2+ bets)'}
+              </button>
             </div>
-          ) : (
-            <>
-              <div className="wallet-info">
-                <div className="wallet-balance">
-                  💰 WINZO Wallet: <strong>${walletBalance.toFixed(2)}</strong>
-                </div>
+            <div className="bet-slip-items">
+              {betSlipItems.map(item => (
+                <BetSlipItemCard
+                  key={item.id}
+                  item={item}
+                  onRemove={() => removeFromBetSlip(item.id)}
+                  onStakeChange={value => handleStakeChange(item.id, value)}
+                  onQuickStake={amount => setQuickStake(item.id, amount)}
+                />
+              ))}
+            </div>
+            {placeBetError && (
+              <div className="bet-error">
+                <span>{placeBetError}</span>
+                <button onClick={() => setPlaceBetError('')}>✕</button>
               </div>
-
-              <div className="bet-list">
-                {bets.map((bet) => (
-                  <div key={bet.id} className="bet-item">
-                    <div className="bet-header">
-                      <div className="bet-event">
-                        <span className="sport-badge">{bet.sport}</span>
-                        <span className="event-name">{bet.event}</span>
-                      </div>
-                      <button 
-                        onClick={() => onRemoveBet(bet.id)}
-                        className="remove-bet-btn"
-                      >
-                        ✕
-                      </button>
-                    </div>
-
-                    <div className="bet-details">
-                      <div className="bet-selection">
-                        <span className="market">{bet.market}:</span>
-                        <span className="outcome">{bet.outcome}</span>
-                        <span className="odds">{bet.odds}</span>
-                      </div>
-
-                      <div className="bet-amount-section">
-                        <label>Stake Amount:</label>
-                        <div className="amount-input-group">
-                          <span className="currency">$</span>
-                          <input
-                            type="number"
-                            min="1"
-                            max={walletBalance}
-                            step="0.01"
-                            value={betAmounts[bet.id] || ''}
-                            onChange={(e) => handleAmountChange(bet.id, e.target.value)}
-                            placeholder="0.00"
-                            className="amount-input"
-                          />
-                        </div>
-
-                        <div className="quick-amounts">
-                          {getQuickBetAmounts(walletBalance).map(amount => (
-                            <button
-                              key={amount}
-                              onClick={() => handleAmountChange(bet.id, amount.toString())}
-                              className="quick-amount-btn"
-                              disabled={amount > walletBalance}
-                            >
-                              ${amount}
-                            </button>
-                          ))}
-                        </div>
-
-                        {betAmounts[bet.id] && (
-                          <div className="payout-preview">
-                            <div className="payout-line">
-                              <span>Potential Payout:</span>
-                              <span className="payout-amount">
-                                ${calculatePayout(bet.id).toFixed(2)}
-                              </span>
-                            </div>
-                            <div className="profit-line">
-                              <span>Potential Profit:</span>
-                              <span className="profit-amount">
-                                ${(calculatePayout(bet.id) - (betAmounts[bet.id] || 0)).toFixed(2)}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            )}
+            <div className="bet-slip-summary">
+              <div className="summary-row">
+                <span>Total Stake:</span>
+                <span className="amount">{formatCurrency(totalStake)}</span>
               </div>
-
-              <div className="bet-slip-summary">
-                <div className="summary-line">
-                  <span>Total Stake:</span>
-                  <span className="total-stake">${calculateTotalStake().toFixed(2)}</span>
-                </div>
-                <div className="summary-line">
-                  <span>Total Potential Payout:</span>
-                  <span className="total-payout">${calculateTotalPayout().toFixed(2)}</span>
-                </div>
-                <div className="summary-line profit-line">
-                  <span>Total Potential Profit:</span>
-                  <span className="total-profit">${calculateTotalProfit().toFixed(2)}</span>
-                </div>
+              <div className="summary-row total">
+                <span>Potential Payout:</span>
+                <span className="amount">{formatCurrency(totalPayout)}</span>
               </div>
-
-              <div className="bet-slip-actions">
-                {calculateTotalStake() > walletBalance && (
-                  <div className="insufficient-funds-warning">
-                    ⚠️ Insufficient funds. Add money to your WINZO Wallet!
-                  </div>
+              <div className="summary-row profit">
+                <span>Potential Profit:</span>
+                <span className="amount profit-amount">{formatCurrency(totalPayout - totalStake)}</span>
+              </div>
+            </div>
+            <div className="bet-slip-actions">
+              <button className="clear-button" onClick={clearBetSlip}>
+                Clear All
+              </button>
+              <button
+                className="place-bet-button"
+                onClick={placeBets}
+                disabled={!canPlaceBet() || isPlacingBet}
+              >
+                {isPlacingBet ? (
+                  <>
+                    <span className="loading-spinner-small" />
+                    Placing...
+                  </>
+                ) : (
+                  `Place ${betType === 'parlay' ? 'Parlay' : 'Bet'}${
+                    betSlipItems.length > 1 && betType === 'single' ? 's' : ''
+                  }`
                 )}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 
+interface BetSlipItemCardProps {
+  item: any;
+  onRemove: () => void;
+  onStakeChange: (value: string) => void;
+  onQuickStake: (amount: number) => void;
+}
+
+const BetSlipItemCard: React.FC<BetSlipItemCardProps> = ({ item, onRemove, onStakeChange, onQuickStake }) => {
+  const formatOdds = (odds: number): string => {
+    return odds > 0 ? `+${odds}` : odds.toString();
+  };
+
+  const formatCurrency = (amount: number): string => {
+    return `$${amount.toFixed(2)}`;
+  };
+
+  return (
+    <div className="bet-slip-item">
+      <div className="bet-header">
+        <div className="teams">
+          <span className="matchup">
+            {item.awayTeam} @ {item.homeTeam}
+          </span>
+          <span className="sport">{item.sport.toUpperCase()}</span>
+        </div>
+        <button className="remove-bet" onClick={onRemove}>✕</button>
+      </div>
+      <div className="bet-details">
+        <div className="selection">
+          <span className="selected-team">{item.selectedTeam}</span>
+          <span className="odds">{formatOdds(item.odds)}</span>
+        </div>
+        <div className="bookmaker">{item.bookmaker}</div>
+        <div className="stake-section">
+          <label>Stake:</label>
+          <div className="stake-input-group">
+            <input
+              type="number"
+              min="1"
+              max="1000"
+              step="1"
+              value={item.stake}
+              onChange={e => onStakeChange(e.target.value)}
+              className="stake-input"
+            />
+            <div className="quick-stakes">
+              {[5, 10, 25, 50].map(amount => (
                 <button
-                  onClick={handlePlaceBets}
-                  disabled={!canPlaceBets() || isPlacing}
-                  className={`place-bets-btn ${canPlaceBets() ? 'ready' : 'disabled'}`}
+                  key={amount}
+                  className="quick-stake-button"
+                  onClick={() => onQuickStake(amount)}
                 >
-                  {isPlacing ? (
-                    <>
-                      <span className="loading-spinner">⏳</span>
-                      Placing Bets...
-                    </>
-                  ) : (
-                    <>
-                      🚀 Place {bets.length} Bet{bets.length > 1 ? 's' : ''}
-                      {calculateTotalStake() > 0 && (
-                        <span className="stake-amount">
-                          (${calculateTotalStake().toFixed(2)})
-                        </span>
-                      )}
-                    </>
-                  )}
+                  ${amount}
                 </button>
-
-                {!canPlaceBets() && bets.length > 0 && calculateTotalStake() <= walletBalance && (
-                  <div className="bet-requirements">
-                    💡 Minimum $1 per bet required
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="payout-info">
+          <span>Payout: {formatCurrency(item.potentialPayout)}</span>
+          <span>Profit: {formatCurrency(item.potentialPayout - item.stake)}</span>
         </div>
       </div>
     </div>

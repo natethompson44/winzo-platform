@@ -10,6 +10,9 @@ import Dashboard from './components/Dashboard';
 import SportsBetting from './components/SportsBetting';
 import WalletDashboard from './components/WalletDashboardEnhanced';
 import BettingHistory from './components/BettingHistory';
+import { BetSlipProvider } from './contexts/BetSlipContext';
+import BetSlip from './components/BetSlip';
+import BetSlipToggle from './components/BetSlipToggle';
 import './App.css';
 
 /**
@@ -59,8 +62,9 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <Router>
-          <div className="App">
+        <BetSlipProvider>
+          <Router>
+            <div className="App">
             <Routes>
             {/* Public Routes */}
               <Route path="/" element={<HomePage />} />
@@ -103,8 +107,11 @@ function App() {
               {/* Catch-all redirect */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
+            <BetSlip />
           </div>
         </Router>
+        <BetSlipToggle />
+        </BetSlipProvider>
       </AuthProvider>
     </ErrorBoundary>
   );
