@@ -1,48 +1,52 @@
-const { sequelize } = require('../models');
-const migrate = require('./migrations');
+const { Sequelize } = require('sequelize');
+const fs = require('fs');
+const path = require('path');
 
-// Check if we're in a build environment (Railway build phase)
-if (process.env.RAILWAY_ENVIRONMENT === 'build') {
-  console.log('\n⏭️ Skipping migration during build phase');
-  process.exit(0);
-}
+// Database connection
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  logging: console.log,
+  dialectOptions: {
+    ssl: process.env.NODE_ENV === 'production' ? {
+      require: true,
+      rejectUnauthorized: false
+    } : false
+  }
+});
 
-// Add better error handling for connection issues
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 5000; // 5 seconds
-
-async function connectWithRetry(retries = MAX_RETRIES) {
+async function runMigrations() {
   try {
+    console.log('\n🔄 Starting database migration...');
+    // Test connection
     await sequelize.authenticate();
-    console.log('\n✅ Database connection established successfully');
-    return true;
+    console.log('\n✅ Database connection established');
+
+    // Read and execute schema
+    const schemaPath = path.join(__dirname, 'schema.sql');
+    const schema = fs.readFileSync(schemaPath, 'utf8');
+    console.log('\n📊 Executing database schema...');
+    await sequelize.query(schema);
+    console.log('\n✅ Database migration completed successfully');
+    console.log('\n👤 Test user (testuser2) recreated with $1000 balance');
   } catch (error) {
-    console.error(`\n❌ Database connection failed (attempt ${MAX_RETRIES - retries + 1}/${MAX_RETRIES}):`, error.message);
-    if (retries > 0) {
-      console.log(`\n⏳ Retrying in ${RETRY_DELAY/1000} seconds...`);
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      return connectWithRetry(retries - 1);
-    } else {
-      throw error;
-    }
+    console.error('\n❌ Migration failed:', error.message);
+    throw error;
+  } finally {
+    await sequelize.close();
   }
 }
 
-async function runMigrations() {
-  await connectWithRetry();
-  await migrate();
-}
-
+// Run if called directly
 if (require.main === module) {
   runMigrations()
     .then(() => {
-      console.log('Migration completed');
+      console.log('\n🎉 Migration process completed');
       process.exit(0);
     })
-    .catch((err) => {
-      console.error('Migration failed', err);
+    .catch((error) => {
+      console.error('\n💥 Migration process failed:', error);
       process.exit(1);
     });
 }
 
-module.exports = runMigrations;
+module.exports = { runMigrations };
