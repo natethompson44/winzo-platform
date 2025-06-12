@@ -1,347 +1,229 @@
 import React, { useState, useEffect } from 'react';
-import { APIError, WinzoLoading, EmptyState } from './ErrorBoundary';
+import apiClient from '../utils/axios';
+import { API_ENDPOINTS, handleApiError } from '../config/api';
 import './SportsBetting.css';
 
 interface Sport {
   key: string;
   title: string;
+  group: string;
   description: string;
   active: boolean;
+  has_outrights: boolean;
+  icon: string;
+  category: string;
+  popularity: number;
 }
 
-interface SportsEvent {
+interface OddsEvent {
   id: string;
   sport_key: string;
-  sport_title: string;
   commence_time: string;
   home_team: string;
   away_team: string;
-  bookmakers: any[];
+  bookmakers: Bookmaker[];
+  timing: {
+    date: string;
+    time: string;
+    hoursFromNow: number;
+    isLive: boolean;
+    isUpcoming: boolean;
+  };
+  featured: boolean;
+  markets_count: number;
 }
 
-/**
- * Enhanced SportsBetting Component with Error Handling and Fallback Data
- * 
- * Provides sports betting interface with graceful degradation when API fails.
- * Includes mock data for development and offline scenarios.
- */
+interface Bookmaker {
+  key: string;
+  title: string;
+  markets: Market[];
+}
+
+interface Market {
+  key: string;
+  outcomes: Outcome[];
+}
+
+interface Outcome {
+  name: string;
+  price: number;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  count?: number;
+  error?: string;
+  message?: string;
+  quota?: {
+    used: number;
+    remaining: number;
+    total: number;
+    percentUsed: number;
+  };
+}
+
 const SportsBetting: React.FC = () => {
   const [sports, setSports] = useState<Sport[]>([]);
-  const [events, setEvents] = useState<SportsEvent[]>([]);
   const [selectedSport, setSelectedSport] = useState<string>('');
+  const [events, setEvents] = useState<OddsEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  const [retryCount, setRetryCount] = useState(0);
+  const [quotaInfo, setQuotaInfo] = useState<any>(null);
 
-  // Mock data for fallback when API fails
-  const mockSports: Sport[] = [
-    {
-      key: 'americanfootball_nfl',
-      title: 'NFL',
-      description: 'National Football League - America\'s favorite sport!',
-      active: true
-    },
-    {
-      key: 'basketball_nba',
-      title: 'NBA',
-      description: 'National Basketball Association - High-flying action!',
-      active: true
-    },
-    {
-      key: 'baseball_mlb',
-      title: 'MLB',
-      description: 'Major League Baseball - America\'s pastime!',
-      active: true
-    },
-    {
-      key: 'soccer_epl',
-      title: 'Premier League',
-      description: 'English Premier League - The world\'s most popular league!',
-      active: true
-    }
-  ];
+  useEffect(() => {
+    fetchSports();
+  }, []);
 
-  const mockEvents: SportsEvent[] = [
-    {
-      id: 'mock-1',
-      sport_key: 'americanfootball_nfl',
-      sport_title: 'NFL',
-      commence_time: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-      home_team: 'Kansas City Chiefs',
-      away_team: 'Buffalo Bills',
-      bookmakers: [
-        {
-          key: 'draftkings',
-          title: 'DraftKings',
-          markets: [
-            {
-              key: 'h2h',
-              outcomes: [
-                { name: 'Kansas City Chiefs', price: 1.85 },
-                { name: 'Buffalo Bills', price: 1.95 }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'mock-2',
-      sport_key: 'basketball_nba',
-      sport_title: 'NBA',
-      commence_time: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
-      home_team: 'Los Angeles Lakers',
-      away_team: 'Boston Celtics',
-      bookmakers: [
-        {
-          key: 'fanduel',
-          title: 'FanDuel',
-          markets: [
-            {
-              key: 'h2h',
-              outcomes: [
-                { name: 'Los Angeles Lakers', price: 2.10 },
-                { name: 'Boston Celtics', price: 1.75 }
-              ]
-            }
-          ]
-        }
-      ]
+  useEffect(() => {
+    if (selectedSport) {
+      fetchOdds(selectedSport);
     }
-  ];
+  }, [selectedSport]);
 
   const fetchSports = async () => {
     try {
       setLoading(true);
       setError('');
-      
-      const response = await fetch('/api/sports', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+      const response = await apiClient.get<ApiResponse<Sport[]>>(API_ENDPOINTS.SPORTS);
+      if (response.data.success) {
+        const sportsData = response.data.data;
+        setSports(sportsData);
+        setQuotaInfo(response.data.quota);
+        const popularSports = ['americanfootball_nfl', 'basketball_nba', 'baseball_mlb', 'icehockey_nhl'];
+        const defaultSport = sportsData.find((sport: Sport) =>
+          popularSports.includes(sport.key) && sport.active
+        );
+        if (defaultSport) {
+          setSelectedSport(defaultSport.key);
+        } else if (sportsData.length > 0) {
+          setSelectedSport(sportsData[0].key);
         }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      } else {
+        setError(response.data.error || 'Failed to load sports');
       }
-
-      const data = await response.json();
-      setSports(data.sports || []);
-      
-      // If no sports data, use mock data
-      if (!data.sports || data.sports.length === 0) {
-        console.log('No API sports data, using mock data');
-        setSports(mockSports);
-      }
-      
-    } catch (err) {
-      console.error('Sports API error:', err);
-      setError('Failed to load sports data');
-      
-      // Use mock data as fallback
-      setSports(mockSports);
+    } catch (error: any) {
+      console.error('Error fetching sports:', error);
+      setError(handleApiError(error));
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchEvents = async (sportKey: string) => {
+  const fetchOdds = async (sportKey: string) => {
     try {
-      setLoading(true);
+      setEventsLoading(true);
       setError('');
-      
-      const response = await fetch(`/api/sports/${sportKey}/events`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      const response = await apiClient.get<ApiResponse<OddsEvent[]>>(
+        API_ENDPOINTS.SPORT_ODDS(sportKey) + '?limit=20'
+      );
+      if (response.data.success) {
+        setEvents(response.data.data);
+        setQuotaInfo(response.data.quota);
+      } else {
+        setError(response.data.error || 'Failed to load odds');
+        setEvents([]);
       }
-
-      const data = await response.json();
-      setEvents(data.events || []);
-      
-      // If no events data, use mock data
-      if (!data.events || data.events.length === 0) {
-        console.log('No API events data, using mock data');
-        const mockEventsForSport = mockEvents.filter(event => event.sport_key === sportKey);
-        setEvents(mockEventsForSport);
-      }
-      
-    } catch (err) {
-      console.error('Events API error:', err);
-      setError('Failed to load events data');
-      
-      // Use mock data as fallback
-      const mockEventsForSport = mockEvents.filter(event => event.sport_key === sportKey);
-      setEvents(mockEventsForSport);
+    } catch (error: any) {
+      console.error('Error fetching odds:', error);
+      setError(handleApiError(error));
+      setEvents([]);
     } finally {
-      setLoading(false);
+      setEventsLoading(false);
     }
   };
 
-  const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
-    if (selectedSport) {
-      fetchEvents(selectedSport);
-    } else {
-      fetchSports();
+  const formatOdds = (price: number): string => {
+    if (price > 0) {
+      return `+${price}`;
     }
+    return price.toString();
   };
 
   const handleSportSelect = (sportKey: string) => {
     setSelectedSport(sportKey);
-    fetchEvents(sportKey);
-  };
-
-  const handleBackToSports = () => {
-    setSelectedSport('');
     setEvents([]);
-    setError('');
   };
 
-  useEffect(() => {
-    fetchSports();
-  }, [retryCount]);
+  const handleOddsClick = (event: OddsEvent, outcome: Outcome) => {
+    console.log('Adding to bet slip:', { event, outcome });
+    alert(`Added ${outcome.name} (${formatOdds(outcome.price)}) to bet slip!`);
+  };
 
-  if (loading && sports.length === 0) {
-    return <WinzoLoading message="Loading your Big Win opportunities..." size="large" />;
-  }
-
-  if (error && sports.length === 0) {
+  if (loading) {
     return (
-      <APIError 
-        message={error}
-        onRetry={handleRetry}
-        showHomeButton={true}
-      />
+      <div className="sports-betting-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading sports data...</p>
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="sports-betting-container">
-      <div className="sports-betting-header">
-        <h1>🎯 Sports Betting</h1>
-        <p className="header-subtitle">Big Win Energy Activated!</p>
-        
-        {error && (
-          <div className="api-warning">
-            <span>⚠️ Using demo data - API connection issues</span>
-            <button onClick={handleRetry} className="retry-small-btn">
-              🔄 Retry
-            </button>
+      <header className="sports-header">
+        <h1>Sports Betting</h1>
+        <p>Live odds from top sportsbooks</p>
+        {quotaInfo && (
+          <div className="quota-info">
+            <small>
+              API Usage: {quotaInfo.used}/{quotaInfo.total} ({quotaInfo.percentUsed}%)
+            </small>
           </div>
         )}
-      </div>
-
-      {!selectedSport ? (
-        <div className="sports-selection">
-          <h2>Choose Your Sport</h2>
-          
-          {sports.length === 0 ? (
-            <EmptyState
-              icon="🏈"
-              title="No Sports Available"
-              message="We're working on bringing you the best betting opportunities. Check back soon!"
-              actionText="Refresh"
-              onAction={handleRetry}
-            />
-          ) : (
-            <div className="sports-grid">
-              {sports.map((sport) => (
-                <div
-                  key={sport.key}
-                  className="sport-card"
-                  onClick={() => handleSportSelect(sport.key)}
-                >
-                  <div className="sport-icon">
-                    {sport.key.includes('football') ? '🏈' :
-                     sport.key.includes('basketball') ? '🏀' :
-                     sport.key.includes('baseball') ? '⚾' :
-                     sport.key.includes('soccer') ? '⚽' : '🏆'}
-                  </div>
-                  <h3>{sport.title}</h3>
-                  <p>{sport.description}</p>
-                  <div className="sport-status">
-                    {sport.active ? '🟢 Live' : '🔴 Offline'}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      </header>
+      {error && (
+        <div className="error-banner">
+          <span>⚠ {error}</span>
+          <button onClick={() => window.location.reload()} className="retry-button">
+            Retry
+          </button>
         </div>
-      ) : (
+      )}
+      <div className="sports-navigation">
+        <h2>Choose Your Sport</h2>
+        <div className="sports-grid">
+          {sports.map((sport) => (
+            <SportCard
+              key={sport.key}
+              sport={sport}
+              isSelected={selectedSport === sport.key}
+              onClick={() => handleSportSelect(sport.key)}
+            />
+          ))}
+        </div>
+      </div>
+      {selectedSport && (
         <div className="events-section">
           <div className="events-header">
-            <button onClick={handleBackToSports} className="back-btn">
-              ← Back to Sports
+            <h2>Live Odds - {sports.find((s) => s.key === selectedSport)?.title}</h2>
+            <button
+              onClick={() => fetchOdds(selectedSport)}
+              className="refresh-button"
+              disabled={eventsLoading}
+            >
+              Refresh
             </button>
-            <h2>
-              {sports.find(s => s.key === selectedSport)?.title || selectedSport} Events
-            </h2>
           </div>
-
-          {loading ? (
-            <WinzoLoading message="Loading events..." />
-          ) : events.length === 0 ? (
-            <EmptyState
-              icon="📅"
-              title="No Events Available"
-              message="No upcoming events for this sport right now. Check back later for more Big Win opportunities!"
-              actionText="Try Another Sport"
-              onAction={handleBackToSports}
-            />
-          ) : (
+          {eventsLoading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Loading odds...</p>
+            </div>
+          ) : events.length > 0 ? (
             <div className="events-grid">
               {events.map((event) => (
-                <div key={event.id} className="event-card">
-                  <div className="event-header">
-                    <div className="event-time">
-                      {new Date(event.commence_time).toLocaleDateString()} at{' '}
-                      {new Date(event.commence_time).toLocaleTimeString()}
-                    </div>
-                  </div>
-                  
-                  <div className="event-matchup">
-                    <div className="team away-team">
-                      <span className="team-name">{event.away_team}</span>
-                      <span className="team-label">Away</span>
-                    </div>
-                    
-                    <div className="vs-divider">VS</div>
-                    
-                    <div className="team home-team">
-                      <span className="team-name">{event.home_team}</span>
-                      <span className="team-label">Home</span>
-                    </div>
-                  </div>
-
-                  {event.bookmakers && event.bookmakers.length > 0 && (
-                    <div className="betting-options">
-                      <h4>Betting Odds</h4>
-                      {event.bookmakers[0].markets?.map((market: any) => (
-                        <div key={market.key} className="market">
-                          {market.outcomes?.map((outcome: any) => (
-                            <button
-                              key={outcome.name}
-                              className="odds-btn"
-                              onClick={() => {
-                                // Placeholder for bet placement
-                                alert(`Placing bet on ${outcome.name} at ${outcome.price}`);
-                              }}
-                            >
-                              <span className="outcome-name">{outcome.name}</span>
-                              <span className="outcome-odds">{outcome.price}</span>
-                            </button>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <EventCard key={event.id} event={event} onOddsClick={handleOddsClick} />
               ))}
+            </div>
+          ) : (
+            <div className="no-events">
+              <div className="no-events-icon"></div>
+              <h3>No upcoming events</h3>
+              <p>Check back later for new games in this sport.</p>
             </div>
           )}
         </div>
@@ -350,5 +232,85 @@ const SportsBetting: React.FC = () => {
   );
 };
 
-export default SportsBetting;
+interface SportCardProps {
+  sport: Sport;
+  isSelected: boolean;
+  onClick: () => void;
+}
 
+const SportCard: React.FC<SportCardProps> = ({ sport, isSelected, onClick }) => {
+  return (
+    <div className={`sport-card ${isSelected ? 'selected' : ''}`} onClick={onClick}>
+      <div className="sport-icon">{sport.icon}</div>
+      <h3>{sport.title}</h3>
+      <p className="sport-category">{sport.category}</p>
+      <div className="sport-status">
+        <span className="live-indicator">Live</span>
+        <span className="popularity">★ {sport.popularity}/10</span>
+      </div>
+    </div>
+  );
+};
+
+interface EventCardProps {
+  event: OddsEvent;
+  onOddsClick: (event: OddsEvent, outcome: Outcome) => void;
+}
+
+const EventCard: React.FC<EventCardProps> = ({ event, onOddsClick }) => {
+  const primaryBookmaker = event.bookmakers?.[0];
+  const h2hMarket = primaryBookmaker?.markets?.find((m) => m.key === 'h2h');
+
+  const getEventStatus = () => {
+    if (event.timing.isLive) {
+      return <span className="status-live">LIVE</span>;
+    } else if (event.timing.hoursFromNow <= 24) {
+      return <span className="status-soon">{event.timing.hoursFromNow}h</span>;
+    } else {
+      return <span className="status-scheduled">{event.timing.date}</span>;
+    }
+  };
+
+  return (
+    <div className="event-card">
+      <div className="event-header">
+        <div className="teams">
+          <div className="away-team">{event.away_team}</div>
+          <div className="vs">@</div>
+          <div className="home-team">{event.home_team}</div>
+        </div>
+        <div className="event-meta">
+          <div className="event-time">{event.timing.time}</div>
+          {getEventStatus()}
+        </div>
+      </div>
+      {event.featured && <div className="featured-badge">Featured</div>}
+      {h2hMarket ? (
+        <div className="odds-section">
+          <div className="bookmaker-info">
+            <span className="bookmaker-name">{primaryBookmaker.title}</span>
+            <span className="markets-count">{event.markets_count} markets</span>
+          </div>
+          <div className="odds-grid">
+            {h2hMarket.outcomes.map((outcome) => (
+              <button
+                key={outcome.name}
+                className="odds-button"
+                onClick={() => onOddsClick(event, outcome)}
+              >
+                <div className="team-name">{outcome.name}</div>
+                <div className="odds-value">{formatOdds(outcome.price)}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="no-odds">
+          <p>Odds not available</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SportsBetting;
