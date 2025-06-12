@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="dashboard-container">
         <div className="loading-container">

@@ -220,7 +220,7 @@ const WalletDashboardEnhanced: React.FC = () => {
     fetchWalletData();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="wallet-dashboard">
         <div className="winzo-loading">
