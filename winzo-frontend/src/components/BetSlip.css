@@ -455,3 +455,71 @@
     font-size: 0.75rem;
   }
 }
+
+/* Authentication Required State */
+.auth-required {
+  padding: 60px 24px;
+  text-align: center;
+  color: #a0aec0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.auth-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+.auth-required h3 {
+  color: #e2e8f0;
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+.auth-required p {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+.login-button {
+  background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.login-button:hover {
+  background: linear-gradient(135deg, #0077b6 0%, #005577 100%);
+  transform: translateY(-2px);
+}
+
+/* Insufficient Funds State */
+.place-bet-button.insufficient-funds {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  cursor: not-allowed;
+}
+.place-bet-button.insufficient-funds:hover {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Balance Warning */
+.balance-warning {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px 24px;
+  font-size: 0.9rem;
+  text-align: center;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}

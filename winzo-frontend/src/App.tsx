@@ -60,9 +60,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
  */
 function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <BetSlipProvider>
+    <AuthProvider>
+      <BetSlipProvider>
+        <ErrorBoundary>
           <Router>
             <div className="App">
             <Routes>
@@ -107,13 +107,13 @@ function App() {
               {/* Catch-all redirect */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
-            <BetSlip />
           </div>
         </Router>
+        <BetSlip />
         <BetSlipToggle />
-        </BetSlipProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </BetSlipProvider>
+    </AuthProvider>
   );
 }
 
