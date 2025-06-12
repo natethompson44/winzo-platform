@@ -59,7 +59,7 @@ function applyAssociations() {
 
   // Bookmaker associations
   Bookmaker.hasMany(Odds, { foreignKey: 'bookmaker_id', as: 'odds' });
-  Odds.belongsTo(Bookmaker, { foreignKey: 'bookmaker_id', as: 'bookmakerEntity' });
+  Odds.belongsTo(Bookmaker, { foreignKey: 'bookmaker_id', as: 'bookmaker' });
 
   SportsEvent.hasMany(Bet, { foreignKey: 'event_id' });
   Bet.belongsTo(SportsEvent, { foreignKey: 'event_id' });
