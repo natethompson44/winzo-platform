@@ -35,7 +35,7 @@ interface WalletData {
 }
 
 const Dashboard: React.FC = () => {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, isLoading } = useAuth();
   const { getItemCount, getTotalStake } = useBetSlip();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentBets, setRecentBets] = useState<RecentBet[]>([]);

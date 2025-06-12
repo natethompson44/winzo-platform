@@ -53,7 +53,7 @@ interface Transaction {
  * and comprehensive financial management capabilities.
  */
 const WalletDashboardEnhanced: React.FC = () => {
-  const { user, token } = useAuth();
+  const { user, token, isLoading } = useAuth();
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);

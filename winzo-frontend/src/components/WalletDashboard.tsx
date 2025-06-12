@@ -44,7 +44,7 @@ interface UserStats {
  * management across all devices.
  */
 const WalletDashboard: React.FC = () => {
-  const { user, token } = useAuth();
+  const { user, token, isLoading } = useAuth();
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
