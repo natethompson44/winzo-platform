@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const initDatabase = require('./database/init');
 const authRoutes = require('./routes/auth');
-const sportsRoutes = require('./routes/sportsEnhanced');
+const sportsRoutes = require('./routes/sports');
 const walletRoutes = require('./routes/walletEnhanced');
 const dashboardRoutes = require('./routes/dashboard');
 

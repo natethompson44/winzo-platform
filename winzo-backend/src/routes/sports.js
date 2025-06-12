@@ -1,431 +1,511 @@
 const express = require('express');
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
-const auth = require('../middleware/auth');
-const Sport = require('../models/Sport');
-const SportsEvent = require('../models/SportsEvent');
-const Odds = require('../models/Odds');
-const Bet = require('../models/Bet');
-const User = require('../models/User');
-const oddsService = require('../services/oddsService');
-const walletService = require('../services/walletService');
+const oddsApiService = require('../services/oddsApiService');
+const { SportsEvent, Odds, Bookmaker } = require('../models');
+const {
+  validateApiResponse,
+  isValidSportKey,
+  parseCommenceTime
+} = require('../utils/apiUtils');
+const {
+  checkQuota,
+  addCorsHeaders,
+  logApiRequest,
+  validateSportParam
+} = require('../middleware/sportsMiddleware');
+
+// Apply middleware to all routes
+router.use(addCorsHeaders);
+router.use(logApiRequest);
+router.use('/:sport/odds', checkQuota);
+router.use('/:sport/scores', checkQuota);
+router.use('/:sport/*', validateSportParam);
 
 /**
- * WINZO Sports Betting Routes
- * 
- * These routes handle all sports betting functionality for the WINZO platform,
- * embodying the "BIG WIN ENERGY" philosophy with confident, energetic responses
- * and seamless user experiences. All routes are mobile-first and optimized for
- * the exclusive WINZO community.
+ * GET /api/sports - Get all available sports
+ * Returns list of active sports from The Odds API
  */
-
-/**
- * GET /api/sports - Get all available sports for WINZO betting
- * Returns active sports with "Big Win Energy" messaging
- */
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const sports = await Sport.findAll({
-      where: { active: true },
-      order: [['title', 'ASC']]
-    });
-
+    console.log('Fetching sports list...');
+    const { include_inactive = false } = req.query;
+    const sports = await oddsApiService.getSports(include_inactive === 'true');
+    // Validate API response
+    if (!validateApiResponse(sports, 'sports')) {
+      throw new Error('Invalid sports data received from API');
+    }
+    // Filter to active sports only unless requested otherwise
+    const activeSports =
+      include_inactive === 'true' ? sports : sports.filter(s => s.active);
+    // Add additional metadata
+    const enrichedSports = activeSports.map(sport => ({
+      ...sport,
+      icon: getSportIcon(sport.group),
+      category: categorizeSport(sport.group),
+      popularity: getSportPopularity(sport.key)
+    }));
     res.json({
       success: true,
-      message: "Ready to unleash your Big Win Energy? Here are today's hottest sports!",
-      data: {
-        sports: sports.map(sport => ({
-          id: sport.id,
-          key: sport.key,
-          title: sport.title,
-          group: sport.group,
-          description: sport.description,
-          hasOutrights: sport.hasOutrights
-        })),
-        count: sports.length
-      }
+      data: enrichedSports,
+      count: enrichedSports.length,
+      quota: oddsApiService.getQuotaStatus(),
+      timestamp: new Date().toISOString()
     });
-
+    console.log(`Returned ${enrichedSports.length} sports`);
   } catch (error) {
-    console.error('WINZO Sports: Error fetching sports:', error.message);
+    console.error('Error in GET /api/sports:', error);
     res.status(500).json({
       success: false,
-      message: "Oops! Let's try getting those sports again.",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: 'Failed to fetch sports data',
+      message: error.message,
+      quota: oddsApiService.getQuotaStatus()
     });
   }
 });
 
 /**
- * GET /api/sports/:sportKey/events - Get upcoming events for a specific sport
- * Returns events with live odds and "winning opportunity" messaging
+ * GET /api/sports/:sport/odds - Get odds for specific sport
+ * Returns live odds data for all events in the specified sport
  */
-router.get('/:sportKey/events', auth, async (req, res) => {
+router.get('/:sport/odds', async (req, res) => {
   try {
-    const { sportKey } = req.params;
-    const { limit = 20, upcoming = true } = req.query;
-
-    const sport = await Sport.findOne({ where: { key: sportKey } });
-    if (!sport) {
-      return res.status(404).json({
+    const { sport } = req.params;
+    const {
+      regions = 'us',
+      markets = 'h2h',
+      bookmakers = null,
+      limit = null
+    } = req.query;
+    console.log(`Fetching odds for ${sport}...`);
+    // Validate sport key
+    if (!isValidSportKey(sport)) {
+      return res.status(400).json({
         success: false,
-        message: "Hmm, we couldn't find that sport. Let's check out what's available!"
+        error: 'Invalid sport key format'
       });
     }
-
-    const whereClause = { sport_id: sport.id };
-    if (upcoming === 'true') {
-      whereClause.commenceTime = { [require('sequelize').Op.gt]: new Date() };
-      whereClause.status = 'upcoming';
-    }
-
-    const events = await SportsEvent.findAll({
-      where: whereClause,
-      attributes: ['id', 'homeTeam', 'awayTeam', 'commenceTime', 'status'],
-      include: [{
-        model: Odds,
-        attributes: ['id', 'bookmakerTitle', 'market', 'outcome', 'price', 'decimalPrice', 'point'],
-        where: { active: true },
-        required: false
-      }],
-      order: [['commenceTime', 'ASC']],
-      limit: parseInt(limit)
+    const odds = await oddsApiService.getOdds(sport, {
+      regions,
+      markets,
+      bookmakers
     });
+    // Validate API response
+    if (!validateApiResponse(odds, 'odds')) {
+      throw new Error('Invalid odds data received from API');
+    }
+    // Store odds in database for persistence
+    await storeOddsInDatabase(odds);
+    // Apply limit if specified
+    const limitedOdds = limit ? odds.slice(0, parseInt(limit)) : odds;
+    // Enrich odds data with additional information
+    const enrichedOdds = limitedOdds.map(event => ({
+      ...event,
+      timing: parseCommenceTime(event.commence_time),
+      featured: isFeaturedEvent(event),
+      markets_count:
+        event.bookmakers?.reduce(
+          (sum, bm) => sum + (bm.markets?.length || 0),
+          0
+        ) || 0
+    }));
+    res.json({
+      success: true,
+      data: enrichedOdds,
+      count: enrichedOdds.length,
+      sport: sport,
+      markets: markets.split(','),
+      quota: oddsApiService.getQuotaStatus(),
+      timestamp: new Date().toISOString()
+    });
+    console.log(`Returned ${enrichedOdds.length} events with odds for ${sport}`);
+  } catch (error) {
+    console.error(`Error in GET /api/sports/${req.params.sport}/odds:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch odds data',
+      message: error.message,
+      sport: req.params.sport,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
 
-    // Group odds by event and market for easier frontend consumption
-    const eventsWithOdds = events.map(event => {
-      const eventData = {
-        id: event.id,
-        homeTeam: event.homeTeam,
-        awayTeam: event.awayTeam,
-        commenceTime: event.commenceTime,
-        status: event.status,
-        markets: {}
-      };
+/**
+ * GET /api/sports/:sport/scores - Get scores for specific sport
+ * Returns live and completed game scores
+ */
+router.get('/:sport/scores', async (req, res) => {
+  try {
+    const { sport } = req.params;
+    const { daysFrom = 1, completed_only = false, live_only = false } = req.query;
+    console.log(`Fetching scores for ${sport}...`);
+    // Validate sport key
+    if (!isValidSportKey(sport)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid sport key format'
+      });
+    }
+    const scores = await oddsApiService.getScores(sport, {
+      daysFrom: parseInt(daysFrom)
+    });
+    // Validate API response
+    if (!validateApiResponse(scores, 'scores')) {
+      throw new Error('Invalid scores data received from API');
+    }
+    // Store scores in database for persistence
+    await storeScoresInDatabase(scores);
+    // Filter based on query parameters
+    let filteredScores = scores;
+    if (completed_only === 'true') {
+      filteredScores = scores.filter(game => game.completed);
+    } else if (live_only === 'true') {
+      filteredScores = scores.filter(game => !game.completed && isGameLive(game));
+    }
+    // Enrich scores data
+    const enrichedScores = filteredScores.map(game => ({
+      ...game,
+      timing: parseCommenceTime(game.commence_time),
+      status: getGameStatus(game),
+      score_summary: getScoreSummary(game)
+    }));
+    res.json({
+      success: true,
+      data: enrichedScores,
+      count: enrichedScores.length,
+      sport: sport,
+      filters: {
+        daysFrom: parseInt(daysFrom),
+        completed_only: completed_only === 'true',
+        live_only: live_only === 'true'
+      },
+      quota: oddsApiService.getQuotaStatus(),
+      timestamp: new Date().toISOString()
+    });
+    console.log(`Returned ${enrichedScores.length} games with scores for ${sport}`);
+  } catch (error) {
+    console.error(`Error in GET /api/sports/${req.params.sport}/scores:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch scores data',
+      message: error.message,
+      sport: req.params.sport,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
 
-      // Group odds by market type
-      event.odds.forEach(odd => {
-        if (!eventData.markets[odd.market]) {
-          eventData.markets[odd.market] = [];
+/**
+ * GET /api/sports/:sport/participants - Get participants for specific sport
+ * Returns teams/players for the specified sport
+ */
+router.get('/:sport/participants', async (req, res) => {
+  try {
+    const { sport } = req.params;
+    console.log(`Fetching participants for ${sport}...`);
+    // Validate sport key
+    if (!isValidSportKey(sport)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid sport key format'
+      });
+    }
+    const participants = await oddsApiService.getParticipants(sport);
+    // Validate API response
+    if (!validateApiResponse(participants, 'participants')) {
+      throw new Error('Invalid participants data received from API');
+    }
+    res.json({
+      success: true,
+      data: participants,
+      count: participants.length,
+      sport: sport,
+      quota: oddsApiService.getQuotaStatus(),
+      timestamp: new Date().toISOString()
+    });
+    console.log(`Returned ${participants.length} participants for ${sport}`);
+  } catch (error) {
+    console.error(
+      `Error in GET /api/sports/${req.params.sport}/participants:`,
+      error
+    );
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch participants data',
+      message: error.message,
+      sport: req.params.sport,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
+
+/**
+ * GET /api/sports/:sport/events/:eventId - Get specific event details
+ * Returns detailed information for a single event
+ */
+router.get('/:sport/events/:eventId', async (req, res) => {
+  try {
+    const { sport, eventId } = req.params;
+    console.log(`Fetching event ${eventId} for ${sport}...`);
+    // Get odds for the specific event
+    const odds = await oddsApiService.getOdds(sport, {
+      eventIds: eventId
+    });
+    if (!odds || odds.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Event not found',
+        eventId: eventId,
+        sport: sport
+      });
+    }
+    const event = odds[0];
+    // Get scores for the event
+    let scores = [];
+    try {
+      const scoresData = await oddsApiService.getScores(sport);
+      scores = scoresData.filter(game => game.id === eventId);
+    } catch (error) {
+      console.log('No scores available for this event');
+    }
+    // Combine odds and scores data
+    const eventDetails = {
+      ...event,
+      scores: scores.length > 0 ? scores[0] : null,
+      timing: parseCommenceTime(event.commence_time),
+      all_markets: getAllMarketsForEvent(event)
+    };
+    res.json({
+      success: true,
+      data: eventDetails,
+      eventId: eventId,
+      sport: sport,
+      quota: oddsApiService.getQuotaStatus(),
+      timestamp: new Date().toISOString()
+    });
+    console.log(`Returned detailed event data for ${eventId}`);
+  } catch (error) {
+    console.error(
+      `Error in GET /api/sports/${req.params.sport}/events/${req.params.eventId}:`,
+      error
+    );
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch event details',
+      message: error.message,
+      eventId: req.params.eventId,
+      sport: req.params.sport,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
+
+// Helper Functions
+/**
+ * Store odds data in database for persistence
+ */
+async function storeOddsInDatabase(oddsData) {
+  try {
+    for (const event of oddsData) {
+      // Create or update sports event
+      const [sportsEvent] = await SportsEvent.findOrCreate({
+        where: { external_id: event.id },
+        defaults: {
+          external_id: event.id,
+          sport_key: event.sport_key,
+          home_team: event.home_team,
+          away_team: event.away_team,
+          commence_time: new Date(event.commence_time),
+          completed: event.completed || false,
+          last_update: new Date()
         }
-        eventData.markets[odd.market].push({
-          id: odd.id,
-          bookmaker: odd.bookmakerTitle,
-          outcome: odd.outcome,
-          price: odd.price,
-          decimalPrice: odd.decimalPrice,
-          point: odd.point
+      });
+      // Update existing event if needed
+      if (sportsEvent) {
+        await sportsEvent.update({
+          home_team: event.home_team,
+          away_team: event.away_team,
+          commence_time: new Date(event.commence_time),
+          completed: event.completed || false,
+          last_update: new Date()
         });
-      });
-
-      return eventData;
-    });
-
-    res.json({
-      success: true,
-      message: `🔥 ${events.length} winning opportunities found in ${sport.title}! Your Big Win Energy is about to activate!`,
-      data: {
-        sport: {
-          title: sport.title,
-          key: sport.key,
-          group: sport.group
-        },
-        events: eventsWithOdds,
-        count: events.length
       }
-    });
-
-  } catch (error) {
-    console.error('WINZO Sports: Error fetching events:', error.message);
-    res.status(500).json({
-      success: false,
-      message: "Almost there! Let's try loading those winning opportunities again.",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-});
-
-/**
- * POST /api/sports/place-bet - Place a sports bet with WINZO Wallet
- * Handles bet placement with celebration messaging and wallet integration
- */
-router.post('/place-bet', [
-  auth,
-  body('eventId').isUUID().withMessage('Valid event required for your winning bet'),
-  body('oddsId').isUUID().withMessage('Valid odds selection required'),
-  body('amount').isFloat({ min: 1 }).withMessage('Minimum bet is $1 to activate Big Win Energy'),
-  body('market').notEmpty().withMessage('Betting market selection required'),
-  body('outcome').notEmpty().withMessage('Outcome selection required for your win')
-], async (req, res) => {
-  try {
-    // Validate input
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: "Almost there! Just need to fix one thing for your winning bet.",
-        errors: errors.array()
-      });
-    }
-
-    const { eventId, oddsId, amount, market, outcome } = req.body;
-    const userId = req.user.id;
-
-    // Verify user has sufficient WINZO Wallet balance
-    const hasBalance = await walletService.validateBalance(userId, amount);
-    if (!hasBalance) {
-      return res.status(400).json({
-        success: false,
-        message: "Time to add some funds to your WINZO Wallet! Let's get you ready for that big win.",
-        action: 'add_funds'
-      });
-    }
-
-    // Get event and odds details
-    const event = await SportsEvent.findByPk(eventId, {
-      include: [Sport]
-    });
-    
-    const odds = await Odds.findByPk(oddsId);
-
-    if (!event || !odds) {
-      return res.status(404).json({
-        success: false,
-        message: "Oops! That betting opportunity just expired. Let's find you another winner!"
-      });
-    }
-
-    // Verify event is still bettable
-    if (event.status !== 'upcoming' || new Date(event.commenceTime) <= new Date()) {
-      return res.status(400).json({
-        success: false,
-        message: "This game has already started! Let's find you another winning opportunity."
-      });
-    }
-
-    // Calculate potential payout
-    const betAmount = parseFloat(amount);
-    const decimalOdds = odds.decimalPrice;
-    const potentialPayout = betAmount * decimalOdds;
-    const potentialProfit = potentialPayout - betAmount;
-
-    // Process bet placement (deduct from wallet)
-    const walletTransaction = await walletService.processBetPlacement(userId, betAmount);
-
-    // Create bet record
-    const bet = await Bet.create({
-      user_id: userId,
-      event_id: eventId,
-      odds_id: oddsId,
-      bet_type: 'sports',
-      market,
-      outcome,
-      point: odds.point,
-      amount: betAmount,
-      odds: odds.price,
-      decimalOdds: odds.decimalPrice,
-      potentialPayout,
-      potentialProfit,
-      status: 'pending',
-      placedAt: new Date()
-    });
-
-    // Get updated user info
-    const user = await User.findByPk(userId);
-
-    res.json({
-      success: true,
-      message: `🎯 Bet placed! Your Big Win Energy is locked and loaded for ${event.homeTeam} vs ${event.awayTeam}!`,
-      data: {
-        bet: {
-          id: bet.id,
-          event: `${event.homeTeam} vs ${event.awayTeam}`,
-          sport: event.sport.title,
-          market,
-          outcome,
-          amount: betAmount,
-          odds: odds.price,
-          potentialPayout,
-          potentialProfit,
-          status: bet.status,
-          placedAt: bet.placedAt
-        },
-        wallet: {
-          previousBalance: walletTransaction.previousBalance,
-          newBalance: walletTransaction.newBalance,
-          amountWagered: betAmount
-        },
-        celebration: {
-          message: "🔥 You're locked in! Time to watch the magic happen!",
-          potentialWin: `Win $${potentialProfit.toFixed(2)} profit!`
+      // Store odds for each bookmaker
+      for (const bookmaker of event.bookmakers || []) {
+        const [bookmakerId] = await Bookmaker.findOrCreate({
+          where: { key: bookmaker.key },
+          defaults: {
+            key: bookmaker.key,
+            title: bookmaker.title,
+            active: true
+          }
+        });
+        // Store odds for each market
+        for (const market of bookmaker.markets || []) {
+          for (const outcome of market.outcomes || []) {
+            await Odds.upsert({
+              sports_event_id: sportsEvent.id,
+              bookmaker_id: bookmakerId.id,
+              market_type: market.key,
+              outcome_name: outcome.name,
+              price: outcome.price,
+              last_update: new Date()
+            });
+          }
         }
       }
-    });
-
-  } catch (error) {
-    console.error('WINZO Sports: Error placing bet:', error.message);
-    res.status(500).json({
-      success: false,
-      message: "No worries! Let's try placing that winning bet again.",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-});
-
-/**
- * GET /api/sports/my-bets - Get user's betting history with WINZO energy
- * Returns bet history with celebratory messaging for wins
- */
-router.get('/my-bets', auth, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { status, limit = 50, page = 1 } = req.query;
-
-    const whereClause = { user_id: userId, bet_type: 'sports' };
-    if (status) {
-      whereClause.status = status;
     }
-
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-
-    const { count, rows: bets } = await Bet.findAndCountAll({
-      where: whereClause,
-      attributes: { exclude: ['updatedAt'] },
-      include: [{
-        model: SportsEvent,
-        attributes: ['homeTeam', 'awayTeam', 'commenceTime', 'status', 'sport_id'],
-        include: [{
-          model: Sport,
-          attributes: ['title']
-        }]
-      }],
-      order: [['placedAt', 'DESC']],
-      limit: parseInt(limit),
-      offset
-    });
-
-    // Calculate statistics
-    const totalWagered = bets.reduce((sum, bet) => sum + parseFloat(bet.amount), 0);
-    const totalWinnings = bets
-      .filter(bet => bet.status === 'won')
-      .reduce((sum, bet) => sum + parseFloat(bet.actualPayout || 0), 0);
-    
-    const wonBets = bets.filter(bet => bet.status === 'won').length;
-    const lostBets = bets.filter(bet => bet.status === 'lost').length;
-    const pendingBets = bets.filter(bet => bet.status === 'pending').length;
-
-    const winRate = (wonBets + lostBets) > 0 ? ((wonBets / (wonBets + lostBets)) * 100) : 0;
-
-    res.json({
-      success: true,
-      message: wonBets > 0 ? 
-        `🏆 ${wonBets} wins and counting! Your Big Win Energy is unstoppable!` :
-        "Your betting journey is just getting started! Big wins are coming!",
-      data: {
-        bets: bets.map(bet => ({
-          id: bet.id,
-          event: bet.sportsEvent ? 
-            `${bet.sportsEvent.homeTeam} vs ${bet.sportsEvent.awayTeam}` : 
-            'Event not found',
-          sport: bet.sportsEvent?.sport?.title || 'Unknown',
-          market: bet.market,
-          outcome: bet.outcome,
-          amount: parseFloat(bet.amount),
-          odds: bet.odds,
-          potentialPayout: parseFloat(bet.potentialPayout),
-          actualPayout: bet.actualPayout ? parseFloat(bet.actualPayout) : null,
-          status: bet.status,
-          placedAt: bet.placedAt,
-          settledAt: bet.settledAt
-        })),
-        pagination: {
-          total: count,
-          page: parseInt(page),
-          limit: parseInt(limit),
-          totalPages: Math.ceil(count / parseInt(limit))
-        },
-        statistics: {
-          totalBets: count,
-          pendingBets,
-          wonBets,
-          lostBets,
-          winRate: winRate.toFixed(1),
-          totalWagered: totalWagered.toFixed(2),
-          totalWinnings: totalWinnings.toFixed(2),
-          netProfit: (totalWinnings - totalWagered).toFixed(2)
-        }
-      }
-    });
-
+    console.log(`Stored ${oddsData.length} events in database`);
   } catch (error) {
-    console.error('WINZO Sports: Error fetching bet history:', error.message);
-    res.status(500).json({
-      success: false,
-      message: "Let's try loading your betting history again!",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    console.error('Error storing odds in database:', error);
   }
-});
+}
 
 /**
- * POST /api/sports/sync-data - Manually trigger sports data synchronization
- * Admin/development route to refresh odds and events
+ * Store scores data in database for persistence
  */
-router.post('/sync-data', auth, async (req, res) => {
+async function storeScoresInDatabase(scoresData) {
   try {
-    const { sportKey } = req.body;
-
-    let result;
-    if (sportKey) {
-      // Sync specific sport
-      result = await oddsService.syncSportData(sportKey);
-    } else {
-      // Sync all sports
-      result = await oddsService.syncAllSportsData();
+    for (const game of scoresData) {
+      const homeScore = game.scores
+        ? game.scores.find(s => s.name === game.home_team)?.score
+        : null;
+      const awayScore = game.scores
+        ? game.scores.find(s => s.name === game.away_team)?.score
+        : null;
+      await SportsEvent.upsert({
+        external_id: game.id,
+        sport_key: game.sport_key,
+        home_team: game.home_team,
+        away_team: game.away_team,
+        commence_time: new Date(game.commence_time),
+        completed: game.completed || false,
+        home_score: homeScore,
+        away_score: awayScore,
+        last_update: new Date()
+      });
     }
-
-    res.json({
-      success: true,
-      message: "🔄 WINZO data synchronized! Fresh odds and Big Win Energy activated!",
-      data: {
-        syncResult: result,
-        quota: oddsService.getQuotaInfo()
-      }
-    });
-
+    console.log(`Stored ${scoresData.length} game scores in database`);
   } catch (error) {
-    console.error('WINZO Sports: Error syncing data:', error.message);
-    res.status(500).json({
-      success: false,
-      message: "Sync hit a snag! Let's try refreshing that data again.",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    console.error('Error storing scores in database:', error);
   }
-});
+}
 
 /**
- * GET /api/sports/quota - Get current API quota usage
- * Monitoring route for API usage
+ * Get sport icon based on group
  */
-router.get('/quota', auth, async (req, res) => {
-  try {
-    const quotaInfo = oddsService.getQuotaInfo();
-    
-    res.json({
-      success: true,
-      message: "WINZO API status check complete!",
-      data: quotaInfo
-    });
+function getSportIcon(group) {
+  const icons = {
+    'American Football': '',
+    Basketball: '',
+    Baseball: '⚾',
+    'Ice Hockey': '',
+    Soccer: '⚽',
+    Tennis: '',
+    Golf: '',
+    Boxing: '',
+    'Mixed Martial Arts': ''
+  };
+  return icons[group] || '';
+}
 
-  } catch (error) {
-    console.error('WINZO Sports: Error checking quota:', error.message);
-    res.status(500).json({
-      success: false,
-      message: "Couldn't check API status right now.",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+/**
+ * Categorize sport for UI grouping
+ */
+function categorizeSport(group) {
+  const categories = {
+    'American Football': 'US Sports',
+    Basketball: 'US Sports',
+    Baseball: 'US Sports',
+    'Ice Hockey': 'US Sports',
+    Soccer: 'International',
+    Tennis: 'Individual',
+    Golf: 'Individual',
+    Boxing: 'Combat',
+    'Mixed Martial Arts': 'Combat'
+  };
+  return categories[group] || 'Other';
+}
+
+/**
+ * Get sport popularity ranking
+ */
+function getSportPopularity(sportKey) {
+  const popularity = {
+    americanfootball_nfl: 10,
+    basketball_nba: 9,
+    baseball_mlb: 8,
+    icehockey_nhl: 7,
+    soccer_epl: 6,
+    americanfootball_ncaaf: 5,
+    basketball_ncaab: 4
+  };
+  return popularity[sportKey] || 1;
+}
+
+/**
+ * Check if event is featured
+ */
+function isFeaturedEvent(event) {
+  // Consider events with multiple bookmakers as featured
+  return event.bookmakers && event.bookmakers.length >= 3;
+}
+
+/**
+ * Check if game is currently live
+ */
+function isGameLive(game) {
+  const now = new Date();
+  const commenceTime = new Date(game.commence_time);
+  const hoursSinceStart = (now - commenceTime) / (1000 * 60 * 60);
+  // Consider live if started within last 4 hours and not completed
+  return hoursSinceStart > 0 && hoursSinceStart < 4 && !game.completed;
+}
+
+/**
+ * Get game status description
+ */
+function getGameStatus(game) {
+  if (game.completed) {
+    return 'Final';
   }
-});
+  const timing = parseCommenceTime(game.commence_time);
+  if (timing.isLive) {
+    return 'Live';
+  } else if (timing.isUpcoming) {
+    return `${timing.hoursFromNow}h`;
+  } else {
+    return 'Scheduled';
+  }
+}
+
+/**
+ * Get score summary
+ */
+function getScoreSummary(game) {
+  if (!game.scores || game.scores.length === 0) {
+    return null;
+  }
+  const homeScore = game.scores.find(s => s.name === game.home_team);
+  const awayScore = game.scores.find(s => s.name === game.away_team);
+  return {
+    home: homeScore?.score || 0,
+    away: awayScore?.score || 0,
+    display: `${awayScore?.score || 0} - ${homeScore?.score || 0}`
+  };
+}
+
+/**
+ * Get all markets for an event
+ */
+function getAllMarketsForEvent(event) {
+  const markets = new Set();
+  for (const bookmaker of event.bookmakers || []) {
+    for (const market of bookmaker.markets || []) {
+      markets.add(market.key);
+    }
+  }
+  return Array.from(markets);
+}
 
 module.exports = router;
-
