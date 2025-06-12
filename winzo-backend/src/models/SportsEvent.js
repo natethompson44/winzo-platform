@@ -21,7 +21,7 @@ class SportsEvent extends Model {
    * @returns {boolean}
    */
   isLive() {
-    return this.status === 'live';
+    return !this.completed;
   }
 }
 
@@ -39,6 +39,12 @@ SportsEvent.init(
       field: 'external_id',
       comment: 'Event ID from The Odds API for synchronization',
     },
+    sportKey: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'sport_key',
+      comment: 'Sport key from The Odds API',
+    },
     homeTeam: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -51,32 +57,17 @@ SportsEvent.init(
       field: 'away_team',
       comment: 'Name of the away team',
     },
-    league_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: { model: 'leagues', key: 'id' },
-    },
-    home_team_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: { model: 'teams', key: 'id' },
-    },
-    away_team_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: { model: 'teams', key: 'id' },
-    },
     commenceTime: {
       type: DataTypes.DATE,
       allowNull: false,
       field: 'commence_time',
       comment: 'When the event is scheduled to start',
     },
-    status: {
-      type: DataTypes.ENUM('upcoming', 'live', 'completed', 'cancelled'),
+    completed: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: 'upcoming',
-      comment: 'Current status of the sporting event',
+      defaultValue: false,
+      comment: 'Whether the event has been completed',
     },
     homeScore: {
       type: DataTypes.INTEGER,
@@ -116,16 +107,28 @@ SportsEvent.init(
     statusLong: { type: DataTypes.STRING, allowNull: true, field: 'status_long' },
     statusShort: { type: DataTypes.STRING, allowNull: true, field: 'status_short' },
     elapsed: { type: DataTypes.INTEGER, allowNull: true },
-    lastUpdated: {
+    lastUpdate: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
-      field: 'last_updated',
+      field: 'last_update',
       comment: 'When this event data was last synchronized',
     },
     bigWinMessage: { type: DataTypes.STRING, allowNull: true, field: 'big_win_message' },
     createdBy: { type: DataTypes.UUID, allowNull: true, field: 'created_by' },
     updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'created_at',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'updated_at',
+    },
   },
   {
     sequelize,
@@ -134,13 +137,12 @@ SportsEvent.init(
     paranoid: true,
     indexes: [
       { fields: ['external_id'] },
-      { fields: ['league_id'] },
+      { fields: ['sport_key'] },
       { fields: ['commence_time'] },
-      { fields: ['status'] },
     ],
     hooks: {
       beforeUpdate(event) {
-        event.lastUpdated = new Date();
+        event.lastUpdate = new Date();
       },
     },
   }

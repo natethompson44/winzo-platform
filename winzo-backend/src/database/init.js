@@ -20,9 +20,8 @@ async function initDatabase() {
     await migrate();
     console.log('Database migrations completed successfully');
     
-    // Synchronize models with database (should be safe now)
-    await sequelize.sync({ alter: false });
-    
+    // Skip Sequelize sync since we're using our own migration system
+    // await sequelize.sync({ alter: false });
     console.log('Database models synchronized successfully');
   } catch (err) {
     console.error('Unable to connect to the database:', err);
