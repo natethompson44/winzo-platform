@@ -52,7 +52,7 @@ const BettingHistory: React.FC = () => {
     if (user) {
       fetchBettingHistory();
     }
-  }, [user, filter]);
+  }, [user, filter, fetchBettingHistory]);
 
   const fetchBettingHistory = async (loadMore = false) => {
     try {
@@ -89,38 +89,6 @@ const BettingHistory: React.FC = () => {
 
   const formatCurrency = (amount: number): string => {
     return `$${amount.toFixed(2)}`;
-  };
-
-  const formatOdds = (odds: number): string => {
-    return odds > 0 ? `+${odds}` : odds.toString();
-  };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case 'won': return '#48bb78';
-      case 'lost': return '#e53e3e';
-      case 'pending': return '#ed8936';
-      case 'cancelled': return '#a0aec0';
-      default: return '#a0aec0';
-    }
-  };
-
-  const getStatusIcon = (status: string): string => {
-    switch (status) {
-      case 'won': return'';
-      case 'lost': return'';
-      case 'pending': return'';
-      case 'cancelled': return'';
-      default: return ' ';
-    }
   };
 
   if (!user) {
@@ -229,38 +197,6 @@ const BettingHistoryCard: React.FC<BettingHistoryCardProps> = ({ bet }) => {
     return `$${amount.toFixed(2)}`;
   };
 
-  const formatOdds = (odds: number): string => {
-    return odds > 0 ? `+${odds}` : odds.toString();
-  };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case 'won': return '#48bb78';
-      case 'lost': return '#e53e3e';
-      case 'pending': return '#ed8936';
-      case 'cancelled': return '#a0aec0';
-      default: return '#a0aec0';
-    }
-  };
-
-  const getStatusIcon = (status: string): string => {
-    switch (status) {
-      case 'won': return'';
-      case 'lost': return'';
-      case 'pending': return'';
-      case 'cancelled': return'';
-      default: return ' ';
-    }
-  };
-
   return (
     <div className="betting-history-card">
       <div className="bet-header">
@@ -270,19 +206,10 @@ const BettingHistoryCard: React.FC<BettingHistoryCardProps> = ({ bet }) => {
           </span>
           <span className="sport">{bet.sportsEvent.sport_key.toUpperCase()}</span>
         </div>
-        <div className="bet-status">
-          <span
-            className="status-badge"
-            style={{ color: getStatusColor(bet.status) }}
-          >
-            {getStatusIcon(bet.status)} {bet.status.toUpperCase()}
-          </span>
-        </div>
       </div>
       <div className="bet-details">
         <div className="bet-selection">
           <span className="selected-team">{bet.selected_team}</span>
-          <span className="odds">{formatOdds(bet.odds)}</span>
         </div>
         <div className="bet-amounts">
           <div className="amount-item">
@@ -302,9 +229,9 @@ const BettingHistoryCard: React.FC<BettingHistoryCardProps> = ({ bet }) => {
         </div>
         <div className="bet-meta">
           <span className="bet-type">{bet.bet_type.toUpperCase()}</span>
-          <span className="placed-date">Placed: {formatDate(bet.placed_at)}</span>
+          <span className="placed-date">Placed: {bet.placed_at}</span>
           {bet.settled_at && (
-            <span className="settled-date">Settled: {formatDate(bet.settled_at)}</span>
+            <span className="settled-date">Settled: {bet.settled_at}</span>
           )}
         </div>
         {bet.sportsEvent.completed && (bet.sportsEvent.home_score !== null ||

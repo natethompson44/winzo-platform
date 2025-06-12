@@ -44,10 +44,8 @@ interface UserStats {
  * management across all devices.
  */
 const WalletDashboard: React.FC = () => {
-  const { user, isLoading } = useAuth();
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addFundsAmount, setAddFundsAmount] = useState<string>('');
   const [addingFunds, setAddingFunds] = useState(false);
@@ -60,7 +58,6 @@ const WalletDashboard: React.FC = () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
         setError('Authentication required');
-        setLoading(false);
         return;
       }
 
@@ -77,8 +74,6 @@ const WalletDashboard: React.FC = () => {
       setUserStats(statsResponse.data.data);
     } catch (error: any) {
       setError(error.response?.data?.message || 'Failed to load wallet data');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -117,14 +112,16 @@ const WalletDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchWalletData();
-  }, []);
+  }, [fetchWalletData]);
 
-  if (isLoading) {
+  if (error) {
     return (
       <div className="wallet-dashboard">
-        <div className="winzo-loading">
-          <div className="winzo-spinner"></div>
-          <p>🔥 Loading your WINZO Wallet...</p>
+        <div className="winzo-error">
+          <p>⚠️ {error}</p>
+          <button onClick={() => setError(null)} className="dismiss-btn">
+            Let's try again!
+          </button>
         </div>
       </div>
     );
@@ -137,15 +134,6 @@ const WalletDashboard: React.FC = () => {
         <h1 className="winzo-title">💰 WINZO Wallet</h1>
         <p className="winzo-subtitle">Your Big Win Energy Financial Hub!</p>
       </div>
-
-      {error && (
-        <div className="winzo-error">
-          <p>⚠️ {error}</p>
-          <button onClick={() => setError(null)} className="dismiss-btn">
-            Let's try again!
-          </button>
-        </div>
-      )}
 
       {/* Balance Display */}
       {walletBalance && (

@@ -38,10 +38,6 @@ const BetSlip: React.FC = () => {
   const [isPlacingBet, setIsPlacingBet] = useState(false);
   const [placeBetError, setPlaceBetError] = useState<string>('');
 
-  const formatOdds = (odds: number): string => {
-    return odds > 0 ? `+${odds}` : odds.toString();
-  };
-
   const formatCurrency = (amount: number): string => {
     return `$${amount.toFixed(2)}`;
   };
@@ -280,10 +276,6 @@ interface BetSlipItemCardProps {
 }
 
 const BetSlipItemCard: React.FC<BetSlipItemCardProps> = ({ item, onRemove, onStakeChange, onQuickStake }) => {
-  const formatOdds = (odds: number): string => {
-    return odds > 0 ? `+${odds}` : odds.toString();
-  };
-
   const formatCurrency = (amount: number): string => {
     return `$${amount.toFixed(2)}`;
   };
@@ -302,7 +294,7 @@ const BetSlipItemCard: React.FC<BetSlipItemCardProps> = ({ item, onRemove, onSta
       <div className="bet-details">
         <div className="selection">
           <span className="selected-team">{item.selectedTeam}</span>
-          <span className="odds">{formatOdds(item.odds)}</span>
+          <span className="odds">{item.odds > 0 ? `+${item.odds}` : item.odds.toString()}</span>
         </div>
         <div className="bookmaker">{item.bookmaker}</div>
         <div className="stake-section">

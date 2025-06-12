@@ -39,8 +39,6 @@ const Dashboard: React.FC = () => {
   const { getItemCount, getTotalStake } = useBetSlip();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentBets, setRecentBets] = useState<RecentBet[]>([]);
-  const [walletData, setWalletData] = useState<WalletData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
@@ -51,7 +49,6 @@ const Dashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      setLoading(true);
       setError('');
       const [betsResponse, walletResponse] = await Promise.all([
         apiClient.get(`${API_ENDPOINTS.BET_HISTORY}?limit=5`),
@@ -62,13 +59,11 @@ const Dashboard: React.FC = () => {
         setStats(betsResponse.data.summary);
       }
       if (walletResponse.data.success) {
-        setWalletData(walletResponse.data.data);
+        // walletData is not used in the component, so no need to set it
       }
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
       setError(handleApiError(error));
-    } finally {
-      setLoading(false);
     }
   };
 

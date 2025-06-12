@@ -57,7 +57,6 @@ const WalletDashboardEnhanced: React.FC = () => {
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   // Add Funds State
@@ -84,7 +83,6 @@ const WalletDashboardEnhanced: React.FC = () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
         setError('Authentication required');
-        setLoading(false);
         return;
       }
 
@@ -135,8 +133,6 @@ const WalletDashboardEnhanced: React.FC = () => {
           nextMilestone: 'Place your first bet to get started!'
         }
       });
-    } finally {
-      setLoading(false);
     }
   };
 
