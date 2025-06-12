@@ -164,7 +164,7 @@ const SportsBetting: React.FC = () => {
     });
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="sports-betting-container">
         <div className="loading-container">
