@@ -5,12 +5,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "python3 ../test_winzo_platform.py",
-    "db:setup": "node src/database/setup.js",
-    "db:migrate": "node src/database/migrate.js",
-    "db:seed": "node src/database/seed.js",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix"
+    "migrate": "node src/database/migrate.js",
+    "reset-and-start": "node reset-and-start.js",
+    "railway:start": "node reset-and-start.js"
   },
   "keywords": [
     "winzo",

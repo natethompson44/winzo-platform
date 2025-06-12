@@ -2,10 +2,10 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "cd winzo-backend && npm install"
+    "buildCommand": "cd winzo-backend && npm install --production"
   },
   "deploy": {
-    "startCommand": "cd winzo-backend && node railway-start.js",
+    "startCommand": "cd winzo-backend && node reset-and-start.js",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
