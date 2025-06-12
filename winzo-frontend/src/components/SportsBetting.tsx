@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
+import { useBetSlip } from '../contexts/BetSlipContext';
 import './SportsBetting.css';
 
 interface Sport {
@@ -71,6 +72,8 @@ const SportsBetting: React.FC = () => {
   const [eventsLoading, setEventsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [quotaInfo, setQuotaInfo] = useState<any>(null);
+
+  const { addToBetSlip } = useBetSlip();
 
   useEffect(() => {
     fetchSports();
@@ -147,8 +150,18 @@ const SportsBetting: React.FC = () => {
   };
 
   const handleOddsClick = (event: OddsEvent, outcome: Outcome) => {
-    console.log('Adding to bet slip:', { event, outcome });
-    alert(`Added ${outcome.name} (${formatOdds(outcome.price)}) to bet slip!`);
+    const bookmaker = event.bookmakers?.[0];
+    addToBetSlip({
+      eventId: event.id,
+      sport: event.sport_key,
+      homeTeam: event.home_team,
+      awayTeam: event.away_team,
+      selectedTeam: outcome.name,
+      odds: outcome.price,
+      bookmaker: bookmaker?.title || 'Unknown',
+      marketType: 'h2h',
+      commenceTime: event.commence_time,
+    });
   };
 
   if (loading) {
