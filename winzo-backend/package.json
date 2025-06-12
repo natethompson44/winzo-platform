@@ -5,12 +5,12 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "build": "echo 'Build completed - no build steps required for Node.js'",
-    "test": "node tests/runTests.js",
-    "migrate": "node src/database/migrate.js",
-    "migrate:check": "node -e \"console.log('Migration check - database available at runtime')\"",
-    "postinstall": "echo 'Dependencies installed successfully'",
-    "railway:start": "npm run migrate && npm start"
+    "test": "python3 ../test_winzo_platform.py",
+    "db:setup": "node src/database/setup.js",
+    "db:migrate": "node src/database/migrate.js",
+    "db:seed": "node src/database/seed.js",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix"
   },
   "keywords": [
     "winzo",

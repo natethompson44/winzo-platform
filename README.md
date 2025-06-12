@@ -1,458 +1,267 @@
-# WINZO Platform
+# WINZO Platform - Professional Sports Betting Platform
+A modern, full-stack sports betting platform built with React, Node.js, and The Odds API. Features real-time odds, comprehensive betting functionality, and a professional user experience.
 
-**BIG WIN ENERGY.**
+## Features
+### Core Functionality
+- **Live Sports Data**: Real-time odds from major sportsbooks (DraftKings, FanDuel, BetMGM)
+- **Comprehensive Betting**: Single bets and parlays with real-time payout calculations
+- **Wallet Management**: Secure deposit, withdrawal, and balance tracking
+- **Betting History**: Complete transaction history with filtering and statistics
+- **User Dashboard**: Personalized overview with stats and recent activity
+### Sports Coverage
+- **51+ Sports**: NFL, NBA, MLB, NHL, Soccer, Tennis, and more
+- **Live Odds**: Updated every 30 seconds from top sportsbooks
+- **Multiple Markets**: Moneyline, spread, totals, and specialty bets
+- **Event Tracking**: Live scores and game status updates
+### Technical Features
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+- **Real-time Updates**: Live odds and balance synchronization
+- **Secure Authentication**: JWT-based user authentication
+- **API Integration**: Professional integration with The Odds API
+- **Database Persistence**: PostgreSQL with comprehensive data modeling
 
-A modern, mobile-first gaming platform for sports betting and casino games built with cutting-edge web technologies.
-
-![WINZO Platform](https://img.shields.io/badge/WINZO-Platform-blue) ![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Node.js](https://img.shields.io/badge/Node.js-20-green) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
-
-## 🚀 Live Demo
-
-- **Frontend**: https://winzo-platform.netlify.app
-- **Backend API**: https://winzo-platform-production.up.railway.app
-
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Recent Fixes](#-recent-fixes)
-- [Current Status](#-current-status)
-- [Tech Stack](#-tech-stack)
-- [Features](#-features)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Environment Setup](#-environment-setup)
-- [Deployment](#-deployment)
-- [API Documentation](#-api-documentation)
-- [Known Issues](#-known-issues)
-- [Troubleshooting](#-troubleshooting)
-- [Development](#-development)
-- [Contributing](#-contributing)
-- [Roadmap](#-roadmap)
-
-## 🎯 Overview
-
-WINZO is a comprehensive gaming platform designed for the modern mobile-first world. Built with React and TypeScript on the frontend and Node.js with Express on the backend, it provides a secure, scalable foundation for sports betting and casino gaming experiences.
-
-### Key Highlights
-
-- 🎨 **WINZO Brand Identity**: Navy (#1a365d) and teal (#00b4d8) color scheme with "Big Win Energy" messaging
-- 📱 **Mobile-First Design**: Responsive, touch-optimized interface for all devices
-- 🔐 **Secure Authentication**: JWT-based auth system with invite code registration
-- 💰 **WINZO Wallet**: Integrated wallet system with starting balance
-- 🏗️ **Scalable Architecture**: Modern tech stack ready for production scaling
-- 🚀 **Auto-Deployment**: Continuous deployment via Netlify and Railway
-
-## 🔧 Recent Fixes
-
-### Database Schema Resolution (June 2025) ✅
-**Problem**: Railway deployment was failing with systematic database column mapping errors across all models.
-
-**Root Cause**: Field mapping inconsistencies between JavaScript camelCase field names and PostgreSQL snake_case column expectations.
-
-**Solution**: Comprehensive database overhaul including:
-- ✅ Enhanced database initialization with migration-first approach
-- ✅ Fixed all camelCase to snake_case field mappings across models
-- ✅ Bulletproof migration script with safe table/column creation
-- ✅ Corrected all index definitions to reference proper column names
-- ✅ Automatic migration execution via postinstall script
-
-**Impact**: Railway deployment now succeeds consistently. All database schema issues resolved.
-
-### Authentication Issue Resolution (June 2025) ✅
-**Problem**: Login system was experiencing HTTP 500 errors and "Invalid credentials" messages despite correct user credentials.
-
-**Root Cause**: Authentication middleware bug in `/winzo-backend/src/middleware/auth.js` line 20:
-```javascript
-// ❌ BROKEN - Setting req.user as object
-req.user = { id: payload.id };
-
-// ✅ FIXED - Setting req.user as primitive ID  
-req.user = payload.id;
-```
-
-**Impact**: This single-line fix resolved all authentication issues. The `/api/auth/me` endpoint now works correctly with Sequelize's `findByPk()` method.
-
-### Test Credentials
-The platform includes pre-seeded test users:
-
-| Username | Password | Wallet Balance | Invite Code |
-|----------|----------|----------------|-------------|
-| testuser1 | testuser1 | $0.00 | 05IRB9 |
-| testuser2 | testuser2 | $0.00 | 4AISCE |
-| testuser3 | testuser3 | $0.00 | 9ZJWQ8 |
-
-## 📊 Current Status
-
-### ✅ WORKING COMPONENTS:
-- **Authentication System** - Login/logout functionality working
-- **UI/UX Design** - Professional, responsive, branded interface
-- **Navigation** - All menu items and routing working
-- **Backend API** - Server running successfully on Railway
-- **Database** - All schema issues resolved, migrations working
-- **Sports Data Display** - Demo data showing correctly
-- **User Interface** - Clean, mobile-responsive design
-
-### ⚠️ KNOWN ISSUES (Requires Attention):
-
-#### 1. **API Data Loading Failures** 🚨 HIGH PRIORITY
-- **Dashboard**: "Failed to load dashboard data" error
-- **Wallet**: "Let's try loading your WINZO stats again!" error  
-- **History**: "Let's try loading your betting history again!" error
-- **Root Cause**: Frontend-backend API communication issues
-
-#### 2. **Missing Betting Functionality** 🚨 HIGH PRIORITY
-- **Bet Slip**: Clicking odds doesn't open bet placement modal
-- **Bet Processing**: No way to actually place bets
-- **Wallet Integration**: Cannot deposit/withdraw funds
-
-#### 3. **API Integration Issues** 🔶 MEDIUM PRIORITY
-- **Sports API**: Shows "API connection issues" warning
-- **Live Data**: Using demo data instead of real sports data
-- **Real-time Updates**: No live odds updates
-
-#### 4. **Missing Features** 🔶 MEDIUM PRIORITY
-- **Wallet Transactions**: No deposit/withdrawal functionality
-- **Bet History**: No actual betting records
-- **User Profile**: No profile management
-
-## 🛠️ Tech Stack
-
+## Technology Stack
 ### Frontend
 - **React 18** with TypeScript
-- **React Router** for client-side routing
 - **Context API** for state management
-- **CSS3** with modern features (gradients, glass-morphism)
-- **Mobile-first** responsive design
-
+- **Axios** for API communication
+- **CSS3** with modern animations and responsive design
 ### Backend
-- **Node.js 20** with Express.js
-- **PostgreSQL 16** with Sequelize ORM
-- **JWT** for authentication
-- **bcryptjs** for password hashing
-- **CORS** and security middleware
-- **Rate limiting** and validation
+- **Node.js** with Express.js
+- **PostgreSQL** database with Sequelize ORM
+- **JWT** authentication
+- **The Odds API** integration
+- **RESTful API** architecture
+### Infrastructure
+- **Netlify** deployment for frontend
+- **Environment-based** configuration
+- **CORS** enabled for cross-origin requests
+- **Error handling** and logging throughout
 
-### DevOps & Deployment
-- **Netlify** for frontend hosting
-- **Railway** for backend and database hosting
-- **GitHub** for version control
-- **Automatic deployments** on push
+## Prerequisites
+- Node.js 16+ and npm
+- PostgreSQL 12+
+- The Odds API key (get from [the-odds-api.com](https://the-odds-api.com))
 
-### Development Tools
-- **TypeScript** for type safety
-- **ESLint** for code quality
-- **Environment variables** for configuration
-- **Modular architecture** for maintainability
-
-## ✨ Features
-
-### Phase 1 (Completed) ✅
-
-#### Authentication System
-- ✅ User Registration with invite code system
-- ✅ JWT Authentication with secure token management
-- ✅ Login/Logout functionality
-- ✅ Protected Routes with auth middleware
-- ✅ Password Security with bcrypt hashing
-
-#### User Management
-- ✅ WINZO Wallet with $50 starting balance
-- ✅ User Profiles with secure data storage
-- ✅ Invite Code System for controlled registration
-- ✅ Admin-Ready user management foundation
-
-#### Frontend Experience
-- ✅ WINZO Branding throughout the application
-- ✅ Mobile-Optimized touch interfaces
-- ✅ Responsive Design for all screen sizes
-- ✅ Modern UI/UX with gradients and glass-morphism
-- ✅ Celebration Animations and positive messaging
-
-#### Backend Infrastructure
-- ✅ RESTful API with Express.js
-- ✅ PostgreSQL Database with proper associations
-- ✅ Security Middleware (Helmet, CORS, Rate Limiting)
-- ✅ Environment Configuration for different stages
-- ✅ Database Models ready for betting system expansion
-
-#### Deployment & DevOps
-- ✅ Production Deployment on Netlify + Railway
-- ✅ Automatic Deployments from GitHub
-- ✅ Environment Variables properly configured
-- ✅ CORS Configuration for cross-origin requests
-- ✅ SPA Routing support for React Router
-
-### Phase 1.5 (In Progress) ⚠️
-
-#### Sports Betting Foundation
-- ⚠️ Sports Data Display (demo data working)
-- ⚠️ Betting Interface (UI complete, functionality pending)
-- ⚠️ Odds Display (static odds showing)
-- ❌ Bet Placement (not implemented)
-- ❌ Live Odds Updates (not connected)
-
-#### Wallet System
-- ⚠️ Wallet Display (shows balance)
-- ❌ Deposit Functionality (not implemented)
-- ❌ Withdrawal Functionality (not implemented)
-- ❌ Transaction History (not implemented)
-
-## 📁 Project Structure
-
-```
-winzo-platform/
-├── README.md                 # This file
-├── .gitignore               # Git ignore rules
-├── netlify.toml             # Netlify deployment config
-├── winzo-frontend/          # React TypeScript frontend
-│   ├── package.json         # Frontend dependencies
-│   ├── tsconfig.json        # TypeScript configuration
-│   ├── public/
-│   │   └── index.html       # HTML template
-│   └── src/
-│       ├── App.tsx          # Main app component
-│       ├── index.tsx        # React entry point
-│       ├── components/      # React components
-│       │   ├── Login.tsx    # Login form component
-│       │   ├── Register.tsx # Registration form
-│       │   ├── Dashboard.tsx# User dashboard
-│       │   ├── SportsBetting.tsx # Sports betting interface
-│       │   ├── WalletDashboard.tsx # Wallet management
-│       │   ├── BettingHistory.tsx # Betting history
-│       │   └── Auth.css     # Authentication styling
-│       └── contexts/
-│           └── AuthContext.tsx # Authentication context
-└── winzo-backend/           # Node.js Express backend
-    ├── package.json         # Backend dependencies
-    ├── .env.example         # Environment template
-    ├── src/
-    │   ├── server.js        # Express server setup
-    │   ├── models/          # Database models
-    │   │   ├── User.js      # User model with wallet
-    │   │   ├── Sport.js     # Sports model
-    │   │   ├── SportsEvent.js # Sports events model
-    │   │   ├── Bet.js       # Betting model
-    │   │   ├── Odds.js      # Odds model
-    │   │   └── index.js     # Model associations
-    │   ├── routes/          # API routes
-    │   │   ├── auth.js      # Authentication endpoints
-    │   │   ├── sports.js    # Sports betting endpoints
-    │   │   └── wallet.js    # Wallet endpoints
-    │   ├── middleware/      # Express middleware
-    │   │   └── auth.js      # JWT auth middleware
-    │   ├── services/        # Business logic services
-    │   │   ├── apiSportsService.js # External API integration
-    │   │   ├── oddsService.js # Odds management
-    │   │   └── walletService.js # Wallet operations
-    │   └── database/        # Database configuration
-    │       ├── init.js      # Database initialization
-    │       └── migrations.js # Database migrations
-    └── config/
-        └── database.js      # Database connection config
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-- **Node.js 20+** and npm
-- **PostgreSQL 16+** (or use Railway's managed database)
-- **Git** for version control
-
-### Local Development Setup
-
-1. **Clone the repository**
+## Quick Start
+### 1. Clone and Setup
 ```bash
-git clone https://github.com/yourusername/winzo-platform.git
-cd winzo-platform
+git clone <your-repo-url>
+cd winzo-platform-main
 ```
-
-2. **Backend Setup**
+### 2. Backend Setup
 ```bash
 cd winzo-backend
 npm install
-
-# Copy environment template
+# Create environment file
 cp .env.example .env
-
-# Edit .env with your database credentials
-# See Environment Setup section below
+# Edit .env with your database and API key details
+# Setup database
+npm run db:setup
+# Start backend server
+npm start
 ```
-
-3. **Frontend Setup**
+### 3. Frontend Setup
 ```bash
 cd ../winzo-frontend
 npm install
-
-# Copy environment template
+# Create environment file
 cp .env.example .env
-
-# Set your backend API URL
-echo "REACT_APP_API_URL=http://localhost:5000/api" > .env
-```
-
-4. **Start Development Servers**
-```bash
-# Terminal 1: Backend
-cd winzo-backend
-npm run dev
-
-# Terminal 2: Frontend
-cd winzo-frontend
+# Edit .env with your backend URL
+# Start frontend development server
 npm start
 ```
+### 4. Access the Platform
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000
+- Test Login: testuser2 / testuser2
 
-5. **Access the Application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
-
-## ⚙️ Environment Setup
-
-### Backend Environment Variables (.env)
-```env
+## Configuration
+### Environment Variables
+#### Backend (.env)
+```
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=winzo_platform
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+# The Odds API
+ODDS_API_KEY=your_odds_api_key_here
+ODDS_API_BASE_URL=https://api.the-odds-api.com/v4
+# Authentication
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=24h
 # Server Configuration
 PORT=5000
 NODE_ENV=development
-
-# Database Configuration (Railway)
-DATABASE_URL=postgresql://postgres:HayRzfIsZaIPCONrrnIalLVknNyBeYVj@postgres.railway.internal:5432/railway
-
-# Or individual parameters for local development:
-DB_NAME=winzo
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_HOST=localhost
-DB_PORT=5432
-
-# Authentication
-JWT_SECRET=VhjjuiVKjmKJLKc
-
-# WINZO Configuration
-MASTER_INVITE_CODE=WINZO123
-
-# CORS Configuration
-CORS_ORIGIN=http://localhost:3000,https://winzo-platform.netlify.app
+```
+#### Frontend (.env)
+```
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_ENVIRONMENT=development
 ```
 
-### Frontend Environment Variables (.env)
-```env
-# API Configuration
-REACT_APP_API_URL=https://winzo-platform-production.up.railway.app/api
+## Testing
+### Automated Testing
+```bash
+# Run comprehensive test suite
+python3 test_winzo_platform.py
+# Test specific URL
+python3 test_winzo_platform.py --url http://localhost:5000
+```
+### Manual Testing Checklist
+- [ ] User registration and login
+- [ ] Sports data loading and display
+- [ ] Odds clicking and bet slip functionality
+- [ ] Bet placement and confirmation
+- [ ] Wallet operations (deposit/withdrawal)
+- [ ] Betting history and filtering
+- [ ] Dashboard statistics and updates
+- [ ] Mobile responsive design
+- [ ] Error handling and edge cases
+
+## API Endpoints
+### Authentication
+- POST /api/auth/login - User login
+- POST /api/auth/register - User registration
+- GET /api/auth/profile - Get user profile
+### Sports Data
+- GET /api/sports - Get all available sports
+- GET /api/sports/{sport}/odds - Get odds for specific sport
+- GET /api/sports/{sport}/scores - Get live scores
+- GET /api/sports/{sport}/events/{eventId} - Get specific event
+### Betting
+- POST /api/bets/place - Place single bet or parlay
+- GET /api/bets/history - Get betting history
+- GET /api/bets/{betId} - Get specific bet details
+- POST /api/bets/{betId}/cancel - Cancel pending bet
+### Wallet
+- GET /api/wallet/balance - Get wallet balance
+- POST /api/wallet/deposit - Deposit funds
+- POST /api/wallet/withdraw - Withdraw funds
+- GET /api/wallet/transactions - Get transaction history
+
+## Usage Examples
+### Placing a Bet
+```javascript
+// Add bet to slip
+const betData = {
+  eventId: "event_123",
+  sport: "americanfootball_nfl",
+  homeTeam: "Kansas City Chiefs",
+  awayTeam: "Buffalo Bills",
+  selectedTeam: "Kansas City Chiefs",
+  odds: -110,
+  bookmaker: "DraftKings",
+  marketType: "h2h",
+  commenceTime: "2024-01-15T18:00:00Z"
+};
+addToBetSlip(betData);
+// Place the bet
+const response = await apiClient.post('/api/bets/place', {
+  bets: [betData],
+  betType: 'single',
+  totalStake: 25,
+  potentialPayout: 47.73
+});
+```
+### Getting Live Odds
+```javascript
+const response = await apiClient.get('/api/sports/americanfootball_nfl/odds?limit=10');
+const events = response.data.data;
+events.forEach(event => {
+  console.log(`${event.away_team} @ ${event.home_team}`);
+  event.bookmakers.forEach(bookmaker => {
+    console.log(`${bookmaker.title}: ${bookmaker.markets[0].outcomes}`);
+  });
+});
 ```
 
-## 🚀 Deployment
+## Security Features
+- JWT Authentication: Secure token-based authentication
+- Input Validation: Comprehensive request validation
+- SQL Injection Protection: Parameterized queries with Sequelize
+- CORS Configuration: Controlled cross-origin access
+- Environment Variables: Sensitive data protection
+- Rate Limiting: API quota management and monitoring
 
-### Automatic Deployment
-Both frontend and backend are configured for automatic deployment:
-- **Frontend**: Pushes to main branch trigger Netlify builds
-- **Backend**: Pushes to main branch trigger Railway deployments
+## Mobile Optimization
+- Responsive Design: Optimized for all screen sizes
+- Touch-Friendly: Large buttons and touch targets
+- Fast Loading: Optimized images and code splitting
+- Offline Handling: Graceful degradation for poor connections
+- PWA Ready: Service worker and manifest configuration
 
-## 📚 API Documentation
+## Deployment
+### Frontend (Netlify)
+```bash
+cd winzo-frontend
+npm run build
+# Deploy dist/ folder to Netlify
+```
+### Backend (Your Choice)
+```bash
+cd winzo-backend
+# Set production environment variables
+NODE_ENV=production npm start
+```
+### Database Migration
+```bash
+# Run database setup on production
+npm run db:setup:production
+```
 
-### Authentication Endpoints
+## Performance Monitoring
+### API Quota Management
+- Real-time quota tracking
+- Automatic rate limiting
+- Usage analytics and reporting
+- Cost optimization strategies
+### Database Optimization
+- Indexed queries for fast lookups
+- Connection pooling
+- Query optimization
+- Regular maintenance procedures
 
-#### POST /api/auth/register
-Register a new user with invite code.
+## Troubleshooting
+### Common Issues
+#### API Key Issues
+```bash
+# Verify API key is working
+curl "https://api.the-odds-api.com/v4/sports?apiKey=YOUR_KEY"
+```
+#### Database Connection
+```bash
+# Test database connection
+psql -h localhost -U your_user -d winzo_platform
+```
+#### CORS Errors
+- Ensure backend CORS is configured for your frontend URL
+- Check that API_URL in frontend matches backend URL
+#### Build Errors
+```bash
+# Clear node modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
 
-#### POST /api/auth/login
-Authenticate existing user.
+## Contributing
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-#### GET /api/auth/me
-Get authenticated user profile (requires JWT token).
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-### Sports Betting Endpoints
+## Acknowledgments
+- The Odds API for comprehensive sports data
+- React and Node.js communities for excellent documentation
+- All contributors and testers who helped improve the platform
 
-#### GET /api/sports
-Get available sports for betting.
+## Support
+For support, email support@winzo.com or create an issue in this repository.
 
-#### GET /api/sports/:sportKey/events
-Get events for a specific sport.
-
-### Wallet Endpoints
-
-#### GET /api/wallet/balance
-Get user wallet balance (requires authentication).
-
-### Health Check
-#### GET /health
-Server health status.
-
-## ⚠️ Known Issues
-
-### High Priority Issues
-
-#### 1. API Data Loading Failures
-**Symptoms**: Dashboard, Wallet, and History pages show "Failed to load data" errors
-**Impact**: Core functionality not accessible to users
-**Status**: Requires immediate attention
-
-#### 2. Missing Bet Placement
-**Symptoms**: Clicking odds buttons doesn't open bet slip or allow bet placement
-**Impact**: Users cannot place bets despite seeing odds
-**Status**: Core feature missing
-
-#### 3. Wallet Functionality Incomplete
-**Symptoms**: Cannot deposit, withdraw, or view transaction history
-**Impact**: Users cannot manage funds
-**Status**: Essential feature missing
-
-### Medium Priority Issues
-
-#### 4. API Integration Incomplete
-**Symptoms**: Shows "API connection issues" warning, using demo data
-**Impact**: Not showing real sports data or live odds
-**Status**: Feature enhancement needed
-
-#### 5. Error Handling Improvements
-**Symptoms**: Generic error messages, poor retry mechanisms
-**Impact**: Poor user experience during failures
-**Status**: UX improvement needed
-
-## 🗺️ Roadmap
-
-### Phase 1.5: Core Functionality Completion (Immediate)
-- 🚨 **Fix API Data Loading** - Resolve frontend-backend communication
-- 🚨 **Implement Bet Placement** - Add bet slip modal and betting flow
-- 🚨 **Complete Wallet System** - Add deposit/withdrawal functionality
-- 🔶 **Connect Real Sports API** - Replace demo data with live data
-- 🔶 **Improve Error Handling** - Better user experience during failures
-
-### Phase 2: Gaming Core (Planned)
-- 🎯 **Live Odds Updates** with WebSocket
-- 🎰 **Casino Games** integration
-- 💳 **Payment Processing** integration
-- 📊 **Advanced User Dashboard**
-- 🏆 **Betting Analytics** and statistics
-
-### Phase 3: Advanced Features (Future)
-- 📺 **Live Streaming** integration
-- 👥 **Social Features** and leaderboards
-- 📱 **Mobile App** (React Native)
-- 📈 **Advanced Analytics** and reporting
-- 🌍 **Multi-language Support**
-
-### Phase 4: Scale & Optimize (Future)
-- 🏗️ **Microservices Architecture**
-- ⚡ **Advanced Caching** (Redis)
-- ⚖️ **Load Balancing**
-- 🔒 **Advanced Security** features
-- 🚀 **Performance Optimization**
-
-## 📄 License
-
-This project is proprietary and confidential. All rights reserved.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue in this repository
-- Contact the development team
-
----
-
-## 🏆 WINZO - BIG WIN ENERGY. 🏆
-
-Built with ❤️ for the future of gaming
-
-**Last Updated**: June 2025  
-**Status**: ⚠️ Core Features In Development
-
+WINZO Platform - Built with ❤️ for sports betting enthusiasts
