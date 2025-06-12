@@ -6,8 +6,6 @@ export const API_ENDPOINTS = {
   SPORTS: '/api/sports',
   SPORT_ODDS: (sport: string) => `/api/sports/${sport}/odds`,
   SPORT_SCORES: (sport: string) => `/api/sports/${sport}/scores`,
-  SPORT_PARTICIPANTS: (sport: string) => `/api/sports/${sport}/participants`,
-  SPORT_EVENT: (sport: string, eventId: string) => `/api/sports/${sport}/events/${eventId}`,
   // Betting endpoints
   PLACE_BET: '/api/bets/place',
   BET_HISTORY: '/api/bets/history',
@@ -26,14 +24,7 @@ export const API_ENDPOINTS = {
 
 export const API_CONFIG = {
   BASE_URL: API_BASE_URL,
-  TIMEOUT: 10000,
-  RETRY_ATTEMPTS: 3,
-  RETRY_DELAY: 1000
-};
-
-// Helper function to build full URL
-export const buildApiUrl = (endpoint: string): string => {
-  return `${API_BASE_URL}${endpoint}`;
+  TIMEOUT: 10000
 };
 
 // Helper function for API error handling
@@ -48,3 +39,5 @@ export const handleApiError = (error: any): string => {
     return 'An unexpected error occurred';
   }
 };
+
+console.log('\n🔗 API Base URL:', API_BASE_URL);

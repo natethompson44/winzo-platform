@@ -5,7 +5,7 @@
     "buildCommand": "cd winzo-backend && npm install --production"
   },
   "deploy": {
-    "startCommand": "cd winzo-backend && node reset-and-start.js",
+    "startCommand": "cd winzo-backend && npm run railway:start",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",

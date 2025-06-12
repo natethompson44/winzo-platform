@@ -20,14 +20,12 @@ async function runMigrations() {
     // Test connection
     await sequelize.authenticate();
     console.log('\n✅ Database connection established');
-
     // Read and execute schema
     const schemaPath = path.join(__dirname, 'schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
     console.log('\n📊 Executing database schema...');
     await sequelize.query(schema);
     console.log('\n✅ Database migration completed successfully');
-    console.log('\n👤 Test user (testuser2) recreated with $1000 balance');
   } catch (error) {
     console.error('\n❌ Migration failed:', error.message);
     throw error;

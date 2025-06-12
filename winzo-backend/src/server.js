@@ -64,7 +64,8 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0'
+    version: '1.0.0',
+    database: 'connected'
   });
 });
 
@@ -102,11 +103,9 @@ console.log('OddsApiService initialized');
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 WINZO API Server powered up on port ${PORT}!`);
-  console.log(`💪 Big Win Energy activated and ready for action!`);
-  console.log(`🎯 Sports betting system online and ready to win!`);
   console.log('\n✅ WINZO Backend started successfully');
   console.log(`\n🌐 Server running on port ${PORT}`);
-  console.log('\n🏥 Health check available at /health');
+  console.log(`\n🏥 Health check available at /health`);
+  console.log(`\n🔗 CORS enabled for: ${process.env.CORS_ORIGIN}`);
 });
 
