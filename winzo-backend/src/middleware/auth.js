@@ -5,21 +5,25 @@ const jwt = require('jsonwebtoken');
  * If valid, the decoded user id is attached to the request object under
  * `req.user`. Unauthorized requests are rejected with a 401 status code.
  */
-module.exports = function authenticate(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Authentication required' });
-  }
-
+module.exports = (req, res, next) => {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    // Attach the user id directly to the request so downstream
-    // handlers can access `req.user` as the id value.
-    req.user = payload.id;
-    return next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: 'Access denied. No token provided.'
+      });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = {
+      id: decoded.id || decoded.userId,
+      username: decoded.username
+    };
+    next();
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: 'Invalid token.'
+    });
   }
 };
