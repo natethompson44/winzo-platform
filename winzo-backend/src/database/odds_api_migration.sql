@@ -56,3 +56,30 @@ COMMENT ON TABLE bookmakers IS 'Stores information about sportsbooks/bookmakers 
 COMMENT ON COLUMN sports_events.external_id IS 'External ID from The Odds API for event synchronization';
 COMMENT ON COLUMN odds.market_type IS 'Type of betting market: h2h (moneyline), spreads, totals, outrights';
 COMMENT ON COLUMN odds.price IS 'Odds price in American format (e.g., +150, -200)';
+
+-- Create transactions table for financial tracking
+CREATE TABLE IF NOT EXISTS transactions (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  type VARCHAR(20) NOT NULL CHECK (type IN ('deposit', 'withdrawal', 'bet_placed', 'bet_won', 'bet_cancelled')),
+  amount DECIMAL(10,2) NOT NULL,
+  description VARCHAR(255),
+  reference_id INTEGER,
+  balance_after DECIMAL(10,2) NOT NULL,
+  payment_method VARCHAR(50) DEFAULT 'winzo',
+  status VARCHAR(20) DEFAULT 'completed' CHECK (status IN ('pending', 'completed', 'failed')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for transactions table
+CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
+CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at);
+CREATE INDEX IF NOT EXISTS idx_transactions_reference_id ON transactions(reference_id);
+
+-- Add comments for documentation
+COMMENT ON TABLE transactions IS 'Financial transaction history for users';
+COMMENT ON COLUMN transactions.amount IS 'Positive for credits, negative for debits';
+COMMENT ON COLUMN transactions.reference_id IS 'Reference to bet ID or other related record';
+COMMENT ON COLUMN transactions.balance_after IS 'User balance after this transaction';
