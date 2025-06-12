@@ -5,7 +5,7 @@ const path = require('path');
 // Database connection
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
-  logging: console.log,
+  logging: false, // Reduce logging for faster startup
   dialectOptions: {
     ssl: process.env.NODE_ENV === 'production' ? {
       require: true,
@@ -14,12 +14,39 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
   }
 });
 
+async function checkIfDatabaseIsEmpty() {
+  try {
+    const result = await sequelize.query("SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema = 'public'");
+    return result[0][0].count === '0';
+  } catch (error) {
+    // If query fails, database might not exist or be empty
+    return true;
+  }
+}
+
 async function runMigrations() {
   try {
-    console.log('\n🔄 Starting database migration...');
+    console.log('\n🔄 Checking database state...');
+    
     // Test connection
     await sequelize.authenticate();
     console.log('\n✅ Database connection established');
+    
+    // Check if database is empty or if we should force migration
+    const isEmpty = await checkIfDatabaseIsEmpty();
+    const forceMigration = process.env.FORCE_MIGRATION === 'true';
+    
+    if (!isEmpty && !forceMigration) {
+      console.log('\n✅ Database already initialized, skipping migration');
+      return;
+    }
+    
+    if (isEmpty) {
+      console.log('\n📊 Database is empty, running initial migration...');
+    } else {
+      console.log('\n📊 Force migration requested, running migration...');
+    }
+    
     // Read and execute schema
     const schemaPath = path.join(__dirname, 'schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');

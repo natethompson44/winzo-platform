@@ -45,8 +45,20 @@ app.use(rateLimitMiddleware);
 app.use('/api', apiRateLimitMiddleware);
 app.use(express.json());
 
-// Initialize database connection
-initDatabase();
+// Track database initialization status
+let databaseReady = false;
+let databaseError = null;
+
+// Initialize database connection in background
+initDatabase()
+  .then(() => {
+    console.log('✅ Database initialization completed');
+    databaseReady = true;
+  })
+  .catch((error) => {
+    console.error('❌ Database initialization failed:', error);
+    databaseError = error;
+  });
 
 // Application routes with WINZO Big Win Energy
 app.use('/api/auth', authRoutes);
@@ -58,14 +70,27 @@ app.use('/api/wallet', require('./routes/wallet'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  if (databaseError) {
+    return res.status(503).json({
+      success: false,
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0',
+      database: 'error',
+      error: databaseError.message
+    });
+  }
+  
   res.status(200).json({
     success: true,
-    status: 'healthy',
+    status: databaseReady ? 'healthy' : 'initializing',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
     version: '1.0.0',
-    database: 'connected'
+    database: databaseReady ? 'connected' : 'connecting'
   });
 });
 
