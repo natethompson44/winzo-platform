@@ -104,6 +104,10 @@ app.use((error, req, res, next) => {
   });
 });
 
+// Initialize OddsApiService
+const oddsApiService = require('./services/oddsApiService');
+console.log('OddsApiService initialized');
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, '0.0.0.0', () => {

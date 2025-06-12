@@ -1,5 +1,8 @@
 const run = async () => {
   await require('./apiSportsService.test')();
+  if (require('../src/services/oddsApiService')) {
+    await require('./oddsApiService.test').testOddsApiService();
+  }
 };
 
 run()
