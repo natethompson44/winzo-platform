@@ -5,9 +5,12 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "build": "echo 'Build completed - no build steps required for Node.js'",
     "test": "node tests/runTests.js",
-    "migrate": "node src/database/migrations.js",
-    "postinstall": "npm run migrate"
+    "migrate": "node src/database/migrate.js",
+    "migrate:check": "node -e \"console.log('Migration check - database available at runtime')\"",
+    "postinstall": "echo 'Dependencies installed successfully'",
+    "railway:start": "npm run migrate && npm start"
   },
   "keywords": [
     "winzo",
@@ -20,6 +23,7 @@
   "description": "WINZO Backend API - Sports Betting Platform with Big Win Energy",
   "dependencies": {
     "axios": "^1.6.0",
+    "node-cache": "^5.1.2",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",

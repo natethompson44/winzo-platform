@@ -13,6 +13,10 @@ const dashboardRoutes = require('./routes/dashboard');
 const app = express();
 app.set('trust proxy', 1);
 
+console.log('\n🌟 WINZO Backend starting...');
+console.log('\n📊 Environment:', process.env.NODE_ENV || 'development');
+console.log('\n🔌 Port:', process.env.PORT || 5000);
+
 // Global security middleware with WINZO configuration
 const corsOptions = {
   origin: [
@@ -51,13 +55,15 @@ app.use('/api/sports', sportsRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// Health check endpoint with WINZO branding
+// Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'WINNING', 
-    message: 'WINZO servers are powered up and ready for Big Win Energy!',
+  res.status(200).json({
+    success: true,
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: '2.0.0-sports-betting'
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
+    version: '1.0.0'
   });
 });
 
@@ -104,5 +110,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 WINZO API Server powered up on port ${PORT}!`);
   console.log(`💪 Big Win Energy activated and ready for action!`);
   console.log(`🎯 Sports betting system online and ready to win!`);
+  console.log('\n✅ WINZO Backend started successfully');
+  console.log(`\n🌐 Server running on port ${PORT}`);
+  console.log('\n🏥 Health check available at /health');
 });
 
