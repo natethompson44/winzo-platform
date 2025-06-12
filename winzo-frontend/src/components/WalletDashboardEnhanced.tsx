@@ -134,7 +134,7 @@ const WalletDashboardEnhanced: React.FC = () => {
         }
       });
     }
-  }, [user]);
+  }, [user, API_BASE]);
 
   const fetchTransactions = async () => {
     setLoadingTransactions(true);

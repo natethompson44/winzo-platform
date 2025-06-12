@@ -29,15 +29,9 @@ interface RecentBet {
   };
 }
 
-interface WalletData {
-  balance: number;
-  lastUpdated: string;
-}
-
 const Dashboard: React.FC = () => {
   const { user, refreshUser } = useAuth();
   const { getItemCount, getTotalStake } = useBetSlip();
-  const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentBets, setRecentBets] = useState<RecentBet[]>([]);
   const [error, setError] = useState<string>('');
@@ -102,17 +96,6 @@ const Dashboard: React.FC = () => {
         <div className="auth-required">
           <h2>Welcome to WINZO</h2>
           <p>Please log in to view your dashboard and start betting.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="dashboard-container">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading your dashboard...</p>
         </div>
       </div>
     );
