@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ErrorIcon, InfoIcon, WarningIcon, SuccessIcon, RefreshIcon } from './icons/IconLibrary';
 import './ErrorHandler.css';
 
@@ -42,6 +42,13 @@ const ErrorHandler: React.FC<ErrorHandlerProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const handleDismiss = useCallback(() => {
+    setIsVisible(false);
+    if (error && onDismiss) {
+      onDismiss(error.id);
+    }
+  }, [error, onDismiss]);
+
   useEffect(() => {
     if (error) {
       setIsVisible(true);
@@ -58,14 +65,7 @@ const ErrorHandler: React.FC<ErrorHandlerProps> = ({
     } else {
       setIsVisible(false);
     }
-  }, [error]);
-
-  const handleDismiss = () => {
-    setIsVisible(false);
-    if (error && onDismiss) {
-      onDismiss(error.id);
-    }
-  };
+  }, [error, handleDismiss]);
 
   const handleRetry = () => {
     if (onRetry) {

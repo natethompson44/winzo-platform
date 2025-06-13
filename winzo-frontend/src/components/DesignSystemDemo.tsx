@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  HomeIcon, 
   DashboardIcon, 
   SportsIcon, 
   WalletIcon, 
@@ -275,22 +274,22 @@ const DesignSystemDemo: React.FC = () => {
               
               <div className="nav-desktop">
                 <div className="nav-links">
-                  <a href="#" className="nav-link active">
+                  <button type="button" className="nav-link active">
                     <DashboardIcon size="sm" color="secondary" aria-hidden={true} />
                     <span className="nav-link-text">Dashboard</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </button>
+                  <button type="button" className="nav-link">
                     <SportsIcon size="sm" color="neutral" aria-hidden={true} />
                     <span className="nav-link-text">Sports</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </button>
+                  <button type="button" className="nav-link">
                     <WalletIcon size="sm" color="neutral" aria-hidden={true} />
                     <span className="nav-link-text">Wallet</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </button>
+                  <button type="button" className="nav-link">
                     <HistoryIcon size="sm" color="neutral" aria-hidden={true} />
                     <span className="nav-link-text">History</span>
-                  </a>
+                  </button>
                 </div>
                 
                 <div className="user-section">
