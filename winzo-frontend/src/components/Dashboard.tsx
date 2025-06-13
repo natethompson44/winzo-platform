@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useBetSlip } from '../contexts/BetSlipContext';
+import { useNavigate } from 'react-router-dom';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
 import { formatCurrency, formatPercentage } from '../utils/numberUtils';
@@ -59,8 +60,18 @@ interface LiveEvent {
   odds_changes: number;
 }
 
+interface DashboardWidget {
+  id: string;
+  title: string;
+  type: 'wallet' | 'stats' | 'recent-bets' | 'quick-actions' | 'recommendations' | 'live-events';
+  size: 'small' | 'medium' | 'large';
+  collapsible: boolean;
+  collapsed: boolean;
+}
+
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { getItemCount, getTotalStake } = useBetSlip();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentBets, setRecentBets] = useState<RecentBet[]>([]);
@@ -71,6 +82,14 @@ const Dashboard: React.FC = () => {
   const [walletLoading, setWalletLoading] = useState(false);
   const [realTimeBalance, setRealTimeBalance] = useState<number | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [widgets, setWidgets] = useState<DashboardWidget[]>([
+    { id: 'wallet', title: 'Wallet Balance', type: 'wallet', size: 'small', collapsible: true, collapsed: false },
+    { id: 'stats', title: 'Quick Stats', type: 'stats', size: 'medium', collapsible: true, collapsed: false },
+    { id: 'recent-bets', title: 'Recent Bets', type: 'recent-bets', size: 'large', collapsible: true, collapsed: false },
+    { id: 'quick-actions', title: 'Quick Actions', type: 'quick-actions', size: 'small', collapsible: false, collapsed: false },
+    { id: 'recommendations', title: 'Recommendations', type: 'recommendations', size: 'medium', collapsible: true, collapsed: false },
+    { id: 'live-events', title: 'Live Events', type: 'live-events', size: 'medium', collapsible: true, collapsed: false }
+  ]);
   
   const balanceIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const liveUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -281,6 +300,214 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const toggleWidget = (widgetId: string) => {
+    setWidgets(prev => prev.map(widget => 
+      widget.id === widgetId 
+        ? { ...widget, collapsed: !widget.collapsed }
+        : widget
+    ));
+  };
+
+  const getWidgetContent = (widget: DashboardWidget) => {
+    switch (widget.type) {
+      case 'wallet':
+        return (
+          <div className="widget-content">
+            <div className="wallet-balance-large">
+              {formatCurrency(currentBalance)}
+            </div>
+            <div className="wallet-actions-grid">
+              <button className="btn btn-primary" onClick={() => navigate('/wallet')}>
+                💳 Deposit
+              </button>
+              <button className="btn btn-secondary" onClick={() => navigate('/wallet')}>
+                💸 Withdraw
+              </button>
+            </div>
+            {stats && (
+              <div className="wallet-stats-compact">
+                <div className="stat-row">
+                  <span>Monthly P&L:</span>
+                  <span className={stats.monthlyTrend >= 0 ? 'positive' : 'negative'}>
+                    {formatCurrency(stats.monthlyTrend)}
+                  </span>
+                </div>
+                <div className="stat-row">
+                  <span>ROI:</span>
+                  <span className={stats.roi >= 0 ? 'positive' : 'negative'}>
+                    {formatPercentage(stats.roi)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'stats':
+        return stats ? (
+          <div className="widget-content">
+            <div className="stats-grid-compact">
+              <div className="stat-card">
+                <div className="stat-number">{stats.totalBets}</div>
+                <div className="stat-label">Total Bets</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-number">{formatPercentage(stats.winRate)}</div>
+                <div className="stat-label">Win Rate</div>
+              </div>
+              <div className="stat-card">
+                <div className={`stat-number ${stats.profit >= 0 ? 'positive' : 'negative'}`}>
+                  {formatCurrency(stats.profit)}
+                </div>
+                <div className="stat-label">Profit/Loss</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-number">{stats.betsPending}</div>
+                <div className="stat-label">Pending</div>
+              </div>
+            </div>
+            {stats.currentStreak > 0 && (
+              <div className="streak-badge">
+                🔥 {stats.currentStreak} bet streak
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="widget-content">
+            <p>Loading stats...</p>
+          </div>
+        );
+
+      case 'recent-bets':
+        return (
+          <div className="widget-content">
+            {recentBets.length > 0 ? (
+              <div className="recent-bets-list">
+                {recentBets.slice(0, 5).map((bet) => (
+                  <div key={bet.id} className="bet-item">
+                    <div className="bet-header">
+                      <span className="bet-teams">
+                        {bet.sportsEvent.away_team} @ {bet.sportsEvent.home_team}
+                      </span>
+                      <span className={`bet-status ${bet.status}`}>
+                        {getStatusIcon(bet.status)} {bet.status}
+                      </span>
+                    </div>
+                    <div className="bet-details">
+                      <span className="bet-stake">{formatCurrency(bet.stake)}</span>
+                      <span className="bet-odds">{formatOdds(bet.odds)}</span>
+                      <span className="bet-payout">{formatCurrency(bet.potential_payout)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <p>No recent bets</p>
+                <button className="btn btn-primary" onClick={() => navigate('/sports')}>
+                  Place Your First Bet
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'quick-actions':
+        return (
+          <div className="widget-content">
+            <div className="quick-actions-grid">
+              <button className="action-btn primary" onClick={() => navigate('/sports')}>
+                <span className="action-icon">⚡</span>
+                <span className="action-label">Quick Bet</span>
+              </button>
+              <button className="action-btn secondary" onClick={() => navigate('/wallet')}>
+                <span className="action-icon">💳</span>
+                <span className="action-label">Deposit</span>
+              </button>
+              <button className="action-btn secondary" onClick={() => navigate('/history')}>
+                <span className="action-icon">📊</span>
+                <span className="action-label">History</span>
+              </button>
+              <button className="action-btn secondary" onClick={() => navigate('/sports')}>
+                <span className="action-icon">🏈</span>
+                <span className="action-label">Sports</span>
+              </button>
+            </div>
+            {getItemCount() > 0 && (
+              <div className="betslip-summary-compact">
+                <span>Active Bet Slip: {getItemCount()} bets</span>
+                <span>{formatCurrency(getTotalStake())}</span>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'recommendations':
+        return (
+          <div className="widget-content">
+            {recommendations.length > 0 ? (
+              <div className="recommendations-list">
+                {recommendations.slice(0, 3).map((rec, index) => (
+                  <div key={index} className="recommendation-item">
+                    <div className="rec-header">
+                      <span className="rec-icon">{getRecommendationIcon(rec.type)}</span>
+                      <span className="rec-title">{rec.title}</span>
+                      <span className={`rec-priority ${rec.priority}`}>
+                        {rec.priority.toUpperCase()}
+                      </span>
+                    </div>
+                    <p className="rec-description">{rec.description}</p>
+                    {rec.action && (
+                      <button className="rec-action-btn">
+                        {rec.action}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <p>No recommendations available</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'live-events':
+        return (
+          <div className="widget-content">
+            {liveEvents.length > 0 ? (
+              <div className="live-events-list">
+                {liveEvents.map((event) => (
+                  <div key={event.id} className="live-event-item">
+                    <div className="event-info">
+                      <div className="event-teams">
+                        {event.away_team} @ {event.home_team}
+                      </div>
+                      <div className="event-score">{event.current_score}</div>
+                    </div>
+                    <div className="event-meta">
+                      <span className="event-time">{event.time_remaining}</span>
+                      <span className={`odds-change ${event.odds_changes > 0 ? 'positive' : 'negative'}`}>
+                        {event.odds_changes > 0 ? '+' : ''}{event.odds_changes}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <p>No live events</p>
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return <div className="widget-content">Widget not found</div>;
+    }
+  };
+
   if (!user) {
     return (
       <div className="dashboard-container">
@@ -319,8 +546,8 @@ const Dashboard: React.FC = () => {
     <div className="dashboard-container">
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>Welcome back, {user.username}! 🚀</h1>
-          <p>Your betting command center</p>
+          <h1 className="page-title">Welcome back, {user.username}! 🚀</h1>
+          <p className="page-subtitle">Your betting command center</p>
           <div className="last-update">
             Last updated: {lastUpdate.toLocaleTimeString()}
           </div>
@@ -328,7 +555,7 @@ const Dashboard: React.FC = () => {
         <div className="header-actions">
           <button 
             onClick={fetchDashboardData} 
-            className="refresh-all-btn"
+            className="btn btn-secondary"
             disabled={loading}
           >
             {loading ? '⏳' : '🔄'} Refresh
@@ -339,252 +566,35 @@ const Dashboard: React.FC = () => {
       {error && (
         <div className="error-banner">
           <span>⚠ {error}</span>
-          <button onClick={fetchDashboardData} className="retry-button">
+          <button onClick={fetchDashboardData} className="btn btn-primary">
             Retry
           </button>
         </div>
       )}
       
-      <div className="dashboard-grid">
-        {/* Wallet Card */}
-        <div className="dashboard-card wallet-card">
-          <div className="card-header">
-            <h3>💰 Wallet</h3>
-            <button 
-              onClick={fetchWalletBalance} 
-              className={`refresh-btn ${walletLoading ? 'loading' : ''}`}
-              disabled={walletLoading}
-            >
-              {walletLoading ? '⏳' : '🔄'}
-            </button>
-          </div>
-          <div className="wallet-balance">
-            {formatCurrency(currentBalance)}
-          </div>
-          <div className="wallet-actions">
-            <button className="wallet-btn deposit">+ Deposit</button>
-            <button className="wallet-btn withdraw">- Withdraw</button>
-          </div>
-          {stats && (
-            <div className="wallet-stats">
-              <div className="stat-item">
-                <span className="stat-label">Monthly P&L:</span>
-                <span className={`stat-value ${stats.monthlyTrend >= 0 ? 'positive' : 'negative'}`}>
-                  {formatCurrency(stats.monthlyTrend)}
-                </span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">ROI:</span>
-                <span className={`stat-value ${stats.roi >= 0 ? 'positive' : 'negative'}`}>
-                  {formatPercentage(stats.roi)}
-                </span>
+      <div className="dashboard-widgets">
+        {widgets.map((widget) => (
+          <div 
+            key={widget.id} 
+            className={`dashboard-widget widget-${widget.size} widget-${widget.type}`}
+          >
+            <div className="widget-header">
+              <h3 className="widget-title">{widget.title}</h3>
+              <div className="widget-actions">
+                {widget.collapsible && (
+                  <button 
+                    className="widget-toggle"
+                    onClick={() => toggleWidget(widget.id)}
+                    aria-label={widget.collapsed ? 'Expand widget' : 'Collapse widget'}
+                  >
+                    {widget.collapsed ? '▼' : '▲'}
+                  </button>
+                )}
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Active Bet Slip */}
-        <div className="dashboard-card betslip-card">
-          <div className="card-header">
-            <h3>📋 Active Bet Slip</h3>
-            <span className="item-count">{getItemCount()}</span>
+            {!widget.collapsed && getWidgetContent(widget)}
           </div>
-          <div className="betslip-summary">
-            <div className="betslip-stat">
-              <span className="stat-label">Bets:</span>
-              <span className="stat-value">{getItemCount()}</span>
-            </div>
-            <div className="betslip-stat">
-              <span className="stat-label">Stake:</span>
-              <span className="stat-value">{formatCurrency(getTotalStake())}</span>
-            </div>
-          </div>
-          {getItemCount() > 0 ? (
-            <button className="view-betslip-btn">View Bet Slip</button>
-          ) : (
-            <p className="no-bets">No active bets</p>
-          )}
-        </div>
-
-        {/* Live Events */}
-        {liveEvents.length > 0 && (
-          <div className="dashboard-card live-events-card">
-            <div className="card-header">
-              <h3>🔥 Live Events</h3>
-              <span className="live-indicator">LIVE</span>
-            </div>
-            <div className="live-events-list">
-              {liveEvents.map((event) => (
-                <div key={event.id} className="live-event-item">
-                  <div className="event-teams">
-                    {event.away_team} @ {event.home_team}
-                  </div>
-                  <div className="event-score">
-                    {event.current_score}
-                  </div>
-                  <div className="event-time">
-                    {event.time_remaining}
-                  </div>
-                  <div className="odds-change">
-                    {event.odds_changes > 0 ? '+' : ''}{event.odds_changes}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Betting Stats */}
-        {stats && (
-          <div className="dashboard-card stats-card">
-            <div className="card-header">
-              <h3>📊 Betting Stats</h3>
-            </div>
-            <div className="stats-grid">
-              <div className="stat-item">
-                <span className="stat-number">{stats.totalBets}</span>
-                <span className="stat-label">Total Bets</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">{formatPercentage(stats.winRate)}</span>
-                <span className="stat-label">Win Rate</span>
-              </div>
-              <div className="stat-item">
-                <span className={`stat-number ${stats.profit >= 0 ? 'profit' : 'loss'}`}>
-                  {formatCurrency(stats.profit)}
-                </span>
-                <span className="stat-label">Profit/Loss</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">{stats.betsPending}</span>
-                <span className="stat-label">Pending</span>
-              </div>
-            </div>
-            {stats.currentStreak > 0 && (
-              <div className="streak-indicator">
-                🔥 {stats.currentStreak} bet winning streak!
-              </div>
-            )}
-            {stats.weeklyPerformance !== undefined && (
-              <div className="weekly-performance">
-                <span className="performance-label">This Week:</span>
-                <span className={`performance-value ${stats.weeklyPerformance >= 0 ? 'positive' : 'negative'}`}>
-                  {formatCurrency(stats.weeklyPerformance)}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Smart Recommendations */}
-        {recommendations.length > 0 && (
-          <div className="dashboard-card recommendations-card">
-            <div className="card-header">
-              <h3>💡 Smart Recommendations</h3>
-              <span className="ai-badge">AI Powered</span>
-            </div>
-            <div className="recommendations-list">
-              {recommendations.map((rec, index) => (
-                <div key={index} className="recommendation-item">
-                  <div className="recommendation-header">
-                    <div className="recommendation-icon">
-                      {getRecommendationIcon(rec.type)}
-                    </div>
-                    <div className="recommendation-priority">
-                      <span 
-                        className="priority-dot"
-                        style={{ backgroundColor: getPriorityColor(rec.priority) }}
-                      ></span>
-                      {rec.priority}
-                    </div>
-                  </div>
-                  <div className="recommendation-content">
-                    <h4>{rec.title}</h4>
-                    <p>{rec.description}</p>
-                    {rec.potentialValue !== undefined && (
-                      <div className="potential-value">
-                        Potential: {formatCurrency(rec.potentialValue)}
-                      </div>
-                    )}
-                    {rec.action && (
-                      <button className="recommendation-action">
-                        {rec.action}
-                      </button>
-                    )}
-                  </div>
-                  <div className="confidence-bar">
-                    <div 
-                      className="confidence-fill" 
-                      style={{ width: `${rec.confidence * 100}%` }}
-                    ></div>
-                    <span className="confidence-text">{Math.round(rec.confidence * 100)}%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Recent Bets */}
-        <div className="dashboard-card recent-bets-card">
-          <div className="card-header">
-            <h3>📈 Recent Bets</h3>
-            <button className="view-all-btn">View All</button>
-          </div>
-          <div className="recent-bets-list">
-            {recentBets.length > 0 ? (
-              recentBets.map((bet) => (
-                <div key={bet.id} className="recent-bet-item">
-                  <div className="bet-info">
-                    <div className="bet-teams">
-                      {bet.sportsEvent.away_team} @ {bet.sportsEvent.home_team}
-                    </div>
-                    <div className="bet-selection">
-                      {bet.selected_team} ({formatOdds(bet.odds)})
-                    </div>
-                    <div className="bet-amount">
-                      Stake: {formatCurrency(bet.stake)}
-                    </div>
-                  </div>
-                  <div className="bet-status">
-                    <span
-                      className="status-badge"
-                      style={{ color: getStatusColor(bet.status) }}
-                    >
-                      {getStatusIcon(bet.status)} {bet.status.toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="no-recent-bets">
-                <p>No recent bets</p>
-                <p>Start betting to see your history here!</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="dashboard-card quick-actions-card">
-          <div className="card-header">
-            <h3>⚡ Quick Actions</h3>
-          </div>
-          <div className="quick-actions">
-            <button className="quick-action-btn sports">
-              🏈 Sports Betting
-            </button>
-            <button className="quick-action-btn history">
-              📊 Bet History
-            </button>
-            <button className="quick-action-btn wallet">
-              💰 Manage Wallet
-            </button>
-            <button className="quick-action-btn support">
-              🆘 Support
-            </button>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

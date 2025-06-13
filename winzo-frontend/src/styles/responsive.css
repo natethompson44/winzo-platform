@@ -1,0 +1,292 @@
+/* WINZO Responsive Design System */
+
+/* ===== BREAKPOINT CONSTANTS ===== */
+:root {
+  /* Breakpoints */
+  --breakpoint-mobile: 768px;
+  --breakpoint-tablet: 1024px;
+  --breakpoint-desktop: 1440px;
+  --breakpoint-large: 1920px;
+  
+  /* Container Max Widths */
+  --container-mobile: 100%;
+  --container-tablet: 768px;
+  --container-desktop: 1200px;
+  --container-large: 1400px;
+  
+  /* Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  
+  /* Typography Scale */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+  --text-5xl: 3rem;      /* 48px */
+  
+  /* Grid Gaps */
+  --grid-gap-xs: var(--space-xs);
+  --grid-gap-sm: var(--space-sm);
+  --grid-gap-md: var(--space-md);
+  --grid-gap-lg: var(--space-lg);
+  --grid-gap-xl: var(--space-xl);
+  
+  /* Card Max Widths */
+  --card-max-width-sm: 300px;
+  --card-max-width-md: 400px;
+  --card-max-width-lg: 500px;
+  --card-max-width-xl: 600px;
+  
+  /* Reading Width */
+  --reading-width: 65ch;
+}
+
+/* ===== RESPONSIVE UTILITY CLASSES ===== */
+
+/* Container System */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  max-width: var(--container-mobile);
+}
+
+/* Grid System */
+.grid {
+  display: grid;
+  gap: var(--grid-gap-md);
+}
+
+.grid-1 { grid-template-columns: 1fr; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Spacing Utilities */
+.m-0 { margin: 0; }
+.m-xs { margin: var(--space-xs); }
+.m-sm { margin: var(--space-sm); }
+.m-md { margin: var(--space-md); }
+.m-lg { margin: var(--space-lg); }
+.m-xl { margin: var(--space-xl); }
+
+.p-0 { padding: 0; }
+.p-xs { padding: var(--space-xs); }
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+.p-xl { padding: var(--space-xl); }
+
+/* Typography Utilities */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+.text-5xl { font-size: var(--text-5xl); }
+
+/* Card System */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.card-sm { max-width: var(--card-max-width-sm); }
+.card-md { max-width: var(--card-max-width-md); }
+.card-lg { max-width: var(--card-max-width-lg); }
+.card-xl { max-width: var(--card-max-width-xl); }
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Mobile First Approach */
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .container {
+    max-width: var(--container-tablet);
+    padding: 0 var(--space-lg);
+  }
+  
+  .grid-tablet-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-tablet-3 { grid-template-columns: repeat(3, 1fr); }
+  
+  .text-tablet-lg { font-size: var(--text-lg); }
+  .text-tablet-xl { font-size: var(--text-xl); }
+  .text-tablet-2xl { font-size: var(--text-2xl); }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-desktop);
+    padding: 0 var(--space-xl);
+  }
+  
+  .grid-desktop-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-desktop-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  .text-desktop-xl { font-size: var(--text-xl); }
+  .text-desktop-2xl { font-size: var(--text-2xl); }
+  .text-desktop-3xl { font-size: var(--text-3xl); }
+}
+
+/* Large Desktop and up */
+@media (min-width: 1440px) {
+  .container {
+    max-width: var(--container-large);
+    padding: 0 var(--space-2xl);
+  }
+  
+  .grid-large-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-large-5 { grid-template-columns: repeat(5, 1fr); }
+  
+  .text-large-2xl { font-size: var(--text-2xl); }
+  .text-large-3xl { font-size: var(--text-3xl); }
+  .text-large-4xl { font-size: var(--text-4xl); }
+}
+
+/* Extra Large and up */
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+  }
+  
+  .grid-xlarge-5 { grid-template-columns: repeat(5, 1fr); }
+  .grid-xlarge-6 { grid-template-columns: repeat(6, 1fr); }
+}
+
+/* ===== RESPONSIVE HIDE/SHOW UTILITIES ===== */
+.hide-mobile { display: none; }
+.show-mobile { display: block; }
+
+@media (min-width: 768px) {
+  .hide-mobile { display: block; }
+  .show-mobile { display: none; }
+  .hide-tablet { display: none; }
+  .show-tablet { display: block; }
+}
+
+@media (min-width: 1024px) {
+  .hide-tablet { display: block; }
+  .show-tablet { display: none; }
+  .hide-desktop { display: none; }
+  .show-desktop { display: block; }
+}
+
+@media (min-width: 1440px) {
+  .hide-desktop { display: block; }
+  .show-desktop { display: none; }
+  .hide-large { display: none; }
+  .show-large { display: block; }
+}
+
+/* ===== RESPONSIVE SPACING ===== */
+.responsive-padding {
+  padding: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .responsive-padding {
+    padding: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-padding {
+    padding: var(--space-xl);
+  }
+}
+
+@media (min-width: 1440px) {
+  .responsive-padding {
+    padding: var(--space-2xl);
+  }
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY ===== */
+.responsive-heading {
+  font-size: var(--text-2xl);
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .responsive-heading {
+    font-size: var(--text-3xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-heading {
+    font-size: var(--text-4xl);
+  }
+}
+
+@media (min-width: 1440px) {
+  .responsive-heading {
+    font-size: var(--text-5xl);
+  }
+}
+
+/* ===== RESPONSIVE GRID GAPS ===== */
+.responsive-grid {
+  gap: var(--grid-gap-sm);
+}
+
+@media (min-width: 768px) {
+  .responsive-grid {
+    gap: var(--grid-gap-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid {
+    gap: var(--grid-gap-lg);
+  }
+}
+
+@media (min-width: 1440px) {
+  .responsive-grid {
+    gap: var(--grid-gap-xl);
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+/* Ensure minimum touch target size */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Reading width for optimal readability */
+.reading-width {
+  max-width: var(--reading-width);
+  margin: 0 auto;
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .container {
+    max-width: none;
+    padding: 0;
+  }
+  
+  .hide-print { display: none !important; }
+  .show-print { display: block !important; }
+} 
