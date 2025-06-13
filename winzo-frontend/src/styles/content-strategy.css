@@ -39,10 +39,10 @@
 
 /* Simplified Terminology */
 .content-simple {
-  font-size: var(--content-font-size-base);
-  line-height: 1.6;
-  color: var(--content-primary);
-  font-weight: 400;
+  font-size: var(--text-lg);
+  line-height: var(--leading-loose);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-normal);
   max-width: 65ch; /* Optimal reading width */
 }
 
@@ -91,29 +91,15 @@
 
 /* Betting Terminology Standardization */
 .betting-term {
-  font-weight: 600;
-  color: var(--content-emphasis);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  border-bottom: 1px dotted var(--text-secondary);
   cursor: help;
-  border-bottom: 1px dotted var(--content-link);
-  position: relative;
 }
 
-.betting-term:hover::after {
-  content: attr(data-definition);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg-neutral);
-  border: 1px solid var(--border-neutral);
-  border-radius: var(--radius-sm);
-  padding: var(--content-space-tight);
-  font-size: var(--content-font-size-small);
-  font-weight: 400;
-  color: var(--content-secondary);
-  white-space: nowrap;
-  z-index: 1000;
-  box-shadow: var(--shadow-md);
+.betting-term:hover {
+  color: var(--text-accent);
+  border-bottom-color: var(--text-accent);
 }
 
 /* ===== EDUCATIONAL CONTENT SYSTEM ===== */
@@ -540,5 +526,419 @@
     background: none !important;
     color: #000000 !important;
     border: 1px solid #000000;
+  }
+}
+
+/* WINZO Content Strategy - User-Friendly Language Implementation */
+
+/* ===== TYPOGRAPHY FOR CONTENT STRATEGY ===== */
+
+/* Reading Level Optimization */
+.content-readable {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--text-primary);
+  max-width: 65ch; /* Optimal reading width */
+  margin: 0 auto;
+}
+
+/* Content Hierarchy */
+.content-heading {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  line-height: var(--leading-tight);
+}
+
+.content-subheading {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  line-height: var(--leading-tight);
+}
+
+.content-body {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.content-caption {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+/* ===== USER-FRIENDLY MESSAGING ===== */
+
+/* Success Messages */
+.message-success {
+  background: var(--color-success-50);
+  border: 1px solid var(--color-success-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.message-success .message-title {
+  color: var(--color-success-800);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-2);
+}
+
+.message-success .message-text {
+  color: var(--color-success-700);
+  line-height: var(--leading-relaxed);
+}
+
+/* Information Messages */
+.message-info {
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.message-info .message-title {
+  color: var(--color-primary-800);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-2);
+}
+
+.message-info .message-text {
+  color: var(--color-primary-700);
+  line-height: var(--leading-relaxed);
+}
+
+/* Warning Messages */
+.message-warning {
+  background: var(--color-warning-50);
+  border: 1px solid var(--color-warning-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.message-warning .message-title {
+  color: var(--color-warning-800);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-2);
+}
+
+.message-warning .message-text {
+  color: var(--color-warning-700);
+  line-height: var(--leading-relaxed);
+}
+
+/* ===== BETTING TERMINOLOGY ===== */
+
+/* Betting Explanation */
+.betting-explanation {
+  background: var(--bg-neutral);
+  border-left: 4px solid var(--color-secondary);
+  padding: var(--space-4);
+  margin: var(--space-4) 0;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
+.betting-explanation .explanation-title {
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.betting-explanation .explanation-text {
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* ===== ONBOARDING CONTENT ===== */
+
+/* Onboarding Steps */
+.onboarding-step {
+  background: var(--text-inverse);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.onboarding-step:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.onboarding-step .step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-secondary);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-3);
+}
+
+.onboarding-step .step-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.onboarding-step .step-description {
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-4);
+}
+
+/* Progressive Disclosure */
+.progressive-disclosure {
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.progressive-disclosure .disclosure-header {
+  background: var(--bg-neutral);
+  padding: var(--space-4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease;
+}
+
+.progressive-disclosure .disclosure-header:hover {
+  background: var(--color-neutral-200);
+}
+
+.progressive-disclosure .disclosure-title {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.progressive-disclosure .disclosure-content {
+  padding: var(--space-4);
+  background: var(--text-inverse);
+  border-top: 1px solid var(--border-neutral);
+}
+
+.progressive-disclosure .disclosure-text {
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* ===== HELP CONTENT ===== */
+
+/* Help Section */
+.help-section {
+  background: var(--bg-neutral);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin: var(--space-6) 0;
+}
+
+.help-section .help-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.help-section .help-content {
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* FAQ Items */
+.faq-item {
+  border-bottom: 1px solid var(--border-neutral);
+  padding: var(--space-4) 0;
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-item .faq-question {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.faq-item .faq-answer {
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  padding-left: var(--space-4);
+}
+
+/* ===== CONTENT SCANNING OPTIMIZATION ===== */
+
+/* Content Scanning */
+.content-scanning {
+  max-width: 70ch;
+  margin: 0 auto;
+}
+
+.content-scanning h1,
+.content-scanning h2,
+.content-scanning h3 {
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.content-scanning h1:first-child,
+.content-scanning h2:first-child,
+.content-scanning h3:first-child {
+  margin-top: 0;
+}
+
+.content-scanning p {
+  margin-bottom: var(--space-4);
+  line-height: var(--leading-relaxed);
+}
+
+.content-scanning ul,
+.content-scanning ol {
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-6);
+}
+
+.content-scanning li {
+  margin-bottom: var(--space-2);
+  line-height: var(--leading-relaxed);
+}
+
+/* Highlighted Information */
+.content-highlight {
+  background: var(--color-secondary-50);
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin: var(--space-4) 0;
+}
+
+.content-highlight .highlight-title {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary-800);
+  margin-bottom: var(--space-2);
+}
+
+.content-highlight .highlight-text {
+  color: var(--color-secondary-700);
+  line-height: var(--leading-relaxed);
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+
+/* Screen Reader Only Content */
+.sr-only-content {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus Indicators for Content */
+.content-focusable:focus {
+  outline: 3px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* ===== RESPONSIVE CONTENT ===== */
+
+@media (max-width: 768px) {
+  .content-readable {
+    font-size: var(--text-lg);
+    line-height: var(--leading-loose);
+  }
+  
+  .content-heading {
+    font-size: var(--text-xl);
+  }
+  
+  .content-subheading {
+    font-size: var(--text-lg);
+  }
+  
+  .onboarding-step {
+    padding: var(--space-4);
+  }
+  
+  .help-section {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .content-readable {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+  }
+  
+  .content-scanning {
+    max-width: 100%;
+    padding: 0 var(--space-2);
+  }
+  
+  .content-scanning ul,
+  .content-scanning ol {
+    padding-left: var(--space-4);
+  }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+
+@media (prefers-contrast: high) {
+  .content-readable,
+  .content-body,
+  .content-caption {
+    color: var(--text-primary);
+  }
+  
+  .betting-term {
+    border-bottom-width: 2px;
+  }
+  
+  .content-highlight {
+    border-width: 2px;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-step,
+  .progressive-disclosure .disclosure-header {
+    transition: none;
+  }
+  
+  .onboarding-step:hover {
+    transform: none;
   }
 }
