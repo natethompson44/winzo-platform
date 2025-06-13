@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
+import { formatCurrency, formatPercentage } from '../utils/numberUtils';
 import './BettingHistory.css';
 
 interface BettingHistoryItem {
@@ -87,10 +88,6 @@ const BettingHistory: React.FC = () => {
     }
   }, [user, filter, fetchBettingHistory]);
 
-  const formatCurrency = (amount: number): string => {
-    return `$${amount.toFixed(2)}`;
-  };
-
   if (!user) {
     return (
       <div className="betting-history-container">
@@ -136,7 +133,7 @@ const BettingHistory: React.FC = () => {
             <div className="stat-label">Profit/Loss</div>
           </div>
           <div className="stat-card">
-            <div className="stat-value">{stats.winRate.toFixed(1)}%</div>
+            <div className="stat-value">{formatPercentage(stats.winRate)}</div>
             <div className="stat-label">Win Rate</div>
           </div>
         </div>
@@ -193,10 +190,6 @@ interface BettingHistoryCardProps {
 }
 
 const BettingHistoryCard: React.FC<BettingHistoryCardProps> = ({ bet }) => {
-  const formatCurrency = (amount: number): string => {
-    return `$${amount.toFixed(2)}`;
-  };
-
   return (
     <div className="betting-history-card">
       <div className="bet-header">

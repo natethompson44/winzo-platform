@@ -3,6 +3,8 @@ import { useBetSlip } from '../contexts/BetSlipContext';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
+import { formatCurrency } from '../utils/numberUtils';
+import ValidatedInput from './ValidatedInput';
 import './BetSlip.css';
 
 interface PlaceBetResponse {
@@ -38,14 +40,9 @@ const BetSlip: React.FC = () => {
   const [isPlacingBet, setIsPlacingBet] = useState(false);
   const [placeBetError, setPlaceBetError] = useState<string>('');
 
-  const formatCurrency = (amount: number): string => {
-    return `$${amount.toFixed(2)}`;
-  };
-
-  const handleStakeChange = (itemId: string, value: string) => {
-    const stake = parseFloat(value) || 0;
-    if (stake >= 0 && stake <= 1000) {
-      updateStake(itemId, stake);
+  const handleStakeChange = (itemId: string, value: string, isValid: boolean, numericValue?: number) => {
+    if (isValid && numericValue !== undefined) {
+      updateStake(itemId, numericValue);
     }
   };
 
@@ -118,7 +115,7 @@ const BetSlip: React.FC = () => {
       <div style="font-size: 0.9rem; margin-bottom: 4px;">
         ${betCount} bet${betCount !== 1 ? 's' : ''} placed successfully
       </div>
-      ${newBalance ? `<div style="font-size: 0.9rem; color: #68d391;">New Balance: $${newBalance.toFixed(2)}</div>` : ''}
+      ${newBalance ? `<div style="font-size: 0.9rem; color: #68d391;">New Balance: ${formatCurrency(newBalance)}</div>` : ''}
     `;
     notification.style.cssText = `
       position: fixed;
@@ -213,7 +210,9 @@ const BetSlip: React.FC = () => {
                   key={item.id}
                   item={item}
                   onRemove={() => removeFromBetSlip(item.id)}
-                  onStakeChange={value => handleStakeChange(item.id, value)}
+                  onStakeChange={(value, isValid, numericValue) => 
+                    handleStakeChange(item.id, value, isValid, numericValue)
+                  }
                   onQuickStake={amount => setQuickStake(item.id, amount)}
                 />
               ))}
@@ -271,14 +270,12 @@ const BetSlip: React.FC = () => {
 interface BetSlipItemCardProps {
   item: any;
   onRemove: () => void;
-  onStakeChange: (value: string) => void;
+  onStakeChange: (value: string, isValid: boolean, numericValue?: number) => void;
   onQuickStake: (amount: number) => void;
 }
 
 const BetSlipItemCard: React.FC<BetSlipItemCardProps> = ({ item, onRemove, onStakeChange, onQuickStake }) => {
-  const formatCurrency = (amount: number): string => {
-    return `$${amount.toFixed(2)}`;
-  };
+  const { user } = useAuth();
 
   return (
     <div className="bet-slip-item">
@@ -300,13 +297,16 @@ const BetSlipItemCard: React.FC<BetSlipItemCardProps> = ({ item, onRemove, onSta
         <div className="stake-section">
           <label>Stake:</label>
           <div className="stake-input-group">
-            <input
-              type="number"
-              min="1"
-              max="1000"
-              step="1"
-              value={item.stake}
-              onChange={e => onStakeChange(e.target.value)}
+            <ValidatedInput
+              type="wallet-operation"
+              value={item.stake.toString()}
+              onChange={(value, isValid, numericValue) => 
+                onStakeChange(value, isValid, numericValue)
+              }
+              walletBalance={user?.wallet_balance || 0}
+              operation="bet"
+              rules={{ min: 1, max: 1000, precision: 2 }}
+              placeholder="Enter stake amount"
               className="stake-input"
             />
             <div className="quick-stakes">

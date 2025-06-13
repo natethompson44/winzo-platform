@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
+import { formatCurrency, formatPercentage } from '../utils/numberUtils';
 import './Dashboard.css';
 
 interface DashboardStats {
@@ -61,10 +62,6 @@ const Dashboard: React.FC = () => {
       fetchDashboardData();
     }
   }, [user, fetchDashboardData]);
-
-  const formatCurrency = (amount: number): string => {
-    return `$${amount.toFixed(2)}`;
-  };
 
   const formatOdds = (odds: number): string => {
     return odds > 0 ? `+${odds}` : odds.toString();
@@ -163,7 +160,7 @@ const Dashboard: React.FC = () => {
                 <span className="stat-label">Total Bets</span>
               </div>
               <div className="stat-item">
-                <span className="stat-number">{stats.winRate.toFixed(1)}%</span>
+                <span className="stat-number">{formatPercentage(stats.winRate)}</span>
                 <span className="stat-label">Win Rate</span>
               </div>
               <div className="stat-item">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import ValidatedInput from './ValidatedInput';
 import './WalletDashboard.css';
 
 interface WalletBalance {
@@ -50,6 +51,7 @@ const WalletDashboard: React.FC = () => {
   const [addFundsAmount, setAddFundsAmount] = useState<string>('');
   const [addingFunds, setAddingFunds] = useState(false);
   const [showAddFunds, setShowAddFunds] = useState(false);
+  const [amountValidation, setAmountValidation] = useState({ isValid: true, value: 0 });
 
   const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -78,7 +80,7 @@ const WalletDashboard: React.FC = () => {
   }, []);
 
   const addFunds = async () => {
-    if (!addFundsAmount || parseFloat(addFundsAmount) <= 0) return;
+    if (!amountValidation.isValid || amountValidation.value <= 0) return;
 
     setAddingFunds(true);
     try {
@@ -89,7 +91,7 @@ const WalletDashboard: React.FC = () => {
       }
 
       const response = await axios.post(`${API_BASE}/wallet/add-funds`, {
-        amount: parseFloat(addFundsAmount),
+        amount: amountValidation.value,
         method: 'credit_card'
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -101,6 +103,7 @@ const WalletDashboard: React.FC = () => {
       // Reset form and refresh data
       setAddFundsAmount('');
       setShowAddFunds(false);
+      setAmountValidation({ isValid: true, value: 0 });
       fetchWalletData();
       
     } catch (error: any) {
@@ -108,6 +111,11 @@ const WalletDashboard: React.FC = () => {
     } finally {
       setAddingFunds(false);
     }
+  };
+
+  const handleAmountChange = (value: string, isValid: boolean, numericValue?: number) => {
+    setAddFundsAmount(value);
+    setAmountValidation({ isValid, value: numericValue || 0 });
   };
 
   useEffect(() => {
@@ -296,25 +304,25 @@ const WalletDashboard: React.FC = () => {
                 <label htmlFor="addAmount" className="amount-label">
                   💰 Amount to Add
                 </label>
-                <div className="amount-input-group">
-                  <span className="currency-symbol">$</span>
-                  <input
-                    id="addAmount"
-                    type="number"
-                    value={addFundsAmount}
-                    onChange={(e) => setAddFundsAmount(e.target.value)}
-                    placeholder="0.00"
-                    min="1"
-                    step="0.01"
-                    className="amount-input"
-                  />
-                </div>
+                <ValidatedInput
+                  type="wallet-operation"
+                  value={addFundsAmount}
+                  onChange={handleAmountChange}
+                  walletBalance={0} // Not relevant for deposits
+                  operation="deposit"
+                  rules={{ min: 1, max: 10000, precision: 2 }}
+                  placeholder="0.00"
+                  className="amount-input"
+                />
 
                 <div className="quick-amounts">
                   {[25, 50, 100, 250, 500].map(amount => (
                     <button
                       key={amount}
-                      onClick={() => setAddFundsAmount(amount.toString())}
+                      onClick={() => {
+                        setAddFundsAmount(amount.toString());
+                        setAmountValidation({ isValid: true, value: amount });
+                      }}
                       className="quick-amount-btn"
                     >
                       ${amount}
@@ -343,7 +351,7 @@ const WalletDashboard: React.FC = () => {
               </button>
               <button
                 onClick={addFunds}
-                disabled={!addFundsAmount || parseFloat(addFundsAmount) <= 0 || addingFunds}
+                disabled={!amountValidation.isValid || amountValidation.value <= 0 || addingFunds}
                 className="confirm-btn"
               >
                 {addingFunds ? '⏳ Processing...' : '🚀 Add Funds'}

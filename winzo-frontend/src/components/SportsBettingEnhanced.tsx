@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { APIError, WinzoLoading, EmptyState } from './ErrorBoundary';
 import EnhancedBetSlip from './EnhancedBetSlip';
+import { formatCurrency } from '../utils/numberUtils';
 import './SportsBetting.css';
 
 interface Sport {
@@ -356,7 +357,7 @@ const SportsBettingEnhanced: React.FC = () => {
         
         <div className="header-controls">
           <div className="wallet-display">
-            💰 ${walletBalance.toFixed(2)}
+            💰 {formatCurrency(walletBalance)}
           </div>
           
           {betSlipItems.length > 0 && (

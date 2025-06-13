@@ -1,5 +1,6 @@
 import React from 'react';
 import { useBetSlip } from '../contexts/BetSlipContext';
+import { formatCurrency } from '../utils/numberUtils';
 import './BetSlipToggle.css';
 
 const BetSlipToggle: React.FC = () => {
@@ -15,7 +16,7 @@ const BetSlipToggle: React.FC = () => {
         <span className="bet-count-badge">{itemCount}</span>
         <div className="bet-slip-toggle-text">
           <div className="bet-slip-label">Bet Slip</div>
-          <div className="bet-slip-total">${totalStake.toFixed(2)}</div>
+          <div className="bet-slip-total">{formatCurrency(totalStake)}</div>
         </div>
       </div>
     </button>

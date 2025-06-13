@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatCurrency } from '../utils/numberUtils';
 import './BetSlip.css';
 
 interface BetSlipItem {
@@ -39,10 +40,6 @@ const EnhancedBetSlip: React.FC<EnhancedBetSlipProps> = ({
   const formatOdds = (odds: string): string => {
     const numOdds = parseFloat(odds);
     return numOdds > 0 ? `+${odds}` : odds;
-  };
-
-  const formatCurrency = (amount: number): string => {
-    return `$${amount.toFixed(2)}`;
   };
 
   const handleAmountChange = (betId: string, value: string) => {
