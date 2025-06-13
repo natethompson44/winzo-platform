@@ -28,7 +28,9 @@
     "react-swipeable": "^7.0.1",
     "react-helmet-async": "^2.0.4",
     "react-hot-toast": "^2.4.1",
-    "framer-motion": "^10.16.16"
+    "framer-motion": "^10.16.16",
+    "react-scripts": "^5.0.1",
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@types/babel__generator": "^7.27.0",
@@ -38,9 +40,7 @@
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.6",
     "@types/react-router-dom": "^5.3.3",
-    "react-scripts": "^5.0.1",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "typescript": "^4.9.5"
+    "eslint-plugin-react-hooks": "^4.6.2"
   },
   "browserslist": {
     "production": [

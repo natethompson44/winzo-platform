@@ -21,7 +21,6 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ user, onLogout }) =
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Swipe handlers
@@ -149,7 +148,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ user, onLogout }) =
               key={item.path}
               to={item.path}
               className={`mobile-tab-item ${location.pathname === item.path ? 'active' : ''}`}
-              onClick={() => setActiveTab(index)}
+              onClick={() => setIsMenuOpen(false)}
             >
               <div className="mobile-tab-icon" style={{ backgroundColor: item.color }}>
                 {item.icon}

@@ -26,7 +26,6 @@ const MobileBetSlip: React.FC = () => {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [inputValue, setInputValue] = useState(totalStake.toString());
   const [quickStakes] = useState([10, 25, 50, 100, 250, 500]);
-  const betSlipRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Swipe handlers
