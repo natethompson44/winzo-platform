@@ -1,0 +1,469 @@
+/* WINZO Professional Iconography System - Phase 2 */
+
+/* ===== ICON DESIGN PRINCIPLES ===== */
+:root {
+  /* Icon Design Tokens */
+  --icon-stroke-width: 1.5px;
+  --icon-stroke-width-thin: 1px;
+  --icon-stroke-width-bold: 2px;
+  --icon-corner-radius: 2px;
+  --icon-padding: 8px;
+  --icon-min-size: 20px;
+  --icon-touch-target: 44px;
+  
+  /* Icon Sizes */
+  --icon-xs: 16px;
+  --icon-sm: 20px;
+  --icon-md: 24px;
+  --icon-lg: 32px;
+  --icon-xl: 40px;
+  --icon-2xl: 48px;
+  
+  /* Icon Colors */
+  --icon-primary: var(--color-primary);
+  --icon-secondary: var(--color-secondary);
+  --icon-success: var(--color-success);
+  --icon-warning: var(--color-warning);
+  --icon-danger: var(--color-danger);
+  --icon-neutral: var(--color-neutral-600);
+  --icon-muted: var(--color-neutral-400);
+  --icon-inverse: var(--color-neutral-50);
+}
+
+/* ===== BASE ICON STYLES ===== */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  min-width: var(--icon-min-size);
+  min-height: var(--icon-min-size);
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Icon Size Variants */
+.icon-xs { width: var(--icon-xs); height: var(--icon-xs); }
+.icon-sm { width: var(--icon-sm); height: var(--icon-sm); }
+.icon-md { width: var(--icon-md); height: var(--icon-md); }
+.icon-lg { width: var(--icon-lg); height: var(--icon-lg); }
+.icon-xl { width: var(--icon-xl); height: var(--icon-xl); }
+.icon-2xl { width: var(--icon-2xl); height: var(--icon-2xl); }
+
+/* Icon Color Variants */
+.icon-primary { color: var(--icon-primary); }
+.icon-secondary { color: var(--icon-secondary); }
+.icon-success { color: var(--icon-success); }
+.icon-warning { color: var(--icon-warning); }
+.icon-danger { color: var(--icon-danger); }
+.icon-neutral { color: var(--icon-neutral); }
+.icon-muted { color: var(--icon-muted); }
+.icon-inverse { color: var(--icon-inverse); }
+
+/* Icon Style Variants */
+.icon-filled {
+  fill: currentColor;
+  stroke: none;
+}
+
+.icon-outlined {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-duotone {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width-thin);
+  opacity: 0.8;
+}
+
+/* Touch Target Optimization */
+.icon-touch {
+  width: var(--icon-touch-target);
+  height: var(--icon-touch-target);
+  padding: var(--icon-padding);
+}
+
+/* ===== SPORTS ICONS ===== */
+.icon-sport {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+/* Football/Soccer */
+.icon-football {
+  fill: #1a365d;
+}
+
+.icon-football .ball {
+  fill: #ffffff;
+  stroke: #1a365d;
+  stroke-width: 1px;
+}
+
+/* Basketball */
+.icon-basketball {
+  fill: #ff6b35;
+}
+
+.icon-basketball .ball {
+  fill: #ff6b35;
+  stroke: #ffffff;
+  stroke-width: 1px;
+}
+
+/* Cricket */
+.icon-cricket {
+  fill: #10b981;
+}
+
+.icon-cricket .bat {
+  fill: #8b4513;
+}
+
+/* Tennis */
+.icon-tennis {
+  fill: #f59e0b;
+}
+
+.icon-tennis .ball {
+  fill: #ffffff;
+  stroke: #f59e0b;
+  stroke-width: 1px;
+}
+
+/* ===== NAVIGATION ICONS ===== */
+.icon-home {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-dashboard {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-wallet {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-history {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-sports {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+/* ===== ACTION ICONS ===== */
+.icon-quick-bet {
+  fill: var(--color-success);
+  stroke: none;
+}
+
+.icon-deposit {
+  fill: var(--color-primary);
+  stroke: none;
+}
+
+.icon-withdraw {
+  fill: var(--color-warning);
+  stroke: none;
+}
+
+.icon-settings {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-support {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-logout {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+/* ===== STATUS ICONS ===== */
+.icon-success {
+  fill: var(--color-success);
+  stroke: none;
+}
+
+.icon-warning {
+  fill: var(--color-warning);
+  stroke: none;
+}
+
+.icon-error {
+  fill: var(--color-danger);
+  stroke: none;
+}
+
+.icon-info {
+  fill: var(--color-secondary);
+  stroke: none;
+}
+
+.icon-loading {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+  animation: icon-spin 1s linear infinite;
+}
+
+@keyframes icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ===== PAYMENT ICONS ===== */
+.icon-card {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-bank {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-crypto {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+/* ===== UTILITY ICONS ===== */
+.icon-search {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-filter {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-sort {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-close {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-chevron-down {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-chevron-up {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-chevron-left {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+.icon-chevron-right {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--icon-stroke-width);
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+.icon[aria-hidden="true"] {
+  pointer-events: none;
+}
+
+.icon[role="img"] {
+  pointer-events: auto;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .icon {
+    stroke-width: var(--icon-stroke-width-bold);
+  }
+  
+  .icon-outlined {
+    stroke-width: var(--icon-stroke-width-bold);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .icon-loading {
+    animation: none;
+  }
+  
+  .icon {
+    transition: none;
+  }
+}
+
+/* ===== RESPONSIVE ICON SIZES ===== */
+@media (max-width: 640px) {
+  .icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  
+  .icon-lg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  
+  .icon-xl {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  
+  .icon-lg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  
+  .icon-xl {
+    width: var(--icon-xl);
+    height: var(--icon-xl);
+  }
+}
+
+/* ===== ICON COMPONENT WRAPPER ===== */
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.icon-wrapper .icon-label {
+  margin-left: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.icon-wrapper .icon-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--color-danger);
+  color: var(--text-inverse);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+}
+
+/* ===== ICON ANIMATIONS ===== */
+.icon-pulse {
+  animation: icon-pulse 2s infinite;
+}
+
+@keyframes icon-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.icon-bounce {
+  animation: icon-bounce 1s infinite;
+}
+
+@keyframes icon-bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+/* ===== ICON STATES ===== */
+.icon:hover {
+  transform: scale(1.1);
+}
+
+.icon:active {
+  transform: scale(0.95);
+}
+
+.icon:focus {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Disabled state */
+.icon:disabled,
+.icon.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .icon {
+    fill: #000000 !important;
+    stroke: #000000 !important;
+    color: #000000 !important;
+  }
+  
+  .icon-loading {
+    animation: none;
+  }
+} 

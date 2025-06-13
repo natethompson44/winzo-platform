@@ -1,10 +1,16 @@
-/* WINZO App Global Styles - Phase 1 Design System Implementation */
+/* WINZO App Global Styles - Phase 2 Design System Implementation */
 
 /* Import Google Fonts for WINZO Typography */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-/* Import Design System */
+/* Import Phase 1 Design System */
 @import './styles/design-system.css';
+
+/* Import Phase 2 Design System Components */
+@import './styles/iconography.css';
+@import './styles/visual-hierarchy.css';
+@import './styles/brand-system.css';
+@import './styles/content-strategy.css';
 
 /* Import responsive design system */
 @import './styles/responsive.css';

@@ -1,0 +1,551 @@
+/* WINZO Visual Hierarchy System - Phase 2 */
+
+/* ===== VISUAL HIERARCHY PRINCIPLES ===== */
+:root {
+  /* Content Priority Levels */
+  --priority-primary: 1;      /* Betting markets, odds, primary actions */
+  --priority-secondary: 2;    /* Supporting information, secondary actions */
+  --priority-tertiary: 3;     /* Metadata, legal disclaimers */
+  
+  /* Visual Weight Scale */
+  --weight-light: 300;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+  
+  /* Spacing Hierarchy */
+  --space-hierarchy-xs: 0.25rem;   /* 4px - Tight grouping */
+  --space-hierarchy-sm: 0.5rem;    /* 8px - Related elements */
+  --space-hierarchy-md: 1rem;      /* 16px - Section separation */
+  --space-hierarchy-lg: 1.5rem;    /* 24px - Major sections */
+  --space-hierarchy-xl: 2rem;      /* 32px - Page sections */
+  --space-hierarchy-2xl: 3rem;     /* 48px - Page breaks */
+  
+  /* Typography Hierarchy */
+  --text-hierarchy-display: 2.5rem;    /* 40px - Page titles */
+  --text-hierarchy-headline: 2rem;     /* 32px - Section headers */
+  --text-hierarchy-title: 1.5rem;      /* 24px - Subsection headers */
+  --text-hierarchy-subtitle: 1.25rem;  /* 20px - Group headers */
+  --text-hierarchy-body: 1rem;         /* 16px - Body text */
+  --text-hierarchy-caption: 0.875rem;  /* 14px - Supporting text */
+  --text-hierarchy-small: 0.75rem;     /* 12px - Legal text */
+  
+  /* Color Hierarchy */
+  --color-hierarchy-primary: var(--color-primary);
+  --color-hierarchy-secondary: var(--color-secondary);
+  --color-hierarchy-accent: var(--color-success);
+  --color-hierarchy-neutral: var(--color-neutral-600);
+  --color-hierarchy-muted: var(--color-neutral-400);
+  --color-hierarchy-disabled: var(--color-neutral-300);
+  
+  /* Shadow Hierarchy */
+  --shadow-hierarchy-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-hierarchy-mild: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  --shadow-hierarchy-medium: 0 4px 8px 0 rgba(0, 0, 0, 0.15);
+  --shadow-hierarchy-strong: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  --shadow-hierarchy-emphasis: 0 12px 24px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* ===== CONTENT PRIORITY SYSTEM ===== */
+
+/* Primary Content - Betting Markets & Odds */
+.content-primary {
+  font-size: var(--text-hierarchy-body);
+  font-weight: var(--weight-medium);
+  color: var(--color-hierarchy-primary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-hierarchy-md);
+}
+
+.content-primary h1,
+.content-primary h2,
+.content-primary h3 {
+  color: var(--color-hierarchy-primary);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-hierarchy-sm);
+}
+
+.content-primary .odds {
+  font-size: var(--text-hierarchy-title);
+  font-weight: var(--weight-bold);
+  color: var(--color-hierarchy-accent);
+  background: var(--bg-neutral);
+  padding: var(--space-hierarchy-sm);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-hierarchy-accent);
+  text-align: center;
+  margin: var(--space-hierarchy-sm) 0;
+}
+
+.content-primary .betting-market {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-lg);
+  padding: var(--space-hierarchy-md);
+  margin-bottom: var(--space-hierarchy-md);
+  box-shadow: var(--shadow-hierarchy-mild);
+  transition: all 0.2s ease;
+}
+
+.content-primary .betting-market:hover {
+  border-color: var(--color-hierarchy-accent);
+  box-shadow: var(--shadow-hierarchy-medium);
+  transform: translateY(-1px);
+}
+
+.content-primary .betting-market.active {
+  border-color: var(--color-hierarchy-accent);
+  background: var(--color-hierarchy-accent);
+  color: var(--text-inverse);
+}
+
+/* Secondary Content - Supporting Information */
+.content-secondary {
+  font-size: var(--text-hierarchy-caption);
+  font-weight: var(--weight-normal);
+  color: var(--color-hierarchy-neutral);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-hierarchy-sm);
+}
+
+.content-secondary .metadata {
+  display: flex;
+  align-items: center;
+  gap: var(--space-hierarchy-sm);
+  margin-bottom: var(--space-hierarchy-xs);
+}
+
+.content-secondary .status {
+  padding: var(--space-hierarchy-xs) var(--space-hierarchy-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-hierarchy-small);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.content-secondary .status.live {
+  background: var(--color-danger);
+  color: var(--text-inverse);
+}
+
+.content-secondary .status.upcoming {
+  background: var(--color-warning);
+  color: var(--text-inverse);
+}
+
+.content-secondary .status.completed {
+  background: var(--color-success);
+  color: var(--text-inverse);
+}
+
+/* Tertiary Content - Legal & Metadata */
+.content-tertiary {
+  font-size: var(--text-hierarchy-small);
+  font-weight: var(--weight-normal);
+  color: var(--color-hierarchy-muted);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-hierarchy-xs);
+}
+
+.content-tertiary .disclaimer {
+  border-top: 1px solid var(--border-neutral);
+  padding-top: var(--space-hierarchy-sm);
+  margin-top: var(--space-hierarchy-md);
+  font-style: italic;
+}
+
+/* ===== TYPOGRAPHY HIERARCHY ===== */
+
+/* Display Text - Page Titles */
+.text-display {
+  font-size: var(--text-hierarchy-display);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  color: var(--color-hierarchy-primary);
+  margin-bottom: var(--space-hierarchy-lg);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Headline Text - Section Headers */
+.text-headline {
+  font-size: var(--text-hierarchy-headline);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  color: var(--color-hierarchy-primary);
+  margin-bottom: var(--space-hierarchy-md);
+}
+
+/* Title Text - Subsection Headers */
+.text-title {
+  font-size: var(--text-hierarchy-title);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  color: var(--color-hierarchy-primary);
+  margin-bottom: var(--space-hierarchy-sm);
+}
+
+/* Subtitle Text - Group Headers */
+.text-subtitle {
+  font-size: var(--text-hierarchy-subtitle);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-normal);
+  color: var(--color-hierarchy-secondary);
+  margin-bottom: var(--space-hierarchy-sm);
+}
+
+/* Body Text - Main Content */
+.text-body {
+  font-size: var(--text-hierarchy-body);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-relaxed);
+  color: var(--color-hierarchy-primary);
+  margin-bottom: var(--space-hierarchy-md);
+}
+
+/* Caption Text - Supporting Information */
+.text-caption {
+  font-size: var(--text-hierarchy-caption);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-hierarchy-neutral);
+  margin-bottom: var(--space-hierarchy-xs);
+}
+
+/* Small Text - Legal Disclaimers */
+.text-small {
+  font-size: var(--text-hierarchy-small);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-hierarchy-muted);
+  margin-bottom: var(--space-hierarchy-xs);
+}
+
+/* ===== LAYOUT HIERARCHY ===== */
+
+/* Section Hierarchy */
+.section-primary {
+  margin-bottom: var(--space-hierarchy-2xl);
+  padding: var(--space-hierarchy-xl);
+  background: var(--bg-neutral);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-hierarchy-mild);
+}
+
+.section-secondary {
+  margin-bottom: var(--space-hierarchy-xl);
+  padding: var(--space-hierarchy-lg);
+  background: var(--bg-neutral);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-hierarchy-subtle);
+}
+
+.section-tertiary {
+  margin-bottom: var(--space-hierarchy-lg);
+  padding: var(--space-hierarchy-md);
+  background: var(--bg-neutral);
+  border-radius: var(--radius-sm);
+}
+
+/* Card Hierarchy */
+.card-primary {
+  background: var(--bg-neutral);
+  border: 2px solid var(--color-hierarchy-accent);
+  border-radius: var(--radius-lg);
+  padding: var(--space-hierarchy-lg);
+  margin-bottom: var(--space-hierarchy-md);
+  box-shadow: var(--shadow-hierarchy-medium);
+  transition: all 0.2s ease;
+}
+
+.card-primary:hover {
+  box-shadow: var(--shadow-hierarchy-strong);
+  transform: translateY(-2px);
+}
+
+.card-secondary {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-md);
+  padding: var(--space-hierarchy-md);
+  margin-bottom: var(--space-hierarchy-sm);
+  box-shadow: var(--shadow-hierarchy-mild);
+  transition: all 0.2s ease;
+}
+
+.card-secondary:hover {
+  border-color: var(--color-hierarchy-secondary);
+  box-shadow: var(--shadow-hierarchy-medium);
+}
+
+.card-tertiary {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-sm);
+  padding: var(--space-hierarchy-sm);
+  margin-bottom: var(--space-hierarchy-xs);
+  box-shadow: var(--shadow-hierarchy-subtle);
+}
+
+/* ===== ACTION HIERARCHY ===== */
+
+/* Primary Actions - Betting, Deposits */
+.action-primary {
+  background: var(--color-hierarchy-accent);
+  color: var(--text-inverse);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-hierarchy-body);
+  padding: var(--space-hierarchy-md) var(--space-hierarchy-lg);
+  border-radius: var(--radius-md);
+  border: none;
+  box-shadow: var(--shadow-hierarchy-medium);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-hierarchy-sm);
+}
+
+.action-primary:hover {
+  background: var(--color-success-light);
+  box-shadow: var(--shadow-hierarchy-strong);
+  transform: translateY(-1px);
+}
+
+.action-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary Actions - Settings, Support */
+.action-secondary {
+  background: var(--color-hierarchy-secondary);
+  color: var(--text-inverse);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-hierarchy-caption);
+  padding: var(--space-hierarchy-sm) var(--space-hierarchy-md);
+  border-radius: var(--radius-md);
+  border: none;
+  box-shadow: var(--shadow-hierarchy-mild);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-hierarchy-xs);
+}
+
+.action-secondary:hover {
+  background: var(--color-secondary-light);
+  box-shadow: var(--shadow-hierarchy-medium);
+}
+
+/* Tertiary Actions - Links, Minor Actions */
+.action-tertiary {
+  background: transparent;
+  color: var(--color-hierarchy-secondary);
+  font-weight: var(--weight-normal);
+  font-size: var(--text-hierarchy-caption);
+  padding: var(--space-hierarchy-xs) var(--space-hierarchy-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-neutral);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-hierarchy-xs);
+}
+
+.action-tertiary:hover {
+  background: var(--color-hierarchy-secondary);
+  color: var(--text-inverse);
+  border-color: var(--color-hierarchy-secondary);
+}
+
+/* ===== INFORMATION ARCHITECTURE ===== */
+
+/* Content Grouping */
+.content-group {
+  margin-bottom: var(--space-hierarchy-lg);
+}
+
+.content-group-header {
+  margin-bottom: var(--space-hierarchy-md);
+  padding-bottom: var(--space-hierarchy-sm);
+  border-bottom: 2px solid var(--color-hierarchy-accent);
+}
+
+.content-group-body {
+  margin-bottom: var(--space-hierarchy-md);
+}
+
+.content-group-footer {
+  margin-top: var(--space-hierarchy-md);
+  padding-top: var(--space-hierarchy-sm);
+  border-top: 1px solid var(--border-neutral);
+}
+
+/* Information Density */
+.density-sparse {
+  padding: var(--space-hierarchy-xl);
+  margin-bottom: var(--space-hierarchy-xl);
+}
+
+.density-normal {
+  padding: var(--space-hierarchy-lg);
+  margin-bottom: var(--space-hierarchy-lg);
+}
+
+.density-compact {
+  padding: var(--space-hierarchy-md);
+  margin-bottom: var(--space-hierarchy-md);
+}
+
+.density-tight {
+  padding: var(--space-hierarchy-sm);
+  margin-bottom: var(--space-hierarchy-sm);
+}
+
+/* ===== VISUAL EMPHASIS ===== */
+
+/* Highlight Important Information */
+.emphasis-high {
+  background: var(--color-hierarchy-accent);
+  color: var(--text-inverse);
+  padding: var(--space-hierarchy-sm);
+  border-radius: var(--radius-md);
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  margin: var(--space-hierarchy-md) 0;
+}
+
+.emphasis-medium {
+  background: var(--color-hierarchy-secondary);
+  color: var(--text-inverse);
+  padding: var(--space-hierarchy-sm);
+  border-radius: var(--radius-md);
+  font-weight: var(--weight-medium);
+  margin: var(--space-hierarchy-sm) 0;
+}
+
+.emphasis-low {
+  background: var(--color-neutral-100);
+  color: var(--color-hierarchy-primary);
+  padding: var(--space-hierarchy-sm);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--color-hierarchy-secondary);
+  margin: var(--space-hierarchy-sm) 0;
+}
+
+/* ===== RESPONSIVE HIERARCHY ===== */
+
+@media (max-width: 640px) {
+  .text-display {
+    font-size: var(--text-hierarchy-headline);
+    margin-bottom: var(--space-hierarchy-md);
+  }
+  
+  .text-headline {
+    font-size: var(--text-hierarchy-title);
+    margin-bottom: var(--space-hierarchy-sm);
+  }
+  
+  .text-title {
+    font-size: var(--text-hierarchy-subtitle);
+    margin-bottom: var(--space-hierarchy-sm);
+  }
+  
+  .section-primary {
+    padding: var(--space-hierarchy-md);
+    margin-bottom: var(--space-hierarchy-lg);
+  }
+  
+  .section-secondary {
+    padding: var(--space-hierarchy-md);
+    margin-bottom: var(--space-hierarchy-md);
+  }
+  
+  .action-primary {
+    padding: var(--space-hierarchy-sm) var(--space-hierarchy-md);
+    font-size: var(--text-hierarchy-caption);
+    min-height: 44px;
+  }
+  
+  .action-secondary {
+    padding: var(--space-hierarchy-xs) var(--space-hierarchy-sm);
+    font-size: var(--text-hierarchy-small);
+    min-height: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-display {
+    font-size: 3rem;
+    margin-bottom: var(--space-hierarchy-2xl);
+  }
+  
+  .text-headline {
+    font-size: 2.25rem;
+    margin-bottom: var(--space-hierarchy-lg);
+  }
+  
+  .section-primary {
+    padding: var(--space-hierarchy-2xl);
+    margin-bottom: var(--space-hierarchy-2xl);
+  }
+  
+  .action-primary {
+    padding: var(--space-hierarchy-lg) var(--space-hierarchy-xl);
+    font-size: var(--text-hierarchy-subtitle);
+    min-height: 56px;
+  }
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+
+/* Focus Indicators */
+.action-primary:focus,
+.action-secondary:focus,
+.action-tertiary:focus {
+  outline: 3px solid var(--color-hierarchy-secondary);
+  outline-offset: 2px;
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+  .content-primary .betting-market {
+    border-width: 2px;
+  }
+  
+  .action-primary,
+  .action-secondary {
+    border: 2px solid currentColor;
+  }
+  
+  .emphasis-high,
+  .emphasis-medium,
+  .emphasis-low {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .content-primary .betting-market,
+  .card-primary,
+  .card-secondary,
+  .action-primary,
+  .action-secondary {
+    transition: none;
+  }
+  
+  .action-primary:hover,
+  .action-secondary:hover {
+    transform: none;
+  }
+}
