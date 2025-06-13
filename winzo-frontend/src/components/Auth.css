@@ -25,38 +25,210 @@ a:hover {
 
 /* Auth Page Layout */
 .auth-container {
-  min-height: 100vh;
-  padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  padding: 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .auth-logo {
-  width: 80px;
-  margin-bottom: 1rem;
+  width: 120px;
+  height: auto;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 180, 216, 0.3);
 }
 
 .auth-title {
-  font-size: 1.75rem;
-  color: var(--big-win-gold);
+  color: var(--white);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+  background: linear-gradient(135deg, #00b4d8 0%, #48bb78 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .auth-subtitle {
-  color: var(--winzo-teal);
-  margin-bottom: 1.5rem;
+  color: var(--gray-400);
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+  text-align: center;
 }
 
 .auth-form {
   width: 100%;
-  max-width: 340px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  max-width: 400px;
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 180, 216, 0.2);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.auth-form:hover {
+  border-color: rgba(0, 180, 216, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.auth-form.success {
+  border-color: rgba(72, 187, 120, 0.4);
+  box-shadow: 0 12px 40px rgba(72, 187, 120, 0.2);
+}
+
+.winzo-input {
+  width: 100%;
+  padding: 16px 20px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(0, 180, 216, 0.2);
+  border-radius: 12px;
+  color: var(--white);
+  font-size: 1rem;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.winzo-input:focus {
+  border-color: var(--winzo-teal);
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.winzo-input::placeholder {
+  color: var(--gray-500);
+}
+
+.winzo-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.winzo-btn {
+  width: 100%;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  outline: none;
+}
+
+.winzo-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.winzo-btn-primary {
+  background: linear-gradient(135deg, #00b4d8 0%, #48bb78 100%);
+  color: var(--white);
+  box-shadow: 0 4px 16px rgba(0, 180, 216, 0.3);
+}
+
+.winzo-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 180, 216, 0.4);
+}
+
+.winzo-btn-secondary {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  color: var(--white);
+  box-shadow: 0 4px 16px rgba(100, 116, 139, 0.3);
+  margin-top: 10px;
+}
+
+.winzo-btn-secondary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(100, 116, 139, 0.4);
 }
 
 .auth-footer {
-  margin-top: 1rem;
+  margin-top: 30px;
+  text-align: center;
+  color: var(--gray-400);
+}
+
+.auth-footer a {
+  color: var(--winzo-teal);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.auth-footer a:hover {
+  color: var(--win-green);
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.success-msg {
+  background: rgba(72, 187, 120, 0.1);
+  border: 1px solid rgba(72, 187, 120, 0.3);
+  color: #86efac;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.auth-help {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(0, 180, 216, 0.2);
+  border-radius: 12px;
+  text-align: center;
+  color: var(--gray-300);
+  max-width: 400px;
+}
+
+.auth-help p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.auth-help strong {
+  color: var(--winzo-teal);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 15px;
+  }
+  
+  .auth-form {
+    padding: 30px 20px;
+  }
+  
+  .auth-title {
+    font-size: 2rem;
+  }
+  
+  .auth-subtitle {
+    font-size: 1rem;
+  }
 }

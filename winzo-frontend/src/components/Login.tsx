@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../utils/axios';
+import { API_ENDPOINTS, API_CONFIG } from '../config/api';
 import winzoLogo from '../assets/winzo-logo.png';
 import './Auth.css';
 
@@ -13,6 +15,24 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const testApiConnection = async () => {
+    try {
+      console.log('🧪 Testing API connection...');
+      console.log('🔗 API Base URL:', API_CONFIG.BASE_URL);
+      console.log('🔗 Login Endpoint:', API_ENDPOINTS.LOGIN);
+      console.log('🔗 Full URL:', `${API_CONFIG.BASE_URL}${API_ENDPOINTS.LOGIN}`);
+      
+      const response = await apiClient.get('/api/health');
+      console.log('✅ Health check response:', response.data);
+      setError('API connection successful! Check console for details.');
+    } catch (error: any) {
+      console.error('❌ API connection failed:', error);
+      console.error('Response data:', error.response?.data);
+      console.error('Response status:', error.response?.status);
+      setError(`API connection failed: ${error.message}`);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -20,6 +40,8 @@ const Login: React.FC = () => {
     
     try {
       console.log('🔐 Attempting login with:', { username });
+      console.log('🔗 Making request to:', `${API_CONFIG.BASE_URL}${API_ENDPOINTS.LOGIN}`);
+      
       const ok = await login(username, password);
       if (ok) {
         setError('');
@@ -78,6 +100,13 @@ const Login: React.FC = () => {
         <p><strong>Test Credentials:</strong></p>
         <p>Username: testuser2</p>
         <p>Password: testuser2</p>
+        <button 
+          onClick={testApiConnection}
+          className="winzo-btn winzo-btn-secondary"
+          style={{ marginTop: '10px' }}
+        >
+          Test API Connection
+        </button>
       </div>
     </div>
   );
