@@ -4,10 +4,31 @@ import winzoLogo from '../assets/winzo-logo.png';
 import './HomePage.css';
 
 const HomePage: React.FC = () => {
+  const handleLogoError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    // Fallback to text if logo fails to load
+    e.currentTarget.style.display = 'none';
+    const textLogo = document.createElement('div');
+    textLogo.className = 'hero-logo-text';
+    textLogo.textContent = 'WINZO';
+    textLogo.style.cssText = `
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--big-win-gold);
+      margin: 0 auto 1rem;
+      text-align: center;
+    `;
+    e.currentTarget.parentNode?.insertBefore(textLogo, e.currentTarget);
+  };
+
   return (
     <div className="home-page">
       <header className="hero-section">
-        <img src={winzoLogo} alt="WINZO" className="hero-logo" />
+        <img 
+          src={winzoLogo} 
+          alt="WINZO" 
+          className="hero-logo" 
+          onError={handleLogoError}
+        />
         <h1 className="hero-title">BIG WIN ENERGY</h1>
         <p className="hero-subtitle">Exclusive sports betting for champions only.</p>
         <div className="hero-actions">

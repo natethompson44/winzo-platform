@@ -14,11 +14,29 @@
   padding: 4rem 1rem 3rem;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 180, 216, 0.15);
+  position: relative;
 }
 
 .hero-logo {
   width: 100px;
+  height: auto;
   margin: 0 auto 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.hero-logo:hover {
+  transform: scale(1.05);
+}
+
+.hero-logo-text {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--big-win-gold);
+  margin: 0 auto 1rem;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero-title {
@@ -26,12 +44,16 @@
   color: var(--big-win-gold);
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.03em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
 }
 
 .hero-subtitle {
   font-size: 1.1rem;
-  opacity: 0.9;
+  color: var(--white);
+  opacity: 0.95;
   margin-bottom: 2rem;
+  font-weight: 400;
 }
 
 .hero-actions {
@@ -79,6 +101,8 @@
 .sports-preview {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-title {
@@ -86,12 +110,16 @@
   color: var(--winzo-teal);
   margin-bottom: 1rem;
   font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .section-text {
   max-width: 600px;
   margin: 0 auto 1.5rem;
+  color: var(--white);
   opacity: 0.9;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .proof-grid {
@@ -99,6 +127,7 @@
   justify-content: center;
   gap: 2rem;
   flex-wrap: wrap;
+  margin-top: 2rem;
 }
 
 .proof-item {
@@ -107,18 +136,29 @@
   border-radius: 16px;
   padding: 1rem 2rem;
   min-width: 120px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.proof-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 180, 216, 0.2);
 }
 
 .proof-value {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--big-win-gold);
+  display: block;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .proof-label {
   font-size: 0.875rem;
+  color: var(--white);
   display: block;
   margin-top: 0.25rem;
+  opacity: 0.8;
 }
 
 .win-feed {
@@ -130,8 +170,15 @@
 }
 
 .win-feed li {
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.win-feed li:last-child {
+  border-bottom: none;
 }
 
 .home-footer {
@@ -140,12 +187,31 @@
   background: var(--primary-gradient);
   text-align: center;
   font-size: 0.875rem;
+  color: var(--white);
   opacity: 0.8;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @media (max-width: 640px) {
-  .hero-title { font-size: 2rem; }
-  .hero-logo { width: 80px; }
+  .hero-title { 
+    font-size: 2rem; 
+  }
+  .hero-logo { 
+    width: 80px; 
+  }
+  .hero-logo-text {
+    font-size: 1.5rem;
+  }
+  .section-title {
+    font-size: 1.25rem;
+  }
+  .proof-grid {
+    gap: 1rem;
+  }
+  .proof-item {
+    min-width: 100px;
+    padding: 0.75rem 1.5rem;
+  }
 }
 
 /* Button Styles */
@@ -165,6 +231,7 @@
   min-width: 120px;
   max-width: 100%;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .winzo-btn-primary {

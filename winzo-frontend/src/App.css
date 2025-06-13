@@ -1,5 +1,8 @@
 /* WINZO App Global Styles - Phase 2 Design System Implementation */
 
+/* Import Global CSS Variables */
+@import './styles/global-variables.css';
+
 /* Import Google Fonts for WINZO Typography */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
