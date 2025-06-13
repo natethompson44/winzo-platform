@@ -40,37 +40,6 @@ async function resetDatabase() {
     await sequelize.query(schema);
     console.log('\n✅ Fresh schema created');
     
-    // Create test user
-    console.log('\n👤 Creating test user...');
-    const bcrypt = require('bcryptjs');
-    const hashedPassword = await bcrypt.hash('testuser2', 10);
-    
-    // Check if test user already exists and update it, or create new one
-    const existingUser = await sequelize.query(`
-      SELECT id FROM users WHERE username = 'testuser2';
-    `);
-    
-    if (existingUser[0].length > 0) {
-      // Update existing user
-      await sequelize.query(`
-        UPDATE users 
-        SET password_hash = $1, wallet_balance = 1000.00, is_active = true 
-        WHERE username = 'testuser2';
-      `, {
-        bind: [hashedPassword]
-      });
-      console.log('\n✅ Test user updated');
-    } else {
-      // Create new test user
-      await sequelize.query(`
-        INSERT INTO users (username, email, password_hash, wallet_balance, is_active) 
-        VALUES ('testuser2', 'test@winzo.com', $1, 1000.00, true)
-      `, {
-        bind: [hashedPassword]
-      });
-      console.log('\n✅ Test user created');
-    }
-    
     console.log('\n🎉 Database reset completed successfully!');
     console.log('\n📋 Test credentials:');
     console.log('Username: testuser2');

@@ -138,7 +138,7 @@ ON CONFLICT (key) DO NOTHING;
 
 -- Insert test user
 INSERT INTO users (username, email, password_hash, wallet_balance) VALUES
-  ('testuser2', 'test@winzo.com', '$2b$10$rQZ9QmZ9QmZ9QmZ9QmZ9Qu', 1000.00)
+  ('testuser2', 'test@winzo.com', '$2b$10$oh026ywEFqUKiqJ7vx2DHOaoVEstQn4MAgiLMpPZgtM//CT/XiEMO', 1000.00)
 ON CONFLICT (username) DO NOTHING;
 
 -- Add comments
