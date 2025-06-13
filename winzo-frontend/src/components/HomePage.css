@@ -35,10 +35,38 @@
 }
 
 .hero-actions {
-  display: flex;
+  display: grid;
   gap: 1rem;
   justify-content: center;
-  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+/* Mobile: Single column, full width */
+@media (max-width: 767px) {
+  .hero-actions {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Tablet: 2 columns with max-width */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-actions {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+    margin: 0 auto;
+    gap: 1.5rem;
+  }
+}
+
+/* Desktop: 2 columns with max-width, centered */
+@media (min-width: 1024px) {
+  .hero-actions {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
+    margin: 0 auto;
+    gap: 2rem;
+  }
 }
 
 .sports-preview,
@@ -118,4 +146,59 @@
 @media (max-width: 640px) {
   .hero-title { font-size: 2rem; }
   .hero-logo { width: 80px; }
+}
+
+/* Button Styles */
+.winzo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 48px;
+  min-width: 120px;
+  max-width: 100%;
+  text-align: center;
+}
+
+.winzo-btn-primary {
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+}
+
+.winzo-btn-primary:hover {
+  background: linear-gradient(135deg, #0077b6, #005577);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.4);
+}
+
+.winzo-btn-secondary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.winzo-btn-secondary:hover {
+  background: linear-gradient(135deg, #764ba2, #667eea);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.winzo-btn-success {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+}
+
+.winzo-btn-success:hover {
+  background: linear-gradient(135deg, #38a169, #2f855a);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
 }
