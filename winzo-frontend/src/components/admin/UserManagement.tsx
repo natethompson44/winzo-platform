@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../../utils/axios';
-import { API_ENDPOINTS, handleApiError } from '../../config/api';
+import { handleApiError } from '../../config/api';
 import toast from 'react-hot-toast';
 import './UserManagement.css';
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import apiClient from '../../utils/axios';
-import { API_ENDPOINTS, handleApiError } from '../../config/api';
+import { handleApiError } from '../../config/api';
 import toast from 'react-hot-toast';
 import './AdminLogin.css';
 
