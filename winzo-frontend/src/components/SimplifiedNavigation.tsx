@@ -1,26 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  SportsIcon,
-  DashboardIcon,
-  WalletIcon,
-  HistoryIcon,
-  QuickBetIcon,
-  DepositIcon,
-  SettingsIcon,
-  SupportIcon,
-  LogoutIcon,
-  UserIcon,
-  PaletteIcon
-} from './icons/IconLibrary';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import './SimplifiedNavigation.css';
 
+interface User {
+  name: string;
+  balance: number;
+}
+
 interface SimplifiedNavigationProps {
-  user?: {
-    name: string;
-    balance: number;
-  };
-  onLogout?: () => void;
+  user?: User;
+  onLogout: () => void;
 }
 
 /**
@@ -32,74 +21,19 @@ interface SimplifiedNavigationProps {
  * - Managing account funds
  * - Accessing betting history
  */
-const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
-  user,
-  onLogout
-}) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
-  // Primary navigation items - prioritized by importance
-  const primaryNavItems = [
-    {
-      path: '/sports',
-      label: 'Sports',
-      icon: SportsIcon,
-      description: 'Browse and bet on sports'
-    },
-    {
-      path: '/dashboard',
-      label: 'Dashboard',
-      icon: DashboardIcon,
-      description: 'View your betting overview'
-    },
-    {
-      path: '/wallet',
-      label: 'Wallet',
-      icon: WalletIcon,
-      description: 'Manage your funds'
-    },
-    {
-      path: '/history',
-      label: 'History',
-      icon: HistoryIcon,
-      description: 'View betting history'
-    }
-  ];
-
-  // Quick actions for immediate access
-  const quickActions = [
-    {
-      label: 'Quick Bet',
-      icon: QuickBetIcon,
-      action: () => navigate('/sports'),
-      color: 'success'
-    },
-    {
-      label: 'Deposit',
-      icon: DepositIcon,
-      action: () => navigate('/wallet'),
-      color: 'primary'
-    }
-  ];
-
-  // Close menus when clicking outside
+  // Handle scroll effect
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
-        setIsMobileMenuOpen(false);
-      }
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setShowUserMenu(false);
-      }
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Close mobile menu when route changes
@@ -107,228 +41,124 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const formatBalance = (balance: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(balance);
   };
 
   return (
-    <>
-      {/* Desktop Navigation */}
-      <nav className="simplified-nav desktop-only">
-        <div className="nav-container">
-          {/* Logo */}
-          <Link to="/dashboard" className="nav-logo">
-            <span className="logo-text">WINZO</span>
-          </Link>
+    <nav className={`simplified-nav ${isScrolled ? 'scrolled' : ''}`}>
+      <div className="nav-container">
+        {/* Logo */}
+        <Link to="/" className="nav-logo">
+          <span className="logo-text">WINZO</span>
+        </Link>
 
-          {/* Primary Navigation */}
-          <div className="nav-primary">
-            {primaryNavItems.map((item) => {
-              const IconComponent = item.icon;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
-                  title={item.description}
-                >
-                  <IconComponent size="sm" className="nav-icon" />
-                  <span className="nav-label">{item.label}</span>
-                </Link>
-              );
-            })}
+        {/* Desktop Navigation */}
+        <div className="nav-desktop">
+          <div className="nav-links">
+            <Link to="/dashboard" className="nav-link">Dashboard</Link>
+            <Link to="/sports" className="nav-link">Sports</Link>
+            <Link to="/wallet" className="nav-link">Wallet</Link>
+            <Link to="/history" className="nav-link">History</Link>
           </div>
 
-          {/* Quick Actions */}
           <div className="nav-actions">
-            {quickActions.map((action) => {
-              const IconComponent = action.icon;
-              return (
-                <button
-                  key={action.label}
-                  className={`winzo-btn winzo-btn-${action.color} winzo-btn-sm`}
-                  onClick={action.action}
-                >
-                  <IconComponent size="sm" className="action-icon" />
-                  <span className="action-label">{action.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* User Menu */}
-          <div className="nav-user" ref={userMenuRef}>
             {user ? (
               <>
-                <button
-                  className="user-menu-toggle"
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  aria-label="User menu"
-                >
-                  <UserIcon size="sm" className="user-avatar" />
+                <div className="user-info">
                   <span className="user-name">{user.name}</span>
-                  <span className="user-balance">${user.balance.toFixed(2)}</span>
+                  <span className="user-balance">{formatBalance(user.balance)}</span>
+                </div>
+                <button onClick={onLogout} className="btn btn-outline btn-sm">
+                  Logout
                 </button>
-
-                {showUserMenu && (
-                  <div className="user-menu">
-                    <div className="user-menu-header">
-                      <span className="user-menu-name">{user.name}</span>
-                      <span className="user-menu-balance">${user.balance.toFixed(2)}</span>
-                    </div>
-                    
-                    <div className="user-menu-actions">
-                      <Link to="/profile" className="user-menu-item">
-                        <SettingsIcon size="sm" className="menu-icon" />
-                        <span>Settings</span>
-                      </Link>
-                      <Link to="/support" className="user-menu-item">
-                        <SupportIcon size="sm" className="menu-icon" />
-                        <span>Support</span>
-                      </Link>
-                      <Link to="/components" className="user-menu-item">
-                        <PaletteIcon size="sm" className="menu-icon" />
-                        <span>Components</span>
-                      </Link>
-                      <button 
-                        className="user-menu-item logout"
-                        onClick={onLogout}
-                      >
-                        <LogoutIcon size="sm" className="menu-icon" />
-                        <span>Logout</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
               </>
             ) : (
-              <Link to="/login" className="winzo-btn winzo-btn-primary">
-                Login
-              </Link>
+              <>
+                <Link to="/login" className="btn btn-primary btn-sm">
+                  Login
+                </Link>
+                <Link to="/register" className="btn btn-secondary btn-sm">
+                  Register
+                </Link>
+              </>
             )}
           </div>
         </div>
-      </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          className={`mobile-menu-btn ${isMobileMenuOpen ? 'active' : ''}`}
+          onClick={toggleMobileMenu}
+          aria-label="Toggle navigation menu"
+        >
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+        </button>
+      </div>
 
       {/* Mobile Navigation */}
-      <nav className="simplified-nav mobile-only">
-        <div className="mobile-nav-container">
-          {/* Mobile Header */}
-          <div className="mobile-nav-header">
-            <button
-              className="mobile-menu-toggle"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              <span className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}>
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </button>
-
-            <Link to="/dashboard" className="mobile-logo">
-              <span className="logo-text">WINZO</span>
+      <div className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-nav-content">
+          <div className="mobile-nav-links">
+            <Link to="/dashboard" className="mobile-nav-link">
+              <span className="nav-icon">📊</span>
+              Dashboard
             </Link>
+            <Link to="/sports" className="mobile-nav-link">
+              <span className="nav-icon">⚽</span>
+              Sports
+            </Link>
+            <Link to="/wallet" className="mobile-nav-link">
+              <span className="nav-icon">💰</span>
+              Wallet
+            </Link>
+            <Link to="/history" className="mobile-nav-link">
+              <span className="nav-icon">📈</span>
+              History
+            </Link>
+          </div>
 
-            {user && (
-              <div className="mobile-user-info">
-                <span className="mobile-balance">${user.balance.toFixed(2)}</span>
+          <div className="mobile-nav-actions">
+            {user ? (
+              <>
+                <div className="mobile-user-info">
+                  <div className="mobile-user-name">{user.name}</div>
+                  <div className="mobile-user-balance">{formatBalance(user.balance)}</div>
+                </div>
+                <button onClick={onLogout} className="btn btn-outline btn-sm full-width">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <div className="mobile-auth-buttons">
+                <Link to="/login" className="btn btn-primary btn-sm full-width">
+                  Login
+                </Link>
+                <Link to="/register" className="btn btn-secondary btn-sm full-width">
+                  Register
+                </Link>
               </div>
             )}
           </div>
-
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && (
-            <div className="mobile-menu" ref={mobileMenuRef}>
-              {/* Primary Navigation */}
-              <div className="mobile-nav-section">
-                <h3 className="mobile-section-title">Navigation</h3>
-                {primaryNavItems.map((item) => {
-                  const IconComponent = item.icon;
-                  return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={`mobile-nav-item ${isActive(item.path) ? 'active' : ''}`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <IconComponent size="sm" className="mobile-nav-icon" />
-                      <div className="mobile-nav-content">
-                        <span className="mobile-nav-label">{item.label}</span>
-                        <span className="mobile-nav-description">{item.description}</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-
-              {/* Quick Actions */}
-              <div className="mobile-nav-section">
-                <h3 className="mobile-section-title">Quick Actions</h3>
-                <div className="mobile-quick-actions">
-                  {quickActions.map((action) => {
-                    const IconComponent = action.icon;
-                    return (
-                      <button
-                        key={action.label}
-                        className={`winzo-btn winzo-btn-${action.color}`}
-                        onClick={() => {
-                          action.action();
-                          setIsMobileMenuOpen(false);
-                        }}
-                      >
-                        <IconComponent size="sm" className="action-icon" />
-                        <span className="action-label">{action.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* User Actions */}
-              {user && (
-                <div className="mobile-nav-section">
-                  <h3 className="mobile-section-title">Account</h3>
-                  <div className="mobile-user-actions">
-                    <Link to="/profile" className="mobile-user-item">
-                      <SettingsIcon size="sm" className="menu-icon" />
-                      <span>Settings</span>
-                    </Link>
-                    <Link to="/support" className="mobile-user-item">
-                      <SupportIcon size="sm" className="menu-icon" />
-                      <span>Support</span>
-                    </Link>
-                    <Link to="/components" className="mobile-user-item">
-                      <PaletteIcon size="sm" className="menu-icon" />
-                      <span>Components</span>
-                    </Link>
-                    <button 
-                      className="mobile-user-item logout"
-                      onClick={() => {
-                        onLogout?.();
-                        setIsMobileMenuOpen(false);
-                      }}
-                    >
-                      <LogoutIcon size="sm" className="menu-icon" />
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
-      </nav>
+      </div>
 
-      {/* Mobile Menu Backdrop */}
+      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
-          className="mobile-menu-backdrop"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
+        <div className="mobile-overlay" onClick={toggleMobileMenu}></div>
       )}
-    </>
+    </nav>
   );
 };
 
