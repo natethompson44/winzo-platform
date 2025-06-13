@@ -15,20 +15,31 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const testApiConnection = async () => {
+  const testApiConnectionHandler = async () => {
     try {
       console.log('🧪 Testing API connection...');
       console.log('🔗 API Base URL:', API_CONFIG.BASE_URL);
       console.log('🔗 Login Endpoint:', API_ENDPOINTS.LOGIN);
       console.log('🔗 Full URL:', `${API_CONFIG.BASE_URL}${API_ENDPOINTS.LOGIN}`);
       
-      const response = await apiClient.get('/api/health');
-      console.log('✅ Health check response:', response.data);
+      // Test direct fetch to health endpoint
+      console.log('🔗 Testing direct fetch to health endpoint...');
+      const healthResponse = await fetch(`${API_CONFIG.BASE_URL}/health`);
+      console.log('✅ Direct health check response:', await healthResponse.text());
+      
+      // Test axios client
+      console.log('🔗 Testing axios client...');
+      const response = await apiClient.get('/health');
+      console.log('✅ Axios health check response:', response.data);
+      
       setError('API connection successful! Check console for details.');
     } catch (error: any) {
       console.error('❌ API connection failed:', error);
       console.error('Response data:', error.response?.data);
       console.error('Response status:', error.response?.status);
+      console.error('Response headers:', error.response?.headers);
+      console.error('Request URL:', error.config?.url);
+      console.error('Request method:', error.config?.method);
       setError(`API connection failed: ${error.message}`);
     }
   };
@@ -101,7 +112,7 @@ const Login: React.FC = () => {
         <p>Username: testuser2</p>
         <p>Password: testuser2</p>
         <button 
-          onClick={testApiConnection}
+          onClick={testApiConnectionHandler}
           className="winzo-btn winzo-btn-secondary"
           style={{ marginTop: '10px' }}
         >

@@ -67,6 +67,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
       console.log('🔗 Making login request to:', `${API_CONFIG.BASE_URL}${API_ENDPOINTS.LOGIN}`);
+      console.log('🔗 Axios baseURL:', apiClient.defaults.baseURL);
+      console.log('🔗 Full request URL will be:', `${apiClient.defaults.baseURL}${API_ENDPOINTS.LOGIN}`);
+      
       const response = await apiClient.post(API_ENDPOINTS.LOGIN, {
         username,
         password
@@ -85,6 +88,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Response data:', error.response?.data);
       console.error('Response status:', error.response?.status);
       console.error('Response headers:', error.response?.headers);
+      console.error('Request URL:', error.config?.url);
+      console.error('Request method:', error.config?.method);
+      console.error('Request baseURL:', error.config?.baseURL);
       return false;
     }
   };

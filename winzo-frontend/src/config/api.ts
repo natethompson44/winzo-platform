@@ -1,6 +1,14 @@
 // API Configuration for WINZO Frontend
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://winzo-platform-production.up.railway.app';
 
+// Alternative Railway URLs to try if the main one fails
+const ALTERNATIVE_URLS = [
+  'https://winzo-platform-production.up.railway.app',
+  'https://winzo-platform.up.railway.app',
+  'https://winzo-backend-production.up.railway.app',
+  'https://winzo-backend.up.railway.app'
+];
+
 export const API_ENDPOINTS = {
   // Sports endpoints
   SPORTS: '/api/sports',
@@ -24,7 +32,8 @@ export const API_ENDPOINTS = {
 
 export const API_CONFIG = {
   BASE_URL: API_BASE_URL,
-  TIMEOUT: 10000
+  TIMEOUT: 10000,
+  ALTERNATIVE_URLS
 };
 
 // Helper function for API error handling
@@ -40,6 +49,30 @@ export const handleApiError = (error: any): string => {
   }
 };
 
+// Helper function to test API connectivity
+export const testApiConnection = async (): Promise<string> => {
+  for (const url of [API_BASE_URL, ...ALTERNATIVE_URLS]) {
+    try {
+      console.log(`🔗 Testing API connection to: ${url}/health`);
+      const response = await fetch(`${url}/health`, {
+        method: 'GET'
+      });
+      
+      if (response.ok) {
+        console.log(`✅ API connection successful to: ${url}`);
+        return url;
+      }
+    } catch (error) {
+      console.log(`❌ API connection failed for: ${url}`, error);
+    }
+  }
+  
+  console.log('❌ All API URLs failed');
+  return API_BASE_URL; // Return default as fallback
+};
+
 console.log('\n🔗 API Base URL:', API_BASE_URL);
 console.log('🌍 Environment:', process.env.NODE_ENV);
 console.log('🔗 Login Endpoint:', `${API_BASE_URL}/api/auth/login`);
+console.log('🔗 Health Endpoint:', `${API_BASE_URL}/health`);
+console.log('🔗 Alternative URLs:', ALTERNATIVE_URLS);
