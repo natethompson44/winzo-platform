@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   validateBetAmount, 
   validateWalletOperation,
@@ -45,8 +45,8 @@ const ValidatedInput: React.FC<ValidatedInputProps> = ({
   const [touched, setTouched] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: true });
 
-  // Validate input based on type
-  const validateInput = (inputValue: string): ValidationResult => {
+  // Validate input based on type - memoized with useCallback
+  const validateInput = useCallback((inputValue: string): ValidationResult => {
     switch (type) {
       case 'bet-amount':
         return validateBetAmount(inputValue, rules);
@@ -61,13 +61,13 @@ const ValidatedInput: React.FC<ValidatedInputProps> = ({
       default:
         return { isValid: true };
     }
-  };
+  }, [type, rules, walletBalance, operation]);
 
   // Update validation when value or dependencies change
   useEffect(() => {
     const result = validateInput(value);
     setValidationResult(result);
-  }, [value, walletBalance, operation, rules, type]);
+  }, [value, validateInput]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
