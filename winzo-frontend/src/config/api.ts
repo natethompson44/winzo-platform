@@ -19,7 +19,7 @@ export const API_ENDPOINTS = {
   // Auth endpoints
   LOGIN: '/api/auth/login',
   REGISTER: '/api/auth/register',
-  PROFILE: '/api/auth/profile'
+  PROFILE: '/api/auth/me'
 };
 
 export const API_CONFIG = {
@@ -42,3 +42,4 @@ export const handleApiError = (error: any): string => {
 
 console.log('\n🔗 API Base URL:', API_BASE_URL);
 console.log('🌍 Environment:', process.env.NODE_ENV);
+console.log('🔗 Login Endpoint:', `${API_BASE_URL}/api/auth/login`);

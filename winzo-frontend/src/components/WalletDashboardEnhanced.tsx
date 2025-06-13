@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import './WalletDashboard.css';
+import { API_CONFIG, API_ENDPOINTS } from '../config/api';
 
 interface WalletBalance {
   balance: number;
@@ -76,7 +77,7 @@ const WalletDashboardEnhanced: React.FC = () => {
   const [showTransactions, setShowTransactions] = useState(false);
   const [loadingTransactions, setLoadingTransactions] = useState(false);
 
-  const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  const API_BASE = API_CONFIG.BASE_URL;
 
   const fetchWalletData = useCallback(async () => {
     try {
@@ -87,10 +88,10 @@ const WalletDashboardEnhanced: React.FC = () => {
       }
 
       const [balanceResponse, statsResponse] = await Promise.all([
-        axios.get(`${API_BASE}/wallet/balance`, {
+        axios.get(`${API_BASE}${API_ENDPOINTS.WALLET_BALANCE}`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${API_BASE}/wallet/stats`, {
+        axios.get(`${API_BASE}/api/wallet/stats`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
@@ -145,7 +146,7 @@ const WalletDashboardEnhanced: React.FC = () => {
         return;
       }
 
-      const response = await axios.get(`${API_BASE}/wallet/transactions`, {
+      const response = await axios.get(`${API_BASE}${API_ENDPOINTS.WALLET_TRANSACTIONS}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTransactions(response.data.data?.transactions || []);
@@ -180,7 +181,7 @@ const WalletDashboardEnhanced: React.FC = () => {
         return;
       }
 
-      const response = await axios.post(`${API_BASE}/wallet/add-funds`, {
+      const response = await axios.post(`${API_BASE}${API_ENDPOINTS.WALLET_DEPOSIT}`, {
         amount: parseFloat(addFundsAmount),
         method: selectedPaymentMethod
       }, {
@@ -213,7 +214,7 @@ const WalletDashboardEnhanced: React.FC = () => {
         return;
       }
 
-      const response = await axios.post(`${API_BASE}/wallet/withdraw`, {
+      const response = await axios.post(`${API_BASE}${API_ENDPOINTS.WALLET_WITHDRAW}`, {
         amount: parseFloat(withdrawAmount),
         method: selectedWithdrawMethod,
         details: withdrawDetails

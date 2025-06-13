@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { APIError, WinzoLoading, EmptyState } from './ErrorBoundary';
 import EnhancedBetSlip from './EnhancedBetSlip';
 import { formatCurrency } from '../utils/numberUtils';
+import { API_CONFIG, API_ENDPOINTS } from '../config/api';
 import './SportsBetting.css';
 
 interface Sport {
@@ -143,9 +144,9 @@ const SportsBettingEnhanced: React.FC = () => {
 
   const fetchWalletBalance = useCallback(async () => {
     try {
-      const response = await fetch('/api/wallet/balance', {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.WALLET_BALANCE}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 
@@ -167,9 +168,9 @@ const SportsBettingEnhanced: React.FC = () => {
       setLoading(true);
       setError('');
       
-      const response = await fetch('/api/sports', {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.SPORTS}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 
@@ -194,9 +195,9 @@ const SportsBettingEnhanced: React.FC = () => {
       setLoading(true);
       setError('');
       
-      const response = await fetch(`/api/sports/${sportKey}/events`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/api/sports/${sportKey}/events`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
 
@@ -263,50 +264,40 @@ const SportsBettingEnhanced: React.FC = () => {
 
   const placeBets = async (bets: BetSlipItem[], amounts: { [key: string]: number }) => {
     try {
-      const betPromises = bets.map(async (bet) => {
-        const amount = amounts[bet.id];
-        if (!amount || amount < 1) return null;
-
-        const response = await fetch('/api/sports/place-bet', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify({
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.PLACE_BET}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify({
+          bets: bets.map(bet => ({
             eventId: bet.eventId,
             oddsId: bet.oddsId,
-            amount,
+            amount: amounts[bet.id] || 10,
             market: bet.market,
             outcome: bet.outcome
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to place bet: ${response.statusText}`);
-        }
-
-        return await response.json();
+          }))
+        })
       });
 
-      const results = await Promise.all(betPromises);
-      const successfulBets = results.filter(result => result !== null);
-
-      if (successfulBets.length > 0) {
-        // Update wallet balance
-        await fetchWalletBalance();
-        
-        // Show success message
-        alert(`🎉 ${successfulBets.length} bet(s) placed successfully! Big Win Energy activated!`);
-        
-        // Close bet slip
-        setIsBetSlipOpen(false);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // Clear bet slip and show success
+          setBetSlipItems([]);
+          alert('Bets placed successfully! Big Win Energy! 🎉');
+          // Refresh wallet balance
+          fetchWalletBalance();
+        } else {
+          alert(result.message || 'Failed to place bets');
+        }
+      } else {
+        alert('Failed to place bets. Please try again.');
       }
-
     } catch (error) {
       console.error('Error placing bets:', error);
       alert('Error placing bets. Please try again.');
-      throw error;
     }
   };
 
