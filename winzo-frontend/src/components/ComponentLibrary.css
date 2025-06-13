@@ -1,0 +1,269 @@
+/* Component Library Styles - Using Design System */
+
+.component-library {
+  min-height: 100vh;
+  background: var(--bg-neutral);
+  padding: var(--space-8) 0;
+}
+
+.library-header {
+  text-align: center;
+  margin-bottom: var(--space-12);
+  padding: var(--space-8) 0;
+  background: var(--bg-primary);
+  color: var(--text-inverse);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-8);
+}
+
+.library-header h1 {
+  margin-bottom: var(--space-2);
+}
+
+.library-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+/* Component Sections */
+.component-section {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+}
+
+.component-section h2 {
+  margin-bottom: var(--space-2);
+  color: var(--text-primary);
+}
+
+.component-section > p {
+  margin-bottom: var(--space-6);
+  color: var(--text-secondary);
+}
+
+/* Component Grids */
+.component-grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .component-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+.component-group {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.component-group h3 {
+  margin-bottom: var(--space-4);
+  color: var(--text-primary);
+}
+
+/* Button Groups */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.button-group .btn {
+  margin-bottom: var(--space-2);
+}
+
+/* Form Examples */
+.form-examples {
+  max-width: 600px;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+/* Card Grid */
+.card-grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* Badge Examples */
+.badge-examples {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .badge-examples {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+.badge-group {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.badge-usage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.usage-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Alert Examples */
+.alert-examples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Typography Examples */
+.typography-examples {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .typography-examples {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+.typography-group {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.text-sizes,
+.font-weights,
+.text-colors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.text-sizes p,
+.font-weights p,
+.text-colors p {
+  margin: 0;
+  padding: var(--space-2);
+  background: var(--color-neutral-50);
+  border-radius: var(--radius-sm);
+}
+
+/* Spinner for Loading States */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+  margin-right: var(--space-2);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .component-library {
+    padding: var(--space-4) 0;
+  }
+  
+  .library-header {
+    padding: var(--space-6) var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+  
+  .component-section {
+    padding: var(--space-4);
+  }
+  
+  .component-group,
+  .badge-group,
+  .typography-group {
+    padding: var(--space-4);
+  }
+  
+  .button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .button-group .btn {
+    width: 100%;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .component-section,
+  .component-group,
+  .badge-group,
+  .typography-group {
+    border-width: 2px;
+  }
+  
+  .text-sizes p,
+  .font-weights p,
+  .text-colors p {
+    border: 1px solid var(--text-primary);
+  }
+}
+
+/* Focus States */
+.component-section:focus-within {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+} 

@@ -1,72 +1,13 @@
-/* WINZO App Global Styles - Big Win Energy Foundation */
+/* WINZO App Global Styles - Phase 1 Design System Implementation */
 
 /* Import Google Fonts for WINZO Typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* Import Design System */
+@import './styles/design-system.css';
 
 /* Import responsive design system */
 @import './styles/responsive.css';
-
-/* WINZO Color System - Following Design Philosophy */
-:root {
-  /* Primary Brand Colors */
-  --winzo-navy: #1a365d;
-  --winzo-teal: #00b4d8;
-  
-  /* Success & Wins */
-  --win-green: #10b981;
-  --big-win-gold: #f59e0b;
-  
-  /* Warnings & Alerts */
-  --caution-orange: #f97316;
-  --danger-red: #ef4444;
-  
-  /* Neutrals */
-  --white: #ffffff;
-  --light-gray: #f8fafc;
-  --medium-gray: #64748b;
-  --dark-gray: #334155;
-  --black: #0f172a;
-  
-  /* WINZO Gradients */
-  --primary-gradient: linear-gradient(135deg, #1a365d 0%, #2d5a87 100%);
-  --win-gradient: linear-gradient(135deg, #10b981 0%, #00b4d8 100%);
-  --big-win-gradient: linear-gradient(135deg, #f59e0b 0%, #00b4d8 100%);
-  --teal-gradient: linear-gradient(135deg, #00b4d8 0%, #0891b2 100%);
-  
-  /* Typography Scale */
-  --font-family-primary: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  
-  /* Spacing Scale */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-  
-  /* Border Radius */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 20px;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-winzo: 0 8px 25px rgba(0, 180, 216, 0.15);
-  
-  /* Z-Index Scale */
-  --z-dropdown: 1000;
-  --z-sticky: 1020;
-  --z-fixed: 1030;
-  --z-modal-backdrop: 1040;
-  --z-modal: 1050;
-  --z-popover: 1060;
-  --z-tooltip: 1070;
-}
 
 /* Global Reset & Base Styles */
 * {
@@ -85,9 +26,9 @@ html {
 
 body {
   font-family: var(--font-family-primary);
-  font-weight: 400;
-  color: var(--white);
-  background: var(--winzo-navy);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-primary);
+  background: var(--bg-neutral);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -97,7 +38,7 @@ body {
 /* WINZO App Container */
 .winzo-app {
   min-height: 100vh;
-  background: var(--winzo-navy);
+  background: var(--bg-neutral);
   position: relative;
 }
 
@@ -121,8 +62,8 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: var(--primary-gradient);
-  gap: 1rem;
+  background: var(--bg-primary);
+  gap: var(--space-4);
 }
 
 /* Bet Slip Container */
@@ -131,54 +72,58 @@ body {
   z-index: var(--z-modal);
 }
 
-/* WINZO Typography Classes - Following Design Philosophy */
+/* WINZO Typography Classes - Using Design System */
 .winzo-heading {
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--winzo-teal);
-  line-height: 1.2;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-secondary);
+  line-height: var(--leading-tight);
 }
 
 .winzo-body {
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--white);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--leading-relaxed);
+  color: var(--text-primary);
 }
 
 .winzo-emphasis {
-  font-weight: 600;
-  color: var(--winzo-teal);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary);
 }
 
 .winzo-small {
-  font-size: 0.875rem;
-  color: var(--medium-gray);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
 
-/* WINZO Button System */
+/* WINZO Button System - Using Design System */
 .winzo-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-family-primary);
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-base);
   line-height: 1;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.2s ease;
   min-height: 44px; /* Touch target minimum */
+  min-width: 44px;  /* Touch target minimum */
   user-select: none;
   position: relative;
   overflow: hidden;
 }
 
 .winzo-btn:focus {
-  outline: 3px solid var(--winzo-teal);
+  outline: 3px solid var(--color-secondary);
   outline-offset: 2px;
 }
 
@@ -186,55 +131,60 @@ body {
   transform: translateY(1px);
 }
 
-/* Primary Button - Electric Teal, Bold, Confident */
+/* Primary Button - Using Design System */
 .winzo-btn-primary {
-  background: var(--teal-gradient);
-  color: var(--white);
-  box-shadow: var(--shadow-winzo);
+  background: var(--color-primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
 }
 
 .winzo-btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(0, 180, 216, 0.25);
+  background: var(--color-primary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
 .winzo-btn-primary:active {
   transform: translateY(0);
 }
 
-/* Secondary Button - Navy Outline, Sophisticated */
+/* Secondary Button - Using Design System */
 .winzo-btn-secondary {
-  background: transparent;
-  color: var(--winzo-teal);
-  border: 2px solid var(--winzo-teal);
+  background: var(--color-secondary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
 }
 
 .winzo-btn-secondary:hover:not(:disabled) {
-  background: rgba(0, 180, 216, 0.1);
+  background: var(--color-secondary-light);
   transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Success Button - Win Green, Celebratory */
+/* Success Button - Using Design System */
 .winzo-btn-success {
-  background: var(--win-gradient);
-  color: var(--white);
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  background: var(--color-success);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
 }
 
 .winzo-btn-success:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+  background: var(--color-success-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Danger Button - Subtle Red, Not Alarming */
+/* Danger Button - Using Design System */
 .winzo-btn-danger {
-  background: var(--danger-red);
-  color: var(--white);
+  background: var(--color-danger);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
 }
 
 .winzo-btn-danger:hover:not(:disabled) {
-  background: #dc2626;
+  background: var(--color-danger-light);
   transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Disabled Button State */
@@ -245,20 +195,19 @@ body {
   box-shadow: none !important;
 }
 
-/* WINZO Card System */
+/* WINZO Card System - Using Design System */
 .winzo-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  backdrop-filter: blur(10px);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
 
 .winzo-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .winzo-card-glass {
@@ -267,89 +216,81 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* WINZO Input System */
+/* WINZO Input System - Using Design System */
 .winzo-input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--border-neutral);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--white);
   font-family: var(--font-family-primary);
-  font-size: 1rem;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background: var(--bg-neutral);
   transition: all 0.2s ease;
-  min-height: 44px;
+  min-height: 44px; /* Touch target minimum */
 }
 
 .winzo-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted);
 }
 
 .winzo-input:focus {
   outline: none;
-  border-color: var(--winzo-teal);
+  border-color: var(--color-secondary);
   box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
-  background: rgba(255, 255, 255, 0.15);
 }
 
 .winzo-input:invalid {
-  border-color: var(--danger-red);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  border-color: var(--color-danger);
 }
 
-/* WINZO Badge System */
+/* WINZO Badge System - Using Design System */
 .winzo-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--white);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  min-height: 20px;
 }
 
 .winzo-badge-success {
-  background: rgba(16, 185, 129, 0.2);
-  color: var(--win-green);
-  border-color: rgba(16, 185, 129, 0.3);
+  background: var(--color-success);
+  color: var(--text-inverse);
 }
 
 .winzo-badge-warning {
-  background: rgba(249, 115, 22, 0.2);
-  color: var(--caution-orange);
-  border-color: rgba(249, 115, 22, 0.3);
+  background: var(--color-warning);
+  color: var(--text-inverse);
 }
 
 .winzo-badge-info {
-  background: rgba(0, 180, 216, 0.2);
-  color: var(--winzo-teal);
-  border-color: rgba(0, 180, 216, 0.3);
+  background: var(--color-secondary);
+  color: var(--text-inverse);
 }
 
-.winzo-badge-gold {
-  background: rgba(245, 158, 11, 0.2);
-  color: var(--big-win-gold);
-  border-color: rgba(245, 158, 11, 0.3);
+.winzo-badge-danger {
+  background: var(--color-danger);
+  color: var(--text-inverse);
 }
 
-/* WINZO Loading System */
+/* WINZO Loading States - Using Design System */
 .winzo-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-xl);
+  gap: var(--space-2);
+  padding: var(--space-4);
 }
 
 .winzo-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(0, 180, 216, 0.2);
-  border-top: 3px solid var(--winzo-teal);
-  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--border-neutral);
+  border-top: 3px solid var(--color-secondary);
+  border-radius: var(--radius-full);
   animation: winzoSpin 1s linear infinite;
 }
 
@@ -358,43 +299,42 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* WINZO Alert System */
+/* WINZO Alert System - Using Design System */
 .winzo-alert {
-  padding: var(--spacing-md);
+  padding: var(--space-4);
   border-radius: var(--radius-md);
   border: 1px solid;
-  margin-bottom: var(--spacing-md);
-  font-weight: 500;
+  margin-bottom: var(--space-4);
 }
 
 .winzo-alert-success {
   background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: var(--win-green);
+  border-color: var(--color-success);
+  color: var(--color-success-dark);
 }
 
 .winzo-alert-warning {
-  background: rgba(249, 115, 22, 0.1);
-  border-color: rgba(249, 115, 22, 0.3);
-  color: var(--caution-orange);
+  background: rgba(245, 158, 11, 0.1);
+  border-color: var(--color-warning);
+  color: var(--color-warning-dark);
 }
 
 .winzo-alert-error {
   background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: var(--danger-red);
+  border-color: var(--color-danger);
+  color: var(--color-danger-dark);
 }
 
 .winzo-alert-info {
   background: rgba(0, 180, 216, 0.1);
-  border-color: rgba(0, 180, 216, 0.3);
-  color: var(--winzo-teal);
+  border-color: var(--color-secondary);
+  color: var(--color-secondary-dark);
 }
 
-/* WINZO Grid System */
+/* WINZO Grid System - Using Design System */
 .winzo-grid {
   display: grid;
-  gap: var(--spacing-md);
+  gap: var(--space-4);
 }
 
 .winzo-grid-2 { grid-template-columns: repeat(2, 1fr); }
@@ -402,57 +342,52 @@ body {
 .winzo-grid-4 { grid-template-columns: repeat(4, 1fr); }
 .winzo-grid-auto { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 
-/* WINZO Flex System */
+/* WINZO Flexbox Utilities - Using Design System */
 .winzo-flex { display: flex; }
 .winzo-flex-col { flex-direction: column; }
 .winzo-flex-center { align-items: center; justify-content: center; }
 .winzo-flex-between { justify-content: space-between; }
 .winzo-flex-wrap { flex-wrap: wrap; }
 
-/* WINZO Spacing Utilities */
-.winzo-p-xs { padding: var(--spacing-xs); }
-.winzo-p-sm { padding: var(--spacing-sm); }
-.winzo-p-md { padding: var(--spacing-md); }
-.winzo-p-lg { padding: var(--spacing-lg); }
-.winzo-p-xl { padding: var(--spacing-xl); }
+/* WINZO Spacing Utilities - Using Design System */
+.winzo-p-xs { padding: var(--space-1); }
+.winzo-p-sm { padding: var(--space-2); }
+.winzo-p-md { padding: var(--space-4); }
+.winzo-p-lg { padding: var(--space-6); }
+.winzo-p-xl { padding: var(--space-8); }
 
-.winzo-m-xs { margin: var(--spacing-xs); }
-.winzo-m-sm { margin: var(--spacing-sm); }
-.winzo-m-md { margin: var(--spacing-md); }
-.winzo-m-lg { margin: var(--spacing-lg); }
-.winzo-m-xl { margin: var(--spacing-xl); }
+.winzo-m-xs { margin: var(--space-1); }
+.winzo-m-sm { margin: var(--space-2); }
+.winzo-m-md { margin: var(--space-4); }
+.winzo-m-lg { margin: var(--space-6); }
+.winzo-m-xl { margin: var(--space-8); }
 
-/* WINZO Text Utilities */
+/* WINZO Text Utilities - Using Design System */
 .winzo-text-center { text-align: center; }
 .winzo-text-left { text-align: left; }
 .winzo-text-right { text-align: right; }
 
-.winzo-text-xs { font-size: 0.75rem; }
-.winzo-text-sm { font-size: 0.875rem; }
-.winzo-text-base { font-size: 1rem; }
-.winzo-text-lg { font-size: 1.125rem; }
-.winzo-text-xl { font-size: 1.25rem; }
-.winzo-text-2xl { font-size: 1.5rem; }
-.winzo-text-3xl { font-size: 1.875rem; }
-.winzo-text-4xl { font-size: 2.25rem; }
+.winzo-text-xs { font-size: var(--text-xs); }
+.winzo-text-sm { font-size: var(--text-sm); }
+.winzo-text-base { font-size: var(--text-base); }
+.winzo-text-lg { font-size: var(--text-lg); }
+.winzo-text-xl { font-size: var(--text-xl); }
+.winzo-text-2xl { font-size: var(--text-2xl); }
 
-.winzo-font-normal { font-weight: 400; }
-.winzo-font-medium { font-weight: 500; }
-.winzo-font-semibold { font-weight: 600; }
-.winzo-font-bold { font-weight: 700; }
-.winzo-font-extrabold { font-weight: 800; }
+.winzo-font-normal { font-weight: var(--font-weight-normal); }
+.winzo-font-medium { font-weight: var(--font-weight-medium); }
+.winzo-font-bold { font-weight: var(--font-weight-bold); }
 
-/* WINZO Color Utilities */
-.winzo-text-white { color: var(--white); }
-.winzo-text-teal { color: var(--winzo-teal); }
-.winzo-text-navy { color: var(--winzo-navy); }
-.winzo-text-green { color: var(--win-green); }
-.winzo-text-gold { color: var(--big-win-gold); }
-.winzo-text-orange { color: var(--caution-orange); }
-.winzo-text-red { color: var(--danger-red); }
-.winzo-text-gray { color: var(--medium-gray); }
+/* WINZO Color Utilities - Using Design System */
+.winzo-text-white { color: var(--text-inverse); }
+.winzo-text-primary { color: var(--color-primary); }
+.winzo-text-secondary { color: var(--color-secondary); }
+.winzo-text-success { color: var(--color-success); }
+.winzo-text-warning { color: var(--color-warning); }
+.winzo-text-danger { color: var(--color-danger); }
+.winzo-text-muted { color: var(--text-muted); }
 
-/* Responsive Design */
+/* Responsive Design - Using Design System */
 @media (max-width: 640px) {
   .winzo-grid-2,
   .winzo-grid-3,
@@ -461,8 +396,8 @@ body {
   }
   
   .winzo-btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
   }
   
   html {
@@ -491,7 +426,7 @@ body {
   }
 }
 
-/* Touch Device Optimizations */
+/* Touch Device Optimizations - Using Design System */
 @media (hover: none) and (pointer: coarse) {
   .winzo-btn,
   .winzo-card {
@@ -507,7 +442,7 @@ body {
   }
 }
 
-/* Accessibility Improvements */
+/* Accessibility Improvements - Using Design System */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -533,14 +468,14 @@ body {
   }
 }
 
-/* Focus States for Accessibility */
+/* Focus States for Accessibility - Using Design System */
 .winzo-btn:focus-visible,
 .winzo-input:focus-visible {
-  outline: 3px solid var(--winzo-teal);
+  outline: 3px solid var(--color-secondary);
   outline-offset: 2px;
 }
 
-/* Print Styles */
+/* Print Styles - Using Design System */
 @media print {
   .winzo-app {
     background: white;
@@ -554,45 +489,32 @@ body {
   }
 }
 
-/* Light Mode Support */
-@media (prefers-color-scheme: light) {
-  :root {
-    --white: #0f172a;
-    --black: #ffffff;
-    --medium-gray: #64748b;
-  }
-}
-
-/* High DPI Display Support */
+/* High DPI Display Support - Using Design System */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .winzo-spinner {
     border-width: 2px;
   }
 }
 
-/* Mobile-First Responsive Breakpoints */
+/* Mobile-First Responsive Breakpoints - Using Design System */
 @media (max-width: 480px) {
   .app-main {
-    padding: 0.5rem;
+    padding: var(--space-2);
     padding-bottom: 120px;
   }
   
   .winzo-card {
-    padding: var(--spacing-md);
+    padding: var(--space-4);
   }
   
-  .winzo-text-4xl {
-    font-size: 1.75rem;
-  }
-  
-  .winzo-text-3xl {
-    font-size: 1.5rem;
+  .winzo-text-2xl {
+    font-size: var(--text-xl);
   }
 }
 
 @media (max-width: 768px) {
   .app-main {
-    padding: 1rem;
+    padding: var(--space-4);
     padding-bottom: 100px;
   }
   
@@ -603,21 +525,21 @@ body {
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .app-main {
-    padding: 1.5rem;
+    padding: var(--space-6);
     padding-bottom: 80px;
   }
 }
 
 @media (min-width: 1025px) {
   .app-main {
-    padding: 2rem;
+    padding: var(--space-8);
     padding-bottom: 60px;
     max-width: 1400px;
     margin: 0 auto;
   }
 }
 
-/* Performance Optimizations */
+/* Performance Optimizations - Using Design System */
 .winzo-card,
 .winzo-btn,
 .winzo-input {
@@ -629,222 +551,45 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Using Design System */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-neutral-100);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--winzo-teal);
-  border-radius: 4px;
+  background: var(--color-neutral-400);
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0891b2;
+  background: var(--color-neutral-500);
 }
 
-/* Selection Styles */
+/* Selection Styles - Using Design System */
 ::selection {
-  background: rgba(0, 180, 216, 0.3);
-  color: var(--white);
+  background: var(--color-secondary);
+  color: var(--text-inverse);
 }
 
 ::-moz-selection {
-  background: rgba(0, 180, 216, 0.3);
-  color: var(--white);
+  background: var(--color-secondary);
+  color: var(--text-inverse);
 }
 
-/* WINZO App Styles - Enhanced with Responsive Design System */
-
-/* ===== GLOBAL RESET & BASE STYLES ===== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
-  color: #333;
-  background-color: #f8fafc;
-}
-
-/* ===== APP LAYOUT ===== */
-.App {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.app-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.app-main {
-  flex: 1;
-  padding: var(--space-md);
-}
-
-@media (min-width: 768px) {
-  .app-main {
-    padding: var(--space-lg);
-  }
-}
-
-@media (min-width: 1024px) {
-  .app-main {
-    padding: var(--space-xl);
-  }
-}
-
-/* ===== LOADING STATES ===== */
-.app-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-/* ===== RESPONSIVE CONTAINER ===== */
-.page-container {
-  width: 100%;
-  max-width: var(--container-desktop);
-  margin: 0 auto;
-  padding: 0 var(--space-md);
-}
-
-@media (min-width: 768px) {
-  .page-container {
-    padding: 0 var(--space-lg);
-  }
-}
-
-@media (min-width: 1024px) {
-  .page-container {
-    padding: 0 var(--space-xl);
-  }
-}
-
-@media (min-width: 1440px) {
-  .page-container {
-    padding: 0 var(--space-2xl);
-  }
-}
-
-/* ===== RESPONSIVE GRID LAYOUTS ===== */
-.page-grid {
-  display: grid;
-  gap: var(--grid-gap-md);
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) {
-  .page-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--grid-gap-lg);
-  }
-}
-
-@media (min-width: 1024px) {
-  .page-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--grid-gap-xl);
-  }
-}
-
-@media (min-width: 1440px) {
-  .page-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-2xl);
-  }
-}
-
-/* ===== RESPONSIVE TYPOGRAPHY ===== */
-.page-title {
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  color: #2d3748;
-  margin-bottom: var(--space-lg);
-  line-height: 1.2;
-}
-
-@media (min-width: 768px) {
-  .page-title {
-    font-size: var(--text-4xl);
-    margin-bottom: var(--space-xl);
-  }
-}
-
-@media (min-width: 1024px) {
-  .page-title {
-    font-size: var(--text-5xl);
-    margin-bottom: var(--space-2xl);
-  }
-}
-
-.page-subtitle {
-  font-size: var(--text-lg);
-  color: #4a5568;
-  margin-bottom: var(--space-md);
-  line-height: 1.5;
-}
-
-@media (min-width: 768px) {
-  .page-subtitle {
-    font-size: var(--text-xl);
-    margin-bottom: var(--space-lg);
-  }
-}
-
-/* ===== RESPONSIVE CARD SYSTEM ===== */
-.content-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  padding: var(--space-lg);
-  border: 1px solid #e2e8f0;
-  transition: all 0.3s ease;
-}
-
-.content-card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-@media (min-width: 768px) {
-  .content-card {
-    padding: var(--space-xl);
-  }
-}
-
-/* ===== RESPONSIVE BUTTON SYSTEM ===== */
+/* Legacy Compatibility - Maintain old class names but use new system */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-2) var(--space-4);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: var(--font-weight-medium);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -854,53 +599,53 @@ body {
 
 @media (min-width: 768px) {
   .btn {
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--space-3) var(--space-6);
     font-size: var(--text-lg);
   }
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #00b4d8, #0077b6);
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+  background: var(--color-primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #0077b6, #005577);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.4);
+  background: var(--color-primary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn-secondary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  background: var(--color-secondary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-secondary:hover {
-  background: linear-gradient(135deg, #764ba2, #667eea);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: var(--color-secondary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
-/* ===== RESPONSIVE SPACING ===== */
+/* Layout Utilities - Using Design System */
 .section {
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-8);
 }
 
 @media (min-width: 768px) {
   .section {
-    margin-bottom: var(--space-3xl);
+    margin-bottom: var(--space-12);
   }
 }
 
 @media (min-width: 1024px) {
   .section {
-    margin-bottom: var(--space-4xl);
+    margin-bottom: var(--space-16);
   }
 }
 
-/* ===== RESPONSIVE UTILITIES ===== */
+/* Text Utilities - Using Design System */
 .text-center { text-align: center; }
 .text-left { text-align: left; }
 .text-right { text-align: right; }
@@ -915,14 +660,14 @@ body {
 .w-full { width: 100%; }
 .h-full { height: 100%; }
 
-.rounded { border-radius: 8px; }
-.rounded-lg { border-radius: 12px; }
-.rounded-xl { border-radius: 16px; }
+.rounded { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
 
-.shadow { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-.shadow-lg { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+.shadow { box-shadow: var(--shadow-sm); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
 
-/* ===== RESPONSIVE HIDE/SHOW ===== */
+/* Responsive Hide/Show - Using Design System */
 @media (max-width: 767px) {
   .mobile-only { display: block; }
   .desktop-only { display: none; }
@@ -933,7 +678,7 @@ body {
   .desktop-only { display: block; }
 }
 
-/* ===== ACCESSIBILITY ===== */
+/* Accessibility - Using Design System */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -946,16 +691,16 @@ body {
   border: 0;
 }
 
-/* Focus styles for accessibility */
+/* Focus styles for accessibility - Using Design System */
 .btn:focus,
 input:focus,
 select:focus,
 textarea:focus {
-  outline: 2px solid #00b4d8;
+  outline: 2px solid var(--color-secondary);
   outline-offset: 2px;
 }
 
-/* ===== RESPONSIVE ANIMATIONS ===== */
+/* Animations - Using Design System */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -980,7 +725,7 @@ textarea:focus {
   animation: slideUp 0.4s ease-out;
 }
 
-/* ===== RESPONSIVE PRINT STYLES ===== */
+/* Print Styles - Using Design System */
 @media print {
   .app-main {
     padding: 0;

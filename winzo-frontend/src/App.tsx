@@ -8,6 +8,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Navigation from './components/Navigation';
 import MobileNavigation from './components/MobileNavigation';
 import EnhancedNavigation from './components/EnhancedNavigation';
+import SimplifiedNavigation from './components/SimplifiedNavigation';
+import ComponentLibrary from './components/ComponentLibrary';
+import DesignSystemTest from './components/DesignSystemTest';
 import Login from './components/Login';
 import Register from './components/Register';
 import HomePage from './components/HomePage';
@@ -126,14 +129,14 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="app-layout">
-      {/* Responsive Navigation */}
-      {isMobile ? (
-        <MobileNavigation user={user} onLogout={logout} />
-      ) : isEnhanced ? (
-        <EnhancedNavigation user={user} onLogout={logout} />
-      ) : (
-        <Navigation user={user} onLogout={logout} />
-      )}
+      {/* Use Simplified Navigation */}
+      <SimplifiedNavigation 
+        user={user ? {
+          name: user.username,
+          balance: user.wallet_balance
+        } : undefined}
+        onLogout={logout} 
+      />
       
       <main className="app-main">
         <ErrorBoundary>
@@ -229,6 +232,24 @@ function App() {
                           >
                             <BettingHistory />
                           </ProgressiveLoading>
+                        </AppLayout>
+                      </ProtectedRoute>
+                    } />
+                    
+                    {/* Design System Component Library */}
+                    <Route path="/components" element={
+                      <ProtectedRoute>
+                        <AppLayout>
+                          <ComponentLibrary />
+                        </AppLayout>
+                      </ProtectedRoute>
+                    } />
+                    
+                    {/* Design System Test */}
+                    <Route path="/design-system-test" element={
+                      <ProtectedRoute>
+                        <AppLayout>
+                          <DesignSystemTest />
                         </AppLayout>
                       </ProtectedRoute>
                     } />

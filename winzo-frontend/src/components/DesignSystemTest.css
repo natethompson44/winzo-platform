@@ -1,0 +1,171 @@
+/* Design System Test Styles */
+
+.design-system-test {
+  min-height: 100vh;
+  background: var(--bg-neutral);
+  padding: var(--space-6);
+}
+
+.test-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.test-section {
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.test-section h2 {
+  margin-bottom: var(--space-4);
+  color: var(--text-primary);
+}
+
+/* Color Palette Test */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.color-swatch {
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  color: var(--text-inverse);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-swatch.primary {
+  background: var(--color-primary);
+}
+
+.color-swatch.secondary {
+  background: var(--color-secondary);
+}
+
+.color-swatch.success {
+  background: var(--color-success);
+}
+
+.color-swatch.warning {
+  background: var(--color-warning);
+}
+
+.color-swatch.danger {
+  background: var(--color-danger);
+}
+
+/* Typography Test */
+.typography-test {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.typography-test h1,
+.typography-test h2,
+.typography-test p {
+  margin: 0;
+}
+
+/* Button Test */
+.button-test {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Form Test */
+.form-test {
+  max-width: 400px;
+}
+
+/* Card Test */
+.card-test {
+  max-width: 400px;
+}
+
+/* Badge Test */
+.badge-test {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Alert Test */
+.alert-test {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Error Test */
+.error-test {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Touch Target Test */
+.touch-test {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.touch-test .btn {
+  position: relative;
+}
+
+.touch-test .btn::after {
+  content: attr(data-size);
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Test Footer */
+.test-footer {
+  text-align: center;
+  padding: var(--space-6);
+  background: var(--color-success);
+  color: var(--text-inverse);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-8);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .design-system-test {
+    padding: var(--space-4);
+  }
+  
+  .test-section {
+    padding: var(--space-4);
+  }
+  
+  .color-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .button-test,
+  .badge-test,
+  .touch-test {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+} 
