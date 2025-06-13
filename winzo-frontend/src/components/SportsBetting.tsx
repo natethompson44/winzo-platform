@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import apiClient from '../utils/axios';
-import { API_ENDPOINTS, handleApiError } from '../config/api';
+import { API_ENDPOINTS } from '../config/api';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import { formatCurrency } from '../utils/numberUtils';
 import { 
@@ -186,7 +186,7 @@ const SportsBetting: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error fetching sports:', error);
-      setError(handleApiError(error));
+      setError(error.message || 'Failed to load sports');
     } finally {
       setLoading(false);
     }
@@ -210,7 +210,7 @@ const SportsBetting: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error fetching odds:', error);
-      setError(handleApiError(error));
+      setError(error.message || 'Failed to load odds');
       setEvents([]);
     } finally {
       setEventsLoading(false);
@@ -333,7 +333,7 @@ const SportsBetting: React.FC = () => {
         alert(response.data.error || 'Failed to place bet');
       }
     } catch (error: any) {
-      alert(handleApiError(error));
+      alert(error.message || 'Failed to place bet');
     }
   };
 

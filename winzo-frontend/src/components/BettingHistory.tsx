@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/axios';
-import { API_ENDPOINTS, handleApiError } from '../config/api';
+import { API_ENDPOINTS } from '../config/api';
 import { formatCurrency, formatPercentage } from '../utils/numberUtils';
 import './BettingHistory.css';
 
@@ -129,7 +129,7 @@ const BettingHistory: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error fetching betting history:', error);
-      setError(handleApiError(error));
+      setError(error.message);
     } finally {
       setLoading(false);
     }

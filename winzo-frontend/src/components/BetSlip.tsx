@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import apiClient from '../utils/axios';
-import { API_ENDPOINTS, handleApiError } from '../config/api';
+import { API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
 import { formatCurrency } from '../utils/numberUtils';
 import ValidatedInput from './ValidatedInput';
 import './BetSlip.css';
+import { toast } from 'react-hot-toast';
 
 interface PlaceBetResponse {
   success: boolean;
@@ -89,13 +90,9 @@ const BetSlip: React.FC = () => {
         setPlaceBetError(response.data.error || 'Failed to place bets');
       }
     } catch (error: any) {
-      const errorMessage = handleApiError(error);
-      setPlaceBetError(errorMessage);
-      if (error.response?.status === 401) {
-        setPlaceBetError('Please log in to place bets');
-      } else if (error.response?.status === 400) {
-        setPlaceBetError(error.response.data.error || 'Invalid bet data');
-      }
+      const errorMessage = error.message || 'Failed to place bet';
+      console.error('Error placing bet:', error);
+      toast.error(errorMessage);
     } finally {
       setIsPlacingBet(false);
     }

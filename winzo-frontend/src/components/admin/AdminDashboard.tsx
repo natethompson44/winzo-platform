@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../../utils/axios';
-import { handleApiError } from '../../config/api';
 import toast from 'react-hot-toast';
 import './AdminDashboard.css';
 
@@ -62,7 +61,7 @@ const AdminDashboard: React.FC = () => {
       setLastUpdate(new Date());
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
-      toast.error(handleApiError(error));
+      toast.error(error.message);
       
       // Fallback data for development
       setMetrics({

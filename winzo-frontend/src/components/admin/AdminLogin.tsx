@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { handleApiError } from '../../config/api';
 import toast from 'react-hot-toast';
 import './AdminLogin.css';
 
@@ -36,7 +35,7 @@ const AdminLogin: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Admin login error:', error);
-      toast.error(handleApiError(error));
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

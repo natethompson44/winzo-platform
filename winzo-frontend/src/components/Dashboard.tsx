@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../utils/axios';
-import { API_ENDPOINTS, handleApiError } from '../config/api';
+import { API_ENDPOINTS } from '../config/api';
 import { formatCurrency, formatPercentage } from '../utils/numberUtils';
 import './Dashboard.css';
 

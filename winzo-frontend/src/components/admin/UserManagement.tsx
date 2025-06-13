@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../../utils/axios';
-import { handleApiError } from '../../config/api';
+import { API_ENDPOINTS } from '../../config/api';
 import toast from 'react-hot-toast';
 import './UserManagement.css';
 
@@ -63,7 +63,7 @@ const UserManagement: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error fetching users:', error);
-      toast.error(handleApiError(error));
+      toast.error(error.message || 'Failed to fetch users');
       
       // Fallback data for development
       setUsers([
@@ -129,25 +129,24 @@ const UserManagement: React.FC = () => {
       }
     } catch (error: any) {
       console.error(`Error ${action}ing user:`, error);
-      toast.error(handleApiError(error));
+      toast.error(error.message || `Failed to ${action} user`);
     }
   };
 
-  const handleBalanceAdjustment = async (userId: number, adjustment: number, reason: string) => {
+  const adjustBalance = async (userId: number, adjustment: number) => {
     try {
-      const response = await apiClient.post(`/api/admin/users/${userId}/balance-adjustment`, {
-        adjustment,
-        reason
+      const response = await apiClient.post(`${API_ENDPOINTS.WALLET_DEPOSIT}`, {
+        user_id: userId,
+        amount: adjustment
       });
       
       if (response.data.success) {
-        toast.success('Balance adjusted successfully');
-        fetchUsers();
-        setShowUserModal(false);
+        toast.success(`Balance adjusted by $${adjustment}`);
+        fetchUsers(); // Refresh the list
       }
     } catch (error: any) {
       console.error('Error adjusting balance:', error);
-      toast.error(handleApiError(error));
+      toast.error(error.message || 'Failed to adjust balance');
     }
   };
 
@@ -422,7 +421,7 @@ const UserManagement: React.FC = () => {
         <UserDetailModal
           user={selectedUser}
           onClose={closeUserModal}
-          onBalanceAdjustment={handleBalanceAdjustment}
+          onBalanceAdjustment={adjustBalance}
         />
       )}
     </div>
@@ -433,7 +432,7 @@ const UserManagement: React.FC = () => {
 interface UserDetailModalProps {
   user: User;
   onClose: () => void;
-  onBalanceAdjustment: (userId: number, adjustment: number, reason: string) => Promise<void>;
+  onBalanceAdjustment: (userId: number, adjustment: number) => Promise<void>;
 }
 
 const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose, onBalanceAdjustment }) => {
@@ -456,7 +455,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose, onBala
     }
 
     setLoading(true);
-    await onBalanceAdjustment(user.id, adjustmentValue, reason);
+    await onBalanceAdjustment(user.id, adjustmentValue);
     setLoading(false);
   };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/axios';
-import { API_ENDPOINTS, handleApiError } from '../config/api';
+import { API_ENDPOINTS } from '../config/api';
 import { formatCurrency } from '../utils/numberUtils';
 import ValidatedInput from './ValidatedInput';
 import './WalletDashboard.css';
@@ -197,7 +197,7 @@ const WalletDashboard: React.FC = () => {
 
       setLastUpdate(new Date());
     } catch (error: any) {
-      setError(handleApiError(error));
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -235,7 +235,7 @@ const WalletDashboard: React.FC = () => {
         fetchWalletData();
       }
     } catch (error: any) {
-      alert(handleApiError(error));
+      alert(error.message);
     }
   };
 
@@ -252,7 +252,7 @@ const WalletDashboard: React.FC = () => {
         fetchWalletData();
       }
     } catch (error: any) {
-      alert(handleApiError(error));
+      alert(error.message);
     }
   };
 
@@ -272,7 +272,7 @@ const WalletDashboard: React.FC = () => {
         fetchWalletData();
       }
     } catch (error: any) {
-      alert(handleApiError(error));
+      alert(error.message);
     }
   };
 

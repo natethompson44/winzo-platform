@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../../utils/axios';
-import { handleApiError } from '../../config/api';
 import toast from 'react-hot-toast';
 import './BettingManagement.css';
 
@@ -82,7 +81,7 @@ const BettingManagement: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error fetching bets:', error);
-      toast.error(handleApiError(error));
+      toast.error(error.message);
       
       // Fallback data for development
       setBets([
@@ -181,7 +180,7 @@ const BettingManagement: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error settling bet:', error);
-      toast.error(handleApiError(error));
+      toast.error(error.message);
     }
   };
 
@@ -195,7 +194,7 @@ const BettingManagement: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error cancelling bet:', error);
-      toast.error(handleApiError(error));
+      toast.error(error.message);
     }
   };
 
