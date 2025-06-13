@@ -49,6 +49,14 @@ function startServer() {
 // Main execution
 async function main() {
   try {
+    // Add this at the beginning of your main() function in railway-start.js
+    if (process.env.RESET_DATABASE === 'true') {
+      console.log('\n🔄 RESET_DATABASE flag detected, resetting database...');
+      const { resetDatabase } = require('./reset-database');
+      await resetDatabase();
+      console.log('\n✅ Database reset completed');
+    }
+    
     // Wait for Railway environment to be ready
     console.log('\n⏳ Waiting for Railway environment...');
     await new Promise(resolve => setTimeout(resolve, 3000));
