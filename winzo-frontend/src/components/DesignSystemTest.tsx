@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ErrorHandler from './ErrorHandler';
+import ErrorHandler, { ErrorDetails } from './ErrorHandler';
 import './DesignSystemTest.css';
 
 /**
@@ -9,10 +9,25 @@ import './DesignSystemTest.css';
  */
 const DesignSystemTest: React.FC = () => {
   const [showError, setShowError] = useState(false);
-  const [testError, setTestError] = useState<Error | null>(null);
+  const [testError, setTestError] = useState<ErrorDetails | null>(null);
 
   const testErrorHandler = () => {
-    const error = new Error('Test network error - Failed to fetch data');
+    const error: ErrorDetails = {
+      id: 'test-error-1',
+      type: 'error',
+      title: 'Network Error',
+      message: 'Failed to fetch data from the server',
+      technicalDetails: 'Error: Network request failed\n    at fetchData (api.js:45)\n    at handleRequest (utils.js:23)',
+      category: 'network',
+      dismissible: true,
+      action: {
+        label: 'Retry',
+        onClick: () => {
+          console.log('Retrying...');
+          clearError();
+        }
+      }
+    };
     setTestError(error);
     setShowError(true);
   };
