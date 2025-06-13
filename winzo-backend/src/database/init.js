@@ -1,9 +1,8 @@
 const { sequelize, applyAssociations } = require('../models');
-const migrate = require('./migrations');
 
 /**
- * Initialize connection to the PostgreSQL database and synchronize models.
- * Runs comprehensive migrations first to ensure all required tables and columns exist.
+ * Initialize connection to the PostgreSQL database.
+ * Only applies model associations, no migrations or sync.
  * Exits the process if authentication fails because the app cannot work
  * without a persistent database connection.
  */
@@ -12,16 +11,8 @@ async function initDatabase() {
     await sequelize.authenticate();
     console.log('Database connection established');
     
-    // Apply model associations
+    // Apply model associations only
     applyAssociations();
-    
-    // Run comprehensive migrations before sync to ensure all tables and columns exist
-    console.log('Running database migrations...');
-    await migrate();
-    console.log('Database migrations completed successfully');
-    
-    // Skip Sequelize sync since we're using our own migration system
-    // await sequelize.sync({ alter: false });
     console.log('Database models synchronized successfully');
   } catch (err) {
     console.error('Unable to connect to the database:', err);

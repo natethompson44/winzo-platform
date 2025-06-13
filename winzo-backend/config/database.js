@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
 // Centralized database configuration with optional pooling and logging.
 // Supports DATABASE_URL for Railway or individual connection parameters
@@ -15,7 +16,19 @@ const baseConfig = {
     min: parseInt(process.env.DB_MIN_POOL || '0', 10),
     acquire: parseInt(process.env.DB_ACQUIRE || '30000', 10),
     idle: parseInt(process.env.DB_IDLE || '10000', 10)
-  }
+  },
+  dialectOptions: {
+    ssl: process.env.NODE_ENV === 'production' ? {
+      require: true,
+      rejectUnauthorized: false
+    } : false
+  },
+  migrationStorageTableName: null,
+  seederStorageTableName: null,
+  timestamps: false,
+  paranoid: false,
+  sync: false,
+  migrationRun: false
 };
 
 const sequelize = process.env.DATABASE_URL

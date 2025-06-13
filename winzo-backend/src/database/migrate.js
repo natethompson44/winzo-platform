@@ -47,10 +47,10 @@ async function runMigrations() {
       console.log('\n📊 Force migration requested, running migration...');
     }
     
-    // Read and execute schema
+    // Read and execute basic schema only
     const schemaPath = path.join(__dirname, 'schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
-    console.log('\n📊 Executing database schema...');
+    console.log('\n📊 Executing basic database schema...');
     await sequelize.query(schema);
     console.log('\n✅ Database migration completed successfully');
   } catch (error) {
