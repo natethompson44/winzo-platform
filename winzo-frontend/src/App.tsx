@@ -51,7 +51,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   if (isLoading) {
     return (
       <div className="app-loading">
-        <LoadingSpinner size="large" message="Loading WINZO..." />
+        <LoadingSpinner size="large" message="Loading Platform..." />
       </div>
     );
   }
