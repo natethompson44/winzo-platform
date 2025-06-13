@@ -1,11 +1,12 @@
 [build]
   base = "winzo-frontend"
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "build"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_FLAGS = "--legacy-peer-deps"
+  NPM_CONFIG_PRODUCTION = "false"
 
 [[redirects]]
   from = "/*"
