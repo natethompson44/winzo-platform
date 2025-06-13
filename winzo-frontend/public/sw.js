@@ -1,16 +1,16 @@
 // WINZO Service Worker - Offline Functionality & Performance Optimization
 
-const CACHE_NAME = 'winzo-v1.0.0';
-const STATIC_CACHE = 'winzo-static-v1.0.0';
-const DYNAMIC_CACHE = 'winzo-dynamic-v1.0.0';
-const API_CACHE = 'winzo-api-v1.0.0';
+// Dynamic cache names based on build time
+const BUILD_TIME = Date.now();
+const CACHE_VERSION = 'winzo-v2.0.0';
+const STATIC_CACHE = `winzo-static-${CACHE_VERSION}-${BUILD_TIME}`;
+const DYNAMIC_CACHE = `winzo-dynamic-${CACHE_VERSION}-${BUILD_TIME}`;
+const API_CACHE = `winzo-api-${CACHE_VERSION}-${BUILD_TIME}`;
 
-// Files to cache immediately
+// Files to cache immediately (without hashes - they'll be handled dynamically)
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/manifest.json',
   '/favicon.ico',
   '/logo192.png',
@@ -27,7 +27,7 @@ const API_ENDPOINTS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
+  console.log('Service Worker: Installing...', STATIC_CACHE);
   
   event.waitUntil(
     caches.open(STATIC_CACHE)
@@ -47,16 +47,18 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
+  console.log('Service Worker: Activating...', STATIC_CACHE);
   
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && 
-                cacheName !== DYNAMIC_CACHE && 
-                cacheName !== API_CACHE) {
+            // Delete all old caches that don't match current version
+            if (!cacheName.includes(CACHE_VERSION) || 
+                (cacheName !== STATIC_CACHE && 
+                 cacheName !== DYNAMIC_CACHE && 
+                 cacheName !== API_CACHE)) {
               console.log('Service Worker: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
@@ -87,7 +89,7 @@ self.addEventListener('fetch', (event) => {
   } else if (url.pathname.startsWith('/static/') || 
              url.pathname.includes('.') ||
              STATIC_ASSETS.includes(url.pathname)) {
-    // Static assets - Cache first with network fallback
+    // Static assets - Network first with cache fallback (for hashed files)
     event.respondWith(handleStaticRequest(request));
   } else {
     // HTML pages - Network first with cache fallback
@@ -136,7 +138,22 @@ async function handleApiRequest(request) {
 // Handle static asset requests
 async function handleStaticRequest(request) {
   try {
-    // Try cache first
+    // For hashed files (CSS/JS), always try network first to get latest version
+    if (request.url.includes('/static/css/') || request.url.includes('/static/js/')) {
+      try {
+        const networkResponse = await fetch(request);
+        if (networkResponse.ok) {
+          // Cache the new version
+          const cache = await caches.open(STATIC_CACHE);
+          cache.put(request, networkResponse.clone());
+          return networkResponse;
+        }
+      } catch (error) {
+        console.log('Service Worker: Network failed for static asset, trying cache:', request.url);
+      }
+    }
+    
+    // Try cache for non-hashed files or as fallback
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
       return cachedResponse;
