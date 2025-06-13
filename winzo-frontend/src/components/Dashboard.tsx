@@ -79,7 +79,6 @@ const Dashboard: React.FC = () => {
   const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const [walletLoading, setWalletLoading] = useState(false);
   const [realTimeBalance, setRealTimeBalance] = useState<number | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [widgets, setWidgets] = useState<DashboardWidget[]>([
@@ -134,7 +133,6 @@ const Dashboard: React.FC = () => {
 
   const fetchWalletBalance = useCallback(async () => {
     try {
-      setWalletLoading(true);
       const response = await apiClient.get(API_ENDPOINTS.WALLET_BALANCE);
       if (response.data.success) {
         setRealTimeBalance(response.data.data.balance);
@@ -142,8 +140,6 @@ const Dashboard: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error fetching wallet balance:', error);
-    } finally {
-      setWalletLoading(false);
     }
   }, []);
 
@@ -260,16 +256,6 @@ const Dashboard: React.FC = () => {
     return odds > 0 ? `+${odds}` : odds.toString();
   };
 
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case 'won': return '#48bb78';
-      case 'lost': return '#e53e3e';
-      case 'pending': return '#ed8936';
-      case 'cancelled': return '#a0aec0';
-      default: return '#a0aec0';
-    }
-  };
-
   const getStatusIcon = (status: string): string => {
     switch (status) {
       case 'won': return '🏆';
@@ -288,15 +274,6 @@ const Dashboard: React.FC = () => {
       case 'strategy': return '📊';
       case 'opportunity': return '🎯';
       default: return '💡';
-    }
-  };
-
-  const getPriorityColor = (priority: string): string => {
-    switch (priority) {
-      case 'high': return '#e53e3e';
-      case 'medium': return '#ed8936';
-      case 'low': return '#48bb78';
-      default: return '#a0aec0';
     }
   };
 
