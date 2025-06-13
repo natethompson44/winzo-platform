@@ -67,12 +67,14 @@ router.post(
     res.json({ 
       success: true,
       message: 'User registered successfully',
-      token,
-      user: {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email,
-        wallet_balance: newUser.wallet_balance
+      data: {
+        token,
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          wallet_balance: newUser.wallet_balance
+        }
       }
     });
   } catch (err) {
@@ -119,12 +121,14 @@ router.post(
     res.json({ 
       success: true,
       message: 'Login successful',
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        wallet_balance: user.wallet_balance
+      data: {
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          wallet_balance: user.wallet_balance
+        }
       }
     });
   } catch (err) {
@@ -144,7 +148,7 @@ router.get('/me', auth, async (req, res) => {
     }
     res.json({
       success: true,
-      user: {
+      data: {
         id: user.id,
         username: user.username,
         email: user.email,
