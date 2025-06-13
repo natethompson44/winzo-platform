@@ -1,5 +1,5 @@
 // API Configuration for WINZO Frontend
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://winzo-platform-production.up.railway.app';
 
 export const API_ENDPOINTS = {
   // Sports endpoints
@@ -41,3 +41,4 @@ export const handleApiError = (error: any): string => {
 };
 
 console.log('\n🔗 API Base URL:', API_BASE_URL);
+console.log('🌍 Environment:', process.env.NODE_ENV);

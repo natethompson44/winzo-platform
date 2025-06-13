@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import apiClient from '../utils/axios';
-import { API_ENDPOINTS } from '../config/api';
+import { API_ENDPOINTS, API_CONFIG } from '../config/api';
 
 interface User {
   id: number;
@@ -66,19 +66,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
+      console.log('🔗 Making login request to:', `${API_CONFIG.BASE_URL}${API_ENDPOINTS.LOGIN}`);
       const response = await apiClient.post(API_ENDPOINTS.LOGIN, {
         username,
         password
       });
+      console.log('✅ Login response:', response.data);
       if (response.data.success) {
         const { token, user: userData } = response.data.data;
         localStorage.setItem('authToken', token);
         setUser(userData);
         return true;
       }
+      console.log('❌ Login failed - no success flag');
       return false;
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch (error: any) {
+      console.error('❌ Login failed:', error);
+      console.error('Response data:', error.response?.data);
+      console.error('Response status:', error.response?.status);
+      console.error('Response headers:', error.response?.headers);
       return false;
     }
   };
