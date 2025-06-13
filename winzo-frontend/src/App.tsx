@@ -20,6 +20,14 @@ import BetSlip from './components/BetSlip';
 import MobileBetSlip from './components/MobileBetSlip';
 import BetSlipToggle from './components/BetSlipToggle';
 import { ProgressiveLoading, LoadingSpinner } from './components/LoadingStates';
+
+// Admin Components
+import AdminLogin from './components/admin/AdminLogin';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboard from './components/admin/AdminDashboard';
+import UserManagement from './components/admin/UserManagement';
+import BettingManagement from './components/admin/BettingManagement';
+
 import './App.css';
 
 // Create React Query client
@@ -51,6 +59,31 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+  
+  return <>{children}</>;
+};
+
+/**
+ * Admin Protected Route Component
+ */
+const AdminProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="app-loading">
+        <LoadingSpinner size="large" message="Loading Admin Portal..." />
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  
+  // TODO: Add admin role check here
+  // For now, we'll allow any authenticated user to access admin
+  // In production, you should check for admin privileges
   
   return <>{children}</>;
 };
@@ -128,6 +161,24 @@ function App() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    
+                    {/* Admin Routes */}
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    
+                    {/* Protected Admin Routes */}
+                    <Route path="/admin" element={
+                      <AdminProtectedRoute>
+                        <AdminLayout />
+                      </AdminProtectedRoute>
+                    }>
+                      <Route path="dashboard" element={<AdminDashboard />} />
+                      <Route path="users" element={<UserManagement />} />
+                      <Route path="betting" element={<BettingManagement />} />
+                      <Route path="financial" element={<div>Financial Management (Coming Soon)</div>} />
+                      <Route path="content" element={<div>Content Management (Coming Soon)</div>} />
+                      <Route path="system" element={<div>System Administration (Coming Soon)</div>} />
+                      <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                    </Route>
                     
                     {/* Protected Routes with Layout */}
                     <Route path="/dashboard" element={
