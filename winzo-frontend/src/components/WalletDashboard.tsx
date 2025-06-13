@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
-import { formatCurrency, safeNumber } from '../utils/numberUtils';
+import { formatCurrency } from '../utils/numberUtils';
 import ValidatedInput from './ValidatedInput';
 import './WalletDashboard.css';
 
@@ -113,7 +113,7 @@ interface SecuritySettings {
  * - Advanced analytics
  */
 const WalletDashboard: React.FC = () => {
-  const { user, refreshUser } = useAuth();
+  const { user } = useAuth();
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -126,7 +126,6 @@ const WalletDashboard: React.FC = () => {
   // Form states
   const [showDeposit, setShowDeposit] = useState(false);
   const [showWithdrawal, setShowWithdrawal] = useState(false);
-  const [showAddPayment, setShowAddPayment] = useState(false);
   const [showSecuritySettings, setShowSecuritySettings] = useState(false);
   const [depositAmount, setDepositAmount] = useState<string>('');
   const [withdrawalRequest, setWithdrawalRequest] = useState<WithdrawalRequest>({
@@ -257,11 +256,6 @@ const WalletDashboard: React.FC = () => {
     }
   };
 
-  const handleAddPaymentMethod = async () => {
-    // Implementation for adding payment method
-    setShowAddPayment(false);
-  };
-
   const handleSecurityUpdate = async () => {
     try {
       const response = await apiClient.post(`${API_ENDPOINTS.WALLET_BALANCE}/security`, {
@@ -355,29 +349,6 @@ const WalletDashboard: React.FC = () => {
       case 'bonus': return '🎁';
       case 'fee': return '💳';
       default: return '📊';
-    }
-  };
-
-  const getTransactionColor = (type: string): string => {
-    switch (type) {
-      case 'deposit': return '#48bb78';
-      case 'withdrawal': return '#e53e3e';
-      case 'bet': return '#ed8936';
-      case 'win': return '#48bb78';
-      case 'refund': return '#9f7aea';
-      case 'bonus': return '#38b2ac';
-      case 'fee': return '#a0aec0';
-      default: return '#a0aec0';
-    }
-  };
-
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case 'completed': return '#48bb78';
-      case 'pending': return '#ed8936';
-      case 'failed': return '#e53e3e';
-      case 'cancelled': return '#a0aec0';
-      default: return '#a0aec0';
     }
   };
 
@@ -744,9 +715,6 @@ const WalletDashboard: React.FC = () => {
         <div className="payment-methods-content">
           <div className="payment-methods-header">
             <h2>💳 Payment Methods</h2>
-            <button onClick={() => setShowAddPayment(true)} className="add-payment-btn">
-              + Add Payment Method
-            </button>
           </div>
 
           <div className="payment-methods-grid">

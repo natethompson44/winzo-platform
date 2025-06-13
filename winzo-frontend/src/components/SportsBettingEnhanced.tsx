@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { APIError, WinzoLoading, EmptyState } from './ErrorBoundary';
 import EnhancedBetSlip from './EnhancedBetSlip';
 import { formatCurrency } from '../utils/numberUtils';
@@ -54,15 +54,14 @@ const SportsBettingEnhanced: React.FC = () => {
   const [events, setEvents] = useState<SportsEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [retryCount, setRetryCount] = useState(0);
   
   // Bet Slip State
   const [betSlipItems, setBetSlipItems] = useState<BetSlipItem[]>([]);
   const [isBetSlipOpen, setIsBetSlipOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState<number>(0);
 
-  // Mock data for fallback when API fails
-  const mockSports: Sport[] = [
+  // Move mockSports and mockEvents to useMemo
+  const mockSports = useMemo(() => ([
     {
       key: 'americanfootball_nfl',
       title: 'NFL',
@@ -87,9 +86,9 @@ const SportsBettingEnhanced: React.FC = () => {
       description: 'English Premier League - The world\'s most popular league!',
       active: true
     }
-  ];
+  ]), []);
 
-  const mockEvents: SportsEvent[] = [
+  const mockEvents = useMemo(() => ([
     {
       id: 'mock-1',
       homeTeam: 'Kansas City Chiefs',
@@ -140,7 +139,7 @@ const SportsBettingEnhanced: React.FC = () => {
         ]
       }
     }
-  ];
+  ]), []);
 
   const fetchWalletBalance = useCallback(async () => {
     try {
@@ -188,7 +187,7 @@ const SportsBettingEnhanced: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mockSports]);
 
   const fetchEvents = async (sportKey: string) => {
     try {
@@ -302,7 +301,6 @@ const SportsBettingEnhanced: React.FC = () => {
   };
 
   const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
     if (selectedSport) {
       fetchEvents(selectedSport);
     } else {
@@ -324,7 +322,7 @@ const SportsBettingEnhanced: React.FC = () => {
   useEffect(() => {
     fetchSports();
     fetchWalletBalance();
-  }, [retryCount]);
+  }, [fetchSports, fetchWalletBalance]);
 
   if (loading && sports.length === 0) {
     return <WinzoLoading message="Loading your Big Win opportunities..." size="large" />;

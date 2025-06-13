@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import './ErrorHandler.css';
 
 export interface ErrorInfo {
@@ -34,7 +34,6 @@ const ErrorHandler: React.FC<ErrorHandlerProps> = ({
 
   const getErrorInfo = (error: Error | string): ErrorInfo => {
     const errorMessage = typeof error === 'string' ? error : error.message;
-    const errorStack = typeof error === 'string' ? '' : error.stack || '';
 
     // Network errors
     if (errorMessage.includes('fetch') || errorMessage.includes('network') || 

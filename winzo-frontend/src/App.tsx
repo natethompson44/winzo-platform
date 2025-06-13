@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import AuthProvider, { useAuth } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
-import Navigation from './components/Navigation';
-import MobileNavigation from './components/MobileNavigation';
-import EnhancedNavigation from './components/EnhancedNavigation';
 import SimplifiedNavigation from './components/SimplifiedNavigation';
 import ComponentLibrary from './components/ComponentLibrary';
 import DesignSystemTest from './components/DesignSystemTest';
 import Login from './components/Login';
 import Register from './components/Register';
-import HomePage from './components/HomePage';
 import Dashboard from './components/Dashboard';
 import SportsBetting from './components/SportsBetting';
 import WalletDashboard from './components/WalletDashboardEnhanced';
@@ -23,6 +19,7 @@ import BetSlip from './components/BetSlip';
 import MobileBetSlip from './components/MobileBetSlip';
 import BetSlipToggle from './components/BetSlipToggle';
 import { ProgressiveLoading, LoadingSpinner } from './components/LoadingStates';
+import HomePage from './components/HomePage';
 
 // Admin Components
 import AdminLogin from './components/admin/AdminLogin';
@@ -96,22 +93,6 @@ const AdminProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children
  */
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
-  const [isMobile, setIsMobile] = useState(false);
-  const [isEnhanced, setIsEnhanced] = useState(false);
-
-  // Detect mobile and enhanced features
-  useEffect(() => {
-    const checkDevice = () => {
-      const mobile = window.innerWidth <= 768;
-      const enhanced = window.innerWidth > 1024;
-      setIsMobile(mobile);
-      setIsEnhanced(enhanced);
-    };
-
-    checkDevice();
-    window.addEventListener('resize', checkDevice);
-    return () => window.removeEventListener('resize', checkDevice);
-  }, []);
 
   // Register service worker
   useEffect(() => {

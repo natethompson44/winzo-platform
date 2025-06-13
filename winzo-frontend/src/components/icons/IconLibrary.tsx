@@ -309,7 +309,7 @@ export const IconWrapper: React.FC<IconWrapperProps> = ({
 };
 
 // Export all icons
-export default {
+const IconLibrary = {
   HomeIcon,
   DashboardIcon,
   WalletIcon,
@@ -342,4 +342,5 @@ export default {
   CricketIcon,
   TennisIcon,
   IconWrapper
-}; 
+};
+export default IconLibrary; 
