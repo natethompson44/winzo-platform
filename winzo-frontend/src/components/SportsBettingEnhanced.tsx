@@ -362,7 +362,7 @@ const SportsBettingEnhanced: React.FC = () => {
         {error && (
           <div className="api-warning">
             <span>⚠️ Using demo data - API connection issues</span>
-            <button onClick={handleRetry} className="retry-small-btn">
+            <button onClick={handleRetry} className="winzo-btn winzo-btn-secondary winzo-btn-sm">
               🔄 Retry
             </button>
           </div>
@@ -408,7 +408,7 @@ const SportsBettingEnhanced: React.FC = () => {
       ) : (
         <div className="events-section">
           <div className="events-header">
-            <button onClick={handleBackToSports} className="back-btn">
+            <button onClick={handleBackToSports} className="winzo-btn winzo-btn-secondary">
               ← Back to Sports
             </button>
             <h2>
@@ -463,7 +463,7 @@ const SportsBettingEnhanced: React.FC = () => {
                             {outcomes.map((outcome) => (
                               <button
                                 key={outcome.id}
-                                className="odds-btn"
+                                className="winzo-btn winzo-btn-outline"
                                 onClick={() => addToBetSlip(
                                   event.id,
                                   outcome.id,

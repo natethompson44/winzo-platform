@@ -56,11 +56,11 @@ const DesignSystemTest: React.FC = () => {
         <section className="test-section">
           <h2 className="text-title">Button System</h2>
           <div className="button-test">
-            <button className="btn btn-primary">Primary Button</button>
-            <button className="btn btn-secondary">Secondary Button</button>
-            <button className="btn btn-success">Success Button</button>
-            <button className="btn btn-warning">Warning Button</button>
-            <button className="btn btn-danger">Danger Button</button>
+            <button className="winzo-btn winzo-btn-primary">Primary Button</button>
+            <button className="winzo-btn winzo-btn-secondary">Secondary Button</button>
+            <button className="winzo-btn winzo-btn-success">Success Button</button>
+            <button className="winzo-btn winzo-btn-warning">Warning Button</button>
+            <button className="winzo-btn winzo-btn-danger">Danger Button</button>
           </div>
         </section>
 
@@ -92,7 +92,7 @@ const DesignSystemTest: React.FC = () => {
                 <p className="text-body">This is a test card with content.</p>
               </div>
               <div className="card-footer">
-                <button className="btn btn-primary btn-sm">Action</button>
+                <button className="winzo-btn winzo-btn-primary winzo-btn-sm">Action</button>
               </div>
             </div>
           </div>
@@ -130,7 +130,7 @@ const DesignSystemTest: React.FC = () => {
         <section className="test-section">
           <h2 className="text-title">Error Handler</h2>
           <div className="error-test">
-            <button className="btn btn-danger" onClick={testErrorHandler}>
+            <button className="winzo-btn winzo-btn-danger" onClick={testErrorHandler}>
               Test Error Handler
             </button>
             {showError && testError && (
@@ -147,9 +147,9 @@ const DesignSystemTest: React.FC = () => {
           <h2 className="text-title">Touch Target Test</h2>
           <p className="text-caption">All interactive elements should be at least 44px in height/width</p>
           <div className="touch-test">
-            <button className="btn btn-primary btn-sm">Small (36px)</button>
-            <button className="btn btn-primary">Default (44px)</button>
-            <button className="btn btn-primary btn-lg">Large (48px)</button>
+            <button className="winzo-btn winzo-btn-primary winzo-btn-sm">Small (36px)</button>
+            <button className="winzo-btn winzo-btn-primary">Default (44px)</button>
+            <button className="winzo-btn winzo-btn-primary winzo-btn-lg">Large (48px)</button>
           </div>
         </section>
 

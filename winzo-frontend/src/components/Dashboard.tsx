@@ -294,10 +294,10 @@ const Dashboard: React.FC = () => {
               {formatCurrency(currentBalance)}
             </div>
             <div className="wallet-actions-grid">
-              <button className="btn btn-primary" onClick={() => navigate('/wallet')}>
+              <button className="winzo-btn winzo-btn-primary" onClick={() => navigate('/wallet')}>
                 💳 Deposit
               </button>
-              <button className="btn btn-secondary" onClick={() => navigate('/wallet')}>
+              <button className="winzo-btn winzo-btn-secondary" onClick={() => navigate('/wallet')}>
                 💸 Withdraw
               </button>
             </div>
@@ -381,7 +381,7 @@ const Dashboard: React.FC = () => {
             ) : (
               <div className="empty-state">
                 <p>No recent bets</p>
-                <button className="btn btn-primary" onClick={() => navigate('/sports')}>
+                <button className="winzo-btn winzo-btn-primary" onClick={() => navigate('/sports')}>
                   Place Your First Bet
                 </button>
               </div>
@@ -393,19 +393,19 @@ const Dashboard: React.FC = () => {
         return (
           <div className="widget-content">
             <div className="quick-actions-grid">
-              <button className="action-btn primary" onClick={() => navigate('/sports')}>
+              <button className="winzo-btn winzo-btn-primary" onClick={() => navigate('/sports')}>
                 <span className="action-icon">⚡</span>
                 <span className="action-label">Quick Bet</span>
               </button>
-              <button className="action-btn secondary" onClick={() => navigate('/wallet')}>
+              <button className="winzo-btn winzo-btn-secondary" onClick={() => navigate('/wallet')}>
                 <span className="action-icon">💳</span>
                 <span className="action-label">Deposit</span>
               </button>
-              <button className="action-btn secondary" onClick={() => navigate('/history')}>
+              <button className="winzo-btn winzo-btn-secondary" onClick={() => navigate('/history')}>
                 <span className="action-icon">📊</span>
                 <span className="action-label">History</span>
               </button>
-              <button className="action-btn secondary" onClick={() => navigate('/sports')}>
+              <button className="winzo-btn winzo-btn-secondary" onClick={() => navigate('/sports')}>
                 <span className="action-icon">🏈</span>
                 <span className="action-label">Sports</span>
               </button>
@@ -435,7 +435,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <p className="rec-description">{rec.description}</p>
                     {rec.action && (
-                      <button className="rec-action-btn">
+                      <button className="winzo-btn winzo-btn-outline">
                         {rec.action}
                       </button>
                     )}
@@ -532,7 +532,7 @@ const Dashboard: React.FC = () => {
         <div className="header-actions">
           <button 
             onClick={fetchDashboardData} 
-            className="btn btn-secondary"
+            className="winzo-btn winzo-btn-secondary"
             disabled={loading}
           >
             {loading ? '⏳' : '🔄'} Refresh
@@ -543,7 +543,7 @@ const Dashboard: React.FC = () => {
       {error && (
         <div className="error-banner">
           <span>⚠ {error}</span>
-          <button onClick={fetchDashboardData} className="btn btn-primary">
+          <button onClick={fetchDashboardData} className="winzo-btn winzo-btn-primary">
             Retry
           </button>
         </div>

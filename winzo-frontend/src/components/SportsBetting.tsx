@@ -582,7 +582,7 @@ const SportsBetting: React.FC = () => {
           {filteredAndSortedEvents.length === 0 && !eventsLoading && (
             <div className="no-events">
               <p>No events found matching your criteria</p>
-              <button onClick={() => setFilter('all')} className="reset-filters-btn">
+              <button onClick={() => setFilter('all')} className="winzo-btn winzo-btn-secondary">
                 Reset Filters
               </button>
             </div>
@@ -595,7 +595,7 @@ const SportsBetting: React.FC = () => {
             <div className="bet-slip-modal">
               <div className="bet-slip-header">
                 <h3><BetSlipIcon size="sm" /> Bet Slip</h3>
-                <button onClick={() => setShowBetSlip(false)} className="close-btn">×</button>
+                <button onClick={() => setShowBetSlip(false)} className="winzo-btn winzo-btn-ghost">×</button>
               </div>
               
               <div className="bet-slip-content">
@@ -608,7 +608,7 @@ const SportsBetting: React.FC = () => {
                             <span className="item-teams">{item.awayTeam} @ {item.homeTeam}</span>
                             <button 
                               onClick={() => removeFromBetSlip(item.id)}
-                              className="remove-btn"
+                              className="winzo-btn winzo-btn-ghost winzo-btn-sm"
                             >
                               ×
                             </button>
@@ -657,10 +657,10 @@ const SportsBetting: React.FC = () => {
                     </div>
                     
                     <div className="bet-slip-actions">
-                      <button onClick={placeBet} className="place-bet-btn">
+                      <button onClick={placeBet} className="winzo-btn winzo-btn-primary">
                         Place Bet
                       </button>
-                      <button onClick={clearBetSlip} className="clear-bet-btn">
+                      <button onClick={clearBetSlip} className="winzo-btn winzo-btn-secondary">
                         Clear All
                       </button>
                     </div>

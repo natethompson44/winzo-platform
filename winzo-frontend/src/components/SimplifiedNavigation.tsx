@@ -146,7 +146,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
               return (
                 <button
                   key={action.label}
-                  className={`btn btn-${action.color} btn-sm`}
+                  className={`winzo-btn winzo-btn-${action.color} winzo-btn-sm`}
                   onClick={action.action}
                 >
                   <IconComponent size="sm" className="action-icon" />
@@ -202,7 +202,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                 )}
               </>
             ) : (
-              <Link to="/login" className="btn btn-primary">
+              <Link to="/login" className="winzo-btn winzo-btn-primary">
                 Login
               </Link>
             )}
@@ -272,7 +272,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                     return (
                       <button
                         key={action.label}
-                        className={`btn btn-${action.color}`}
+                        className={`winzo-btn winzo-btn-${action.color}`}
                         onClick={() => {
                           action.action();
                           setIsMobileMenuOpen(false);

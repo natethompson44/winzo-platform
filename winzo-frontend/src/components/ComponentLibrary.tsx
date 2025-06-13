@@ -27,29 +27,29 @@ export const ButtonExamples: React.FC = () => {
         <div className="component-group">
           <h3 className="text-lg">Button Variants</h3>
           <div className="button-group">
-            <button className="btn btn-primary">Primary</button>
-            <button className="btn btn-secondary">Secondary</button>
-            <button className="btn btn-success">Success</button>
-            <button className="btn btn-warning">Warning</button>
-            <button className="btn btn-danger">Danger</button>
-            <button className="btn btn-outline">Outline</button>
-            <button className="btn btn-ghost">Ghost</button>
+            <button className="winzo-btn winzo-btn-primary">Primary</button>
+            <button className="winzo-btn winzo-btn-secondary">Secondary</button>
+            <button className="winzo-btn winzo-btn-success">Success</button>
+            <button className="winzo-btn winzo-btn-warning">Warning</button>
+            <button className="winzo-btn winzo-btn-danger">Danger</button>
+            <button className="winzo-btn winzo-btn-outline">Outline</button>
+            <button className="winzo-btn winzo-btn-ghost">Ghost</button>
           </div>
         </div>
 
         <div className="component-group">
           <h3 className="text-lg">Button Sizes</h3>
           <div className="button-group">
-            <button className="btn btn-primary btn-sm">Small</button>
-            <button className="btn btn-primary">Default</button>
-            <button className="btn btn-primary btn-lg">Large</button>
+            <button className="winzo-btn winzo-btn-primary winzo-btn-sm">Small</button>
+            <button className="winzo-btn winzo-btn-primary">Default</button>
+            <button className="winzo-btn winzo-btn-primary winzo-btn-lg">Large</button>
           </div>
         </div>
 
         <div className="component-group">
           <h3 className="text-lg">Button States</h3>
           <div className="button-group">
-            <button className="btn btn-primary" onClick={handleClick}>
+            <button className="winzo-btn winzo-btn-primary" onClick={handleClick}>
               {isLoading ? (
                 <>
                   <span className="spinner"></span>
@@ -59,7 +59,7 @@ export const ButtonExamples: React.FC = () => {
                 'Click Me'
               )}
             </button>
-            <button className="btn btn-primary" disabled>Disabled</button>
+            <button className="winzo-btn winzo-btn-primary" disabled>Disabled</button>
           </div>
         </div>
       </div>
@@ -132,8 +132,8 @@ export const FormExamples: React.FC = () => {
         </div>
 
         <div className="form-actions">
-          <button className="btn btn-primary">Submit</button>
-          <button className="btn btn-ghost">Cancel</button>
+          <button className="winzo-btn winzo-btn-primary">Submit</button>
+          <button className="winzo-btn winzo-btn-ghost">Cancel</button>
         </div>
       </div>
     </div>
@@ -167,8 +167,8 @@ export const CardExamples: React.FC = () => {
             <p className="text-body">This card includes action buttons in the footer.</p>
           </div>
           <div className="card-footer">
-            <button className="btn btn-primary btn-sm">Action</button>
-            <button className="btn btn-ghost btn-sm">Cancel</button>
+            <button className="winzo-btn winzo-btn-primary winzo-btn-sm">Action</button>
+            <button className="winzo-btn winzo-btn-ghost winzo-btn-sm">Cancel</button>
           </div>
         </div>
 

@@ -158,7 +158,7 @@ const ErrorHandler: React.FC<ErrorHandlerProps> = ({
           <div className="error-actions">
             {errorInfo.actionText && (
               <button 
-                className="btn btn-primary"
+                className="winzo-btn winzo-btn-primary"
                 onClick={handleAction}
               >
                 {errorInfo.actionText}
@@ -167,7 +167,7 @@ const ErrorHandler: React.FC<ErrorHandlerProps> = ({
             
             {onDismiss && (
               <button 
-                className="btn btn-ghost"
+                className="winzo-btn winzo-btn-ghost"
                 onClick={handleDismiss}
               >
                 Dismiss

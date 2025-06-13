@@ -477,10 +477,10 @@ const WalletDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="balance-actions">
-                <button onClick={() => setShowDeposit(true)} className="action-btn deposit">
+                <button onClick={() => setShowDeposit(true)} className="winzo-btn winzo-btn-success">
                   + Deposit
                 </button>
-                <button onClick={() => setShowWithdrawal(true)} className="action-btn withdraw">
+                <button onClick={() => setShowWithdrawal(true)} className="winzo-btn winzo-btn-warning">
                   - Withdraw
                 </button>
               </div>
@@ -519,7 +519,7 @@ const WalletDashboard: React.FC = () => {
             <div className="wallet-card activity-card">
               <div className="card-header">
                 <h3>📈 Recent Activity</h3>
-                <button onClick={() => setActiveTab('transactions')} className="view-all-btn">
+                <button onClick={() => setActiveTab('transactions')} className="winzo-btn winzo-btn-outline">
                   View All
                 </button>
               </div>
@@ -644,7 +644,7 @@ const WalletDashboard: React.FC = () => {
                 </select>
                 <button
                   onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                  className="sort-order-btn"
+                  className="winzo-btn winzo-btn-ghost winzo-btn-sm"
                 >
                   {sortOrder === 'asc' ? '↑' : '↓'}
                 </button>
@@ -652,7 +652,7 @@ const WalletDashboard: React.FC = () => {
             </div>
 
             <div className="actions-section">
-              <button onClick={exportTransactions} className="export-btn">
+              <button onClick={exportTransactions} className="winzo-btn winzo-btn-secondary">
                 📊 Export CSV
               </button>
             </div>
@@ -822,7 +822,7 @@ const WalletDashboard: React.FC = () => {
           <div className="modal">
             <div className="modal-header">
               <h3>💰 Deposit Funds</h3>
-              <button onClick={() => setShowDeposit(false)} className="close-btn">×</button>
+              <button onClick={() => setShowDeposit(false)} className="winzo-btn winzo-btn-ghost">×</button>
             </div>
             <div className="modal-content">
               <div className="form-group">
@@ -854,10 +854,10 @@ const WalletDashboard: React.FC = () => {
                 </select>
               </div>
               <div className="modal-actions">
-                <button onClick={handleDeposit} className="primary-btn" disabled={!amountValidation.isValid}>
+                <button onClick={handleDeposit} className="winzo-btn winzo-btn-primary" disabled={!amountValidation.isValid}>
                   Deposit
                 </button>
-                <button onClick={() => setShowDeposit(false)} className="secondary-btn">
+                <button onClick={() => setShowDeposit(false)} className="winzo-btn winzo-btn-secondary">
                   Cancel
                 </button>
               </div>
@@ -872,7 +872,7 @@ const WalletDashboard: React.FC = () => {
           <div className="modal">
             <div className="modal-header">
               <h3>💸 Withdraw Funds</h3>
-              <button onClick={() => setShowWithdrawal(false)} className="close-btn">×</button>
+              <button onClick={() => setShowWithdrawal(false)} className="winzo-btn winzo-btn-ghost">×</button>
             </div>
             <div className="modal-content">
               <div className="form-group">
@@ -913,10 +913,10 @@ const WalletDashboard: React.FC = () => {
                 />
               </div>
               <div className="modal-actions">
-                <button onClick={handleWithdrawal} className="primary-btn" disabled={!withdrawalValidation.isValid}>
+                <button onClick={handleWithdrawal} className="winzo-btn winzo-btn-primary" disabled={!withdrawalValidation.isValid}>
                   Withdraw
                 </button>
-                <button onClick={() => setShowWithdrawal(false)} className="secondary-btn">
+                <button onClick={() => setShowWithdrawal(false)} className="winzo-btn winzo-btn-secondary">
                   Cancel
                 </button>
               </div>
@@ -931,7 +931,7 @@ const WalletDashboard: React.FC = () => {
           <div className="modal">
             <div className="modal-header">
               <h3>🔒 Security Settings</h3>
-              <button onClick={() => setShowSecuritySettings(false)} className="close-btn">×</button>
+              <button onClick={() => setShowSecuritySettings(false)} className="winzo-btn winzo-btn-ghost">×</button>
             </div>
             <div className="modal-content">
               <div className="form-group">
@@ -968,10 +968,10 @@ const WalletDashboard: React.FC = () => {
                 </label>
               </div>
               <div className="modal-actions">
-                <button onClick={handleSecurityUpdate} className="primary-btn">
+                <button onClick={handleSecurityUpdate} className="winzo-btn winzo-btn-primary">
                   Update Settings
                 </button>
-                <button onClick={() => setShowSecuritySettings(false)} className="secondary-btn">
+                <button onClick={() => setShowSecuritySettings(false)} className="winzo-btn winzo-btn-secondary">
                   Cancel
                 </button>
               </div>

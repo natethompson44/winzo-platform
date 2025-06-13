@@ -63,10 +63,10 @@ class ErrorBoundary extends Component<Props, State> {
             <p>We're sorry, but something unexpected happened. Please try again.</p>
             
             <div className="error-actions">
-              <button onClick={this.handleRetry} className="retry-btn">
+              <button onClick={this.handleRetry} className="winzo-btn winzo-btn-primary">
                 <RefreshIcon size="sm" /> Try Again
               </button>
-              <button onClick={() => window.location.reload()} className="reload-btn">
+              <button onClick={() => window.location.reload()} className="winzo-btn winzo-btn-secondary">
                 Reload Page
               </button>
             </div>
@@ -132,14 +132,14 @@ export const APIError: React.FC<{
         
         <div className="api-error-actions">
           {onRetry && (
-            <button onClick={onRetry} className="api-retry-btn">
+            <button onClick={onRetry} className="winzo-btn winzo-btn-primary">
               <RefreshIcon size="sm" /> Try Again
             </button>
           )}
           {showHomeButton && (
             <button 
               onClick={() => window.location.href = '/dashboard'} 
-              className="api-home-btn"
+              className="winzo-btn winzo-btn-secondary"
             >
               Dashboard
             </button>

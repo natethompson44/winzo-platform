@@ -106,7 +106,7 @@ export const ErrorState: React.FC<{
       <h3>Oops!</h3>
       <p>{message}</p>
       {onRetry && (
-        <button className="retry-btn" onClick={onRetry}>
+        <button className="winzo-btn winzo-btn-primary" onClick={onRetry}>
           Try Again
         </button>
       )}
