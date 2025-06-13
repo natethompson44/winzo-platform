@@ -199,6 +199,14 @@
   font-weight: 500;
 }
 
+.admin-dev-note {
+  font-size: 0.75rem;
+  color: var(--caution-orange);
+  margin: var(--spacing-sm) 0 0 0;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
 /* Responsive Design */
 @media (max-width: 480px) {
   .admin-login-container {
