@@ -100,43 +100,43 @@
 
 /* Football/Soccer */
 .icon-football {
-  fill: #1a365d;
+  fill: var(--color-primary);
 }
 
 .icon-football .ball {
-  fill: #ffffff;
-  stroke: #1a365d;
+  fill: var(--color-neutral-50);
+  stroke: var(--color-primary);
   stroke-width: 1px;
 }
 
 /* Basketball */
 .icon-basketball {
-  fill: #ff6b35;
+  fill: var(--color-warning);
 }
 
 .icon-basketball .ball {
-  fill: #ff6b35;
-  stroke: #ffffff;
+  fill: var(--color-warning);
+  stroke: var(--color-neutral-50);
   stroke-width: 1px;
 }
 
 /* Cricket */
 .icon-cricket {
-  fill: #10b981;
+  fill: var(--color-success);
 }
 
 .icon-cricket .bat {
-  fill: #8b4513;
+  fill: var(--color-neutral-700);
 }
 
 /* Tennis */
 .icon-tennis {
-  fill: #f59e0b;
+  fill: var(--color-warning);
 }
 
 .icon-tennis .ball {
-  fill: #ffffff;
-  stroke: #f59e0b;
+  fill: var(--color-neutral-50);
+  stroke: var(--color-warning);
   stroke-width: 1px;
 }
 
@@ -458,12 +458,12 @@
 /* ===== PRINT STYLES ===== */
 @media print {
   .icon {
-    fill: #000000 !important;
-    stroke: #000000 !important;
-    color: #000000 !important;
+    fill: var(--color-neutral-900) !important;
+    stroke: var(--color-neutral-900) !important;
+    color: var(--color-neutral-900) !important;
   }
   
   .icon-loading {
-    animation: none;
+    animation: none !important;
   }
 } 

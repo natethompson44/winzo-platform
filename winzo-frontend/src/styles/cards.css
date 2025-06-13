@@ -4,18 +4,18 @@
 
 /* Base Card */
 .card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-neutral);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
   overflow: hidden;
-  transition: all 0.3s ease;
   max-width: 100%;
 }
 
 .card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 /* Card Sizes */
@@ -46,43 +46,43 @@
 
 /* Card Variants */
 .card-primary {
-  border-left: 4px solid #00b4d8;
+  border-left: 4px solid var(--color-secondary);
 }
 
 .card-success {
-  border-left: 4px solid #48bb78;
+  border-left: 4px solid var(--color-success);
 }
 
 .card-warning {
-  border-left: 4px solid #ed8936;
+  border-left: 4px solid var(--color-warning);
 }
 
 .card-danger {
-  border-left: 4px solid #e53e3e;
+  border-left: 4px solid var(--color-danger);
 }
 
 .card-info {
-  border-left: 4px solid #667eea;
+  border-left: 4px solid var(--color-primary);
 }
 
 /* Card Header */
 .card-header {
-  padding: var(--space-lg);
-  border-bottom: 1px solid #e2e8f0;
-  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border-neutral);
+  background: linear-gradient(135deg, var(--color-neutral-50) 0%, var(--color-neutral-100) 100%);
 }
 
 .card-title {
   font-size: var(--text-lg);
-  font-weight: 600;
-  color: #2d3748;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
   margin: 0;
 }
 
 .card-subtitle {
   font-size: var(--text-sm);
-  color: #718096;
-  margin: var(--space-xs) 0 0 0;
+  color: var(--text-secondary);
+  margin: var(--space-1) 0 0 0;
 }
 
 /* Card Body */
@@ -93,8 +93,8 @@
 /* Card Footer */
 .card-footer {
   padding: var(--space-lg);
-  border-top: 1px solid #e2e8f0;
-  background: #f7fafc;
+  border-top: 1px solid var(--border-neutral);
+  background: var(--color-neutral-50);
 }
 
 /* Card Actions */
@@ -103,7 +103,7 @@
   gap: var(--space-sm);
   justify-content: flex-end;
   padding: var(--space-lg);
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border-neutral);
 }
 
 /* ===== CONTAINER SYSTEM ===== */
@@ -168,7 +168,7 @@
 
 .page-header {
   padding: var(--space-xl) 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(135deg, var(--color-neutral-50) 0%, var(--color-neutral-100) 100%);
 }
 
 .page-content {
@@ -178,8 +178,8 @@
 
 .page-footer {
   padding: var(--space-xl) 0;
-  background: #2d3748;
-  color: white;
+  background: var(--color-neutral-800);
+  color: var(--text-inverse);
 }
 
 /* Section Container */

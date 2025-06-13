@@ -3,6 +3,17 @@ import apiClient from '../utils/axios';
 import { API_ENDPOINTS, handleApiError } from '../config/api';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import { formatCurrency } from '../utils/numberUtils';
+import { 
+  SportsIcon, 
+  ClockIcon, 
+  CalendarIcon, 
+  CalendarDaysIcon,
+  FireIcon,
+  SearchIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  BetSlipIcon
+} from './icons/IconLibrary';
 import './SportsBetting.css';
 
 interface Sport {
@@ -110,17 +121,17 @@ const calculatePayout = (stake: number, odds: number): number => {
 
 const getOddsMovementColor = (movement?: string): string => {
   switch (movement) {
-    case 'up': return '#48bb78';
-    case 'down': return '#e53e3e';
-    default: return '#a0aec0';
+    case 'up': return 'var(--color-success)';
+    case 'down': return 'var(--color-danger)';
+    default: return 'var(--color-neutral-400)';
   }
 };
 
-const getOddsMovementIcon = (movement?: string): string => {
+const getOddsMovementIcon = (movement?: string): React.ReactNode => {
   switch (movement) {
-    case 'up': return '↗️';
-    case 'down': return '↘️';
-    default: return '➡️';
+    case 'up': return <ChevronUpIcon size="sm" color="success" />;
+    case 'down': return <ChevronDownIcon size="sm" color="danger" />;
+    default: return <span>➡️</span>;
   }
 };
 
@@ -409,29 +420,29 @@ const SportsBetting: React.FC = () => {
       return {
         status: 'live',
         text: 'LIVE',
-        color: '#e53e3e',
-        icon: '🔥'
+        color: 'var(--color-danger)',
+        icon: <FireIcon size="sm" color="danger" />
       };
     } else if (event.timing?.hoursFromNow <= 1) {
       return {
         status: 'starting-soon',
         text: 'Starting Soon',
-        color: '#ed8936',
-        icon: '⏰'
+        color: 'var(--color-warning)',
+        icon: <ClockIcon size="sm" color="warning" />
       };
     } else if (event.timing?.hoursFromNow <= 24) {
       return {
         status: 'today',
         text: 'Today',
-        color: '#48bb78',
-        icon: '📅'
+        color: 'var(--color-success)',
+        icon: <CalendarIcon size="sm" color="success" />
       };
     } else {
       return {
         status: 'upcoming',
         text: 'Upcoming',
-        color: '#a0aec0',
-        icon: '📆'
+        color: 'var(--color-neutral-400)',
+        icon: <CalendarDaysIcon size="sm" color="neutral" />
       };
     }
   };
@@ -450,7 +461,7 @@ const SportsBetting: React.FC = () => {
   return (
     <div className="sports-betting-container">
       <header className="sports-header">
-        <h1>🏈 Sports Betting</h1>
+        <h1><SportsIcon size="lg" /> Sports Betting</h1>
         <p>Real-time odds and live betting</p>
       </header>
 
@@ -492,13 +503,13 @@ const SportsBetting: React.FC = () => {
                 className={`filter-btn ${filter === 'live' ? 'active' : ''}`}
                 onClick={() => setFilter('live')}
               >
-                🔥 Live ({liveEvents.length})
+                <FireIcon size="sm" /> Live ({liveEvents.length})
               </button>
               <button
                 className={`filter-btn ${filter === 'upcoming' ? 'active' : ''}`}
                 onClick={() => setFilter('upcoming')}
               >
-                ⏰ Upcoming ({events.filter(e => !e.timing?.isLive).length})
+                <ClockIcon size="sm" /> Upcoming ({events.filter(e => !e.timing?.isLive).length})
               </button>
             </div>
           </div>
@@ -512,7 +523,7 @@ const SportsBetting: React.FC = () => {
                 onChange={(e) => handleSearch(e.target.value)}
                 className="search-input"
               />
-              <span className="search-icon">🔍</span>
+              <SearchIcon size="sm" className="search-icon" />
             </div>
 
             <div className="sort-controls">
@@ -583,7 +594,7 @@ const SportsBetting: React.FC = () => {
           <div className="bet-slip-overlay">
             <div className="bet-slip-modal">
               <div className="bet-slip-header">
-                <h3>📋 Bet Slip</h3>
+                <h3><BetSlipIcon size="sm" /> Bet Slip</h3>
                 <button onClick={() => setShowBetSlip(false)} className="close-btn">×</button>
               </div>
               
@@ -668,9 +679,9 @@ const SportsBetting: React.FC = () => {
         {/* Floating Bet Slip Toggle */}
         <button
           className="bet-slip-toggle"
-          onClick={() => setShowBetSlip(!showBetSlip)}
+          onClick={() => setShowBetSlip(true)}
         >
-          📋 Bet Slip ({betSlipItems.length})
+          <BetSlipIcon size="sm" /> Bet Slip ({betSlipItems.length})
         </button>
       </div>
 
@@ -711,8 +722,8 @@ const SportCard: React.FC<SportCardProps> = ({ sport, isSelected, onClick }) => 
         <p>{sport.description}</p>
         {sport.live_events_count !== undefined && (
           <div className="sport-stats">
-            <span className="live-count">🔥 {sport.live_events_count} live</span>
-            <span className="upcoming-count">⏰ {sport.upcoming_events_count} upcoming</span>
+            <span className="live-count"><FireIcon size="sm" /> {sport.live_events_count} live</span>
+            <span className="upcoming-count"><ClockIcon size="sm" /> {sport.upcoming_events_count} upcoming</span>
           </div>
         )}
       </div>
@@ -724,7 +735,7 @@ const SportCard: React.FC<SportCardProps> = ({ sport, isSelected, onClick }) => 
 interface EventCardProps {
   event: OddsEvent;
   onOddsClick: (event: OddsEvent, outcome: Outcome, marketType?: string) => void;
-  getEventStatus: (event: OddsEvent) => { status: string; text: string; color: string; icon: string };
+  getEventStatus: (event: OddsEvent) => { status: string; text: string; color: string; icon: React.ReactNode };
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event, onOddsClick, getEventStatus }) => {

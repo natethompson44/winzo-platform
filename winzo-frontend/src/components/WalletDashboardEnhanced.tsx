@@ -3,6 +3,17 @@ import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import './WalletDashboard.css';
 import { API_CONFIG, API_ENDPOINTS } from '../config/api';
+import { 
+  WalletIcon, 
+  FireIcon, 
+  LightningIcon, 
+  WarningIcon, 
+  HistoryIcon, 
+  TrendingUpIcon, 
+  TrendingDownIcon,
+  CardIcon,
+  DollarIcon
+} from './icons/IconLibrary';
 
 interface WalletBalance {
   balance: number;
@@ -242,12 +253,23 @@ const WalletDashboardEnhanced: React.FC = () => {
     fetchWalletData();
   }, [fetchWalletData]);
 
+  const getTransactionIcon = (type: string) => {
+    switch (type) {
+      case 'deposit': return <DollarIcon size="sm" color="success" />;
+      case 'withdrawal': return <DollarIcon size="sm" color="warning" />;
+      case 'bet_win': return <TrendingUpIcon size="sm" color="success" />;
+      case 'bet_loss': return <TrendingDownIcon size="sm" color="danger" />;
+      case 'fee': return <CardIcon size="sm" color="neutral" />;
+      default: return <HistoryIcon size="sm" color="neutral" />;
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="wallet-dashboard">
-        <div className="winzo-loading">
-          <div className="winzo-spinner"></div>
-          <p>🔥 Loading your WINZO Wallet...</p>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p><FireIcon size="sm" /> Loading your WINZO Wallet...</p>
         </div>
       </div>
     );
@@ -257,13 +279,13 @@ const WalletDashboardEnhanced: React.FC = () => {
     <div className="wallet-dashboard">
       {/* Header */}
       <div className="wallet-header">
-        <h1 className="winzo-title">💰 WINZO Wallet</h1>
+        <h1 className="winzo-title"><WalletIcon size="lg" /> WINZO Wallet</h1>
         <p className="winzo-subtitle">Your Big Win Energy Financial Hub!</p>
       </div>
 
       {error && (
         <div className="winzo-error">
-          <p>⚠️ Using demo data - {error}</p>
+          <p><WarningIcon size="sm" /> Using demo data - {error}</p>
           <button onClick={() => setError(null)} className="dismiss-btn">
             Got it!
           </button>
@@ -277,7 +299,8 @@ const WalletDashboardEnhanced: React.FC = () => {
             <div className="balance-header">
               <h2 className="balance-title">Current Balance</h2>
               <div className={`balance-status ${walletBalance.status}`}>
-                {walletBalance.status === 'ready' ? '⚡ Ready to Win!' : '💰 Power Up!'}
+                {walletBalance.status === 'ready' ? <LightningIcon size="sm" color="success" /> : <DollarIcon size="sm" color="warning" />}
+                {walletBalance.status === 'ready' ? 'Ready to Win!' : 'Power Up!'}
               </div>
             </div>
             
@@ -327,8 +350,8 @@ const WalletDashboardEnhanced: React.FC = () => {
             <div className={`status-badge ${userStats.user.status}`}>
               <div className="status-icon">
                 {userStats.user.status === 'champion' && '👑'}
-                {userStats.user.status === 'hot_streak' && '🔥'}
-                {userStats.user.status === 'experienced' && '⚡'}
+                {userStats.user.status === 'hot_streak' && <FireIcon size="sm" color="danger" />}
+                {userStats.user.status === 'experienced' && <LightningIcon size="sm" color="success" />}
                 {userStats.user.status === 'rising' && '🚀'}
                 {userStats.user.status === 'fresh' && '💎'}
               </div>
@@ -351,26 +374,26 @@ const WalletDashboardEnhanced: React.FC = () => {
           <div className="betting-stats">
             <div className="stats-grid">
               <div className="stat-item primary">
-                <div className="stat-icon">🎯</div>
+                <div className="stat-icon"><HistoryIcon size="sm" /></div>
                 <div className="stat-value">{userStats.betting.totalBets}</div>
                 <div className="stat-label">Total Bets</div>
               </div>
 
               <div className="stat-item success">
-                <div className="stat-icon">🏆</div>
+                <div className="stat-icon"><TrendingUpIcon size="sm" color="success" /></div>
                 <div className="stat-value">{userStats.betting.wonBets}</div>
                 <div className="stat-label">Wins</div>
               </div>
 
               <div className="stat-item info">
-                <div className="stat-icon">📊</div>
+                <div className="stat-icon"><TrendingUpIcon size="sm" color="success" /></div>
                 <div className="stat-value">{userStats.betting.winRate}</div>
                 <div className="stat-label">Win Rate</div>
               </div>
 
               <div className={`stat-item ${userStats.betting.profitStatus === 'winning' ? 'profit' : 'building'}`}>
                 <div className="stat-icon">
-                  {userStats.betting.profitStatus === 'winning' ? '💰' : '📈'}
+                  {userStats.betting.profitStatus === 'winning' ? <TrendingUpIcon size="sm" color="success" /> : <TrendingDownIcon size="sm" color="danger" />}
                 </div>
                 <div className="stat-value">{userStats.betting.netProfit}</div>
                 <div className="stat-label">
@@ -442,7 +465,7 @@ const WalletDashboardEnhanced: React.FC = () => {
 
               <div className="amount-input-section">
                 <label htmlFor="addAmount" className="amount-label">
-                  💰 Amount to Add
+                  <DollarIcon size="sm" /> Amount to Add
                 </label>
                 <div className="amount-input-group">
                   <span className="currency-symbol">$</span>
@@ -472,13 +495,13 @@ const WalletDashboardEnhanced: React.FC = () => {
               </div>
 
               <div className="payment-method">
-                <label className="method-label">💳 Payment Method</label>
+                <label className="method-label"><CardIcon size="sm" /> Payment Method</label>
                 <div className="method-options">
                   <div 
                     className={`method-option ${selectedPaymentMethod === 'credit_card' ? 'selected' : ''}`}
                     onClick={() => setSelectedPaymentMethod('credit_card')}
                   >
-                    <span className="method-icon">💳</span>
+                    <span className="method-icon"><CardIcon size="sm" /></span>
                     <span className="method-name">Credit Card</span>
                   </div>
                   <div 
@@ -544,7 +567,7 @@ const WalletDashboardEnhanced: React.FC = () => {
 
               <div className="amount-input-section">
                 <label htmlFor="withdrawAmount" className="amount-label">
-                  💰 Amount to Withdraw (Min: $10)
+                  <DollarIcon size="sm" /> Amount to Withdraw (Min: $10)
                 </label>
                 <div className="amount-input-group">
                   <span className="currency-symbol">$</span>
@@ -655,7 +678,7 @@ const WalletDashboardEnhanced: React.FC = () => {
         <div className="modal-overlay" onClick={() => setShowTransactions(false)}>
           <div className="modal-content transactions-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 className="modal-title">📊 Transaction History</h3>
+              <h3 className="modal-title"><HistoryIcon size="sm" /> Transaction History</h3>
               <button 
                 className="modal-close"
                 onClick={() => setShowTransactions(false)}
@@ -681,7 +704,7 @@ const WalletDashboardEnhanced: React.FC = () => {
                   {transactions.map((transaction) => (
                     <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
                       <div className="transaction-icon">
-                        {transaction.icon}
+                        {getTransactionIcon(transaction.type)}
                       </div>
                       <div className="transaction-details">
                         <div className="transaction-description">
@@ -708,7 +731,7 @@ const WalletDashboardEnhanced: React.FC = () => {
       <div className="motivation-section">
         <div className="motivation-content">
           {userStats && userStats.betting.wonBets > 0 ? (
-            <p>🔥 You've got {userStats.betting.wonBets} wins and counting! Your Big Win Energy is unstoppable!</p>
+            <p><FireIcon size="sm" color="danger" /> You've got {userStats.betting.wonBets} wins and counting! Your Big Win Energy is unstoppable!</p>
           ) : (
             <p>💎 Every WINZO champion started exactly where you are. Your winning moment is coming!</p>
           )}

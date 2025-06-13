@@ -475,7 +475,7 @@
 
 @media print {
   .brand-logo {
-    color: #000000 !important;
+    color: var(--color-neutral-900) !important;
   }
   
   .brand-trust,
@@ -483,18 +483,16 @@
   .brand-success,
   .brand-warning,
   .brand-danger {
+    color: var(--color-neutral-900) !important;
     background: none !important;
-    color: #000000 !important;
   }
   
   .brand-message {
-    border: 1px solid #000000 !important;
-    background: none !important;
+    color: var(--color-neutral-900) !important;
   }
   
   .brand-header,
   .brand-footer {
     background: none !important;
-    color: #000000 !important;
   }
 } 

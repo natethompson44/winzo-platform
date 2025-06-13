@@ -66,7 +66,6 @@ app.use('/api/sports', sportsRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/bets', require('./routes/betting'));
-app.use('/api/wallet', require('./routes/wallet'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

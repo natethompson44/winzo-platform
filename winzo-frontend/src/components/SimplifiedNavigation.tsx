@@ -1,5 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  SportsIcon,
+  DashboardIcon,
+  WalletIcon,
+  HistoryIcon,
+  QuickBetIcon,
+  DepositIcon,
+  SettingsIcon,
+  SupportIcon,
+  LogoutIcon,
+  UserIcon,
+  PaletteIcon
+} from './icons/IconLibrary';
 import './SimplifiedNavigation.css';
 
 interface SimplifiedNavigationProps {
@@ -35,25 +48,25 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
     {
       path: '/sports',
       label: 'Sports',
-      icon: '🏈',
+      icon: SportsIcon,
       description: 'Browse and bet on sports'
     },
     {
       path: '/dashboard',
       label: 'Dashboard',
-      icon: '📊',
+      icon: DashboardIcon,
       description: 'View your betting overview'
     },
     {
       path: '/wallet',
       label: 'Wallet',
-      icon: '💰',
+      icon: WalletIcon,
       description: 'Manage your funds'
     },
     {
       path: '/history',
       label: 'History',
-      icon: '📋',
+      icon: HistoryIcon,
       description: 'View betting history'
     }
   ];
@@ -62,13 +75,13 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
   const quickActions = [
     {
       label: 'Quick Bet',
-      icon: '⚡',
+      icon: QuickBetIcon,
       action: () => navigate('/sports'),
       color: 'success'
     },
     {
       label: 'Deposit',
-      icon: '💳',
+      icon: DepositIcon,
       action: () => navigate('/wallet'),
       color: 'primary'
     }
@@ -110,31 +123,37 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
 
           {/* Primary Navigation */}
           <div className="nav-primary">
-            {primaryNavItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
-                title={item.description}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-label">{item.label}</span>
-              </Link>
-            ))}
+            {primaryNavItems.map((item) => {
+              const IconComponent = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                  title={item.description}
+                >
+                  <IconComponent size="sm" className="nav-icon" />
+                  <span className="nav-label">{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
 
           {/* Quick Actions */}
           <div className="nav-actions">
-            {quickActions.map((action) => (
-              <button
-                key={action.label}
-                className={`btn btn-${action.color} btn-sm`}
-                onClick={action.action}
-              >
-                <span className="action-icon">{action.icon}</span>
-                <span className="action-label">{action.label}</span>
-              </button>
-            ))}
+            {quickActions.map((action) => {
+              const IconComponent = action.icon;
+              return (
+                <button
+                  key={action.label}
+                  className={`btn btn-${action.color} btn-sm`}
+                  onClick={action.action}
+                >
+                  <IconComponent size="sm" className="action-icon" />
+                  <span className="action-label">{action.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* User Menu */}
@@ -146,7 +165,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   aria-label="User menu"
                 >
-                  <span className="user-avatar">👤</span>
+                  <UserIcon size="sm" className="user-avatar" />
                   <span className="user-name">{user.name}</span>
                   <span className="user-balance">${user.balance.toFixed(2)}</span>
                 </button>
@@ -160,22 +179,22 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                     
                     <div className="user-menu-actions">
                       <Link to="/profile" className="user-menu-item">
-                        <span className="menu-icon">⚙️</span>
+                        <SettingsIcon size="sm" className="menu-icon" />
                         <span>Settings</span>
                       </Link>
                       <Link to="/support" className="user-menu-item">
-                        <span className="menu-icon">💬</span>
+                        <SupportIcon size="sm" className="menu-icon" />
                         <span>Support</span>
                       </Link>
                       <Link to="/components" className="user-menu-item">
-                        <span className="menu-icon">🎨</span>
+                        <PaletteIcon size="sm" className="menu-icon" />
                         <span>Components</span>
                       </Link>
                       <button 
                         className="user-menu-item logout"
                         onClick={onLogout}
                       >
-                        <span className="menu-icon">🚪</span>
+                        <LogoutIcon size="sm" className="menu-icon" />
                         <span>Logout</span>
                       </button>
                     </div>
@@ -225,39 +244,45 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
               {/* Primary Navigation */}
               <div className="mobile-nav-section">
                 <h3 className="mobile-section-title">Navigation</h3>
-                {primaryNavItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`mobile-nav-item ${isActive(item.path) ? 'active' : ''}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="mobile-nav-icon">{item.icon}</span>
-                    <div className="mobile-nav-content">
-                      <span className="mobile-nav-label">{item.label}</span>
-                      <span className="mobile-nav-description">{item.description}</span>
-                    </div>
-                  </Link>
-                ))}
+                {primaryNavItems.map((item) => {
+                  const IconComponent = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`mobile-nav-item ${isActive(item.path) ? 'active' : ''}`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <IconComponent size="sm" className="mobile-nav-icon" />
+                      <div className="mobile-nav-content">
+                        <span className="mobile-nav-label">{item.label}</span>
+                        <span className="mobile-nav-description">{item.description}</span>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
 
               {/* Quick Actions */}
               <div className="mobile-nav-section">
                 <h3 className="mobile-section-title">Quick Actions</h3>
                 <div className="mobile-quick-actions">
-                  {quickActions.map((action) => (
-                    <button
-                      key={action.label}
-                      className={`btn btn-${action.color}`}
-                      onClick={() => {
-                        action.action();
-                        setIsMobileMenuOpen(false);
-                      }}
-                    >
-                      <span className="action-icon">{action.icon}</span>
-                      <span className="action-label">{action.label}</span>
-                    </button>
-                  ))}
+                  {quickActions.map((action) => {
+                    const IconComponent = action.icon;
+                    return (
+                      <button
+                        key={action.label}
+                        className={`btn btn-${action.color}`}
+                        onClick={() => {
+                          action.action();
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <IconComponent size="sm" className="action-icon" />
+                        <span className="action-label">{action.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -267,15 +292,15 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                   <h3 className="mobile-section-title">Account</h3>
                   <div className="mobile-user-actions">
                     <Link to="/profile" className="mobile-user-item">
-                      <span className="menu-icon">⚙️</span>
+                      <SettingsIcon size="sm" className="menu-icon" />
                       <span>Settings</span>
                     </Link>
                     <Link to="/support" className="mobile-user-item">
-                      <span className="menu-icon">💬</span>
+                      <SupportIcon size="sm" className="menu-icon" />
                       <span>Support</span>
                     </Link>
                     <Link to="/components" className="mobile-user-item">
-                      <span className="menu-icon">🎨</span>
+                      <PaletteIcon size="sm" className="menu-icon" />
                       <span>Components</span>
                     </Link>
                     <button 
@@ -285,7 +310,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                         setIsMobileMenuOpen(false);
                       }}
                     >
-                      <span className="menu-icon">🚪</span>
+                      <LogoutIcon size="sm" className="menu-icon" />
                       <span>Logout</span>
                     </button>
                   </div>

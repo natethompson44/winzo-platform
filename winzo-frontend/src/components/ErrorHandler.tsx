@@ -1,7 +1,14 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React from 'react';
+import { 
+  NetworkIcon, 
+  ServerIcon, 
+  LockIcon, 
+  WarningIcon, 
+  ErrorIcon 
+} from './icons/IconLibrary';
 import './ErrorHandler.css';
 
-export interface ErrorInfo {
+export interface CustomErrorInfo {
   type: 'network' | 'validation' | 'permission' | 'server' | 'unknown';
   title: string;
   message: string;
@@ -32,7 +39,7 @@ const ErrorHandler: React.FC<ErrorHandlerProps> = ({
 }) => {
   if (!error) return null;
 
-  const getErrorInfo = (error: Error | string): ErrorInfo => {
+  const getErrorInfo = (error: Error | string): CustomErrorInfo => {
     const errorMessage = typeof error === 'string' ? error : error.message;
 
     // Network errors
@@ -137,11 +144,11 @@ const ErrorHandler: React.FC<ErrorHandlerProps> = ({
     <div className={`error-handler ${className}`}>
       <div className="error-container">
         <div className="error-icon">
-          {errorInfo.type === 'network' && '📡'}
-          {errorInfo.type === 'server' && '🔧'}
-          {errorInfo.type === 'permission' && '🔐'}
-          {errorInfo.type === 'validation' && '⚠️'}
-          {errorInfo.type === 'unknown' && '💥'}
+          {errorInfo.type === 'network' && <NetworkIcon size="lg" />}
+          {errorInfo.type === 'server' && <ServerIcon size="lg" />}
+          {errorInfo.type === 'permission' && <LockIcon size="lg" />}
+          {errorInfo.type === 'validation' && <WarningIcon size="lg" />}
+          {errorInfo.type === 'unknown' && <ErrorIcon size="lg" />}
         </div>
         
         <div className="error-content">
@@ -181,11 +188,26 @@ export const ErrorToast: React.FC<{
   onDismiss: () => void;
   duration?: number;
 }> = ({ error, onDismiss, duration = 5000 }) => {
-  const errorInfo = ErrorHandler.prototype.getErrorInfo?.(error) || {
-    type: 'unknown',
-    title: 'Error',
-    message: typeof error === 'string' ? error : error.message
+  const getErrorInfo = (error: Error | string): CustomErrorInfo => {
+    const errorMessage = typeof error === 'string' ? error : error.message;
+    
+    // Simplified error mapping for toast
+    if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+      return {
+        type: 'network',
+        title: 'Connection Error',
+        message: 'Network connection issue'
+      };
+    }
+    
+    return {
+      type: 'unknown',
+      title: 'Error',
+      message: errorMessage
+    };
   };
+
+  const errorInfo = getErrorInfo(error);
 
   React.useEffect(() => {
     if (duration > 0) {
@@ -198,11 +220,11 @@ export const ErrorToast: React.FC<{
     <div className="error-toast">
       <div className="error-toast-content">
         <span className="error-toast-icon">
-          {errorInfo.type === 'network' && '📡'}
-          {errorInfo.type === 'server' && '🔧'}
-          {errorInfo.type === 'permission' && '🔐'}
-          {errorInfo.type === 'validation' && '⚠️'}
-          {errorInfo.type === 'unknown' && '💥'}
+          {errorInfo.type === 'network' && <NetworkIcon size="sm" />}
+          {errorInfo.type === 'server' && <ServerIcon size="sm" />}
+          {errorInfo.type === 'permission' && <LockIcon size="sm" />}
+          {errorInfo.type === 'validation' && <WarningIcon size="sm" />}
+          {errorInfo.type === 'unknown' && <ErrorIcon size="sm" />}
         </span>
         
         <div className="error-toast-text">
@@ -253,10 +275,10 @@ export class ErrorBoundary extends React.Component<
         const FallbackComponent = this.props.fallback;
         return <FallbackComponent error={this.state.error!} retry={this.handleRetry} />;
       }
-
+      
       return (
         <ErrorHandler 
-          error={this.state.error!} 
+          error={this.state.error} 
           onRetry={this.handleRetry}
         />
       );

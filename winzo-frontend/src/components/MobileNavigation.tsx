@@ -35,11 +35,11 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ user, onLogout }) =
   });
 
   // Navigation items with touch-optimized targets
-  const navigationItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: '🏠', color: '#00b4d8' },
-    { path: '/sports', label: 'Sports', icon: '🏈', color: '#10b981' },
-    { path: '/wallet', label: 'Wallet', icon: '💰', color: '#f59e0b' },
-    { path: '/history', label: 'History', icon: '📊', color: '#8b5cf6' }
+  const navItems = [
+    { path: '/dashboard', label: 'Dashboard', icon: '🏠', color: 'var(--color-secondary)' },
+    { path: '/sports', label: 'Sports', icon: '🏈', color: 'var(--color-success)' },
+    { path: '/wallet', label: 'Wallet', icon: '💰', color: 'var(--color-warning)' },
+    { path: '/history', label: 'History', icon: '📊', color: 'var(--color-primary)' }
   ];
 
   // Quick actions for mobile
@@ -143,7 +143,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ user, onLogout }) =
 
         {/* Bottom Tab Navigation */}
         <div className="mobile-tab-nav">
-          {navigationItems.map((item, index) => (
+          {navItems.map((item, index) => (
             <Link
               key={item.path}
               to={item.path}
@@ -196,7 +196,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ user, onLogout }) =
             {/* Navigation Links */}
             <div className="mobile-menu-links">
               <h4>Navigation</h4>
-              {navigationItems.map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}

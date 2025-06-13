@@ -132,6 +132,130 @@ export const LogoutIcon: React.FC<IconProps> = (props) => (
   </Icon>
 );
 
+export const UserIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="User">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const PaletteIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Design System">
+    <circle cx="13.5" cy="6.5" r="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="17.5" cy="10.5" r="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="8.5" cy="7.5" r="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="6.5" cy="12.5" r="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const NetworkIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Network">
+    <path d="M12 2L2 7l10 5 10-5-10-5z" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M2 17l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const ServerIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Server">
+    <rect x="2" y="2" width="20" height="8" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <rect x="2" y="14" width="20" height="8" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="6" y1="6" x2="6.01" y2="6" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="6" y1="18" x2="6.01" y2="18" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const LockIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Lock">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="12" cy="16" r="1" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const ClockIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Clock">
+    <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="12,6 12,12 16,14" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const CalendarIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Calendar">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="16" y1="2" x2="16" y2="6" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="8" y1="2" x2="8" y2="6" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="3" y1="10" x2="21" y2="10" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const CalendarDaysIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Calendar Days">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="16" y1="2" x2="16" y2="6" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="8" y1="2" x2="8" y2="6" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="3" y1="10" x2="21" y2="10" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 14h.01" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 14h.01" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M16 14h.01" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 18h.01" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 18h.01" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M16 18h.01" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const FireIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Fire">
+    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4 4 4 1.5 0 3-1 3-3 0 1.5-1 3-3 3-1 0-1.5-.5-1.5-1" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const BetSlipIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Bet Slip">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="14,2 14,8 20,8" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="16" y1="13" x2="8" y2="13" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="16" y1="17" x2="8" y2="17" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="10,9 9,9 8,9" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const LightningIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Lightning">
+    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const TrendingUpIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Trending Up">
+    <polyline points="22,7 13.5,15.5 8.5,10.5 2,17" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="16,7 22,7 22,13" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const TrendingDownIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Trending Down">
+    <polyline points="22,17 13.5,8.5 8.5,13.5 2,7" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="16,17 22,17 22,11" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const DollarIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Dollar">
+    <line x1="12" y1="1" x2="12" y2="23" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+export const RefreshIcon: React.FC<IconProps> = (props) => (
+  <Icon {...props} aria-label="Refresh">
+    <polyline points="1,4 1,10 7,10" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="23,20 23,14 17,14" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
 // Status Icons
 export const SuccessIcon: React.FC<IconProps> = (props) => (
   <Icon {...props} aria-label="Success" color="success">
@@ -341,6 +465,21 @@ const IconLibrary = {
   BasketballIcon,
   CricketIcon,
   TennisIcon,
-  IconWrapper
+  IconWrapper,
+  UserIcon,
+  PaletteIcon,
+  NetworkIcon,
+  ServerIcon,
+  LockIcon,
+  ClockIcon,
+  CalendarIcon,
+  CalendarDaysIcon,
+  FireIcon,
+  BetSlipIcon,
+  LightningIcon,
+  TrendingUpIcon,
+  TrendingDownIcon,
+  DollarIcon,
+  RefreshIcon
 };
 export default IconLibrary; 

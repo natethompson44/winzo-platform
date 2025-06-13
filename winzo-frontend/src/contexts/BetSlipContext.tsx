@@ -192,13 +192,13 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
       top: 20px;
       right: 20px;
       color: white;
-      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
       padding: 12px 20px;
       border-radius: 8px;
       font-weight: bold;
       z-index: 10000;
       animation: slideInRight 0.3s ease-out;
-      box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     `;
     document.body.appendChild(notification);
     setTimeout(() => {

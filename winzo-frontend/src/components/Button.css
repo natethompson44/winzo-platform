@@ -1,0 +1,431 @@
+/* Base Button Styles */
+.winzo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  min-height: 44px; /* Accessibility minimum touch target */
+  user-select: none;
+  white-space: nowrap;
+  outline: none;
+}
+
+/* Button Variants */
+.winzo-button--primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.winzo-button--primary:hover:not(.winzo-button--disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.winzo-button--primary:active:not(.winzo-button--disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.winzo-button--secondary {
+  background: var(--color-secondary);
+  color: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.winzo-button--secondary:hover:not(.winzo-button--disabled) {
+  background: var(--color-secondary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.winzo-button--success {
+  background: var(--color-success);
+  color: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.winzo-button--success:hover:not(.winzo-button--disabled) {
+  background: var(--color-success-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.winzo-button--danger {
+  background: var(--color-danger);
+  color: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.winzo-button--danger:hover:not(.winzo-button--disabled) {
+  background: var(--color-danger-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.winzo-button--warning {
+  background: var(--color-warning);
+  color: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.winzo-button--warning:hover:not(.winzo-button--disabled) {
+  background: var(--color-warning-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.winzo-button--ghost {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid transparent;
+}
+
+.winzo-button--ghost:hover:not(.winzo-button--disabled) {
+  background: var(--color-neutral-100);
+  color: var(--color-text-primary);
+}
+
+.winzo-button--outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.winzo-button--outline:hover:not(.winzo-button--disabled) {
+  background: var(--color-primary);
+  color: var(--color-white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Button Sizes */
+.winzo-button--xs {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  min-height: 32px;
+}
+
+.winzo-button--sm {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  min-height: 36px;
+}
+
+.winzo-button--md {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  min-height: 44px;
+}
+
+.winzo-button--lg {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  min-height: 52px;
+}
+
+.winzo-button--xl {
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  font-size: var(--font-size-xl);
+  min-height: 60px;
+}
+
+/* Button States */
+.winzo-button--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.winzo-button--loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.winzo-button--full-width {
+  width: 100%;
+}
+
+/* Icon Positioning */
+.winzo-button--icon-left {
+  flex-direction: row;
+}
+
+.winzo-button--icon-right {
+  flex-direction: row-reverse;
+}
+
+.winzo-button__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.winzo-button__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading Spinner */
+.winzo-button__loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  animation: spin 1s linear infinite;
+}
+
+.winzo-button__loading-spinner svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Focus States */
+.winzo-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Button Group */
+.winzo-button-group {
+  display: inline-flex;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.winzo-button-group--horizontal {
+  flex-direction: row;
+}
+
+.winzo-button-group--vertical {
+  flex-direction: column;
+}
+
+.winzo-button-group .winzo-button {
+  border-radius: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.winzo-button-group .winzo-button:first-child {
+  border-top-left-radius: var(--border-radius-md);
+  border-bottom-left-radius: var(--border-radius-md);
+}
+
+.winzo-button-group .winzo-button:last-child {
+  border-top-right-radius: var(--border-radius-md);
+  border-bottom-right-radius: var(--border-radius-md);
+  border-right: none;
+}
+
+.winzo-button-group--vertical .winzo-button {
+  border-right: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.winzo-button-group--vertical .winzo-button:first-child {
+  border-top-left-radius: var(--border-radius-md);
+  border-top-right-radius: var(--border-radius-md);
+  border-bottom-left-radius: 0;
+}
+
+.winzo-button-group--vertical .winzo-button:last-child {
+  border-bottom-left-radius: var(--border-radius-md);
+  border-bottom-right-radius: var(--border-radius-md);
+  border-top-right-radius: 0;
+  border-bottom: none;
+}
+
+/* Icon Button */
+.winzo-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--border-radius-md);
+  background: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--spacing-sm);
+}
+
+.winzo-icon-button:hover:not(:disabled) {
+  background: var(--color-neutral-100);
+  transform: translateY(-1px);
+}
+
+.winzo-icon-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.winzo-icon-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.winzo-icon-button__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+}
+
+/* Icon Button Variants */
+.winzo-icon-button--primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.winzo-icon-button--primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.winzo-icon-button--secondary {
+  background: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.winzo-icon-button--secondary:hover:not(:disabled) {
+  background: var(--color-secondary-dark);
+}
+
+.winzo-icon-button--danger {
+  background: var(--color-danger);
+  color: var(--color-white);
+}
+
+.winzo-icon-button--danger:hover:not(:disabled) {
+  background: var(--color-danger-dark);
+}
+
+/* Icon Button Sizes */
+.winzo-icon-button--xs {
+  min-height: 32px;
+  min-width: 32px;
+  padding: var(--spacing-xs);
+}
+
+.winzo-icon-button--sm {
+  min-height: 36px;
+  min-width: 36px;
+  padding: var(--spacing-sm);
+}
+
+.winzo-icon-button--md {
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--spacing-sm);
+}
+
+.winzo-icon-button--lg {
+  min-height: 52px;
+  min-width: 52px;
+  padding: var(--spacing-md);
+}
+
+.winzo-icon-button--xl {
+  min-height: 60px;
+  min-width: 60px;
+  padding: var(--spacing-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .winzo-button {
+    min-height: 48px; /* Larger touch targets on mobile */
+  }
+  
+  .winzo-button--xs {
+    min-height: 40px;
+  }
+  
+  .winzo-button--sm {
+    min-height: 44px;
+  }
+  
+  .winzo-button--md {
+    min-height: 48px;
+  }
+  
+  .winzo-button--lg {
+    min-height: 56px;
+  }
+  
+  .winzo-button--xl {
+    min-height: 64px;
+  }
+  
+  .winzo-icon-button {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .winzo-button {
+    border: 2px solid currentColor;
+  }
+  
+  .winzo-button--outline {
+    border-width: 3px;
+  }
+  
+  .winzo-icon-button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .winzo-button,
+  .winzo-icon-button {
+    transition: none;
+  }
+  
+  .winzo-button:hover:not(.winzo-button--disabled),
+  .winzo-icon-button:hover:not(:disabled) {
+    transform: none;
+  }
+  
+  .winzo-button__loading-spinner {
+    animation: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .winzo-button,
+  .winzo-icon-button {
+    background: transparent !important;
+    color: black !important;
+    border: 1px solid black !important;
+    box-shadow: none !important;
+  }
+} 
