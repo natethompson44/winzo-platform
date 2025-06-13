@@ -1,0 +1,547 @@
+/* WINZO Mobile Bet Slip Styles - Touch-Optimized Design */
+
+/* Mobile Bet Slip Container */
+.mobile-bet-slip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--primary-gradient);
+  border-top: 2px solid var(--winzo-teal);
+  box-shadow: 0 -4px 20px rgba(0, 180, 216, 0.15);
+  z-index: var(--z-modal);
+  backdrop-filter: blur(20px);
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  min-height: 60vh;
+  max-height: 80vh;
+}
+
+/* Bet Slip Header */
+.bet-slip-header {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.bet-slip-title {
+  color: var(--white);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.clear-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 32px;
+}
+
+.clear-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
+}
+
+.clear-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* Swipe Indicator */
+.swipe-indicator {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.swipe-dot {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  position: relative;
+}
+
+.swipe-dot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--winzo-teal);
+  border-radius: 2px;
+  animation: swipePulse 2s ease-in-out infinite;
+}
+
+@keyframes swipePulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Bet Slip Content */
+.bet-slip-content {
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+/* Empty Selections */
+.empty-selections {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-selections h4 {
+  color: var(--white);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-selections p {
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Selections List */
+.selections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.selection-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.selection-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.selection-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.selection-event {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-name {
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.event-time {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+}
+
+.selection-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selection-name {
+  color: var(--winzo-teal);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.selection-odds {
+  color: var(--big-win-gold);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.remove-selection {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 50%;
+  color: #fca5a5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.remove-selection:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.1);
+}
+
+/* Stake Section */
+.stake-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.stake-input-container {
+  margin-bottom: 1rem;
+}
+
+.stake-label {
+  display: block;
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 1rem;
+  color: var(--winzo-teal);
+  font-weight: 600;
+  font-size: 1.1rem;
+  z-index: 1;
+}
+
+.stake-input {
+  width: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem 0.75rem 2rem;
+  color: var(--white);
+  font-size: 1.1rem;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.stake-input:focus {
+  border-color: var(--winzo-teal);
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+}
+
+.stake-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Quick Stake Buttons */
+.quick-stakes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.quick-stake-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.6rem 0.5rem;
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 40px;
+}
+
+.quick-stake-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.quick-stake-btn:active {
+  transform: translateY(0);
+}
+
+/* Bet Summary */
+.bet-summary {
+  background: rgba(0, 180, 216, 0.1);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-row span:first-child {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+}
+
+.total-odds {
+  color: var(--winzo-teal);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.potential-win {
+  color: var(--big-win-gold);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Place Bet Button */
+.place-bet-btn {
+  width: 100%;
+  background: var(--win-gradient);
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.place-bet-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.place-bet-btn:active {
+  transform: translateY(0);
+}
+
+.place-bet-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.bet-btn-text {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.bet-btn-win {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Mobile Keyboard Hint */
+.mobile-keyboard-hint {
+  background: rgba(0, 180, 216, 0.1);
+  border-top: 1px solid rgba(0, 180, 216, 0.3);
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+}
+
+.mobile-keyboard-hint p {
+  color: var(--winzo-teal);
+  font-size: 0.8rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Backdrop */
+.bet-slip-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-modal) - 1);
+  backdrop-filter: blur(2px);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .mobile-bet-slip {
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .bet-slip-header {
+    padding: 0.75rem 1rem 0.5rem;
+  }
+  
+  .bet-slip-content {
+    padding: 0.75rem 1rem;
+  }
+  
+  .stake-section {
+    padding: 1rem;
+  }
+  
+  .quick-stakes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .selection-item {
+    padding: 0.75rem;
+  }
+  
+  .selection-event {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .selection-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .clear-btn,
+  .close-btn,
+  .remove-selection,
+  .quick-stake-btn,
+  .place-bet-btn {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .clear-btn:active,
+  .close-btn:active,
+  .remove-selection:active,
+  .quick-stake-btn:active,
+  .place-bet-btn:active {
+    transform: scale(0.95);
+  }
+  
+  .selection-item:active {
+    transform: scale(0.98);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .mobile-bet-slip {
+    border-top-width: 3px;
+  }
+  
+  .stake-input {
+    border-width: 3px;
+  }
+  
+  .selection-item,
+  .stake-section,
+  .bet-summary {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .clear-btn,
+  .close-btn,
+  .remove-selection,
+  .quick-stake-btn,
+  .place-bet-btn,
+  .selection-item {
+    transition: none;
+  }
+  
+  .swipe-dot::before {
+    animation: none;
+  }
+}
+
+/* Focus States for Accessibility */
+.stake-input:focus,
+.clear-btn:focus,
+.close-btn:focus,
+.remove-selection:focus,
+.quick-stake-btn:focus,
+.place-bet-btn:focus {
+  outline: 3px solid var(--winzo-teal);
+  outline-offset: 2px;
+} 

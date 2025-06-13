@@ -77,6 +77,7 @@ html {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -87,6 +88,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* WINZO App Container */
@@ -94,6 +96,36 @@ body {
   min-height: 100vh;
   background: var(--winzo-navy);
   position: relative;
+}
+
+/* App Layout */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  padding-top: 0; /* Navigation is now fixed */
+  padding-bottom: 80px; /* Space for mobile bet slip */
+}
+
+/* App Loading State */
+.app-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--primary-gradient);
+  gap: 1rem;
+}
+
+/* Bet Slip Container */
+.bet-slip-container {
+  position: relative;
+  z-index: var(--z-modal);
 }
 
 /* WINZO Typography Classes - Following Design Philosophy */
@@ -138,11 +170,17 @@ body {
   transition: all 0.2s ease;
   min-height: 44px; /* Touch target minimum */
   user-select: none;
+  position: relative;
+  overflow: hidden;
 }
 
 .winzo-btn:focus {
   outline: 3px solid var(--winzo-teal);
   outline-offset: 2px;
+}
+
+.winzo-btn:active {
+  transform: translateY(1px);
 }
 
 /* Primary Button - Electric Teal, Bold, Confident */
@@ -198,112 +236,115 @@ body {
 
 /* Disabled Button State */
 .winzo-btn:disabled {
-  background: var(--medium-gray);
-  color: rgba(255, 255, 255, 0.6);
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* WINZO Card System */
 .winzo-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(0, 180, 216, 0.2);
-  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .winzo-card:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: var(--winzo-teal);
-  box-shadow: var(--shadow-winzo);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .winzo-card-glass {
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* WINZO Input System */
 .winzo-input {
   width: 100%;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(0, 180, 216, 0.3);
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--white);
   font-family: var(--font-family-primary);
   font-size: 1rem;
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .winzo-input::placeholder {
-  color: var(--medium-gray);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .winzo-input:focus {
   outline: none;
   border-color: var(--winzo-teal);
-  background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .winzo-input:invalid {
   border-color: var(--danger-red);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 /* WINZO Badge System */
 .winzo-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
   padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  border-radius: var(--radius-sm);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  line-height: 1;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .winzo-badge-success {
-  background: var(--win-green);
-  color: var(--white);
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--win-green);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .winzo-badge-warning {
-  background: var(--caution-orange);
-  color: var(--white);
+  background: rgba(249, 115, 22, 0.2);
+  color: var(--caution-orange);
+  border-color: rgba(249, 115, 22, 0.3);
 }
 
 .winzo-badge-info {
-  background: var(--winzo-teal);
-  color: var(--white);
+  background: rgba(0, 180, 216, 0.2);
+  color: var(--winzo-teal);
+  border-color: rgba(0, 180, 216, 0.3);
 }
 
 .winzo-badge-gold {
-  background: var(--big-win-gold);
-  color: var(--white);
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--big-win-gold);
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
-/* WINZO Loading States */
+/* WINZO Loading System */
 .winzo-loading {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-xl);
 }
 
 .winzo-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(0, 180, 216, 0.3);
+  border: 3px solid rgba(0, 180, 216, 0.2);
   border-top: 3px solid var(--winzo-teal);
   border-radius: 50%;
   animation: winzoSpin 1s linear infinite;
@@ -319,30 +360,31 @@ body {
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
   border: 1px solid;
-  margin: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-md);
+  font-weight: 500;
 }
 
 .winzo-alert-success {
   background: rgba(16, 185, 129, 0.1);
-  border-color: var(--win-green);
+  border-color: rgba(16, 185, 129, 0.3);
   color: var(--win-green);
 }
 
 .winzo-alert-warning {
   background: rgba(249, 115, 22, 0.1);
-  border-color: var(--caution-orange);
+  border-color: rgba(249, 115, 22, 0.3);
   color: var(--caution-orange);
 }
 
 .winzo-alert-error {
   background: rgba(239, 68, 68, 0.1);
-  border-color: var(--danger-red);
+  border-color: rgba(239, 68, 68, 0.3);
   color: var(--danger-red);
 }
 
 .winzo-alert-info {
   background: rgba(0, 180, 216, 0.1);
-  border-color: var(--winzo-teal);
+  border-color: rgba(0, 180, 216, 0.3);
   color: var(--winzo-teal);
 }
 
@@ -352,43 +394,17 @@ body {
   gap: var(--spacing-md);
 }
 
-.winzo-grid-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
+.winzo-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.winzo-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.winzo-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.winzo-grid-auto { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 
-.winzo-grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.winzo-grid-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.winzo-grid-auto {
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-
-/* WINZO Flex Utilities */
-.winzo-flex {
-  display: flex;
-}
-
-.winzo-flex-col {
-  flex-direction: column;
-}
-
-.winzo-flex-center {
-  align-items: center;
-  justify-content: center;
-}
-
-.winzo-flex-between {
-  justify-content: space-between;
-}
-
-.winzo-flex-wrap {
-  flex-wrap: wrap;
-}
+/* WINZO Flex System */
+.winzo-flex { display: flex; }
+.winzo-flex-col { flex-direction: column; }
+.winzo-flex-center { align-items: center; justify-content: center; }
+.winzo-flex-between { justify-content: space-between; }
+.winzo-flex-wrap { flex-wrap: wrap; }
 
 /* WINZO Spacing Utilities */
 .winzo-p-xs { padding: var(--spacing-xs); }
@@ -433,7 +449,7 @@ body {
 .winzo-text-red { color: var(--danger-red); }
 .winzo-text-gray { color: var(--medium-gray); }
 
-/* Responsive Design - Mobile-First Approach */
+/* Responsive Design */
 @media (max-width: 640px) {
   .winzo-grid-2,
   .winzo-grid-3,
@@ -442,12 +458,16 @@ body {
   }
   
   .winzo-btn {
-    width: 100%;
-    justify-content: center;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
   }
   
   html {
     font-size: 14px;
+  }
+  
+  .app-main {
+    padding-bottom: 100px; /* More space for mobile bet slip */
   }
 }
 
@@ -460,16 +480,40 @@ body {
 
 @media (min-width: 1025px) {
   html {
-    font-size: 16px;
+    font-size: 18px;
+  }
+  
+  .app-main {
+    padding-bottom: 60px;
   }
 }
 
-/* Accessibility Enhancements */
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .winzo-btn,
+  .winzo-card {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .winzo-btn:active {
+    transform: scale(0.98);
+  }
+  
+  .winzo-card:active {
+    transform: scale(0.99);
+  }
+}
+
+/* Accessibility Improvements */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  
+  .winzo-spinner {
+    animation: none;
   }
 }
 
@@ -479,12 +523,16 @@ body {
   .winzo-input {
     border-width: 2px;
   }
+  
+  .winzo-btn:focus,
+  .winzo-input:focus {
+    outline-width: 4px;
+  }
 }
 
-/* Focus Management for Keyboard Navigation */
+/* Focus States for Accessibility */
 .winzo-btn:focus-visible,
-.winzo-input:focus-visible,
-.winzo-card:focus-visible {
+.winzo-input:focus-visible {
   outline: 3px solid var(--winzo-teal);
   outline-offset: 2px;
 }
@@ -497,15 +545,19 @@ body {
   }
   
   .winzo-btn,
-  .winzo-spinner {
-    display: none;
+  .winzo-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
   }
 }
 
-/* Dark Mode Support (WINZO is primarily dark) */
+/* Light Mode Support */
 @media (prefers-color-scheme: light) {
-  /* WINZO maintains dark theme regardless of system preference */
-  /* This ensures consistent Big Win Energy branding */
+  :root {
+    --white: #0f172a;
+    --black: #ffffff;
+    --medium-gray: #64748b;
+  }
 }
 
 /* High DPI Display Support */
@@ -513,5 +565,93 @@ body {
   .winzo-spinner {
     border-width: 2px;
   }
+}
+
+/* Mobile-First Responsive Breakpoints */
+@media (max-width: 480px) {
+  .app-main {
+    padding: 0.5rem;
+    padding-bottom: 120px;
+  }
+  
+  .winzo-card {
+    padding: var(--spacing-md);
+  }
+  
+  .winzo-text-4xl {
+    font-size: 1.75rem;
+  }
+  
+  .winzo-text-3xl {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    padding: 1rem;
+    padding-bottom: 100px;
+  }
+  
+  .winzo-grid-auto {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-main {
+    padding: 1.5rem;
+    padding-bottom: 80px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .app-main {
+    padding: 2rem;
+    padding-bottom: 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}
+
+/* Performance Optimizations */
+.winzo-card,
+.winzo-btn,
+.winzo-input {
+  will-change: transform;
+}
+
+/* Smooth Scrolling for Anchor Links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--winzo-teal);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0891b2;
+}
+
+/* Selection Styles */
+::selection {
+  background: rgba(0, 180, 216, 0.3);
+  color: var(--white);
+}
+
+::-moz-selection {
+  background: rgba(0, 180, 216, 0.3);
+  color: var(--white);
 }
 

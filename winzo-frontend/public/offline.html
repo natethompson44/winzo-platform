@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WINZO - Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2d5a87 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .offline-container {
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #00b4d8;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .offline-features {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .offline-features h3 {
+            color: #00b4d8;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .feature-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .retry-button {
+            background: linear-gradient(135deg, #00b4d8 0%, #0891b2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+            margin-bottom: 1rem;
+            min-width: 200px;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.4);
+        }
+
+        .retry-button:active {
+            transform: translateY(0);
+        }
+
+        .connection-info {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 1rem;
+        }
+
+        .last-sync {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            .offline-container {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .offline-icon {
+                font-size: 3rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .offline-icon {
+                animation: none;
+            }
+
+            .status-dot {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        
+        <h1>You're Offline</h1>
+        
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            No Internet Connection
+        </div>
+        
+        <p class="subtitle">
+            Don't worry! WINZO is designed to work offline. You can still view your betting history, 
+            check cached odds, and access previously loaded content.
+        </p>
+        
+        <div class="offline-features">
+            <h3>Available Offline:</h3>
+            <ul class="feature-list">
+                <li>View your betting history</li>
+                <li>Check cached sports events</li>
+                <li>Review your wallet balance</li>
+                <li>Access saved preferences</li>
+                <li>View cached odds and results</li>
+            </ul>
+        </div>
+        
+        <button class="retry-button" onclick="window.location.reload()">
+            Try Again
+        </button>
+        
+        <div class="connection-info">
+            We'll automatically reconnect when your internet is restored
+        </div>
+        
+        <div class="last-sync">
+            Last synced: <span id="lastSyncTime">Loading...</span>
+        </div>
+    </div>
+
+    <script>
+        // Update last sync time
+        function updateLastSyncTime() {
+            const lastSync = localStorage.getItem('winzo_last_sync');
+            const lastSyncElement = document.getElementById('lastSyncTime');
+            
+            if (lastSync) {
+                const date = new Date(lastSync);
+                lastSyncElement.textContent = date.toLocaleString();
+            } else {
+                lastSyncElement.textContent = 'Unknown';
+            }
+        }
+
+        // Check for connection
+        function checkConnection() {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }
+
+        // Listen for online event
+        window.addEventListener('online', checkConnection);
+        
+        // Update sync time on load
+        updateLastSyncTime();
+        
+        // Check connection every 5 seconds
+        setInterval(checkConnection, 5000);
+        
+        // Update sync time when coming back online
+        window.addEventListener('online', () => {
+            localStorage.setItem('winzo_last_sync', new Date().toISOString());
+        });
+    </script>
+</body>
+</html> 
