@@ -88,9 +88,9 @@ interface Outcome {
  */
 const SportsHierarchyEnhanced: React.FC = () => {
   const [categories, setCategories] = useState<SportCategory[]>([]);
-  const [events, setEvents] = useState<OddsEvent[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [events] = useState<OddsEvent[]>([]);
+  const [loading] = useState(false);
+  const [error] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filter, setFilter] = useState<'all' | 'live' | 'upcoming'>('all');
   const [isMobileView, setIsMobileView] = useState(false);
