@@ -11,7 +11,7 @@ import DesignSystemTest from './components/DesignSystemTest';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
-import SportsBetting from './components/SportsBetting';
+import SportsHierarchyEnhanced from './components/SportsHierarchyEnhanced';
 import WalletDashboard from './components/WalletDashboardEnhanced';
 import BettingHistory from './components/BettingHistory';
 import { BetSlipProvider } from './contexts/BetSlipContext';
@@ -206,7 +206,7 @@ function App() {
                             isLoading={false}
                             skeleton={<div>Sports Skeleton</div>}
                           >
-                            <SportsBetting />
+                            <SportsHierarchyEnhanced />
                           </ProgressiveLoading>
                         </AppLayout>
                       </ProtectedRoute>
