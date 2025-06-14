@@ -29,10 +29,10 @@ const Register: React.FC = () => {
   return (
     <div className="auth-container">
       <img src={winzoLogo} alt="WINZO" className="auth-logo" />
-      <h1 className="auth-title">Create Account</h1>
+      <h1 className="auth-title">Request Access</h1>
       <p className="auth-subtitle">Invite Only</p>
       {error && <div className="error">{error}</div>}
-      {success && <div className="success-msg">Big Win Energy! ✨</div>}
+      {success && <div className="success-msg">Access Granted</div>}
       <form onSubmit={handleSubmit} className={`auth-form ${success ? 'success' : ''}`}>
         <input
           className="winzo-input"
@@ -58,10 +58,10 @@ const Register: React.FC = () => {
           onChange={e => setInviteCode(e.target.value)}
           required
         />
-        <button type="submit" className="winzo-btn winzo-btn-primary">Register</button>
+        <button type="submit" className="winzo-btn winzo-btn-primary">Request Access</button>
       </form>
       <p className="auth-footer">
-        Already have an account? <Link to="/login">Login</Link>
+        Already have access? <Link to="/login">Access Portal</Link>
       </p>
     </div>
   );

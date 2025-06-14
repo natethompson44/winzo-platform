@@ -9,11 +9,11 @@ const HomePage: React.FC = () => {
     e.currentTarget.style.display = 'none';
     const textLogo = document.createElement('div');
     textLogo.className = 'hero-logo-text';
-    textLogo.textContent = 'NEXUS';
+    textLogo.textContent = 'WINZO';
     textLogo.style.cssText = `
       font-size: 2rem;
       font-weight: 700;
-      color: var(--corporate-blue);
+      color: var(--luxury-gold);
       margin: 0 auto 1rem;
       text-align: center;
     `;
@@ -25,34 +25,34 @@ const HomePage: React.FC = () => {
       <header className="hero-section">
         <img 
           src={winzoLogo} 
-          alt="NEXUS" 
+          alt="WINZO" 
           className="hero-logo" 
           onError={handleLogoError}
         />
-        <h1 className="hero-title">Advanced Business Intelligence Platform</h1>
-        <p className="hero-subtitle">Enterprise-grade analytics, real-time insights, and secure data management in one comprehensive solution.</p>
+        <h1 className="hero-title">WINZO</h1>
+        <p className="hero-subtitle">Exclusive Platform</p>
         <div className="hero-actions">
-          <Link to="/login" className="corporate-btn corporate-btn-primary">Access Platform</Link>
-          <Link to="/register" className="corporate-btn corporate-btn-secondary">Request Access</Link>
+          <Link to="/login" className="luxury-btn luxury-btn-primary">Access</Link>
+          <Link to="/register" className="luxury-btn luxury-btn-secondary">Request Invite</Link>
         </div>
       </header>
 
-      <section className="analytics-preview">
-        <h2 className="section-title">Real-Time Data Analytics</h2>
-        <p className="section-text">Monitor key performance indicators with advanced visualization and predictive modeling capabilities.</p>
-        <Link to="/login" className="corporate-btn corporate-btn-success">View Dashboard</Link>
+      <section className="exclusive-preview">
+        <h2 className="section-title">Members Only</h2>
+        <p className="section-text">Premium access to exclusive opportunities and real-time insights.</p>
+        <Link to="/login" className="luxury-btn luxury-btn-accent">Enter Platform</Link>
       </section>
 
-      <section className="enterprise-proof">
-        <h2 className="section-title">Trusted by Industry Leaders</h2>
+      <section className="prestige-proof">
+        <h2 className="section-title">Trusted by Elite Members</h2>
         <div className="proof-grid">
           <div className="proof-item">
-            <span className="proof-value">500+</span>
-            <span className="proof-label">Enterprise Clients</span>
+            <span className="proof-value">10K+</span>
+            <span className="proof-label">Members</span>
           </div>
           <div className="proof-item">
             <span className="proof-value">99.9%</span>
-            <span className="proof-label">Uptime SLA</span>
+            <span className="proof-label">Uptime</span>
           </div>
           <div className="proof-item">
             <span className="proof-value">24/7</span>
@@ -61,69 +61,34 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="insights-showcase">
-        <h2 className="section-title">Recent Performance Insights</h2>
-        <div className="insights-feed">
-          <div className="insight-item">
-            <div className="insight-icon">📈</div>
-            <div className="insight-content">
-              <div className="insight-user">Financial Services Division</div>
-              <div className="insight-details">Achieved 15% efficiency improvement through predictive analytics</div>
-              <div className="insight-time">2 hours ago</div>
-            </div>
-          </div>
-          <div className="insight-item">
-            <div className="insight-icon">⚡</div>
-            <div className="insight-content">
-              <div className="insight-user">Operations Team</div>
-              <div className="insight-details">Reduced processing time by 40% using automated workflows</div>
-              <div className="insight-time">5 hours ago</div>
-            </div>
-          </div>
-          <div className="insight-item">
-            <div className="insight-icon">🎯</div>
-            <div className="insight-content">
-              <div className="insight-user">Strategic Planning</div>
-              <div className="insight-details">Identified $2M in cost optimization opportunities</div>
-              <div className="insight-time">1 day ago</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="platform-features">
-        <h2 className="section-title">Why Choose Our Platform</h2>
+      <section className="exclusive-features">
+        <h2 className="section-title">Why WINZO</h2>
         <div className="features-grid">
           <div className="feature-item">
             <div className="feature-icon">🔒</div>
-            <h3>Enterprise Security</h3>
-            <p>Bank-level encryption with full regulatory compliance and audit trails</p>
+            <h3>Secure Access</h3>
+            <p>Bank-level security with exclusive member verification</p>
           </div>
           <div className="feature-item">
             <div className="feature-icon">⚡</div>
-            <h3>Real-Time Processing</h3>
-            <p>Instant data updates and automated decision-making capabilities</p>
+            <h3>Real-Time</h3>
+            <p>Instant updates and live data streams</p>
           </div>
           <div className="feature-item">
-            <div className="feature-icon">📊</div>
-            <h3>Advanced Analytics</h3>
-            <p>Machine learning algorithms for predictive insights and trend analysis</p>
-          </div>
-          <div className="feature-item">
-            <div className="feature-icon">🌐</div>
-            <h3>Global Infrastructure</h3>
-            <p>Multi-region deployment with 99.9% availability guarantee</p>
+            <div className="feature-icon">💎</div>
+            <h3>Premium Experience</h3>
+            <p>Exclusive features for discerning members</p>
           </div>
         </div>
       </section>
 
       <footer className="home-footer">
         <div className="footer-content">
-          <p>&copy; 2024 NEXUS Business Intelligence Platform. Enterprise solutions for forward-thinking organizations.</p>
+          <p>&copy; 2024 WINZO. Exclusive platform for premium members.</p>
           <div className="footer-links">
-            <Link to="/terms">Terms of Service</Link>
-            <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/support">Enterprise Support</Link>
+            <Link to="/terms">Terms</Link>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/support">Support</Link>
           </div>
         </div>
       </footer>

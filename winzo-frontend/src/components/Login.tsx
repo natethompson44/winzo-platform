@@ -73,10 +73,10 @@ const Login: React.FC = () => {
   return (
     <div className="auth-container">
       <img src={winzoLogo} alt="WINZO" className="auth-logo" />
-      <h1 className="auth-title">Welcome Back</h1>
-      <p className="auth-subtitle">Big Win Energy</p>
+      <h1 className="auth-title">Access</h1>
+      <p className="auth-subtitle">Member Portal</p>
       {error && <div className="error">{error}</div>}
-      {success && <div className="success-msg">Big Win Energy! ✨</div>}
+      {success && <div className="success-msg">Access Granted</div>}
       <form onSubmit={handleSubmit} className={`auth-form ${success ? 'success' : ''}`}>
         <input
           className="winzo-input"
@@ -101,14 +101,14 @@ const Login: React.FC = () => {
           className="winzo-btn winzo-btn-primary"
           disabled={isLoading}
         >
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? 'Accessing...' : 'Access'}
         </button>
       </form>
       <p className="auth-footer">
-        Don't have an account? <Link to="/register">Register</Link>
+        Need access? <Link to="/register">Request Invite</Link>
       </p>
       <div className="auth-help">
-        <p><strong>Test Credentials:</strong></p>
+        <p><strong>Test Access:</strong></p>
         <p>Username: testuser2</p>
         <p>Password: testuser2</p>
         <button 
@@ -116,7 +116,7 @@ const Login: React.FC = () => {
           className="winzo-btn winzo-btn-secondary"
           style={{ marginTop: '10px' }}
         >
-          Test API Connection
+          Test Connection
         </button>
       </div>
     </div>
