@@ -20,8 +20,8 @@ class Odds extends Model {
 Odds.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     bookmaker: {
@@ -83,6 +83,14 @@ Odds.init(
       defaultValue: true,
       comment: 'Whether these odds are currently available for betting',
     },
+    sports_event_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'sports_events',
+        key: 'id',
+      },
+    },
     createdBy: { type: DataTypes.UUID, allowNull: true, field: 'created_by' },
     updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' },
   },
@@ -92,7 +100,7 @@ Odds.init(
     tableName: 'odds',
     paranoid: true,
     indexes: [
-      { fields: ['event_id'] },
+      { fields: ['sports_event_id'] },
       { fields: ['bookmaker'] },
       { fields: ['market'] },
       { fields: ['is_live_odds'] },

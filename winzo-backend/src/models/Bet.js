@@ -22,8 +22,8 @@ Bet.init(
         key: 'id',
       },
     },
-    event_id: {
-      type: DataTypes.UUID,
+    sports_event_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'sports_events',
@@ -31,7 +31,7 @@ Bet.init(
       },
     },
     odds_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'odds',
@@ -39,8 +39,8 @@ Bet.init(
       },
     },
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     // Legacy field for backward compatibility
@@ -133,7 +133,7 @@ Bet.init(
     underscored: true,
     indexes: [
       { fields: ['user_id'] },
-      { fields: ['event_id'] },
+      { fields: ['sports_event_id'] },
       { fields: ['odds_id'] },
       { fields: ['status'] }
     ]

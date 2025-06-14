@@ -154,14 +154,14 @@ class OddsService {
         syncedEvents.push(event);
 
         // Clear existing odds for this event to avoid duplicates
-        await Odds.destroy({ where: { event_id: event.id } });
+        await Odds.destroy({ where: { sports_event_id: event.id } });
 
         // Sync odds from all bookmakers
         for (const bookmaker of eventData.bookmakers) {
           for (const market of bookmaker.markets) {
             for (const outcome of market.outcomes) {
               const odds = await Odds.create({
-                event_id: event.id,
+                sports_event_id: event.id,
                 bookmaker: bookmaker.key,
                 bookmakerTitle: bookmaker.title,
                 market: market.key,

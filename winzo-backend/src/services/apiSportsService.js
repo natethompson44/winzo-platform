@@ -274,13 +274,13 @@ class ApiSportsService {
 
       // Odds per fixture
       const oddsRes = await this.getOdds({ fixture: eventData.externalId });
-      await Odds.destroy({ where: { event_id: event.id } });
+      await Odds.destroy({ where: { sports_event_id: event.id } });
       for (const book of oddsRes.response || []) {
         for (const bet of book.bookmakers || []) {
           for (const odd of bet.bets || []) {
             const oddData = this.transformOdds(odd);
             const created = await Odds.create({
-              event_id: event.id,
+              sports_event_id: event.id,
               bookmaker: oddData.bookmaker,
               bookmakerTitle: oddData.bookmakerTitle,
               market: oddData.market,
