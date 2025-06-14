@@ -3,6 +3,7 @@ import { ChevronDownIcon, ChevronRightIcon, FireIcon, ClockIcon, SearchIcon } fr
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS } from '../config/api';
 import { useBetSlip } from '../contexts/BetSlipContext';
+import BetSlip from './BetSlip';
 import './SportsHierarchy.css';
 
 interface SportCategory {
@@ -88,6 +89,7 @@ const SportsHierarchyEnhanced: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filter, setFilter] = useState<'all' | 'live' | 'upcoming'>('all');
   const [selectedMarket, setSelectedMarket] = useState<string>('h2h');
+  const [userBalance, setUserBalance] = useState<number>(1250.75);
   
   const { addToBetSlip } = useBetSlip();
 
@@ -534,6 +536,31 @@ const SportsHierarchyEnhanced: React.FC = () => {
 
   return (
     <div className="sports-hierarchy-container">
+      {/* Top Header */}
+      <header className="sports-header">
+        <div className="header-left">
+          <div className="logo">WINZO</div>
+          <nav className="header-nav">
+            <a href="#" className="nav-item active">Sports</a>
+            <a href="#" className="nav-item">Live Betting</a>
+            <a href="#" className="nav-item">Promotions</a>
+            <a href="#" className="nav-item">Help</a>
+          </nav>
+        </div>
+        
+        <div className="header-right">
+          <div className="user-balance">
+            <span>Balance:</span>
+            <span className="balance-amount">${userBalance.toFixed(2)}</span>
+          </div>
+          <div className="user-account">
+            <span>👤</span>
+            <span>John D.</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Left Sidebar */}
       <div className="sports-hierarchy-sidebar">
         <div className="sidebar-header">
           <h2>Sports</h2>
@@ -613,6 +640,7 @@ const SportsHierarchyEnhanced: React.FC = () => {
         </div>
       </div>
       
+      {/* Main Content */}
       <div className="sports-hierarchy-content">
         <div className="content-header">
           <h1>Sports Betting</h1>
@@ -765,6 +793,9 @@ const SportsHierarchyEnhanced: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Bet Slip */}
+      <BetSlip />
     </div>
   );
 };

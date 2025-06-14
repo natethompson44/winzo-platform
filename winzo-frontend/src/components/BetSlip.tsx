@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS } from '../config/api';
@@ -21,37 +21,91 @@ interface PlaceBetResponse {
   error?: string;
 }
 
+interface BetSlipItem {
+  id: string;
+  eventId: string;
+  sport: string;
+  homeTeam: string;
+  awayTeam: string;
+  selectedTeam: string;
+  odds: number;
+  marketType: string;
+  bookmaker: string;
+  commenceTime: string;
+}
+
 const BetSlip: React.FC = () => {
   const {
     betSlipItems,
-    isOpen,
     betType,
+    setBetType,
+    removeFromBetSlip,
+    clearBetSlip,
     totalStake,
     totalPayout,
-    removeFromBetSlip,
-    updateStake,
-    clearBetSlip,
-    setBetType,
-    setIsOpen,
     canPlaceBet,
+    isOpen,
+    setIsOpen
   } = useBetSlip();
 
   const { user, updateBalance, refreshUser } = useAuth();
 
   const [isPlacingBet, setIsPlacingBet] = useState(false);
   const [placeBetError, setPlaceBetError] = useState<string>('');
+  const [betAmount, setBetAmount] = useState<string>('10.00');
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const handleStakeChange = (itemId: string, value: string, isValid: boolean, numericValue?: number) => {
-    if (isValid && numericValue !== undefined) {
-      updateStake(itemId, numericValue);
+  const totalOdds = useMemo(() => {
+    if (betType === 'single') {
+      return betSlipItems.length > 0 ? betSlipItems[0].odds : 0;
+    } else {
+      return betSlipItems.reduce((total, item) => total * item.odds, 1);
+    }
+  }, [betSlipItems, betType]);
+
+  const potentialWinnings = useMemo(() => {
+    const amount = parseFloat(betAmount) || 0;
+    return amount * totalOdds - amount;
+  }, [betAmount, totalOdds]);
+
+  const formatOdds = (odds: number): string => {
+    if (odds > 0) {
+      return `+${odds}`;
+    }
+    return odds.toString();
+  };
+
+  const handlePlaceBet = () => {
+    if (betSlipItems.length === 0 || !betAmount || parseFloat(betAmount) <= 0) {
+      return;
+    }
+    setShowConfirmation(true);
+  };
+
+  const confirmBet = () => {
+    const betData = {
+      items: betSlipItems,
+      betAmount: parseFloat(betAmount),
+      betType,
+      totalOdds,
+      potentialWinnings,
+      timestamp: new Date().toISOString()
+    };
+    // Here you would typically call an API to place the bet
+    console.log('Placing bet:', betData);
+    setShowConfirmation(false);
+    clearBetSlip();
+    setBetAmount('10.00');
+  };
+
+  const getBetTypeLabel = (type: string) => {
+    switch (type) {
+      case 'single': return 'Single Bet';
+      case 'parlay': return 'Parlay';
+      default: return type;
     }
   };
-
-  const setQuickStake = (itemId: string, amount: number) => {
-    updateStake(itemId, amount);
-  };
-
-  const hasInsufficientFunds = user ? user.wallet_balance < totalStake : false;
 
   const placeBets = async () => {
     if (!canPlaceBet() || !user) {
@@ -169,97 +223,198 @@ const BetSlip: React.FC = () => {
   }
 
   return (
-    <div className="bet-slip-overlay" onClick={e => e.target === e.currentTarget && setIsOpen(false)}>
-      <div className="bet-slip-container">
-        <div className="bet-slip-header">
-          <h2>Bet Slip</h2>
-          <div className="bet-slip-controls">
-            <span className="bet-count">{betSlipItems.length} bet{betSlipItems.length !== 1 ? 's' : ''}</span>
-            <button className="close-button" onClick={() => setIsOpen(false)}>✕</button>
+    <div className={`bet-slip ${isExpanded ? 'expanded' : 'collapsed'}`}>
+      {/* Header */}
+      <div className="bet-slip-header" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="header-content">
+          <h3>Bet Slip</h3>
+          <div className="bet-count">
+            {betSlipItems.length} {betSlipItems.length === 1 ? 'Selection' : 'Selections'}
           </div>
         </div>
-        {betSlipItems.length === 0 ? (
-          <div className="empty-bet-slip">
-            <div className="empty-icon">🎲</div>
-            <h3>Your bet slip is empty</h3>
-            <p>Click on odds to add bets and start winning!</p>
-          </div>
-        ) : (
-          <>
-            <div className="bet-type-selector">
+        <div className="expand-icon">
+          {isExpanded ? '−' : '+'}
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div className="bet-slip-content">
+          {/* Bet Type Selector */}
+          <div className="bet-type-selector">
+            <div className="bet-type-options">
               <button
-                className={`bet-type-button ${betType === 'single' ? 'active' : ''}`}
+                className={`bet-type-btn ${betType === 'single' ? 'active' : ''}`}
                 onClick={() => setBetType('single')}
               >
-                Single Bets
+                Single
               </button>
               <button
-                className={`bet-type-button ${betType === 'parlay' ? 'active' : ''}`}
+                className={`bet-type-btn ${betType === 'parlay' ? 'active' : ''}`}
                 onClick={() => setBetType('parlay')}
                 disabled={betSlipItems.length < 2}
               >
-                Parlay {betSlipItems.length < 2 && '(2+ bets)'}
+                Parlay
               </button>
             </div>
-            <div className="bet-slip-items">
-              {betSlipItems.map(item => (
-                <BetSlipItemCard
-                  key={item.id}
-                  item={item}
-                  onRemove={() => removeFromBetSlip(item.id)}
-                  onStakeChange={(value, isValid, numericValue) => 
-                    handleStakeChange(item.id, value, isValid, numericValue)
-                  }
-                  onQuickStake={amount => setQuickStake(item.id, amount)}
-                />
-              ))}
-            </div>
-            {placeBetError && (
-              <div className="bet-error">
-                <span>{placeBetError}</span>
-                <button onClick={() => setPlaceBetError('')}>✕</button>
+          </div>
+
+          {/* Bet Items */}
+          <div className="bet-items">
+            {betSlipItems.length === 0 ? (
+              <div className="empty-bet-slip">
+                <div className="empty-icon">📋</div>
+                <p>No selections yet</p>
+                <span>Click on odds to add selections to your bet slip</span>
               </div>
+            ) : (
+              betSlipItems.map((item, index) => (
+                <div key={item.id} className="bet-item">
+                  <div className="bet-item-header">
+                    <div className="bet-number">#{index + 1}</div>
+                    <button
+                      className="remove-bet"
+                      onClick={() => removeFromBetSlip(item.id)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="bet-details">
+                    <div className="teams">
+                      <span className="team">{item.homeTeam}</span>
+                      <span className="vs">vs</span>
+                      <span className="team">{item.awayTeam}</span>
+                    </div>
+                    
+                    <div className="selection">
+                      <span className="selected-team">{item.selectedTeam}</span>
+                      <span className="odds">{formatOdds(item.odds)}</span>
+                    </div>
+                    
+                    <div className="market-info">
+                      <span className="market-type">{getBetTypeLabel(item.marketType)}</span>
+                      <span className="bookmaker">{item.bookmaker}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
             )}
-            <div className="bet-slip-summary">
+          </div>
+
+          {/* Bet Summary */}
+          {betSlipItems.length > 0 && (
+            <div className="bet-summary">
               <div className="summary-row">
-                <span>Total Stake:</span>
-                <span className="amount">{formatCurrency(totalStake)}</span>
+                <span>Bet Type:</span>
+                <span className="bet-type-label">{getBetTypeLabel(betType)}</span>
               </div>
-              <div className="summary-row total">
-                <span>Potential Payout:</span>
-                <span className="amount">{formatCurrency(totalPayout)}</span>
+              
+              <div className="summary-row">
+                <span>Total Odds:</span>
+                <span className="total-odds">{formatOdds(totalOdds)}</span>
               </div>
-              <div className="summary-row profit">
-                <span>Potential Profit:</span>
-                <span className="amount profit-amount">{formatCurrency(totalPayout - totalStake)}</span>
+              
+              <div className="bet-amount-section">
+                <label htmlFor="bet-amount">Bet Amount ($)</label>
+                <input
+                  id="bet-amount"
+                  type="number"
+                  value={betAmount}
+                  onChange={(e) => setBetAmount(e.target.value)}
+                  min="0.01"
+                  step="0.01"
+                  className="bet-amount-input"
+                  placeholder="0.00"
+                />
+              </div>
+              
+              <div className="summary-row winnings">
+                <span>Potential Winnings:</span>
+                <span className="potential-winnings">${potentialWinnings.toFixed(2)}</span>
               </div>
             </div>
-            <div className="bet-slip-actions">
-              <button className="clear-button" onClick={clearBetSlip}>
-                Clear All
+          )}
+
+          {/* Action Buttons */}
+          <div className="bet-actions">
+            {betSlipItems.length > 0 ? (
+              <>
+                <button
+                  className="place-bet-btn"
+                  onClick={handlePlaceBet}
+                  disabled={!betAmount || parseFloat(betAmount) <= 0}
+                >
+                  Place Bet
+                </button>
+                <button className="clear-all-btn" onClick={clearBetSlip}>
+                  Clear All
+                </button>
+              </>
+            ) : (
+              <button className="clear-all-btn" disabled>
+                No Selections
               </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Bet Confirmation Modal */}
+      {showConfirmation && (
+        <div className="bet-confirmation-overlay">
+          <div className="bet-confirmation-modal">
+            <div className="modal-header">
+              <h3>Confirm Your Bet</h3>
               <button
-                className={`place-bet-button ${hasInsufficientFunds ? 'insufficient-funds' : ''}`}
-                onClick={placeBets}
-                disabled={!canPlaceBet() || isPlacingBet || hasInsufficientFunds}
+                className="close-modal"
+                onClick={() => setShowConfirmation(false)}
               >
-                {isPlacingBet ? (
-                  <>
-                    <span className="loading-spinner-small"></span>
-                    Placing...
-                  </>
-                ) : hasInsufficientFunds ? (
-                  'Insufficient Funds'
-                ) : (
-                  `Place ${betType === 'parlay' ? 'Parlay' : 'Bet'}${
-                    betSlipItems.length > 1 && betType === 'single' ? 's' : ''
-                  }`
-                )}
+                ×
               </button>
             </div>
-          </>
-        )}
-      </div>
+            
+            <div className="modal-content">
+              <div className="confirmation-details">
+                <div className="detail-row">
+                  <span>Bet Type:</span>
+                  <span>{getBetTypeLabel(betType)}</span>
+                </div>
+                <div className="detail-row">
+                  <span>Selections:</span>
+                  <span>{betSlipItems.length}</span>
+                </div>
+                <div className="detail-row">
+                  <span>Total Odds:</span>
+                  <span>{formatOdds(totalOdds)}</span>
+                </div>
+                <div className="detail-row">
+                  <span>Bet Amount:</span>
+                  <span>${betAmount}</span>
+                </div>
+                <div className="detail-row highlight">
+                  <span>Potential Winnings:</span>
+                  <span>${potentialWinnings.toFixed(2)}</span>
+                </div>
+              </div>
+              
+              <div className="confirmation-actions">
+                <button
+                  className="confirm-bet-btn"
+                  onClick={confirmBet}
+                >
+                  Confirm Bet
+                </button>
+                <button
+                  className="cancel-bet-btn"
+                  onClick={() => setShowConfirmation(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
