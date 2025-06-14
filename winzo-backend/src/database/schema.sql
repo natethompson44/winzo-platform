@@ -43,7 +43,18 @@ CREATE TABLE sports_events (
   completed BOOLEAN DEFAULT FALSE,
   home_score INTEGER,
   away_score INTEGER,
+  live_home_score INTEGER,
+  live_away_score INTEGER,
+  venue_id UUID,
+  referee VARCHAR(255),
+  timezone VARCHAR(50),
+  status_long VARCHAR(255),
+  status_short VARCHAR(50),
+  elapsed INTEGER,
   last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  big_win_message VARCHAR(255),
+  created_by UUID,
+  updated_by UUID,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -64,10 +75,20 @@ CREATE TABLE odds (
   id SERIAL PRIMARY KEY,
   sports_event_id INTEGER NOT NULL REFERENCES sports_events(id) ON DELETE CASCADE,
   bookmaker_id INTEGER NOT NULL REFERENCES bookmakers(id),
-  market_type VARCHAR(20) NOT NULL DEFAULT 'h2h',
-  outcome_name VARCHAR(100) NOT NULL,
+  bookmaker VARCHAR(100) NOT NULL,
+  bookmaker_title VARCHAR(100) NOT NULL,
+  market VARCHAR(50) NOT NULL,
+  outcome VARCHAR(100) NOT NULL,
   price DECIMAL(10,2) NOT NULL,
-  last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  decimal_price DECIMAL(10,2) NOT NULL,
+  point DECIMAL(10,2),
+  market_type VARCHAR(50),
+  is_live_odds BOOLEAN DEFAULT FALSE,
+  opening_price DECIMAL(10,2),
+  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  active BOOLEAN DEFAULT TRUE,
+  created_by UUID,
+  updated_by UUID,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -76,17 +97,22 @@ CREATE TABLE odds (
 CREATE TABLE bets (
   id SERIAL PRIMARY KEY,
   user_id INTEGER NOT NULL REFERENCES users(id),
-  sports_event_id VARCHAR(255) NOT NULL,
-  selected_team VARCHAR(100) NOT NULL,
+  sports_event_id INTEGER NOT NULL REFERENCES sports_events(id),
+  odds_id INTEGER NOT NULL REFERENCES odds(id),
+  game VARCHAR(255),
+  bet_type VARCHAR(20) DEFAULT 'sports',
+  market VARCHAR(50),
+  outcome VARCHAR(100),
+  point DECIMAL(10,2),
+  amount DECIMAL(10,2) NOT NULL,
   odds DECIMAL(10,2) NOT NULL,
-  stake DECIMAL(10,2) NOT NULL,
+  decimal_odds DECIMAL(10,2) NOT NULL,
   potential_payout DECIMAL(10,2) NOT NULL,
-  market_type VARCHAR(20) DEFAULT 'h2h',
-  bookmaker VARCHAR(100),
-  bet_type VARCHAR(20) DEFAULT 'single',
-  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'cancelled')),
-  placed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  potential_profit DECIMAL(10,2) NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'won', 'lost', 'cancelled', 'pushed')),
   settled_at TIMESTAMP,
+  actual_payout DECIMAL(10,2),
+  placed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -116,8 +142,11 @@ CREATE INDEX idx_sports_events_commence_time ON sports_events(commence_time);
 CREATE INDEX idx_bookmakers_key ON bookmakers(key);
 CREATE INDEX idx_odds_sports_event_id ON odds(sports_event_id);
 CREATE INDEX idx_odds_bookmaker_id ON odds(bookmaker_id);
-CREATE INDEX idx_odds_market_type ON odds(market_type);
+CREATE INDEX idx_odds_market ON odds(market);
+CREATE INDEX idx_odds_is_live_odds ON odds(is_live_odds);
 CREATE INDEX idx_bets_user_id ON bets(user_id);
+CREATE INDEX idx_bets_sports_event_id ON bets(sports_event_id);
+CREATE INDEX idx_bets_odds_id ON bets(odds_id);
 CREATE INDEX idx_bets_status ON bets(status);
 CREATE INDEX idx_bets_placed_at ON bets(placed_at);
 CREATE INDEX idx_transactions_user_id ON transactions(user_id);

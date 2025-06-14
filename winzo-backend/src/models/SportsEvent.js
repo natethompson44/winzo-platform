@@ -134,7 +134,6 @@ SportsEvent.init(
     sequelize,
     modelName: 'sportsEvent',
     tableName: 'sports_events',
-    paranoid: true,
     indexes: [
       { fields: ['external_id'] },
       { fields: ['sport_key'] },

@@ -98,7 +98,6 @@ Odds.init(
     sequelize,
     modelName: 'odds',
     tableName: 'odds',
-    paranoid: true,
     indexes: [
       { fields: ['sports_event_id'] },
       { fields: ['bookmaker'] },
