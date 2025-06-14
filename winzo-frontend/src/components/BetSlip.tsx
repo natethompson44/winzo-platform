@@ -9,8 +9,7 @@ const BetSlip: React.FC = () => {
     setBetType,
     removeFromBetSlip,
     clearBetSlip,
-    isOpen,
-    setIsOpen
+    isOpen
   } = useBetSlip();
 
   const [betAmount, setBetAmount] = useState<string>('10.00');
