@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChevronDownIcon, ChevronRightIcon, FireIcon, ClockIcon, SearchIcon } from './icons/IconLibrary';
-import apiClient from '../utils/axios';
-import { API_ENDPOINTS } from '../config/api';
+import { ChevronRightIcon, FireIcon, ClockIcon, SearchIcon } from './icons/IconLibrary';
 import { useBetSlip } from '../contexts/BetSlipContext';
-import BetSlip from './BetSlip';
 import './SportsHierarchy.css';
 
 interface SportCategory {
@@ -91,15 +88,11 @@ interface Outcome {
  */
 const SportsHierarchyEnhanced: React.FC = () => {
   const [categories, setCategories] = useState<SportCategory[]>([]);
-  const [selectedLeague, setSelectedLeague] = useState<string>('');
-  const [hoveredCategory, setHoveredCategory] = useState<string>('');
   const [events, setEvents] = useState<OddsEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filter, setFilter] = useState<'all' | 'live' | 'upcoming'>('all');
-  const [selectedMarket, setSelectedMarket] = useState<string>('h2h');
-  const [userBalance] = useState<number>(1250.75);
   const [isMobileView, setIsMobileView] = useState(false);
   const [expandedEvents, setExpandedEvents] = useState<string[]>([]);
   
@@ -226,26 +219,6 @@ const SportsHierarchyEnhanced: React.FC = () => {
             liveEvents: 2,
             upcomingEvents: 6,
             description: 'Major League Soccer - American soccer at its finest!'
-          },
-          {
-            id: 'champions-league',
-            name: 'Champions League',
-            key: 'soccer_uefa_champs_league',
-            isPopular: true,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 4,
-            description: 'UEFA Champions League - European elite!'
-          },
-          {
-            id: 'other-soccer',
-            name: 'Other Soccer Leagues',
-            key: 'soccer_other',
-            isPopular: false,
-            isLive: true,
-            liveEvents: 0,
-            upcomingEvents: 15,
-            description: 'Other international soccer competitions'
           }
         ]
       },
@@ -276,36 +249,6 @@ const SportsHierarchyEnhanced: React.FC = () => {
             liveEvents: 4,
             upcomingEvents: 20,
             description: 'NCAA College Basketball - March Madness excitement!'
-          },
-          {
-            id: 'wnba',
-            name: 'WNBA',
-            key: 'basketball_wnba',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 8,
-            description: 'Women\'s National Basketball Association'
-          },
-          {
-            id: 'european-basketball',
-            name: 'European Basketball',
-            key: 'basketball_european',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 6,
-            description: 'European basketball leagues and competitions'
-          },
-          {
-            id: 'other-basketball',
-            name: 'Other Basketball',
-            key: 'basketball_other',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 4,
-            description: 'Other basketball leagues and tournaments'
           }
         ]
       },
@@ -326,136 +269,106 @@ const SportsHierarchyEnhanced: React.FC = () => {
             liveEvents: 0,
             upcomingEvents: 15,
             description: 'Major League Baseball - America\'s pastime!'
-          },
-          {
-            id: 'ncaa-baseball',
-            name: 'NCAA Baseball',
-            key: 'baseball_ncaa',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 12,
-            description: 'NCAA College Baseball - Spring tradition!'
-          },
-          {
-            id: 'minor-league',
-            name: 'Minor League Baseball',
-            key: 'baseball_minor_league',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 8,
-            description: 'Minor League Baseball - Future stars!'
-          },
-          {
-            id: 'international-baseball',
-            name: 'International Baseball',
-            key: 'baseball_international',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 6,
-            description: 'International baseball leagues and tournaments'
           }
         ]
       },
       {
-        id: 'combat-sports',
-        name: 'COMBAT SPORTS',
+        id: 'hockey',
+        name: 'HOCKEY',
+        icon: '🏒',
+        isExpanded: false,
+        isLive: true,
+        liveCount: 6,
+        leagues: [
+          {
+            id: 'nhl',
+            name: 'NHL',
+            key: 'icehockey_nhl',
+            isPopular: true,
+            isLive: true,
+            liveEvents: 6,
+            upcomingEvents: 8,
+            description: 'National Hockey League - Fast-paced ice action!'
+          }
+        ]
+      },
+      {
+        id: 'tennis',
+        name: 'TENNIS',
+        icon: '🎾',
+        isExpanded: false,
+        isLive: true,
+        liveCount: 4,
+        leagues: [
+          {
+            id: 'atp',
+            name: 'ATP Tour',
+            key: 'tennis_atp_singles',
+            isPopular: true,
+            isLive: true,
+            liveEvents: 2,
+            upcomingEvents: 10,
+            description: 'Association of Tennis Professionals - Elite men\'s tennis!'
+          },
+          {
+            id: 'wta',
+            name: 'WTA Tour',
+            key: 'tennis_wta_singles',
+            isPopular: true,
+            isLive: true,
+            liveEvents: 2,
+            upcomingEvents: 8,
+            description: 'Women\'s Tennis Association - Top women\'s tennis!'
+          }
+        ]
+      },
+      {
+        id: 'mma',
+        name: 'MMA',
         icon: '🥊',
+        isExpanded: false,
+        isLive: false,
+        liveCount: 0,
+        leagues: [
+          {
+            id: 'ufc',
+            name: 'UFC',
+            key: 'mma_ufc',
+            isPopular: true,
+            isLive: false,
+            liveEvents: 0,
+            upcomingEvents: 3,
+            description: 'Ultimate Fighting Championship - The ultimate fighting!'
+          }
+        ]
+      },
+      {
+        id: 'esports',
+        name: 'ESPORTS',
+        icon: '🎮',
         isExpanded: false,
         isLive: true,
         liveCount: 3,
         leagues: [
           {
-            id: 'ufc-mma',
-            name: 'UFC/MMA',
-            key: 'mma_ufc',
+            id: 'lol',
+            name: 'League of Legends',
+            key: 'esports_lol',
             isPopular: true,
             isLive: true,
             liveEvents: 2,
             upcomingEvents: 5,
-            description: 'Ultimate Fighting Championship & Mixed Martial Arts'
+            description: 'League of Legends - Competitive gaming at its finest!'
           },
           {
-            id: 'boxing',
-            name: 'Boxing',
-            key: 'boxing',
+            id: 'csgo',
+            name: 'CS:GO',
+            key: 'esports_csgo',
             isPopular: true,
             isLive: true,
             liveEvents: 1,
-            upcomingEvents: 4,
-            description: 'Professional Boxing - The sweet science!'
-          },
-          {
-            id: 'other-combat',
-            name: 'Other Combat Sports',
-            key: 'combat_other',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
             upcomingEvents: 3,
-            description: 'Other combat sports and martial arts'
-          }
-        ]
-      },
-      {
-        id: 'other-sports',
-        name: 'OTHER SPORTS',
-        icon: '🏆',
-        isExpanded: false,
-        isLive: true,
-        liveCount: 7,
-        leagues: [
-          {
-            id: 'hockey',
-            name: 'Hockey (NHL, NCAA)',
-            key: 'icehockey_nhl',
-            isPopular: true,
-            isLive: true,
-            liveEvents: 3,
-            upcomingEvents: 10,
-            description: 'National Hockey League & NCAA Hockey'
-          },
-          {
-            id: 'tennis',
-            name: 'Tennis (ATP, WTA)',
-            key: 'tennis_atp',
-            isPopular: true,
-            isLive: true,
-            liveEvents: 2,
-            upcomingEvents: 8,
-            description: 'ATP & WTA Tennis - Grand Slam action!'
-          },
-          {
-            id: 'golf',
-            name: 'Golf (PGA, Major Championships)',
-            key: 'golf_pga',
-            isPopular: true,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 6,
-            description: 'PGA Tour & Major Golf Championships'
-          },
-          {
-            id: 'auto-racing',
-            name: 'Auto Racing (NASCAR, F1)',
-            key: 'racing_nascar',
-            isPopular: true,
-            isLive: true,
-            liveEvents: 1,
-            upcomingEvents: 4,
-            description: 'NASCAR & Formula 1 Racing'
-          },
-          {
-            id: 'niche-sports',
-            name: 'Niche Sports',
-            key: 'sports_niche',
-            isPopular: false,
-            isLive: true,
-            liveEvents: 1,
-            upcomingEvents: 5,
-            description: 'Other sports and niche competitions'
+            description: 'Counter-Strike: Global Offensive - Tactical FPS action!'
           }
         ]
       }
@@ -670,8 +583,6 @@ const SportsHierarchyEnhanced: React.FC = () => {
             <button
               className={`category-header ${category.isExpanded ? 'expanded' : ''}`}
               onClick={() => toggleCategory(category.id)}
-              onMouseEnter={() => setHoveredCategory(category.id)}
-              onMouseLeave={() => setHoveredCategory('')}
             >
               <div className="category-info">
                 <span className="category-icon">{category.icon}</span>
