@@ -4,7 +4,7 @@ import { useBetSlip } from '../contexts/BetSlipContext';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS } from '../config/api';
-import { formatCurrency, formatPercentage, formatLuxuryCurrency, formatPremiumBalance, formatLuxuryPercentage, formatLuxuryNumber, formatOdds } from '../utils/numberUtils';
+import { formatCurrency, formatPercentage, formatLuxuryCurrency, formatPremiumBalance, formatLuxuryPercentage, formatLuxuryNumber } from '../utils/numberUtils';
 import {
   WalletIcon,
   QuickBetIcon,
@@ -13,7 +13,6 @@ import {
   HistoryIcon,
   SportsIcon,
   TrendingUpIcon,
-  TrendingDownIcon,
   DollarIcon,
   RefreshIcon,
   SuccessIcon,
@@ -21,7 +20,6 @@ import {
   FireIcon,
   LightningIcon,
   ClockIcon,
-  CalendarIcon,
   ChevronUpIcon,
   ChevronDownIcon,
   InfoIcon,
