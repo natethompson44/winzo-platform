@@ -4,7 +4,29 @@ import { useBetSlip } from '../contexts/BetSlipContext';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS } from '../config/api';
-import { formatCurrency, formatPercentage } from '../utils/numberUtils';
+import { formatCurrency, formatPercentage, formatLuxuryCurrency, formatPremiumBalance, formatLuxuryPercentage, formatLuxuryNumber, formatOdds } from '../utils/numberUtils';
+import {
+  WalletIcon,
+  QuickBetIcon,
+  DepositIcon,
+  WithdrawIcon,
+  HistoryIcon,
+  SportsIcon,
+  TrendingUpIcon,
+  TrendingDownIcon,
+  DollarIcon,
+  RefreshIcon,
+  SuccessIcon,
+  WarningIcon,
+  FireIcon,
+  LightningIcon,
+  ClockIcon,
+  CalendarIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  InfoIcon,
+  LoadingIcon
+} from './icons/IconLibrary';
 import './Dashboard.css';
 
 interface DashboardStats {
@@ -284,7 +306,7 @@ const Dashboard: React.FC = () => {
         title: `Focus on ${analytics.bestSport}`,
         description: `You have a ${analytics.bestSportWinRate}% win rate in ${analytics.bestSport}`,
         confidence: analytics.bestSportWinRate / 100,
-        action: `Bet on ${analytics.bestSport}`,
+        action: 'Bet on NFL',
         priority: 'high',
         potentialValue: analytics.bestSportProfit || 0
       });
@@ -376,24 +398,33 @@ const Dashboard: React.FC = () => {
     return odds > 0 ? `+${odds}` : odds.toString();
   };
 
-  const getStatusIcon = (status: string): string => {
-    switch (status) {
-      case 'won': return '🏆';
-      case 'lost': return '❌';
-      case 'pending': return '⏳';
-      case 'cancelled': return '🚫';
-      default: return '❓';
+  const getStatusIcon = (status: string): React.ReactNode => {
+    switch (status.toLowerCase()) {
+      case 'won':
+        return <SuccessIcon size="sm" color="success" className="status-icon" />;
+      case 'lost':
+        return <WarningIcon size="sm" color="danger" className="status-icon" />;
+      case 'pending':
+        return <ClockIcon size="sm" color="warning" className="status-icon" />;
+      default:
+        return <InfoIcon size="sm" color="neutral" className="status-icon" />;
     }
   };
 
-  const getRecommendationIcon = (type: string): string => {
+  const getRecommendationIcon = (type: string): React.ReactNode => {
     switch (type) {
-      case 'sport': return '⚽';
-      case 'time': return '⏰';
-      case 'stake': return '💰';
-      case 'strategy': return '📊';
-      case 'opportunity': return '🎯';
-      default: return '💡';
+      case 'sport':
+        return <SportsIcon size="sm" color="primary" className="rec-icon-svg" />;
+      case 'time':
+        return <ClockIcon size="sm" color="secondary" className="rec-icon-svg" />;
+      case 'stake':
+        return <DollarIcon size="sm" color="success" className="rec-icon-svg" />;
+      case 'strategy':
+        return <TrendingUpIcon size="sm" color="primary" className="rec-icon-svg" />;
+      case 'opportunity':
+        return <LightningIcon size="sm" color="warning" className="rec-icon-svg" />;
+      default:
+        return <InfoIcon size="sm" color="neutral" className="rec-icon-svg" />;
     }
   };
 
@@ -409,29 +440,31 @@ const Dashboard: React.FC = () => {
     switch (widget.type) {
       case 'wallet':
         return (
-          <div className="widget-content">
-            <div className="wallet-balance-large">
-              {formatCurrency(currentBalance)}
+          <div className="widget-content luxury-widget-content">
+            <div className="wallet-balance-large luxury-balance premium-typography">
+              {formatPremiumBalance(currentBalance)}
             </div>
-            <div className="wallet-actions-grid">
-              <button className="winzo-btn winzo-btn-primary" onClick={() => navigate('/wallet')}>
-                💳 Deposit
+            <div className="wallet-actions-grid luxury-actions-grid">
+              <button className="winzo-btn winzo-btn-primary luxury-btn premium-btn" onClick={() => navigate('/wallet')}>
+                <DepositIcon size="sm" color="inverse" className="btn-icon" />
+                <span className="btn-text">Deposit</span>
               </button>
-              <button className="winzo-btn winzo-btn-secondary" onClick={() => navigate('/wallet')}>
-                💸 Withdraw
+              <button className="winzo-btn winzo-btn-secondary luxury-btn premium-btn" onClick={() => navigate('/wallet')}>
+                <WithdrawIcon size="sm" color="neutral" className="btn-icon" />
+                <span className="btn-text">Withdraw</span>
               </button>
             </div>
             {stats && (
-              <div className="wallet-stats-compact">
-                <div className="stat-row">
-                  <span>Monthly P&L:</span>
-                  <span className={stats.monthlyTrend >= 0 ? 'positive' : 'negative'}>
+              <div className="wallet-stats-compact luxury-stats">
+                <div className="stat-row premium-stat-row">
+                  <span className="stat-label">Monthly P&L:</span>
+                  <span className={`stat-value ${stats.monthlyTrend >= 0 ? 'positive luxury-positive' : 'negative luxury-negative'}`}>
                     {formatCurrency(stats.monthlyTrend)}
                   </span>
                 </div>
-                <div className="stat-row">
-                  <span>ROI:</span>
-                  <span className={stats.roi >= 0 ? 'positive' : 'negative'}>
+                <div className="stat-row premium-stat-row">
+                  <span className="stat-label">ROI:</span>
+                  <span className={`stat-value ${stats.roi >= 0 ? 'positive luxury-positive' : 'negative luxury-negative'}`}>
                     {formatPercentage(stats.roi)}
                   </span>
                 </div>
@@ -442,67 +475,69 @@ const Dashboard: React.FC = () => {
 
       case 'stats':
         return stats ? (
-          <div className="widget-content">
-            <div className="stats-grid-compact">
-              <div className="stat-card">
-                <div className="stat-number">{stats.totalBets}</div>
-                <div className="stat-label">Total Bets</div>
+          <div className="widget-content luxury-widget-content">
+            <div className="stats-grid-compact luxury-stats-grid">
+              <div className="stat-card luxury-stat-card">
+                <div className="stat-number premium-stat-number">{formatLuxuryNumber(stats.totalBets)}</div>
+                <div className="stat-label premium-stat-label">Total Bets</div>
               </div>
-              <div className="stat-card">
-                <div className="stat-number">{formatPercentage(stats.winRate)}</div>
-                <div className="stat-label">Win Rate</div>
+              <div className="stat-card luxury-stat-card">
+                <div className="stat-number premium-stat-number">{formatLuxuryPercentage(stats.winRate)}</div>
+                <div className="stat-label premium-stat-label">Win Rate</div>
               </div>
-              <div className="stat-card">
-                <div className={`stat-number ${stats.profit >= 0 ? 'positive' : 'negative'}`}>
-                  {formatCurrency(stats.profit)}
+              <div className={`stat-card luxury-stat-card ${stats.profit >= 0 ? 'positive-card' : 'negative-card'}`}>
+                <div className={`stat-number premium-stat-number ${stats.profit >= 0 ? 'positive luxury-positive' : 'negative luxury-negative'}`}>
+                  {formatLuxuryCurrency(stats.profit)}
                 </div>
-                <div className="stat-label">Profit/Loss</div>
+                <div className="stat-label premium-stat-label">Profit/Loss</div>
               </div>
-              <div className="stat-card">
-                <div className="stat-number">{stats.betsPending}</div>
-                <div className="stat-label">Pending</div>
+              <div className="stat-card luxury-stat-card">
+                <div className="stat-number premium-stat-number">{formatLuxuryNumber(stats.betsPending)}</div>
+                <div className="stat-label premium-stat-label">Pending</div>
               </div>
             </div>
             {stats.currentStreak > 0 && (
-              <div className="streak-badge">
-                🔥 {stats.currentStreak} bet streak
+              <div className="streak-badge luxury-streak-badge">
+                <FireIcon size="sm" color="warning" className="streak-icon" />
+                <span className="streak-text">{stats.currentStreak} bet streak</span>
               </div>
             )}
           </div>
         ) : (
-          <div className="widget-content">
-            <p>Loading stats...</p>
+          <div className="widget-content luxury-widget-content">
+            <p className="loading-text">Loading stats...</p>
           </div>
         );
 
       case 'recent-bets':
         return (
-          <div className="widget-content">
+          <div className="widget-content luxury-widget-content">
             {recentBets.length > 0 ? (
-              <div className="recent-bets-list">
+              <div className="recent-bets-list luxury-bets-list">
                 {recentBets.slice(0, 5).map((bet) => (
-                  <div key={bet.id} className="bet-item">
-                    <div className="bet-header">
-                      <span className="bet-teams">
+                  <div key={bet.id} className="bet-item luxury-bet-item">
+                    <div className="bet-header premium-bet-header">
+                      <span className="bet-teams premium-bet-teams">
                         {bet.sportsEvent.away_team} @ {bet.sportsEvent.home_team}
                       </span>
-                      <span className={`bet-status ${bet.status}`}>
-                        {getStatusIcon(bet.status)} {bet.status}
+                      <span className={`bet-status ${bet.status} luxury-bet-status`}>
+                        {getStatusIcon(bet.status)} <span className="status-text">{bet.status}</span>
                       </span>
                     </div>
-                    <div className="bet-details">
-                      <span className="bet-stake">{formatCurrency(bet.stake)}</span>
-                      <span className="bet-odds">{formatOdds(bet.odds)}</span>
-                      <span className="bet-payout">{formatCurrency(bet.potential_payout)}</span>
+                    <div className="bet-details premium-bet-details">
+                      <span className="bet-stake luxury-bet-stake">{formatCurrency(bet.stake)}</span>
+                      <span className="bet-odds luxury-bet-odds">{formatOdds(bet.odds)}</span>
+                      <span className="bet-payout luxury-bet-payout">{formatCurrency(bet.potential_payout)}</span>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="empty-state">
-                <p>No recent bets</p>
-                <button className="winzo-btn winzo-btn-primary" onClick={() => navigate('/sports')}>
-                  Place Your First Bet
+              <div className="empty-state luxury-empty-state">
+                <p className="empty-text">No recent bets</p>
+                <button className="winzo-btn winzo-btn-primary luxury-btn premium-btn" onClick={() => navigate('/sports')}>
+                  <QuickBetIcon size="sm" color="inverse" className="btn-icon" />
+                  <span className="btn-text">Place Your First Bet</span>
                 </button>
               </div>
             )}
@@ -511,29 +546,29 @@ const Dashboard: React.FC = () => {
 
       case 'quick-actions':
         return (
-          <div className="widget-content">
-            <div className="quick-actions-grid">
-              <button className="winzo-btn winzo-btn-primary" onClick={() => navigate('/sports')}>
-                <span className="action-icon">⚡</span>
-                <span className="action-label">Quick Bet</span>
+          <div className="widget-content luxury-widget-content">
+            <div className="quick-actions-grid luxury-actions-grid">
+              <button className="winzo-btn winzo-btn-primary luxury-btn premium-btn" onClick={() => navigate('/sports')}>
+                <QuickBetIcon size="sm" color="inverse" className="btn-icon" />
+                <span className="btn-text">Quick Bet</span>
               </button>
-              <button className="winzo-btn winzo-btn-secondary" onClick={() => navigate('/wallet')}>
-                <span className="action-icon">💳</span>
-                <span className="action-label">Deposit</span>
+              <button className="winzo-btn winzo-btn-secondary luxury-btn premium-btn" onClick={() => navigate('/wallet')}>
+                <WalletIcon size="sm" color="neutral" className="btn-icon" />
+                <span className="btn-text">Deposit</span>
               </button>
-              <button className="winzo-btn winzo-btn-secondary" onClick={() => navigate('/history')}>
-                <span className="action-icon">📊</span>
-                <span className="action-label">History</span>
+              <button className="winzo-btn winzo-btn-secondary luxury-btn premium-btn" onClick={() => navigate('/history')}>
+                <HistoryIcon size="sm" color="neutral" className="btn-icon" />
+                <span className="btn-text">History</span>
               </button>
-              <button className="winzo-btn winzo-btn-secondary" onClick={() => navigate('/sports')}>
-                <span className="action-icon">🏈</span>
-                <span className="action-label">Sports</span>
+              <button className="winzo-btn winzo-btn-secondary luxury-btn premium-btn" onClick={() => navigate('/sports')}>
+                <SportsIcon size="sm" color="neutral" className="btn-icon" />
+                <span className="btn-text">Sports</span>
               </button>
             </div>
             {getItemCount() > 0 && (
-              <div className="betslip-summary-compact">
-                <span>Active Bet Slip: {getItemCount()} bets</span>
-                <span>{formatCurrency(getTotalStake())}</span>
+              <div className="betslip-summary-compact luxury-betslip-summary">
+                <span className="betslip-count">Active Bet Slip: {getItemCount()} bets</span>
+                <span className="betslip-total">{formatCurrency(getTotalStake())}</span>
               </div>
             )}
           </div>
@@ -541,30 +576,30 @@ const Dashboard: React.FC = () => {
 
       case 'recommendations':
         return (
-          <div className="widget-content">
+          <div className="widget-content luxury-widget-content">
             {recommendations.length > 0 ? (
-              <div className="recommendations-list">
+              <div className="recommendations-list luxury-recommendations-list">
                 {recommendations.slice(0, 3).map((rec, index) => (
-                  <div key={index} className="recommendation-item">
-                    <div className="rec-header">
-                      <span className="rec-icon">{getRecommendationIcon(rec.type)}</span>
-                      <span className="rec-title">{rec.title}</span>
-                      <span className={`rec-priority ${rec.priority}`}>
+                  <div key={index} className="recommendation-item luxury-recommendation-item">
+                    <div className="rec-header premium-rec-header">
+                      <span className="rec-icon-wrapper">{getRecommendationIcon(rec.type)}</span>
+                      <span className="rec-title premium-rec-title">{rec.title}</span>
+                      <span className={`rec-priority ${rec.priority} luxury-priority`}>
                         {rec.priority.toUpperCase()}
                       </span>
                     </div>
-                    <p className="rec-description">{rec.description}</p>
+                    <p className="rec-description premium-rec-description">{rec.description}</p>
                     {rec.action && (
-                      <button className="winzo-btn winzo-btn-outline">
-                        {rec.action}
+                      <button className="winzo-btn winzo-btn-outline luxury-btn premium-btn">
+                        <span className="btn-text">{rec.action}</span>
                       </button>
                     )}
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="empty-state">
-                <p>No recommendations available</p>
+              <div className="empty-state luxury-empty-state">
+                <p className="empty-text">No recommendations available</p>
               </div>
             )}
           </div>
@@ -572,20 +607,20 @@ const Dashboard: React.FC = () => {
 
       case 'live-events':
         return (
-          <div className="widget-content">
+          <div className="widget-content luxury-widget-content">
             {liveEvents.length > 0 ? (
-              <div className="live-events-list">
+              <div className="live-events-list luxury-live-events-list">
                 {liveEvents.map((event) => (
-                  <div key={event.id} className="live-event-item">
-                    <div className="event-info">
-                      <div className="event-teams">
+                  <div key={event.id} className="live-event-item luxury-live-event-item">
+                    <div className="event-info premium-event-info">
+                      <div className="event-teams premium-event-teams">
                         {event.away_team} @ {event.home_team}
                       </div>
-                      <div className="event-score">{event.current_score}</div>
+                      <div className="event-score luxury-event-score">{event.current_score}</div>
                     </div>
-                    <div className="event-meta">
-                      <span className="event-time">{event.time_remaining}</span>
-                      <span className={`odds-change ${event.odds_changes > 0 ? 'positive' : 'negative'}`}>
+                    <div className="event-meta premium-event-meta">
+                      <span className="event-time luxury-event-time">{event.time_remaining}</span>
+                      <span className={`odds-change ${event.odds_changes > 0 ? 'positive luxury-positive' : 'negative luxury-negative'}`}>
                         {event.odds_changes > 0 ? '+' : ''}{event.odds_changes}%
                       </span>
                     </div>
@@ -593,24 +628,24 @@ const Dashboard: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="empty-state">
-                <p>No live events</p>
+              <div className="empty-state luxury-empty-state">
+                <p className="empty-text">No live events</p>
               </div>
             )}
           </div>
         );
 
       default:
-        return <div className="widget-content">Widget not found</div>;
+        return <div className="widget-content luxury-widget-content">Widget not found</div>;
     }
   };
 
   if (!user) {
     return (
-      <div className="dashboard-container">
-        <div className="auth-required">
-          <h2>Welcome to WINZO</h2>
-          <p>Please log in to view your dashboard and start betting.</p>
+      <div className="dashboard-container luxury-dashboard-container">
+        <div className="auth-required luxury-auth-required">
+          <h2 className="auth-title">Welcome to WINZO</h2>
+          <p className="auth-message">Please log in to view your dashboard and start betting.</p>
         </div>
       </div>
     );
@@ -618,19 +653,19 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-container">
-        <div className="dashboard-skeleton">
-          <div className="skeleton-header">
-            <div className="skeleton-title"></div>
-            <div className="skeleton-subtitle"></div>
+      <div className="dashboard-container luxury-dashboard-container">
+        <div className="dashboard-skeleton luxury-skeleton">
+          <div className="skeleton-header premium-skeleton-header">
+            <div className="skeleton-title luxury-skeleton-title"></div>
+            <div className="skeleton-subtitle luxury-skeleton-subtitle"></div>
           </div>
-          <div className="skeleton-grid">
-            <div className="skeleton-card large"></div>
-            <div className="skeleton-card"></div>
-            <div className="skeleton-card"></div>
-            <div className="skeleton-card"></div>
-            <div className="skeleton-card"></div>
-            <div className="skeleton-card"></div>
+          <div className="skeleton-grid luxury-skeleton-grid">
+            <div className="skeleton-card large luxury-skeleton-card"></div>
+            <div className="skeleton-card luxury-skeleton-card"></div>
+            <div className="skeleton-card luxury-skeleton-card"></div>
+            <div className="skeleton-card luxury-skeleton-card"></div>
+            <div className="skeleton-card luxury-skeleton-card"></div>
+            <div className="skeleton-card luxury-skeleton-card"></div>
           </div>
         </div>
       </div>
@@ -640,51 +675,65 @@ const Dashboard: React.FC = () => {
   const currentBalance = realTimeBalance !== null ? realTimeBalance : user.wallet_balance;
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="header-content">
-          <h1 className="page-title">Welcome back, {user.username}! 🚀</h1>
-          <p className="page-subtitle">Your betting command center</p>
-          <div className="last-update">
-            Last updated: {lastUpdate.toLocaleTimeString()}
+    <div className="dashboard-container luxury-dashboard-container">
+      <header className="dashboard-header luxury-dashboard-header">
+        <div className="header-content premium-header-content">
+          <h1 className="page-title luxury-page-title">Welcome back, {user.username}!</h1>
+          <p className="page-subtitle luxury-page-subtitle">Your betting command center</p>
+          <div className="last-update luxury-last-update">
+            <ClockIcon size="sm" color="muted" className="update-icon" />
+            <span className="update-text">Last updated: {lastUpdate.toLocaleTimeString()}</span>
           </div>
         </div>
-        <div className="header-actions">
+        <div className="header-actions luxury-header-actions">
           <button 
             onClick={fetchDashboardData} 
-            className="winzo-btn winzo-btn-secondary"
+            className="winzo-btn winzo-btn-secondary luxury-btn premium-btn"
             disabled={loading}
           >
-            {loading ? '⏳' : '🔄'} Refresh
+            {loading ? (
+              <LoadingIcon size="sm" color="neutral" className="btn-icon" />
+            ) : (
+              <RefreshIcon size="sm" color="neutral" className="btn-icon" />
+            )}
+            <span className="btn-text">Refresh</span>
           </button>
         </div>
       </header>
       
       {error && (
-        <div className="error-banner">
-          <span>ℹ️ {error}</span>
-          <button onClick={fetchDashboardData} className="winzo-btn winzo-btn-primary">
-            Retry
+        <div className="error-banner luxury-error-banner">
+          <span className="error-message">
+            <WarningIcon size="sm" color="danger" className="error-icon" />
+            {error}
+          </span>
+          <button onClick={fetchDashboardData} className="winzo-btn winzo-btn-primary luxury-btn premium-btn">
+            <RefreshIcon size="sm" color="inverse" className="btn-icon" />
+            <span className="btn-text">Retry</span>
           </button>
         </div>
       )}
       
-      <div className="dashboard-widgets">
+      <div className="dashboard-widgets luxury-dashboard-widgets">
         {widgets.map((widget) => (
           <div 
             key={widget.id} 
-            className={`dashboard-widget widget-${widget.size} widget-${widget.type}`}
+            className={`dashboard-widget widget-${widget.size} widget-${widget.type} luxury-widget`}
           >
-            <div className="widget-header">
-              <h3 className="widget-title">{widget.title}</h3>
-              <div className="widget-actions">
+            <div className="widget-header luxury-widget-header">
+              <h3 className="widget-title luxury-widget-title">{widget.title}</h3>
+              <div className="widget-actions luxury-widget-actions">
                 {widget.collapsible && (
                   <button 
-                    className="widget-toggle"
+                    className="widget-toggle luxury-widget-toggle"
                     onClick={() => toggleWidget(widget.id)}
                     aria-label={widget.collapsed ? 'Expand widget' : 'Collapse widget'}
                   >
-                    {widget.collapsed ? '▼' : '▲'}
+                    {widget.collapsed ? (
+                      <ChevronDownIcon size="sm" color="neutral" className="toggle-icon" />
+                    ) : (
+                      <ChevronUpIcon size="sm" color="neutral" className="toggle-icon" />
+                    )}
                   </button>
                 )}
               </div>
