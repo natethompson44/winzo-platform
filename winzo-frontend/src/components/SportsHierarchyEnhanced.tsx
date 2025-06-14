@@ -89,7 +89,7 @@ const SportsHierarchyEnhanced: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filter, setFilter] = useState<'all' | 'live' | 'upcoming'>('all');
   const [selectedMarket, setSelectedMarket] = useState<string>('h2h');
-  const [userBalance, setUserBalance] = useState<number>(1250.75);
+  const [userBalance] = useState<number>(1250.75);
   
   const { addToBetSlip } = useBetSlip();
 
@@ -541,10 +541,10 @@ const SportsHierarchyEnhanced: React.FC = () => {
         <div className="header-left">
           <div className="logo">WINZO</div>
           <nav className="header-nav">
-            <a href="#" className="nav-item active">Sports</a>
-            <a href="#" className="nav-item">Live Betting</a>
-            <a href="#" className="nav-item">Promotions</a>
-            <a href="#" className="nav-item">Help</a>
+            <a href="/sports" className="nav-item active">Sports</a>
+            <a href="/live-betting" className="nav-item">Live Betting</a>
+            <a href="/promotions" className="nav-item">Promotions</a>
+            <a href="/help" className="nav-item">Help</a>
           </nav>
         </div>
         

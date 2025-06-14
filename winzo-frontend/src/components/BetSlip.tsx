@@ -1,38 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useBetSlip } from '../contexts/BetSlipContext';
-import apiClient from '../utils/axios';
-import { API_ENDPOINTS } from '../config/api';
-import { useAuth } from '../contexts/AuthContext';
-import { formatCurrency } from '../utils/numberUtils';
-import ValidatedInput from './ValidatedInput';
 import './BetSlip.css';
-import { toast } from 'react-hot-toast';
-
-interface PlaceBetResponse {
-  success: boolean;
-  message: string;
-  data?: {
-    betIds: string[];
-    betType: string;
-    totalStake: number;
-    potentialPayout: number;
-    newBalance: number;
-  };
-  error?: string;
-}
-
-interface BetSlipItem {
-  id: string;
-  eventId: string;
-  sport: string;
-  homeTeam: string;
-  awayTeam: string;
-  selectedTeam: string;
-  odds: number;
-  marketType: string;
-  bookmaker: string;
-  commenceTime: string;
-}
 
 const BetSlip: React.FC = () => {
   const {
@@ -41,17 +9,10 @@ const BetSlip: React.FC = () => {
     setBetType,
     removeFromBetSlip,
     clearBetSlip,
-    totalStake,
-    totalPayout,
-    canPlaceBet,
     isOpen,
     setIsOpen
   } = useBetSlip();
 
-  const { user, updateBalance, refreshUser } = useAuth();
-
-  const [isPlacingBet, setIsPlacingBet] = useState(false);
-  const [placeBetError, setPlaceBetError] = useState<string>('');
   const [betAmount, setBetAmount] = useState<string>('10.00');
   const [isExpanded, setIsExpanded] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -107,119 +68,8 @@ const BetSlip: React.FC = () => {
     }
   };
 
-  const placeBets = async () => {
-    if (!canPlaceBet() || !user) {
-      setPlaceBetError('Please log in to place bets');
-      return;
-    }
-    setIsPlacingBet(true);
-    setPlaceBetError('');
-    try {
-      const betData = {
-        bets: betSlipItems.map(item => ({
-          eventId: item.eventId,
-          selectedTeam: item.selectedTeam,
-          odds: item.odds,
-          stake: item.stake,
-          marketType: item.marketType,
-          bookmaker: item.bookmaker
-        })),
-        betType,
-        totalStake,
-        potentialPayout: totalPayout
-      };
-      const response = await apiClient.post<PlaceBetResponse>(API_ENDPOINTS.PLACE_BET, betData);
-      if (response.data.success) {
-        if (response.data.data?.newBalance !== undefined) {
-          updateBalance(response.data.data.newBalance);
-        }
-        clearBetSlip();
-        showSuccessNotification(
-          response.data.message,
-          response.data.data?.newBalance,
-          response.data.data?.betIds?.length || 0
-        );
-        await refreshUser();
-      } else {
-        setPlaceBetError(response.data.error || 'Failed to place bets');
-      }
-    } catch (error: any) {
-      const errorMessage = error.message || 'Failed to place bet';
-      console.error('Error placing bet:', error);
-      toast.error(errorMessage);
-    } finally {
-      setIsPlacingBet(false);
-    }
-  };
-
-  const showSuccessNotification = (
-    message: string,
-    newBalance?: number,
-    betCount?: number
-  ) => {
-    const notification = document.createElement('div');
-    notification.className = 'bet-success-notification';
-    notification.innerHTML = `
-      <div style="font-weight: bold; margin-bottom: 8px; color: #48bb78;">
-        ${message}
-      </div>
-      <div style="font-size: 0.9rem; margin-bottom: 4px;">
-        ${betCount} bet${betCount !== 1 ? 's' : ''} placed successfully
-      </div>
-      ${newBalance ? `<div style="font-size: 0.9rem; color: #68d391;">New Balance: ${formatCurrency(newBalance)}</div>` : ''}
-    `;
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      color: white;
-      background: linear-gradient(135deg, #1a365d 0%, #2d5a87 100%);
-      padding: 20px 24px;
-      border-radius: 12px;
-      z-index: 10000;
-      animation: slideInRight 0.3s ease-out;
-      box-shadow: 0 8px 24px rgba(72, 187, 120, 0.3);
-      max-width: 320px;
-      border: 1px solid #48bb78;
-    `;
-    document.body.appendChild(notification);
-    setTimeout(() => {
-      notification.style.animation = 'slideOutRight 0.3s ease-in';
-      setTimeout(() => {
-        if (document.body.contains(notification)) {
-          document.body.removeChild(notification);
-        }
-      }, 300);
-    }, 5000);
-  };
-
-  if (!isOpen) return null;
-
-  if (!user) {
-    return (
-      <div className="bet-slip-overlay" onClick={(e) => e.target === e.currentTarget && setIsOpen(false)}>
-        <div className="bet-slip-container">
-          <div className="bet-slip-header">
-            <h2> Bet Slip</h2>
-            <button className="close-button" onClick={() => setIsOpen(false)}></button>
-          </div>
-          <div className="auth-required">
-            <div className="auth-icon"></div>
-            <h3>Login Required</h3>
-            <p>Please log in to place bets and manage your bet slip.</p>
-            <button
-              className="login-button"
-              onClick={() => {
-                setIsOpen(false);
-                window.location.href = '/login';
-              }}
-            >
-              Go to Login
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+  if (!isOpen) {
+    return null;
   }
 
   return (
@@ -415,70 +265,6 @@ const BetSlip: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
-  );
-};
-
-interface BetSlipItemCardProps {
-  item: any;
-  onRemove: () => void;
-  onStakeChange: (value: string, isValid: boolean, numericValue?: number) => void;
-  onQuickStake: (amount: number) => void;
-}
-
-const BetSlipItemCard: React.FC<BetSlipItemCardProps> = ({ item, onRemove, onStakeChange, onQuickStake }) => {
-  const { user } = useAuth();
-
-  return (
-    <div className="bet-slip-item">
-      <div className="bet-header">
-        <div className="teams">
-          <span className="matchup">
-            {item.awayTeam} @ {item.homeTeam}
-          </span>
-          <span className="sport">{item.sport.toUpperCase()}</span>
-        </div>
-        <button className="remove-bet" onClick={onRemove}>✕</button>
-      </div>
-      <div className="bet-details">
-        <div className="selection">
-          <span className="selected-team">{item.selectedTeam}</span>
-          <span className="odds">{item.odds > 0 ? `+${item.odds}` : item.odds.toString()}</span>
-        </div>
-        <div className="bookmaker">{item.bookmaker}</div>
-        <div className="stake-section">
-          <label>Stake:</label>
-          <div className="stake-input-group">
-            <ValidatedInput
-              type="wallet-operation"
-              value={item.stake.toString()}
-              onChange={(value, isValid, numericValue) => 
-                onStakeChange(value, isValid, numericValue)
-              }
-              walletBalance={user?.wallet_balance || 0}
-              operation="bet"
-              rules={{ min: 1, max: 1000, precision: 2 }}
-              placeholder="Enter stake amount"
-              className="stake-input"
-            />
-            <div className="quick-stakes">
-              {[5, 10, 25, 50].map(amount => (
-                <button
-                  key={amount}
-                  className="quick-stake-button"
-                  onClick={() => onQuickStake(amount)}
-                >
-                  ${amount}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="payout-info">
-          <span>Payout: {formatCurrency(item.potentialPayout)}</span>
-          <span>Profit: {formatCurrency(item.potentialPayout - item.stake)}</span>
-        </div>
-      </div>
     </div>
   );
 };
