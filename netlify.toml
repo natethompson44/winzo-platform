@@ -8,6 +8,55 @@
   NPM_FLAGS = "--legacy-peer-deps"
   NPM_CONFIG_PRODUCTION = "false"
 
+# Serve static assets with proper MIME types
+[[redirects]]
+  from = "/static/*"
+  to = "/static/:splat"
+  status = 200
+  force = true
+
+# Serve asset manifest
+[[redirects]]
+  from = "/asset-manifest.json"
+  to = "/asset-manifest.json"
+  status = 200
+  force = true
+
+# Serve manifest.json
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
+  force = true
+
+# Serve service worker
+[[redirects]]
+  from = "/sw.js"
+  to = "/sw.js"
+  status = 200
+  force = true
+
+# Serve cache buster
+[[redirects]]
+  from = "/cache-buster.js"
+  to = "/cache-buster.js"
+  status = 200
+  force = true
+
+# Serve offline page
+[[redirects]]
+  from = "/offline.html"
+  to = "/offline.html"
+  status = 200
+  force = true
+
+# API redirects (if needed)
+[[redirects]]
+  from = "/api/*"
+  to = "https://winzo-platform-production.up.railway.app/api/:splat"
+  status = 200
+
+# Catch-all for SPA routing (must be last)
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -19,12 +68,14 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
+    Content-Type = "text/css"
 
 [[headers]]
   for = "/static/js/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
+    Content-Type = "application/javascript"
 
 [[headers]]
   for = "/static/media/*"
@@ -35,6 +86,25 @@
   for = "/asset-manifest.json"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/json"
+
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/json"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "/cache-buster.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/javascript"
 
 [context.production.environment]
   REACT_APP_API_URL = "https://winzo-platform-production.up.railway.app"
