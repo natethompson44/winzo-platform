@@ -6,8 +6,6 @@ import apiClient from '../utils/axios';
 import { API_ENDPOINTS } from '../config/api';
 import { formatCurrency, formatPercentage, formatLuxuryCurrency, formatPremiumBalance, formatLuxuryPercentage, formatLuxuryNumber } from '../utils/numberUtils';
 import {
-  WalletIcon,
-  QuickBetIcon,
   DepositIcon,
   WithdrawIcon,
   HistoryIcon,
@@ -22,8 +20,7 @@ import {
   ClockIcon,
   ChevronUpIcon,
   ChevronDownIcon,
-  InfoIcon,
-  LoadingIcon
+  InfoIcon
 } from './icons/IconLibrary';
 import './Dashboard.css';
 
@@ -100,7 +97,6 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [realTimeBalance, setRealTimeBalance] = useState<number | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [widgets, setWidgets] = useState<DashboardWidget[]>([
     { id: 'wallet', title: 'Wallet Balance', type: 'wallet', size: 'small', collapsible: true, collapsed: false },
     { id: 'stats', title: 'Quick Stats', type: 'stats', size: 'medium', collapsible: true, collapsed: false },
@@ -111,8 +107,6 @@ const Dashboard: React.FC = () => {
   ]);
   
   // Enhanced luxury state for animations
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   
   const balanceIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -232,7 +226,6 @@ const Dashboard: React.FC = () => {
           setLiveEvents(liveEventsResponse.data.data.slice(0, 3));
         }
 
-        setLastUpdate(new Date());
       } catch (apiError) {
         console.log('API not available, using mock data');
         // Use mock data when API is not available
@@ -241,7 +234,6 @@ const Dashboard: React.FC = () => {
         setRecommendations(mockRecommendations);
         setLiveEvents(mockLiveEvents);
         setRealTimeBalance(user?.wallet_balance || 100.00);
-        setLastUpdate(new Date());
       }
 
     } catch (error: any) {
@@ -281,7 +273,6 @@ const Dashboard: React.FC = () => {
       const response = await apiClient.get(API_ENDPOINTS.WALLET_BALANCE);
       if (response.data.success) {
         setRealTimeBalance(response.data.data.balance);
-        setLastUpdate(new Date());
       }
     } catch (error: any) {
       console.error('Error fetching wallet balance:', error);
@@ -433,13 +424,11 @@ const Dashboard: React.FC = () => {
 
   // Enhanced luxury animations and interactions
   const handleWidgetToggle = (widgetId: string) => {
-    setIsAnimating(true);
     setWidgets(prev => prev.map(widget => 
       widget.id === widgetId 
         ? { ...widget, collapsed: !widget.collapsed }
         : widget
     ));
-    setTimeout(() => setIsAnimating(false), 300);
   };
 
   const handleCardHover = (cardId: string) => {
@@ -451,7 +440,6 @@ const Dashboard: React.FC = () => {
   };
 
   const handleQuickAction = (action: string) => {
-    setIsAnimating(true);
     switch (action) {
       case 'deposit':
         navigate('/wallet?action=deposit');
@@ -468,7 +456,6 @@ const Dashboard: React.FC = () => {
       default:
         break;
     }
-    setTimeout(() => setIsAnimating(false), 500);
   };
 
   const getWidgetContent = (widget: DashboardWidget) => {
