@@ -12,7 +12,6 @@ import {
   SportsIcon,
   TrendingUpIcon,
   DollarIcon,
-  RefreshIcon,
   SuccessIcon,
   WarningIcon,
   FireIcon,
@@ -784,25 +783,18 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard-container luxury-dashboard">
-      {/* Enhanced Luxury Header */}
-      <div className="luxury-dashboard-header luxury-fade-in">
-        <div className="luxury-header-content">
-          <h1 className="luxury-heading luxury-text-gradient-gold">
-            Welcome back, {user?.username}
-          </h1>
-          <p className="luxury-subheading">
-            Your premium betting dashboard
-          </p>
+      {/* Luxury Style Test - This should show gold gradient text */}
+      <div className="dashboard-header luxury-fade-in">
+        <div className="header-content">
+          <h1 className="luxury-heading">Welcome to WINZO</h1>
+          <p className="luxury-text-gradient">Premium Sports Betting Platform</p>
+          <div className="last-update">
+            <span>Last updated: {new Date().toLocaleTimeString()}</span>
+          </div>
         </div>
-        
-        <div className="luxury-header-actions">
-          <button 
-            className="luxury-btn luxury-btn-outline luxury-hover-glow"
-            onClick={() => window.location.reload()}
-            disabled={loading}
-          >
-            <RefreshIcon size="sm" color="neutral" />
-            <span>Refresh</span>
+        <div className="header-actions">
+          <button className="luxury-btn luxury-btn-primary">
+            Quick Bet
           </button>
         </div>
       </div>
