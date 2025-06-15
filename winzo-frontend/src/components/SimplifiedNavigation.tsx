@@ -38,6 +38,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [activeHover, setActiveHover] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
   const location = useLocation();
 
   // Handle scroll effect for visual feedback
@@ -58,15 +59,19 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
   // Handle logout with loading state
   const handleLogout = async () => {
     setIsLoggingOut(true);
+    setIsAnimating(true);
     try {
       await onLogout();
     } finally {
       setIsLoggingOut(false);
+      setIsAnimating(false);
     }
   };
 
   const toggleMobileMenu = () => {
+    setIsAnimating(true);
     setIsMobileMenuOpen(!isMobileMenuOpen);
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
   const formatBalance = (balance: number) => {
@@ -78,7 +83,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
     }).format(balance);
   };
 
-  // Navigation items with clear hierarchy and purpose
+  // Enhanced luxury navigation items with clear hierarchy and purpose
   const navigationItems = [
     { path: '/dashboard', label: 'Dashboard', icon: DashboardIcon, priority: 'primary' },
     { path: '/sports', label: 'Sports', icon: SportsIcon, priority: 'primary' },
@@ -91,12 +96,12 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
   };
 
   return (
-    <nav className={`enhanced-nav luxury-nav ${isScrolled ? 'scrolled' : ''}`} role="navigation" aria-label="Main navigation">
+    <nav className={`enhanced-nav luxury-nav ${isScrolled ? 'scrolled' : ''} ${isAnimating ? 'animating' : ''}`} role="navigation" aria-label="Main navigation">
       <div className="nav-container luxury-nav-container">
         {/* Enhanced Logo with better brand presentation */}
         <Link to="/" className="nav-logo luxury-nav-logo luxury-hover-lift" aria-label="WINZO Home">
           <div className="logo-container luxury-logo-container">
-            <span className="logo-text luxury-logo-text luxury-text-gradient">WINZO</span>
+            <span className="logo-text luxury-logo-text luxury-text-gradient-gold">WINZO</span>
             <span className="logo-tagline luxury-logo-tagline">Premium Sports Betting</span>
           </div>
         </Link>
@@ -104,7 +109,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
         {/* Desktop Navigation - Streamlined and touch-optimized */}
         <div className="nav-desktop luxury-nav-desktop">
           <div className="nav-links luxury-nav-links" role="menubar">
-            {navigationItems.map((item) => {
+            {navigationItems.map((item, index) => {
               const IconComponent = item.icon;
               const isActive = isActiveRoute(item.path);
               
@@ -117,6 +122,7 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
                   aria-current={isActive ? 'page' : undefined}
                   onMouseEnter={() => setActiveHover(item.path)}
                   onMouseLeave={() => setActiveHover(null)}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <IconComponent 
                     size="sm" 
@@ -205,57 +211,36 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
               </div>
             ) : (
               <div className="auth-actions luxury-auth-actions">
-                <Link to="/login" className="luxury-btn luxury-btn-secondary luxury-hover-lift">
+                <Link to="/login" className="luxury-btn luxury-btn-primary luxury-hover-glow">
                   Login
                 </Link>
-                <Link to="/register" className="luxury-btn luxury-btn-primary luxury-hover-lift">
-                  Sign Up
+                <Link to="/register" className="luxury-btn luxury-btn-outline luxury-hover-glow">
+                  Register
                 </Link>
               </div>
             )}
           </div>
         </div>
 
-        {/* Mobile Menu Toggle */}
+        {/* Enhanced Mobile Menu Toggle */}
         <button
-          className={`mobile-menu-toggle luxury-mobile-menu-toggle ${isMobileMenuOpen ? 'active' : ''}`}
+          className={`mobile-menu-toggle luxury-mobile-toggle ${isMobileMenuOpen ? 'active' : ''}`}
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}
         >
-          <span className="hamburger-line luxury-hamburger-line"></span>
-          <span className="hamburger-line luxury-hamburger-line"></span>
-          <span className="hamburger-line luxury-hamburger-line"></span>
+          <span className="toggle-line luxury-toggle-line"></span>
+          <span className="toggle-line luxury-toggle-line"></span>
+          <span className="toggle-line luxury-toggle-line"></span>
         </button>
       </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* Enhanced Mobile Navigation */}
       <div className={`mobile-nav luxury-mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
-        <div className="mobile-nav-backdrop luxury-mobile-nav-backdrop" onClick={toggleMobileMenu}></div>
-        <div className="mobile-nav-content luxury-mobile-nav-content luxury-slide-in-right">
-          <div className="mobile-nav-header luxury-mobile-nav-header">
-            <div className="mobile-user-info luxury-mobile-user-info">
-              {user ? (
-                <>
-                  <div className="mobile-user-avatar luxury-mobile-user-avatar">
-                    <UserIcon size="lg" color="neutral" aria-hidden={true} />
-                  </div>
-                  <div className="mobile-user-details luxury-mobile-user-details">
-                    <span className="mobile-user-name luxury-mobile-user-name">{user.name}</span>
-                    <span className="mobile-user-balance luxury-mobile-user-balance luxury-text-gradient-gold">{formatBalance(user.balance)}</span>
-                  </div>
-                </>
-              ) : (
-                <div className="mobile-auth-prompt luxury-mobile-auth-prompt">
-                  <span className="mobile-auth-text luxury-mobile-auth-text">Welcome to WINZO</span>
-                  <span className="mobile-auth-subtext luxury-mobile-auth-subtext">Sign in to start betting</span>
-                </div>
-              )}
-            </div>
-          </div>
-
+        <div className="mobile-nav-content luxury-mobile-nav-content">
+          {/* Mobile Navigation Links */}
           <div className="mobile-nav-links luxury-mobile-nav-links">
-            {navigationItems.map((item) => {
+            {navigationItems.map((item, index) => {
               const IconComponent = item.icon;
               const isActive = isActiveRoute(item.path);
               
@@ -263,36 +248,50 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`mobile-nav-link luxury-mobile-nav-link luxury-hover-lift ${isActive ? 'active' : ''}`}
-                  onClick={toggleMobileMenu}
+                  className={`mobile-nav-link luxury-mobile-nav-link ${isActive ? 'active' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <IconComponent 
-                    size="sm" 
+                    size="md" 
                     color={isActive ? 'secondary' : 'neutral'}
                     aria-hidden={true}
                   />
                   <span className="mobile-nav-link-text luxury-mobile-nav-link-text">{item.label}</span>
-                  {isActive && <div className="mobile-nav-link-indicator luxury-mobile-nav-link-indicator luxury-glow"></div>}
+                  {isActive && <div className="mobile-nav-link-indicator luxury-mobile-nav-link-indicator"></div>}
                 </Link>
               );
             })}
           </div>
 
-          <div className="mobile-nav-actions luxury-mobile-nav-actions">
-            {user ? (
-              <>
-                <button className="luxury-btn luxury-btn-secondary luxury-hover-lift">
-                  <SettingsIcon size="sm" color="neutral" aria-hidden={true} />
+          {/* Mobile User Section */}
+          {user && (
+            <div className="mobile-user-section luxury-mobile-user-section">
+              <div className="mobile-user-info luxury-mobile-user-info">
+                <div className="mobile-user-avatar luxury-mobile-user-avatar">
+                  <UserIcon size="md" color="neutral" aria-hidden={true} />
+                </div>
+                <div className="mobile-user-details luxury-mobile-user-details">
+                  <span className="mobile-user-name luxury-mobile-user-name">{user.name}</span>
+                  <span className="mobile-user-balance luxury-mobile-user-balance luxury-text-gradient-gold">{formatBalance(user.balance)}</span>
+                </div>
+              </div>
+              
+              <div className="mobile-user-actions luxury-mobile-user-actions">
+                <button className="luxury-btn luxury-btn-icon luxury-hover-glow">
+                  <SettingsIcon size="md" color="neutral" aria-hidden={true} />
                   <span>Settings</span>
                 </button>
-                <button className="luxury-btn luxury-btn-secondary luxury-hover-lift">
-                  <SupportIcon size="sm" color="neutral" aria-hidden={true} />
+                
+                <button className="luxury-btn luxury-btn-icon luxury-hover-glow">
+                  <SupportIcon size="md" color="neutral" aria-hidden={true} />
                   <span>Support</span>
                 </button>
+                
                 <button 
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className={`luxury-btn luxury-btn-ruby luxury-hover-lift ${isLoggingOut ? 'btn-loading' : ''}`}
+                  className="luxury-btn luxury-btn-outline luxury-btn-ruby"
                 >
                   {isLoggingOut ? (
                     <>
@@ -301,25 +300,25 @@ const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({ user, onLog
                     </>
                   ) : (
                     <>
-                      <LogoutIcon size="sm" color="neutral" aria-hidden={true} />
+                      <LogoutIcon size="md" color="neutral" aria-hidden={true} />
                       <span>Logout</span>
                     </>
                   )}
                 </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="luxury-btn luxury-btn-secondary luxury-hover-lift" onClick={toggleMobileMenu}>
-                  Login
-                </Link>
-                <Link to="/register" className="luxury-btn luxury-btn-primary luxury-hover-lift" onClick={toggleMobileMenu}>
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Enhanced Mobile Menu Backdrop */}
+      {isMobileMenuOpen && (
+        <div 
+          className="mobile-nav-backdrop luxury-mobile-nav-backdrop"
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     </nav>
   );
 };

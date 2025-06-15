@@ -110,6 +110,11 @@ const Dashboard: React.FC = () => {
     { id: 'live-events', title: 'Live Events', type: 'live-events', size: 'medium', collapsible: true, collapsed: false }
   ]);
   
+  // Enhanced luxury state for animations
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [activeWidget, setActiveWidget] = useState<string | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  
   const balanceIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const liveUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -426,12 +431,44 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const toggleWidget = (widgetId: string) => {
+  // Enhanced luxury animations and interactions
+  const handleWidgetToggle = (widgetId: string) => {
+    setIsAnimating(true);
     setWidgets(prev => prev.map(widget => 
       widget.id === widgetId 
         ? { ...widget, collapsed: !widget.collapsed }
         : widget
     ));
+    setTimeout(() => setIsAnimating(false), 300);
+  };
+
+  const handleCardHover = (cardId: string) => {
+    setHoveredCard(cardId);
+  };
+
+  const handleCardLeave = () => {
+    setHoveredCard(null);
+  };
+
+  const handleQuickAction = (action: string) => {
+    setIsAnimating(true);
+    switch (action) {
+      case 'deposit':
+        navigate('/wallet?action=deposit');
+        break;
+      case 'withdraw':
+        navigate('/wallet?action=withdraw');
+        break;
+      case 'sports':
+        navigate('/sports');
+        break;
+      case 'history':
+        navigate('/history');
+        break;
+      default:
+        break;
+    }
+    setTimeout(() => setIsAnimating(false), 500);
   };
 
   const getWidgetContent = (widget: DashboardWidget) => {
@@ -474,24 +511,69 @@ const Dashboard: React.FC = () => {
       case 'stats':
         return stats ? (
           <div className="widget-content luxury-widget-content luxury-slide-up">
-            <div className="stats-grid-compact luxury-stats-grid">
-              <div className="stat-card luxury-stat-card luxury-hover-lift">
-                <div className="stat-number premium-stat-number">{formatLuxuryNumber(stats.totalBets)}</div>
-                <div className="stat-label premium-stat-label">Total Bets</div>
-              </div>
-              <div className="stat-card luxury-stat-card luxury-hover-lift">
-                <div className="stat-number premium-stat-number">{formatLuxuryPercentage(stats.winRate)}</div>
-                <div className="stat-label premium-stat-label">Win Rate</div>
-              </div>
-              <div className={`stat-card luxury-stat-card luxury-hover-lift ${stats.profit >= 0 ? 'positive-card' : 'negative-card'}`}>
-                <div className={`stat-number premium-stat-number ${stats.profit >= 0 ? 'positive luxury-positive' : 'negative luxury-negative'}`}>
-                  {formatLuxuryCurrency(stats.profit)}
+            <div className="luxury-stats-grid luxury-fade-in">
+              <div 
+                className={`luxury-stat-card luxury-card ${hoveredCard === 'total-bets' ? 'luxury-hover-lift' : ''}`}
+                onMouseEnter={() => handleCardHover('total-bets')}
+                onMouseLeave={handleCardLeave}
+              >
+                <div className="luxury-stat-icon luxury-icon-glow">
+                  <FireIcon size="lg" color="warning" />
                 </div>
-                <div className="stat-label premium-stat-label">Profit/Loss</div>
+                <div className="luxury-stat-content">
+                  <h3 className="luxury-stat-value luxury-text-gradient-gold">
+                    {formatLuxuryNumber(stats.totalBets)}
+                  </h3>
+                  <p className="luxury-stat-label">Total Bets</p>
+                </div>
               </div>
-              <div className="stat-card luxury-stat-card luxury-hover-lift">
-                <div className="stat-number premium-stat-number">{formatLuxuryNumber(stats.betsPending)}</div>
-                <div className="stat-label premium-stat-label">Pending</div>
+
+              <div 
+                className={`luxury-stat-card luxury-card ${hoveredCard === 'win-rate' ? 'luxury-hover-lift' : ''}`}
+                onMouseEnter={() => handleCardHover('win-rate')}
+                onMouseLeave={handleCardLeave}
+              >
+                <div className="luxury-stat-icon luxury-icon-glow">
+                  <TrendingUpIcon size="lg" color="success" />
+                </div>
+                <div className="luxury-stat-content">
+                  <h3 className="luxury-stat-value luxury-text-gradient-emerald">
+                    {formatLuxuryPercentage(stats.winRate)}
+                  </h3>
+                  <p className="luxury-stat-label">Win Rate</p>
+                </div>
+              </div>
+
+              <div 
+                className={`luxury-stat-card luxury-card ${hoveredCard === 'profit' ? 'luxury-hover-lift' : ''}`}
+                onMouseEnter={() => handleCardHover('profit')}
+                onMouseLeave={handleCardLeave}
+              >
+                <div className="luxury-stat-icon luxury-icon-glow">
+                  <DollarIcon size="lg" color={stats.profit >= 0 ? 'success' : 'danger'} />
+                </div>
+                <div className="luxury-stat-content">
+                  <h3 className={`luxury-stat-value ${stats.profit >= 0 ? 'luxury-text-gradient-emerald' : 'luxury-text-gradient-ruby'}`}>
+                    {formatLuxuryCurrency(stats.profit)}
+                  </h3>
+                  <p className="luxury-stat-label">Profit/Loss</p>
+                </div>
+              </div>
+
+              <div 
+                className={`luxury-stat-card luxury-card ${hoveredCard === 'roi' ? 'luxury-hover-lift' : ''}`}
+                onMouseEnter={() => handleCardHover('roi')}
+                onMouseLeave={handleCardLeave}
+              >
+                <div className="luxury-stat-icon luxury-icon-glow">
+                  <LightningIcon size="lg" color="primary" />
+                </div>
+                <div className="luxury-stat-content">
+                  <h3 className={`luxury-stat-value ${stats.roi >= 0 ? 'luxury-text-gradient-sapphire' : 'luxury-text-gradient-ruby'}`}>
+                    {formatLuxuryPercentage(stats.roi)}
+                  </h3>
+                  <p className="luxury-stat-label">ROI</p>
+                </div>
               </div>
             </div>
             {stats.currentStreak > 0 && (
@@ -511,31 +593,60 @@ const Dashboard: React.FC = () => {
         return (
           <div className="widget-content luxury-widget-content luxury-scale-in">
             {recentBets.length > 0 ? (
-              <div className="recent-bets-list luxury-bets-list">
-                {recentBets.slice(0, 5).map((bet) => (
-                  <div key={bet.id} className="bet-item luxury-bet-item luxury-hover-lift">
-                    <div className="bet-header premium-bet-header">
-                      <span className="bet-teams premium-bet-teams">
-                        {bet.sportsEvent.away_team} @ {bet.sportsEvent.home_team}
-                      </span>
-                      <span className={`bet-status ${bet.status} luxury-bet-status`}>
-                        {getStatusIcon(bet.status)} <span className="status-text">{bet.status}</span>
-                      </span>
+              <div className="luxury-recent-bets luxury-fade-in">
+                {recentBets.map((bet, index) => (
+                  <div 
+                    key={bet.id}
+                    className={`luxury-bet-card luxury-card ${hoveredCard === `bet-${bet.id}` ? 'luxury-hover-lift' : ''}`}
+                    onMouseEnter={() => handleCardHover(`bet-${bet.id}`)}
+                    onMouseLeave={handleCardLeave}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className="luxury-bet-header">
+                      <div className="luxury-bet-teams">
+                        <span className="luxury-bet-team">{bet.sportsEvent.home_team}</span>
+                        <span className="luxury-bet-vs">vs</span>
+                        <span className="luxury-bet-team">{bet.sportsEvent.away_team}</span>
+                      </div>
+                      <div className={`luxury-bet-status luxury-badge luxury-badge-${bet.status}`}>
+                        {getStatusIcon(bet.status)}
+                        <span>{bet.status}</span>
+                      </div>
                     </div>
-                    <div className="bet-details premium-bet-details">
-                      <span className="bet-stake luxury-bet-stake">{formatCurrency(bet.stake)}</span>
-                      <span className="bet-odds luxury-bet-odds">{formatOdds(bet.odds)}</span>
-                      <span className="bet-payout luxury-bet-payout">{formatCurrency(bet.potential_payout)}</span>
+                    
+                    <div className="luxury-bet-details">
+                      <div className="luxury-bet-selection">
+                        <span className="luxury-bet-label">Selected:</span>
+                        <span className="luxury-bet-value">{bet.selected_team}</span>
+                      </div>
+                      <div className="luxury-bet-odds">
+                        <span className="luxury-bet-label">Odds:</span>
+                        <span className="luxury-bet-value luxury-text-gradient-gold">{formatOdds(bet.odds)}</span>
+                      </div>
+                      <div className="luxury-bet-stake">
+                        <span className="luxury-bet-label">Stake:</span>
+                        <span className="luxury-bet-value">{formatLuxuryCurrency(bet.stake)}</span>
+                      </div>
+                      <div className="luxury-bet-payout">
+                        <span className="luxury-bet-label">Potential Payout:</span>
+                        <span className="luxury-bet-value luxury-text-gradient-emerald">{formatLuxuryCurrency(bet.potential_payout)}</span>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="empty-state luxury-empty-state">
-                <p className="empty-text">No recent bets</p>
-                <button className="luxury-btn luxury-btn-primary premium-btn" onClick={() => navigate('/sports')}>
-                  <QuickBetIcon size="sm" color="inverse" className="btn-icon" />
-                  <span className="btn-text">Place Your First Bet</span>
+              <div className="luxury-empty-state luxury-card">
+                <div className="luxury-empty-icon">
+                  <HistoryIcon size="xl" color="neutral" />
+                </div>
+                <h3 className="luxury-empty-title">No Recent Bets</h3>
+                <p className="luxury-empty-description">Start betting to see your history here</p>
+                <button 
+                  className="luxury-btn luxury-btn-primary luxury-hover-glow"
+                  onClick={() => navigate('/sports')}
+                >
+                  Place Your First Bet
                 </button>
               </div>
             )}
@@ -545,22 +656,34 @@ const Dashboard: React.FC = () => {
       case 'quick-actions':
         return (
           <div className="widget-content luxury-widget-content luxury-fade-in">
-            <div className="quick-actions-grid luxury-actions-grid">
-              <button className="luxury-btn luxury-btn-primary premium-btn" onClick={() => navigate('/sports')}>
-                <QuickBetIcon size="sm" color="inverse" className="btn-icon" />
-                <span className="btn-text">Quick Bet</span>
+            <div className="luxury-quick-actions luxury-fade-in">
+              <button
+                className="luxury-action-btn luxury-btn luxury-btn-primary luxury-gradient-emerald luxury-hover-scale"
+                onClick={() => handleQuickAction('deposit')}
+              >
+                <DepositIcon size="md" color="inverse" />
+                <span className="luxury-action-label">Deposit</span>
               </button>
-              <button className="luxury-btn luxury-btn-secondary premium-btn" onClick={() => navigate('/wallet')}>
-                <WalletIcon size="sm" color="neutral" className="btn-icon" />
-                <span className="btn-text">Deposit</span>
+              <button
+                className="luxury-action-btn luxury-btn luxury-btn-primary luxury-gradient-sapphire luxury-hover-scale"
+                onClick={() => handleQuickAction('withdraw')}
+              >
+                <WithdrawIcon size="md" color="inverse" />
+                <span className="luxury-action-label">Withdraw</span>
               </button>
-              <button className="luxury-btn luxury-btn-secondary premium-btn" onClick={() => navigate('/history')}>
-                <HistoryIcon size="sm" color="neutral" className="btn-icon" />
-                <span className="btn-text">History</span>
+              <button
+                className="luxury-action-btn luxury-btn luxury-btn-primary luxury-gradient-gold luxury-hover-scale"
+                onClick={() => handleQuickAction('sports')}
+              >
+                <SportsIcon size="md" color="inverse" />
+                <span className="luxury-action-label">Sports</span>
               </button>
-              <button className="luxury-btn luxury-btn-secondary premium-btn" onClick={() => navigate('/sports')}>
-                <SportsIcon size="sm" color="neutral" className="btn-icon" />
-                <span className="btn-text">Sports</span>
+              <button
+                className="luxury-action-btn luxury-btn luxury-btn-primary luxury-gradient-amethyst luxury-hover-scale"
+                onClick={() => handleQuickAction('history')}
+              >
+                <HistoryIcon size="md" color="inverse" />
+                <span className="luxury-action-label">History</span>
               </button>
             </div>
             {getItemCount() > 0 && (
@@ -673,74 +796,78 @@ const Dashboard: React.FC = () => {
   const currentBalance = realTimeBalance !== null ? realTimeBalance : user.wallet_balance;
 
   return (
-    <div className="dashboard-container luxury-dashboard-container">
-      <header className="dashboard-header luxury-dashboard-header luxury-fade-in">
-        <div className="header-content premium-header-content">
-          <h1 className="page-title luxury-page-title luxury-heading">Welcome back, {user.username}!</h1>
-          <p className="page-subtitle luxury-page-subtitle luxury-subheading">Your betting command center</p>
-          <div className="last-update luxury-last-update">
-            <ClockIcon size="sm" color="muted" className="update-icon" />
-            <span className="update-text">Last updated: {lastUpdate.toLocaleTimeString()}</span>
-          </div>
+    <div className="dashboard-container luxury-dashboard">
+      {/* Enhanced Luxury Header */}
+      <div className="luxury-dashboard-header luxury-fade-in">
+        <div className="luxury-header-content">
+          <h1 className="luxury-heading luxury-text-gradient-gold">
+            Welcome back, {user?.username}
+          </h1>
+          <p className="luxury-subheading">
+            Your premium betting dashboard
+          </p>
         </div>
-        <div className="header-actions luxury-header-actions">
+        
+        <div className="luxury-header-actions">
           <button 
-            onClick={fetchDashboardData} 
-            className="luxury-btn luxury-btn-secondary premium-btn"
+            className="luxury-btn luxury-btn-outline luxury-hover-glow"
+            onClick={() => window.location.reload()}
             disabled={loading}
           >
-            {loading ? (
-              <LoadingIcon size="sm" color="neutral" className="btn-icon luxury-loading-spin" />
-            ) : (
-              <RefreshIcon size="sm" color="neutral" className="btn-icon" />
-            )}
-            <span className="btn-text">Refresh</span>
+            <RefreshIcon size="sm" color="neutral" />
+            <span>Refresh</span>
           </button>
         </div>
-      </header>
-      
-      {error && (
-        <div className="error-banner luxury-error-banner luxury-slide-up">
-          <span className="error-message">
-            <WarningIcon size="sm" color="danger" className="error-icon" />
-            {error}
-          </span>
-          <button onClick={fetchDashboardData} className="luxury-btn luxury-btn-primary premium-btn">
-            <RefreshIcon size="sm" color="inverse" className="btn-icon" />
-            <span className="btn-text">Retry</span>
-          </button>
-        </div>
-      )}
-      
-      <div className="dashboard-widgets luxury-dashboard-widgets">
+      </div>
+
+      {/* Enhanced Luxury Widgets */}
+      <div className="luxury-widgets-grid">
         {widgets.map((widget, index) => (
           <div 
-            key={widget.id} 
-            className={`dashboard-widget widget-${widget.size} widget-${widget.type} luxury-widget luxury-hover-lift`}
+            key={widget.id}
+            className={`luxury-widget luxury-widget-${widget.size} luxury-slide-up`}
             style={{ animationDelay: `${index * 0.1}s` }}
           >
-            <div className="widget-header luxury-widget-header">
-              <h3 className="widget-title luxury-widget-title">{widget.title}</h3>
-              <div className="widget-actions luxury-widget-actions">
-                {widget.collapsible && (
-                  <button 
-                    className="widget-toggle luxury-widget-toggle"
-                    onClick={() => toggleWidget(widget.id)}
-                    aria-label={widget.collapsed ? 'Expand widget' : 'Collapse widget'}
-                  >
-                    {widget.collapsed ? (
-                      <ChevronDownIcon size="sm" color="neutral" className="toggle-icon" />
-                    ) : (
-                      <ChevronUpIcon size="sm" color="neutral" className="toggle-icon" />
-                    )}
-                  </button>
-                )}
-              </div>
+            <div className="luxury-widget-header">
+              <h2 className="luxury-widget-title">{widget.title}</h2>
+              {widget.collapsible && (
+                <button
+                  className="luxury-widget-toggle luxury-btn luxury-btn-icon"
+                  onClick={() => handleWidgetToggle(widget.id)}
+                  aria-label={widget.collapsed ? 'Expand widget' : 'Collapse widget'}
+                >
+                  {widget.collapsed ? <ChevronDownIcon size="sm" color="neutral" /> : <ChevronUpIcon size="sm" color="neutral" />}
+                </button>
+              )}
             </div>
-            {!widget.collapsed && getWidgetContent(widget)}
+            
+            {!widget.collapsed && (
+              <div className="luxury-widget-content">
+                {getWidgetContent(widget)}
+              </div>
+            )}
           </div>
         ))}
       </div>
+
+      {/* Enhanced Luxury Loading State */}
+      {loading && (
+        <div className="luxury-loading-overlay">
+          <div className="luxury-loading-spinner luxury-spinner"></div>
+          <p className="luxury-loading-text">Loading your premium dashboard...</p>
+        </div>
+      )}
+
+      {/* Enhanced Luxury Error State */}
+      {error && (
+        <div className="luxury-error-alert luxury-alert luxury-alert-error">
+          <WarningIcon size="md" color="danger" />
+          <div className="luxury-error-content">
+            <h3>Dashboard Error</h3>
+            <p>{error}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
