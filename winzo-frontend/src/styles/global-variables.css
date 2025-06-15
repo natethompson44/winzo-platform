@@ -31,7 +31,7 @@
   --luxury-warning: #dd6b20;       /* Amber - Warning */
   --luxury-info: #3182ce;          /* Sapphire - Information */
   
-  /* PREMIUM LUXURY COLORS */
+  /* PREMIUM LUXURY COLORS - Enhanced */
   --luxury-diamond: #e2e8f0;       /* Diamond White - Pure */
   --luxury-sapphire: #1e40af;      /* Deep Sapphire - Trust */
   --luxury-ruby: #dc2626;          /* Rich Ruby - Urgency */
@@ -41,6 +41,16 @@
   --luxury-bronze: #92400e;        /* Rich Bronze - Heritage */
   --luxury-silver: #6b7280;        /* Sterling Silver - Neutral */
   
+  /* ULTRA PREMIUM LUXURY COLORS - New */
+  --luxury-rose-gold: #e11d48;     /* Rose Gold - Premium Romance */
+  --luxury-ivory: #fef7f0;         /* Ivory - Pure Elegance */
+  --luxury-obsidian: #0f0f23;      /* Obsidian - Deep Mystery */
+  --luxury-crystal: #f0f9ff;       /* Crystal - Pure Clarity */
+  --luxury-copper: #b45309;        /* Copper - Warm Heritage */
+  --luxury-jade: #047857;          /* Jade - Prosperity */
+  --luxury-amethyst: #7c3aed;      /* Amethyst - Royalty */
+  --luxury-citrine: #f59e0b;       /* Citrine - Abundance */
+  
   /* LUXURY GRADIENTS - Enhanced Sophistication */
   --luxury-gradient-primary: linear-gradient(135deg, #1a365d 0%, #2d3748 50%, #4a5568 100%);
   --luxury-gradient-gold: linear-gradient(135deg, #d69e2e 0%, #f6e05e 50%, #faf089 100%);
@@ -49,7 +59,7 @@
   --luxury-gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   --luxury-gradient-premium: linear-gradient(135deg, #1a365d 0%, #2d5a87 25%, #4a5568 50%, #2d5a87 75%, #1a365d 100%);
   
-  /* PREMIUM LUXURY GRADIENTS */
+  /* PREMIUM LUXURY GRADIENTS - Enhanced */
   --luxury-gradient-diamond: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
   --luxury-gradient-sapphire: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
   --luxury-gradient-ruby: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
@@ -58,6 +68,16 @@
   --luxury-gradient-pearl: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
   --luxury-gradient-bronze: linear-gradient(135deg, #92400e 0%, #b45309 50%, #d97706 100%);
   --luxury-gradient-silver: linear-gradient(135deg, #6b7280 0%, #9ca3af 50%, #d1d5db 100%);
+  
+  /* ULTRA PREMIUM LUXURY GRADIENTS - New */
+  --luxury-gradient-rose-gold: linear-gradient(135deg, #e11d48 0%, #f43f5e 50%, #fb7185 100%);
+  --luxury-gradient-ivory: linear-gradient(135deg, #fef7f0 0%, #fdf2f8 50%, #fce7f3 100%);
+  --luxury-gradient-obsidian: linear-gradient(135deg, #0f0f23 0%, #1e1b4b 50%, #312e81 100%);
+  --luxury-gradient-crystal: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+  --luxury-gradient-copper: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%);
+  --luxury-gradient-jade: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%);
+  --luxury-gradient-amethyst: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%);
+  --luxury-gradient-citrine: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%);
   
   /* ENHANCED LUXURY SHADOWS */
   --luxury-shadow-sm: 0 2px 4px rgba(26, 54, 93, 0.1);
@@ -68,7 +88,7 @@
   --luxury-shadow-gold: 0 4px 12px rgba(214, 158, 46, 0.3);
   --luxury-shadow-glow: 0 0 20px rgba(214, 158, 46, 0.2);
   
-  /* PREMIUM LUXURY SHADOWS */
+  /* PREMIUM LUXURY SHADOWS - Enhanced */
   --luxury-shadow-diamond: 0 4px 20px rgba(248, 250, 252, 0.3);
   --luxury-shadow-sapphire: 0 8px 25px rgba(30, 64, 175, 0.25);
   --luxury-shadow-ruby: 0 8px 25px rgba(220, 38, 38, 0.25);
@@ -78,16 +98,32 @@
   --luxury-shadow-bronze: 0 6px 20px rgba(146, 64, 14, 0.3);
   --luxury-shadow-silver: 0 4px 15px rgba(107, 114, 128, 0.2);
   
+  /* ULTRA PREMIUM LUXURY SHADOWS - New */
+  --luxury-shadow-rose-gold: 0 8px 25px rgba(225, 29, 72, 0.25);
+  --luxury-shadow-ivory: 0 4px 15px rgba(254, 247, 240, 0.2);
+  --luxury-shadow-obsidian: 0 15px 35px rgba(15, 15, 35, 0.5);
+  --luxury-shadow-crystal: 0 6px 20px rgba(240, 249, 255, 0.25);
+  --luxury-shadow-copper: 0 8px 25px rgba(180, 83, 9, 0.3);
+  --luxury-shadow-jade: 0 8px 25px rgba(4, 120, 87, 0.25);
+  --luxury-shadow-amethyst: 0 10px 30px rgba(124, 58, 237, 0.3);
+  --luxury-shadow-citrine: 0 8px 25px rgba(245, 158, 11, 0.3);
+  
   /* ENHANCED LUXURY TRANSITIONS */
   --luxury-transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --luxury-transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --luxury-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   --luxury-transition-bounce: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   
-  /* PREMIUM LUXURY TRANSITIONS */
+  /* PREMIUM LUXURY TRANSITIONS - Enhanced */
   --luxury-transition-elastic: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --luxury-transition-smooth: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --luxury-transition-premium: 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  
+  /* ULTRA PREMIUM LUXURY TRANSITIONS - New */
+  --luxury-transition-magnetic: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --luxury-transition-fluid: 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --luxury-transition-elegant: 1s cubic-bezier(0.19, 1, 0.22, 1);
+  --luxury-transition-royal: 1.2s cubic-bezier(0.23, 1, 0.32, 1);
   
   /* ENHANCED LUXURY BORDERS */
   --luxury-border-radius: 12px;
@@ -98,7 +134,7 @@
   --luxury-border-glow: 0 0 20px rgba(214, 158, 46, 0.3);
   --luxury-border-glass: 1px solid rgba(255, 255, 255, 0.2);
   
-  /* PREMIUM LUXURY BORDERS */
+  /* PREMIUM LUXURY BORDERS - Enhanced */
   --luxury-border-diamond: 2px solid var(--luxury-diamond);
   --luxury-border-sapphire: 2px solid var(--luxury-sapphire);
   --luxury-border-ruby: 2px solid var(--luxury-ruby);
@@ -107,6 +143,88 @@
   --luxury-border-pearl: 2px solid var(--luxury-pearl);
   --luxury-border-bronze: 2px solid var(--luxury-bronze);
   --luxury-border-silver: 2px solid var(--luxury-silver);
+  
+  /* ULTRA PREMIUM LUXURY BORDERS - New */
+  --luxury-border-rose-gold: 2px solid var(--luxury-rose-gold);
+  --luxury-border-ivory: 2px solid var(--luxury-ivory);
+  --luxury-border-obsidian: 2px solid var(--luxury-obsidian);
+  --luxury-border-crystal: 2px solid var(--luxury-crystal);
+  --luxury-border-copper: 2px solid var(--luxury-copper);
+  --luxury-border-jade: 2px solid var(--luxury-jade);
+  --luxury-border-amethyst: 2px solid var(--luxury-amethyst);
+  --luxury-border-citrine: 2px solid var(--luxury-citrine);
+  
+  /* PREMIUM LUXURY BORDER RADIUS - New */
+  --luxury-border-radius-3xl: 32px;
+  --luxury-border-radius-4xl: 40px;
+  --luxury-border-radius-full: 9999px;
+  --luxury-border-radius-asymmetric: 20px 8px 20px 8px;
+  --luxury-border-radius-pill: 50px;
+  
+  /* PREMIUM LUXURY SPACING - Enhanced */
+  --luxury-space-xs: 0.5rem;
+  --luxury-space-sm: 0.75rem;
+  --luxury-space-md: 1rem;
+  --luxury-space-lg: 1.5rem;
+  --luxury-space-xl: 2rem;
+  --luxury-space-2xl: 3rem;
+  --luxury-space-3xl: 4rem;
+  --luxury-space-4xl: 6rem;
+  --luxury-space-5xl: 8rem;
+  
+  /* PREMIUM LUXURY TYPOGRAPHY SCALE - Enhanced */
+  --luxury-text-xs: 0.75rem;
+  --luxury-text-sm: 0.875rem;
+  --luxury-text-base: 1rem;
+  --luxury-text-lg: 1.125rem;
+  --luxury-text-xl: 1.25rem;
+  --luxury-text-2xl: 1.5rem;
+  --luxury-text-3xl: 1.875rem;
+  --luxury-text-4xl: 2.25rem;
+  --luxury-text-5xl: 3rem;
+  --luxury-text-6xl: 3.75rem;
+  --luxury-text-7xl: 4.5rem;
+  --luxury-text-8xl: 6rem;
+  --luxury-text-9xl: 8rem;
+  
+  /* PREMIUM LUXURY FONT WEIGHTS - Enhanced */
+  --luxury-font-thin: 100;
+  --luxury-font-extralight: 200;
+  --luxury-font-light: 300;
+  --luxury-font-normal: 400;
+  --luxury-font-medium: 500;
+  --luxury-font-semibold: 600;
+  --luxury-font-bold: 700;
+  --luxury-font-extrabold: 800;
+  --luxury-font-black: 900;
+  
+  /* PREMIUM LUXURY LINE HEIGHTS - Enhanced */
+  --luxury-leading-none: 1;
+  --luxury-leading-tight: 1.25;
+  --luxury-leading-snug: 1.375;
+  --luxury-leading-normal: 1.5;
+  --luxury-leading-relaxed: 1.625;
+  --luxury-leading-loose: 2;
+  
+  /* PREMIUM LUXURY LETTER SPACING - Enhanced */
+  --luxury-tracking-tighter: -0.05em;
+  --luxury-tracking-tight: -0.025em;
+  --luxury-tracking-normal: 0em;
+  --luxury-tracking-wide: 0.025em;
+  --luxury-tracking-wider: 0.05em;
+  --luxury-tracking-widest: 0.1em;
+  
+  /* PREMIUM LUXURY Z-INDEX SCALE - Enhanced */
+  --luxury-z-dropdown: 1000;
+  --luxury-z-sticky: 1020;
+  --luxury-z-fixed: 1030;
+  --luxury-z-modal-backdrop: 1040;
+  --luxury-z-modal: 1050;
+  --luxury-z-popover: 1060;
+  --luxury-z-tooltip: 1070;
+  --luxury-z-toast: 1080;
+  --luxury-z-overlay: 1090;
+  --luxury-z-max: 9999;
   
   /* Neutral Grays - Supporting Colors */
   --gray-50: #f9fafb;
