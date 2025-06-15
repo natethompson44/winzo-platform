@@ -10,6 +10,8 @@ interface SportCategory {
   isExpanded: boolean;
   isLive: boolean;
   liveCount: number;
+  priority: 'high' | 'medium' | 'low';
+  description: string;
 }
 
 interface SportLeague {
@@ -21,14 +23,18 @@ interface SportLeague {
   liveEvents: number;
   upcomingEvents: number;
   description: string;
+  priority: 'high' | 'medium' | 'low';
+  lastUpdated: string;
 }
 
 const SportsHierarchy: React.FC = () => {
   const [categories, setCategories] = useState<SportCategory[]>([]);
   const [selectedLeague, setSelectedLeague] = useState<string>('');
   const [hoveredCategory, setHoveredCategory] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filterType, setFilterType] = useState<'all' | 'live' | 'popular'>('all');
 
-  // Initialize sports hierarchy with bigdog247.com structure
+  // ENHANCED SPORTS HIERARCHY WITH BETTER ORGANIZATION
   const initializeSportsHierarchy = useMemo(() => {
     return [
       {
@@ -38,6 +44,8 @@ const SportsHierarchy: React.FC = () => {
         isExpanded: true,
         isLive: true,
         liveCount: 12,
+        priority: 'high' as const,
+        description: 'America\'s favorite sport with NFL, College Football, and more',
         leagues: [
           {
             id: 'nfl',
@@ -47,6 +55,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 8,
             upcomingEvents: 15,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'National Football League - America\'s favorite sport!'
           },
           {
@@ -57,6 +67,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 4,
             upcomingEvents: 25,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'NCAA College Football - Saturday tradition!'
           },
           {
@@ -67,6 +79,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: false,
             liveEvents: 0,
             upcomingEvents: 8,
+            priority: 'medium' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'United Football League & Arena Football'
           },
           {
@@ -77,6 +91,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: false,
             liveEvents: 0,
             upcomingEvents: 5,
+            priority: 'low' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'International American Football leagues'
           }
         ]
@@ -88,6 +104,8 @@ const SportsHierarchy: React.FC = () => {
         isExpanded: false,
         isLive: true,
         liveCount: 18,
+        priority: 'high' as const,
+        description: 'The world\'s most popular sport with global leagues',
         leagues: [
           {
             id: 'premier-league',
@@ -97,6 +115,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 6,
             upcomingEvents: 12,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'English Premier League - The world\'s most popular league!'
           },
           {
@@ -107,6 +127,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 4,
             upcomingEvents: 10,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'Spanish La Liga - Technical excellence!'
           },
           {
@@ -117,6 +139,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 3,
             upcomingEvents: 8,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'Italian Serie A - Tactical brilliance!'
           },
           {
@@ -127,6 +151,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 3,
             upcomingEvents: 9,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'German Bundesliga - High-scoring action!'
           },
           {
@@ -137,6 +163,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 2,
             upcomingEvents: 6,
+            priority: 'medium' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'Major League Soccer - American soccer!'
           },
           {
@@ -147,6 +175,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: false,
             liveEvents: 0,
             upcomingEvents: 4,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'UEFA Champions League - European elite!'
           },
           {
@@ -157,6 +187,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 0,
             upcomingEvents: 15,
+            priority: 'low' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'Other international soccer competitions'
           }
         ]
@@ -168,6 +200,8 @@ const SportsHierarchy: React.FC = () => {
         isExpanded: false,
         isLive: true,
         liveCount: 8,
+        priority: 'high' as const,
+        description: 'High-flying action with NBA and College Basketball',
         leagues: [
           {
             id: 'nba',
@@ -177,6 +211,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 5,
             upcomingEvents: 12,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'National Basketball Association - High-flying action!'
           },
           {
@@ -187,6 +223,8 @@ const SportsHierarchy: React.FC = () => {
             isLive: true,
             liveEvents: 3,
             upcomingEvents: 20,
+            priority: 'high' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'NCAA College Basketball - March Madness!'
           },
           {
@@ -197,27 +235,9 @@ const SportsHierarchy: React.FC = () => {
             isLive: false,
             liveEvents: 0,
             upcomingEvents: 8,
+            priority: 'medium' as const,
+            lastUpdated: new Date().toISOString(),
             description: 'Women\'s National Basketball Association'
-          },
-          {
-            id: 'european-basketball',
-            name: 'European Basketball',
-            key: 'basketball_european',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 6,
-            description: 'European basketball leagues and competitions'
-          },
-          {
-            id: 'other-basketball',
-            name: 'Other Basketball',
-            key: 'basketball_other',
-            isPopular: false,
-            isLive: false,
-            liveEvents: 0,
-            upcomingEvents: 4,
-            description: 'Other basketball leagues and tournaments'
           }
         ]
       },
@@ -374,99 +394,180 @@ const SportsHierarchy: React.FC = () => {
     ];
   }, []);
 
-  useEffect(() => {
-    setCategories(initializeSportsHierarchy);
-  }, [initializeSportsHierarchy]);
-
+  // ENHANCED CATEGORY TOGGLE WITH SMOOTH ANIMATION
   const toggleCategory = useCallback((categoryId: string) => {
-    setCategories(prev => prev.map(cat => 
-      cat.id === categoryId 
-        ? { ...cat, isExpanded: !cat.isExpanded }
-        : cat
+    setCategories(prev => prev.map(category => 
+      category.id === categoryId 
+        ? { ...category, isExpanded: !category.isExpanded }
+        : category
     ));
   }, []);
 
-  const handleLeagueSelect = useCallback((leagueKey: string) => {
-    setSelectedLeague(leagueKey);
-    // Here you would typically trigger navigation or event loading
-    console.log('Selected league:', leagueKey);
+  // ENHANCED LEAGUE SELECTION WITH BETTER FEEDBACK
+  const selectLeague = useCallback((leagueId: string) => {
+    setSelectedLeague(leagueId);
+    // Add smooth transition effect
+    const leagueElement = document.querySelector(`[data-league-id="${leagueId}"]`);
+    if (leagueElement) {
+      leagueElement.classList.add('selected');
+      setTimeout(() => {
+        leagueElement.classList.remove('selected');
+      }, 300);
+    }
   }, []);
 
-  const handleCategoryHover = useCallback((categoryId: string, isHovering: boolean) => {
-    setHoveredCategory(isHovering ? categoryId : '');
+  // ENHANCED SEARCH FUNCTIONALITY
+  const filteredCategories = useMemo(() => {
+    if (!searchTerm && filterType === 'all') return categories;
+    
+    return categories.map(category => ({
+      ...category,
+      leagues: category.leagues.filter(league => {
+        const matchesSearch = !searchTerm || 
+          league.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          league.description.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesFilter = filterType === 'all' ||
+          (filterType === 'live' && league.isLive) ||
+          (filterType === 'popular' && league.isPopular);
+        
+        return matchesSearch && matchesFilter;
+      })
+    })).filter(category => category.leagues.length > 0);
+  }, [categories, searchTerm, filterType]);
+
+  // ENHANCED INITIALIZATION
+  useEffect(() => {
+    setCategories(initializeSportsHierarchy as SportCategory[]);
+  }, [initializeSportsHierarchy]);
+
+  // ENHANCED HOVER EFFECTS
+  const handleCategoryHover = useCallback((categoryId: string) => {
+    setHoveredCategory(categoryId);
   }, []);
 
+  const handleCategoryLeave = useCallback(() => {
+    setHoveredCategory('');
+  }, []);
+
+  // ENHANCED RENDERING WITH BETTER ORGANIZATION
   return (
     <div className="sports-hierarchy-container">
-      <div className="sports-hierarchy-sidebar">
-        <div className="sidebar-header">
-          <h2>Sports</h2>
-          <div className="live-indicator">
-            <FireIcon size="sm" />
-            <span>Live</span>
+      {/* ENHANCED HEADER */}
+      <header className="sports-header">
+        <div className="header-left">
+          <div className="logo">WINZO SPORTS</div>
+          <nav className="header-nav">
+            <a href="#" className="nav-item active">Sports</a>
+            <a href="#" className="nav-item">Live</a>
+            <a href="#" className="nav-item">Favorites</a>
+            <a href="#" className="nav-item">History</a>
+          </nav>
+        </div>
+        <div className="header-right">
+          <div className="user-balance">
+            <span>Balance:</span>
+            <span className="balance-amount">$1,250.00</span>
+          </div>
+          <div className="user-account">
+            <span>John D.</span>
           </div>
         </div>
-        
+      </header>
+
+      {/* ENHANCED SIDEBAR */}
+      <aside className="sports-hierarchy-sidebar">
+        <div className="sidebar-header">
+          <h2>Sports Categories</h2>
+          <div className="live-indicator">
+            <span className="live-dot"></span>
+            <span>Live Events</span>
+          </div>
+        </div>
+
+        {/* ENHANCED SEARCH AND FILTERS */}
+        <div className="search-filters">
+          <input
+            type="text"
+            placeholder="Search leagues..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <div className="filter-buttons">
+            <button
+              className={`filter-btn ${filterType === 'all' ? 'active' : ''}`}
+              onClick={() => setFilterType('all')}
+            >
+              All
+            </button>
+            <button
+              className={`filter-btn ${filterType === 'live' ? 'active' : ''}`}
+              onClick={() => setFilterType('live')}
+            >
+              Live
+            </button>
+            <button
+              className={`filter-btn ${filterType === 'popular' ? 'active' : ''}`}
+              onClick={() => setFilterType('popular')}
+            >
+              Popular
+            </button>
+          </div>
+        </div>
+
+        {/* ENHANCED CATEGORIES LIST */}
         <div className="categories-list">
-          {categories.map((category) => (
-            <div 
+          {filteredCategories.map((category) => (
+            <div
               key={category.id}
               className={`category-item ${category.isExpanded ? 'expanded' : ''} ${hoveredCategory === category.id ? 'hovered' : ''}`}
-              onMouseEnter={() => handleCategoryHover(category.id, true)}
-              onMouseLeave={() => handleCategoryHover(category.id, false)}
+              onMouseEnter={() => handleCategoryHover(category.id)}
+              onMouseLeave={handleCategoryLeave}
             >
-              <div 
+              <div
                 className="category-header"
                 onClick={() => toggleCategory(category.id)}
               >
-                <div className="category-icon">
-                  <span className="sport-icon">{category.icon}</span>
-                  {category.isLive && (
-                    <div className="live-dot"></div>
-                  )}
-                </div>
                 <div className="category-info">
+                  <span className="sport-icon">{category.icon}</span>
                   <h3>{category.name}</h3>
                   {category.isLive && (
-                    <div className="live-count">
-                      <FireIcon size="xs" />
-                      <span>{category.liveCount} live</span>
-                    </div>
+                    <span className="live-count">
+                      {category.liveCount} live
+                    </span>
                   )}
                 </div>
                 <div className="expand-icon">
                   {category.isExpanded ? <ChevronDownIcon size="sm" /> : <ChevronRightIcon size="sm" />}
                 </div>
               </div>
-              
+
+              {/* ENHANCED LEAGUES LIST */}
               {category.isExpanded && (
                 <div className="leagues-list">
                   {category.leagues.map((league) => (
-                    <div 
+                    <div
                       key={league.id}
-                      className={`league-item ${league.isPopular ? 'popular' : ''} ${selectedLeague === league.key ? 'selected' : ''}`}
-                      onClick={() => handleLeagueSelect(league.key)}
+                      className={`league-item ${league.isPopular ? 'popular' : ''} ${selectedLeague === league.id ? 'selected' : ''}`}
+                      onClick={() => selectLeague(league.id)}
+                      data-league-id={league.id}
                     >
                       <div className="league-info">
                         <h4>{league.name}</h4>
                         <p>{league.description}</p>
-                      </div>
-                      <div className="league-stats">
-                        {league.isLive && (
-                          <div className="live-events">
-                            <FireIcon size="xs" />
-                            <span>{league.liveEvents}</span>
-                          </div>
-                        )}
-                        {league.upcomingEvents > 0 && (
-                          <div className="upcoming-events">
+                        <div className="league-stats">
+                          {league.isLive && (
+                            <span className="live-events">
+                              <span className="live-dot"></span>
+                              {league.liveEvents} live
+                            </span>
+                          )}
+                          <span className="upcoming-events">
                             <ClockIcon size="xs" />
-                            <span>{league.upcomingEvents}</span>
-                          </div>
-                        )}
-                        {league.isPopular && (
-                          <div className="popular-badge">🔥</div>
-                        )}
+                            {league.upcomingEvents} upcoming
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -475,42 +576,43 @@ const SportsHierarchy: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
-      
-      <div className="sports-hierarchy-content">
+      </aside>
+
+      {/* ENHANCED MAIN CONTENT */}
+      <main className="sports-hierarchy-content">
         <div className="content-header">
-          <h1>Sports Betting</h1>
-          <p>Select a league from the sidebar to view events and place bets</p>
+          <h1>Welcome to WINZO Sports</h1>
+          <p>Select a league from the sidebar to view available events and place your bets</p>
         </div>
-        
+
         {selectedLeague ? (
           <div className="selected-league-content">
-            <h2>Events for {categories.flatMap(cat => cat.leagues).find(league => league.key === selectedLeague)?.name}</h2>
-            <p>Loading events...</p>
+            <h2>Selected League: {selectedLeague}</h2>
+            <p>Events and betting options will appear here</p>
           </div>
         ) : (
           <div className="welcome-content">
             <div className="welcome-card">
-              <h2>Welcome to WINZO Sports</h2>
-              <p>Choose a sport category from the sidebar to start betting on your favorite leagues and teams.</p>
+              <h2>🎯 Ready to Bet?</h2>
+              <p>Choose your favorite sport and league to get started with live betting action!</p>
               <div className="featured-stats">
                 <div className="stat-item">
-                  <span className="stat-number">50+</span>
-                  <span className="stat-label">Leagues</span>
+                  <div className="stat-number">24</div>
+                  <div className="stat-label">Live Events</div>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-number">1000+</span>
-                  <span className="stat-label">Events</span>
+                  <div className="stat-number">156</div>
+                  <div className="stat-label">Upcoming Events</div>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-number">24/7</span>
-                  <span className="stat-label">Live Betting</span>
+                  <div className="stat-number">12</div>
+                  <div className="stat-label">Sports</div>
                 </div>
               </div>
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };
