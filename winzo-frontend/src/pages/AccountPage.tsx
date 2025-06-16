@@ -33,6 +33,35 @@ interface UserProfile {
   };
 }
 
+const mockProfile: UserProfile = {
+  username: 'user123',
+  email: 'user@example.com',
+  firstName: 'John',
+  lastName: 'Doe',
+  phone: '+1 (555) 123-4567',
+  dateOfBirth: '1990-01-01',
+  address: {
+    street: '123 Main St',
+    city: 'Anytown',
+    state: 'CA',
+    zipCode: '12345'
+  },
+  preferences: {
+    defaultBetAmount: 25,
+    notifications: {
+      email: true,
+      sms: false,
+      push: true
+    },
+    oddsFormat: 'american'
+  },
+  responsibleGaming: {
+    dailyLimit: 500,
+    sessionLimit: 200,
+    selfExclusionEnabled: false
+  }
+};
+
 const AccountPage: React.FC = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -40,36 +69,6 @@ const AccountPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'responsible'>('profile');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
-
-  // Mock profile data - replace with actual API call
-  const mockProfile: UserProfile = {
-    username: user?.username || 'user123',
-    email: 'user@example.com',
-    firstName: 'John',
-    lastName: 'Doe',
-    phone: '+1 (555) 123-4567',
-    dateOfBirth: '1990-01-01',
-    address: {
-      street: '123 Main St',
-      city: 'Anytown',
-      state: 'CA',
-      zipCode: '12345'
-    },
-    preferences: {
-      defaultBetAmount: 25,
-      notifications: {
-        email: true,
-        sms: false,
-        push: true
-      },
-      oddsFormat: 'american'
-    },
-    responsibleGaming: {
-      dailyLimit: 500,
-      sessionLimit: 200,
-      selfExclusionEnabled: false
-    }
-  };
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -86,7 +85,7 @@ const AccountPage: React.FC = () => {
     };
 
     loadProfile();
-  }, [mockProfile]);
+  }, []);
 
   const handleSave = async (updatedProfile: UserProfile) => {
     setIsSaving(true);

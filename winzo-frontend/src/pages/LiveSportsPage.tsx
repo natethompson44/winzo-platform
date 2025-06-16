@@ -33,6 +33,52 @@ export interface SportCategory {
   isActive: boolean;
 }
 
+export const mockCategories: SportCategory[] = [
+  { id: 'all', name: 'All Live', icon: '🔴', eventCount: 8, isActive: false },
+  { id: 'football', name: 'Football', icon: '🏈', eventCount: 3, isActive: false },
+  { id: 'basketball', name: 'Basketball', icon: '🏀', eventCount: 4, isActive: false },
+  { id: 'hockey', name: 'Hockey', icon: '🏒', eventCount: 1, isActive: false },
+];
+
+export const mockLiveEvents: LiveGameEvent[] = [
+  {
+    id: '1',
+    homeTeam: 'Lakers',
+    awayTeam: 'Warriors',
+    gameTime: new Date(),
+    rotationNumbers: { home: '501', away: '502' },
+    odds: {
+      spread: { home: -2.5, away: 2.5, odds: -110 },
+      total: { over: 215.5, under: 215.5, odds: -110 },
+      moneyline: { home: -130, away: +110 }
+    },
+    sport: 'basketball',
+    league: 'NBA',
+    isLive: true,
+    currentScore: { home: 78, away: 82 },
+    gameStatus: 'Q3 8:32',
+    timeRemaining: '8:32'
+  },
+  {
+    id: '2',
+    homeTeam: 'Cowboys',
+    awayTeam: 'Eagles',
+    gameTime: new Date(),
+    rotationNumbers: { home: '601', away: '602' },
+    odds: {
+      spread: { home: -3, away: 3, odds: -110 },
+      total: { over: 42.5, under: 42.5, odds: -110 },
+      moneyline: { home: -150, away: +130 }
+    },
+    sport: 'football',
+    league: 'NFL',
+    isLive: true,
+    currentScore: { home: 14, away: 21 },
+    gameStatus: '2nd Quarter',
+    timeRemaining: '3:45'
+  }
+];
+
 const LiveSportsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [selectedSport, setSelectedSport] = useState<string>('all');
@@ -44,53 +90,6 @@ const LiveSportsPage: React.FC = () => {
 
   // Get highlighted event from search
   const highlightedEventId = searchParams.get('highlight');
-
-  // Mock live data - replace with actual API calls
-  const mockCategories: SportCategory[] = [
-    { id: 'all', name: 'All Live', icon: '🔴', eventCount: 8, isActive: false },
-    { id: 'football', name: 'Football', icon: '🏈', eventCount: 3, isActive: false },
-    { id: 'basketball', name: 'Basketball', icon: '🏀', eventCount: 4, isActive: false },
-    { id: 'hockey', name: 'Hockey', icon: '🏒', eventCount: 1, isActive: false },
-  ];
-
-  const mockLiveEvents: LiveGameEvent[] = [
-    {
-      id: '1',
-      homeTeam: 'Lakers',
-      awayTeam: 'Warriors',
-      gameTime: new Date(),
-      rotationNumbers: { home: '501', away: '502' },
-      odds: {
-        spread: { home: -2.5, away: 2.5, odds: -110 },
-        total: { over: 215.5, under: 215.5, odds: -110 },
-        moneyline: { home: -130, away: +110 }
-      },
-      sport: 'basketball',
-      league: 'NBA',
-      isLive: true,
-      currentScore: { home: 78, away: 82 },
-      gameStatus: 'Q3 8:32',
-      timeRemaining: '8:32'
-    },
-    {
-      id: '2',
-      homeTeam: 'Cowboys',
-      awayTeam: 'Eagles',
-      gameTime: new Date(),
-      rotationNumbers: { home: '601', away: '602' },
-      odds: {
-        spread: { home: -3, away: 3, odds: -110 },
-        total: { over: 42.5, under: 42.5, odds: -110 },
-        moneyline: { home: -150, away: +130 }
-      },
-      sport: 'football',
-      league: 'NFL',
-      isLive: true,
-      currentScore: { home: 14, away: 21 },
-      gameStatus: '2nd Quarter',
-      timeRemaining: '3:45'
-    }
-  ];
 
   // Auto-refresh live data
   useEffect(() => {
@@ -131,7 +130,7 @@ const LiveSportsPage: React.FC = () => {
     const refreshInterval = setInterval(loadData, 10000);
     
     return () => clearInterval(refreshInterval);
-  }, [selectedSport, mockCategories, mockLiveEvents]);
+  }, [selectedSport]);
 
   const handleSportChange = (sportId: string) => {
     setSelectedSport(sportId);

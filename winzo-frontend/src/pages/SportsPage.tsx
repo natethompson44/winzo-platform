@@ -29,6 +29,59 @@ export interface SportCategory {
   isActive: boolean;
 }
 
+export const mockCategories: SportCategory[] = [
+  { id: 'all', name: 'All Sports', icon: '🏆', eventCount: 28, isActive: false },
+  { id: 'football', name: 'Football', icon: '🏈', eventCount: 12, isActive: false },
+  { id: 'basketball', name: 'Basketball', icon: '🏀', eventCount: 8, isActive: false },
+  { id: 'baseball', name: 'Baseball', icon: '⚾', eventCount: 6, isActive: false },
+  { id: 'hockey', name: 'Hockey', icon: '🏒', eventCount: 2, isActive: false },
+];
+
+export const mockEvents: GameEvent[] = [
+  {
+    id: '1',
+    homeTeam: 'Lakers',
+    awayTeam: 'Warriors',
+    gameTime: new Date('2024-01-15T20:00:00'),
+    rotationNumbers: { home: '501', away: '502' },
+    odds: {
+      spread: { home: -3.5, away: 3.5, odds: -110 },
+      total: { over: 220.5, under: 220.5, odds: -110 },
+      moneyline: { home: -150, away: +130 }
+    },
+    sport: 'basketball',
+    league: 'NBA'
+  },
+  {
+    id: '2',
+    homeTeam: 'Cowboys',
+    awayTeam: 'Eagles',
+    gameTime: new Date('2024-01-15T21:00:00'),
+    rotationNumbers: { home: '601', away: '602' },
+    odds: {
+      spread: { home: -7, away: 7, odds: -110 },
+      total: { over: 45.5, under: 45.5, odds: -110 },
+      moneyline: { home: -280, away: +220 }
+    },
+    sport: 'football',
+    league: 'NFL'
+  },
+  {
+    id: '3',
+    homeTeam: 'Yankees',
+    awayTeam: 'Red Sox',
+    gameTime: new Date('2024-01-15T19:00:00'),
+    rotationNumbers: { home: '701', away: '702' },
+    odds: {
+      spread: { home: -1.5, away: 1.5, odds: -110 },
+      total: { over: 8.5, under: 8.5, odds: -110 },
+      moneyline: { home: -140, away: +120 }
+    },
+    sport: 'baseball',
+    league: 'MLB'
+  }
+];
+
 const SportsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [selectedSport, setSelectedSport] = useState<string>('all');
@@ -40,60 +93,6 @@ const SportsPage: React.FC = () => {
 
   // Get highlighted event from search
   const highlightedEventId = searchParams.get('highlight');
-
-  // Mock data - replace with actual API calls
-  const mockCategories: SportCategory[] = [
-    { id: 'all', name: 'All Sports', icon: '🏆', eventCount: 28, isActive: false },
-    { id: 'football', name: 'Football', icon: '🏈', eventCount: 12, isActive: false },
-    { id: 'basketball', name: 'Basketball', icon: '🏀', eventCount: 8, isActive: false },
-    { id: 'baseball', name: 'Baseball', icon: '⚾', eventCount: 6, isActive: false },
-    { id: 'hockey', name: 'Hockey', icon: '🏒', eventCount: 2, isActive: false },
-  ];
-
-  const mockEvents: GameEvent[] = [
-    {
-      id: '1',
-      homeTeam: 'Lakers',
-      awayTeam: 'Warriors',
-      gameTime: new Date('2024-01-15T20:00:00'),
-      rotationNumbers: { home: '501', away: '502' },
-      odds: {
-        spread: { home: -3.5, away: 3.5, odds: -110 },
-        total: { over: 220.5, under: 220.5, odds: -110 },
-        moneyline: { home: -150, away: +130 }
-      },
-      sport: 'basketball',
-      league: 'NBA'
-    },
-    {
-      id: '2',
-      homeTeam: 'Cowboys',
-      awayTeam: 'Eagles',
-      gameTime: new Date('2024-01-15T21:00:00'),
-      rotationNumbers: { home: '601', away: '602' },
-      odds: {
-        spread: { home: -7, away: 7, odds: -110 },
-        total: { over: 45.5, under: 45.5, odds: -110 },
-        moneyline: { home: -280, away: +220 }
-      },
-      sport: 'football',
-      league: 'NFL'
-    },
-    {
-      id: '3',
-      homeTeam: 'Yankees',
-      awayTeam: 'Red Sox',
-      gameTime: new Date('2024-01-15T19:00:00'),
-      rotationNumbers: { home: '701', away: '702' },
-      odds: {
-        spread: { home: -1.5, away: 1.5, odds: -110 },
-        total: { over: 8.5, under: 8.5, odds: -110 },
-        moneyline: { home: -140, away: +120 }
-      },
-      sport: 'baseball',
-      league: 'MLB'
-    }
-  ];
 
   // Load data on component mount
   useEffect(() => {
@@ -129,7 +128,7 @@ const SportsPage: React.FC = () => {
     };
 
     loadData();
-  }, [selectedSport, mockCategories, mockEvents]);
+  }, [selectedSport]);
 
   const handleSportChange = (sportId: string) => {
     setSelectedSport(sportId);
