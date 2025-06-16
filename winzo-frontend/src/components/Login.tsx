@@ -7,7 +7,8 @@ import {
   LoadingIcon,
   SuccessIcon,
   WarningIcon,
-  InfoIcon
+  EyeIcon,
+  EyeOffIcon
 } from './icons/IconLibrary';
 import './Auth.css';
 
@@ -66,8 +67,8 @@ const Login: React.FC = () => {
     <div className="auth-container">
       <div className="auth-content">
         <div className="auth-header">
-          <h1 className="auth-title">Access</h1>
-          <p className="auth-subtitle">Member Portal</p>
+          <h1 className="auth-title">Welcome Back</h1>
+          <p className="auth-subtitle">Access your WINZO account</p>
         </div>
 
         {error && (
@@ -133,7 +134,11 @@ const Login: React.FC = () => {
                 disabled={isLoading}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                <InfoIcon size="sm" color="neutral" />
+                {showPassword ? (
+                  <EyeOffIcon size="sm" color="neutral" />
+                ) : (
+                  <EyeIcon size="sm" color="neutral" />
+                )}
               </button>
             </div>
           </div>
@@ -149,14 +154,14 @@ const Login: React.FC = () => {
                 <span>Accessing...</span>
               </>
             ) : (
-              'Access'
+              'Sign In'
             )}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>
-            Need access? <Link to="/register" className="auth-link">Request Invite</Link>
+            New to WINZO? <Link to="/register" className="auth-link">Request Access</Link>
           </p>
         </div>
       </div>

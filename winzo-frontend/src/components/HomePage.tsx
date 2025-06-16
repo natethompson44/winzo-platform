@@ -13,18 +13,6 @@ const HomePage: React.FC = () => {
           <Link to="/register" className="luxury-btn luxury-btn-secondary">Register</Link>
         </div>
       </header>
-
-      <footer className="home-footer">
-        <div className="footer-content">
-          <div className="footer-section">
-            <h3>WINZO</h3>
-            <p>Premium Sports Betting Experience</p>
-          </div>
-          <div className="footer-section">
-            <p>&copy; {new Date().getFullYear()} WINZO. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
