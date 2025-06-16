@@ -1,6 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import winzoLogo from '../assets/winzo-logo.png';
+import { 
+  HomeIcon, 
+  SportsIcon, 
+  WalletIcon, 
+  HistoryIcon,
+  LogoutIcon 
+} from './icons';
 import './Navigation.css';
 
 interface NavigationProps {
@@ -57,7 +63,8 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
       <div className="nav-container">
         {/* Logo and Home Link */}
         <Link to="/dashboard" className="nav-logo">
-          <img src={winzoLogo} alt="WINZO" className="logo-image" />
+          <span className="logo-text">WINZO</span>
+          <span className="logo-tagline">Premium Sports Betting</span>
         </Link>
 
         {/* Breadcrumbs */}
@@ -99,25 +106,29 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
           to="/dashboard" 
           className={`quick-nav-item ${location.pathname === '/dashboard' ? 'active' : ''}`}
         >
-          🏠 Dashboard
+          <HomeIcon className="nav-icon" />
+          <span className="nav-text">Dashboard</span>
         </Link>
         <Link 
           to="/sports" 
           className={`quick-nav-item ${location.pathname === '/sports' ? 'active' : ''}`}
         >
-          🏈 Sports
+          <SportsIcon className="nav-icon" />
+          <span className="nav-text">Sports</span>
         </Link>
         <Link 
           to="/wallet" 
           className={`quick-nav-item ${location.pathname === '/wallet' ? 'active' : ''}`}
         >
-          💰 Wallet
+          <WalletIcon className="nav-icon" />
+          <span className="nav-text">Wallet</span>
         </Link>
         <Link 
           to="/history" 
           className={`quick-nav-item ${location.pathname === '/history' ? 'active' : ''}`}
         >
-          📊 History
+          <HistoryIcon className="nav-icon" />
+          <span className="nav-text">History</span>
         </Link>
       </div>
     </nav>

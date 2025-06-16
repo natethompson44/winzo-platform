@@ -12,22 +12,24 @@ import {
   SearchIcon,
   ChevronUpIcon,
   ChevronDownIcon,
-  BetSlipIcon
+  BetSlipIcon,
+  FootballIcon,
+  BasketballIcon,
+  BaseballIcon,
+  HockeyIcon,
+  TennisIcon,
+  CricketIcon,
+  LiveIcon,
+  IconProps
 } from './icons/IconLibrary';
 import './SportsBetting.css';
 
 interface Sport {
-  key: string;
-  title: string;
-  group: string;
-  description: string;
-  active: boolean;
-  has_outrights: boolean;
-  icon: string;
-  category: string;
-  popularity: number;
-  live_events_count?: number;
-  upcoming_events_count?: number;
+  id: string;
+  name: string;
+  icon: React.FC<IconProps>;
+  isLive: boolean;
+  eventCount: number;
 }
 
 interface OddsEvent {
@@ -135,13 +137,22 @@ const getOddsMovementIcon = (movement?: string): React.ReactNode => {
   }
 };
 
+const sports: Sport[] = [
+  { id: 'football', name: 'Football', icon: FootballIcon, isLive: true, eventCount: 12 },
+  { id: 'basketball', name: 'Basketball', icon: BasketballIcon, isLive: true, eventCount: 8 },
+  { id: 'baseball', name: 'Baseball', icon: BaseballIcon, isLive: false, eventCount: 6 },
+  { id: 'hockey', name: 'Hockey', icon: HockeyIcon, isLive: true, eventCount: 4 },
+  { id: 'tennis', name: 'Tennis', icon: TennisIcon, isLive: false, eventCount: 3 },
+  { id: 'cricket', name: 'Cricket', icon: CricketIcon, isLive: true, eventCount: 5 }
+];
+
 const SportsBetting: React.FC = () => {
-  const [sports, setSports] = useState<Sport[]>([]);
-  const [selectedSport, setSelectedSport] = useState<string>('');
+  const [selectedSport, setSelectedSport] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [events, setEvents] = useState<OddsEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [eventsLoading, setEventsLoading] = useState(false);
-  const [error, setError] = useState<string>('');
   const [quotaInfo, setQuotaInfo] = useState<any>(null);
   const [liveEvents, setLiveEvents] = useState<OddsEvent[]>([]);
   const [filter, setFilter] = useState<'all' | 'live' | 'upcoming'>('all');
@@ -163,34 +174,14 @@ const SportsBetting: React.FC = () => {
   const oddsUpdateInterval = useRef<NodeJS.Timeout | null>(null);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchSports = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const response = await apiClient.get<ApiResponse<Sport[]>>(API_ENDPOINTS.SPORTS);
-      if (response.data.success) {
-        const sportsData = response.data.data;
-        setSports(sportsData);
-        setQuotaInfo(response.data.quota);
-        const popularSports = ['americanfootball_nfl', 'basketball_nba', 'baseball_mlb', 'icehockey_nhl'];
-        const defaultSport = sportsData.find((sport: Sport) =>
-          popularSports.includes(sport.key) && sport.active
-        );
-        if (defaultSport) {
-          setSelectedSport(defaultSport.key);
-        } else if (sportsData.length > 0) {
-          setSelectedSport(sportsData[0].key);
-        }
-      } else {
-        setError(response.data.error || 'Failed to load sports');
-      }
-    } catch (error: any) {
-      console.error('Error fetching sports:', error);
-      setError(error.message || 'Failed to load sports');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const handleSportSelect = (sportId: string) => {
+    setSelectedSport(sportId);
+    setIsLoading(true);
+    // Simulate loading events for the selected sport
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  };
 
   const fetchOdds = useCallback(async (sportKey: string) => {
     try {
@@ -378,10 +369,6 @@ const SportsBetting: React.FC = () => {
   }, [events, searchTerm, filter, sortBy, sortOrder]);
 
   useEffect(() => {
-    fetchSports();
-  }, [fetchSports]);
-
-  useEffect(() => {
     if (selectedSport) {
       fetchOdds(selectedSport);
     }
@@ -407,13 +394,6 @@ const SportsBetting: React.FC = () => {
   useEffect(() => {
     updateBetSlipSummary();
   }, [updateBetSlipSummary]);
-
-  const handleSportSelect = (sportKey: string) => {
-    setSelectedSport(sportKey);
-    setEvents([]);
-    setLiveEvents([]);
-    setFilter('all');
-  };
 
   const getEventStatus = (event: OddsEvent) => {
     if (event.timing?.isLive) {
@@ -447,13 +427,13 @@ const SportsBetting: React.FC = () => {
     }
   };
 
-  if (loading) {
+  if (error) {
     return (
-      <div className="sports-betting-container">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading sports and odds...</p>
-        </div>
+      <div className="error-banner">
+        <p>{error}</p>
+        <button onClick={() => setError(null)} className="retry-button">
+          Retry
+        </button>
       </div>
     );
   }
@@ -465,225 +445,232 @@ const SportsBetting: React.FC = () => {
         <p>Real-time odds and live betting</p>
       </header>
 
-      {error && (
-        <div className="error-banner">
-          <span>⚠ {error}</span>
-          <button onClick={() => fetchOdds(selectedSport)} className="retry-button">
-            Retry
-          </button>
+      {isLoading ? (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading events...</p>
+        </div>
+      ) : (
+        <div className="sports-grid">
+          {sports.map((sport) => {
+            const Icon = sport.icon;
+            return (
+              <button
+                key={sport.id}
+                className={`sport-card ${selectedSport === sport.id ? 'selected' : ''}`}
+                onClick={() => handleSportSelect(sport.id)}
+              >
+                <div className="sport-icon">
+                  <Icon size="lg" color="primary" className="sport-icon-svg" />
+                  {sport.isLive && (
+                    <div className="live-indicator">
+                      <LiveIcon size="sm" color="danger" />
+                      <span>LIVE</span>
+                    </div>
+                  )}
+                </div>
+                <h3>{sport.name}</h3>
+                <p className="event-count">{sport.eventCount} Events</p>
+              </button>
+            );
+          })}
         </div>
       )}
 
-      <div className="sports-content">
-        {/* Sports Selection */}
-        <div className="sports-selection">
-          <div className="sports-grid">
-            {sports.map((sport) => (
-              <SportCard
-                key={sport.key}
-                sport={sport}
-                isSelected={selectedSport === sport.key}
-                onClick={() => handleSportSelect(sport.key)}
+      {/* Controls */}
+      <div className="controls-section">
+        <div className="filter-controls">
+          <div className="filter-buttons">
+            <button
+              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+              onClick={() => setFilter('all')}
+            >
+              All Events ({events.length})
+            </button>
+            <button
+              className={`filter-btn ${filter === 'live' ? 'active' : ''}`}
+              onClick={() => setFilter('live')}
+            >
+              <FireIcon size="sm" /> Live ({liveEvents.length})
+            </button>
+            <button
+              className={`filter-btn ${filter === 'upcoming' ? 'active' : ''}`}
+              onClick={() => setFilter('upcoming')}
+            >
+              <ClockIcon size="sm" /> Upcoming ({events.filter(e => !e.timing?.isLive).length})
+            </button>
+          </div>
+        </div>
+
+        <div className="search-sort-controls">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search teams..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="search-input"
+            />
+            <SearchIcon size="sm" className="search-icon" />
+          </div>
+
+          <div className="sort-controls">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="sort-select"
+            >
+              <option value="time">Time</option>
+              <option value="popularity">Popularity</option>
+              <option value="odds">Best Odds</option>
+              <option value="confidence">Confidence</option>
+            </select>
+            <button
+              className="sort-order-btn"
+              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+            >
+              {sortOrder === 'asc' ? '↑' : '↓'}
+            </button>
+          </div>
+
+          <div className="market-selector">
+            <select
+              value={selectedMarket}
+              onChange={(e) => setSelectedMarket(e.target.value)}
+              className="market-select"
+            >
+              <option value="h2h">Head to Head</option>
+              <option value="spreads">Spreads</option>
+              <option value="totals">Totals</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Events Grid */}
+      <div className="events-section">
+        {eventsLoading ? (
+          <div className="loading-events">
+            <div className="loading-spinner"></div>
+            <p>Loading events...</p>
+          </div>
+        ) : (
+          <div className="events-grid">
+            {filteredAndSortedEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onOddsClick={handleOddsClick}
+                getEventStatus={getEventStatus}
               />
             ))}
           </div>
-        </div>
-
-        {/* Controls */}
-        <div className="controls-section">
-          <div className="filter-controls">
-            <div className="filter-buttons">
-              <button
-                className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-                onClick={() => setFilter('all')}
-              >
-                All Events ({events.length})
-              </button>
-              <button
-                className={`filter-btn ${filter === 'live' ? 'active' : ''}`}
-                onClick={() => setFilter('live')}
-              >
-                <FireIcon size="sm" /> Live ({liveEvents.length})
-              </button>
-              <button
-                className={`filter-btn ${filter === 'upcoming' ? 'active' : ''}`}
-                onClick={() => setFilter('upcoming')}
-              >
-                <ClockIcon size="sm" /> Upcoming ({events.filter(e => !e.timing?.isLive).length})
-              </button>
-            </div>
-          </div>
-
-          <div className="search-sort-controls">
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Search teams..."
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="search-input"
-              />
-              <SearchIcon size="sm" className="search-icon" />
-            </div>
-
-            <div className="sort-controls">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="sort-select"
-              >
-                <option value="time">Time</option>
-                <option value="popularity">Popularity</option>
-                <option value="odds">Best Odds</option>
-                <option value="confidence">Confidence</option>
-              </select>
-              <button
-                className="sort-order-btn"
-                onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              >
-                {sortOrder === 'asc' ? '↑' : '↓'}
-              </button>
-            </div>
-
-            <div className="market-selector">
-              <select
-                value={selectedMarket}
-                onChange={(e) => setSelectedMarket(e.target.value)}
-                className="market-select"
-              >
-                <option value="h2h">Head to Head</option>
-                <option value="spreads">Spreads</option>
-                <option value="totals">Totals</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Events Grid */}
-        <div className="events-section">
-          {eventsLoading ? (
-            <div className="loading-events">
-              <div className="loading-spinner"></div>
-              <p>Loading events...</p>
-            </div>
-          ) : (
-            <div className="events-grid">
-              {filteredAndSortedEvents.map((event) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  onOddsClick={handleOddsClick}
-                  getEventStatus={getEventStatus}
-                />
-              ))}
-            </div>
-          )}
-
-          {filteredAndSortedEvents.length === 0 && !eventsLoading && (
-            <div className="no-events">
-              <p>No events found matching your criteria</p>
-              <button onClick={() => setFilter('all')} className="winzo-btn winzo-btn-secondary">
-                Reset Filters
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Bet Slip */}
-        {showBetSlip && (
-          <div className="bet-slip-overlay">
-            <div className="bet-slip-modal">
-              <div className="bet-slip-header">
-                <h3><BetSlipIcon size="sm" /> Bet Slip</h3>
-                <button onClick={() => setShowBetSlip(false)} className="winzo-btn winzo-btn-ghost">×</button>
-              </div>
-              
-              <div className="bet-slip-content">
-                {betSlipItems.length > 0 ? (
-                  <>
-                    <div className="bet-slip-items">
-                      {betSlipItems.map((item, index) => (
-                        <div key={index} className="bet-slip-item">
-                          <div className="item-header">
-                            <span className="item-teams">{item.awayTeam} @ {item.homeTeam}</span>
-                            <button 
-                              onClick={() => removeFromBetSlip(item.id)}
-                              className="winzo-btn winzo-btn-ghost winzo-btn-sm"
-                            >
-                              ×
-                            </button>
-                          </div>
-                          <div className="item-selection">
-                            {item.selectedTeam} @ {formatOdds(item.odds)}
-                          </div>
-                          <div className="item-stake">
-                            Stake: {formatCurrency(item.stake || 0)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="bet-slip-summary">
-                      <div className="summary-row">
-                        <span>Total Bets:</span>
-                        <span>{betSlipSummary.totalBets}</span>
-                      </div>
-                      <div className="summary-row">
-                        <span>Average Odds:</span>
-                        <span>{betSlipSummary.averageOdds.toFixed(2)}</span>
-                      </div>
-                      <div className="summary-row">
-                        <span>Confidence:</span>
-                        <span>{(betSlipSummary.confidence * 100).toFixed(1)}%</span>
-                      </div>
-                    </div>
-                    
-                    <div className="stake-input">
-                      <label>Total Stake:</label>
-                      <input
-                        type="number"
-                        value={betSlipStake}
-                        onChange={(e) => handleStakeChange(e.target.value)}
-                        placeholder="Enter stake amount"
-                        min="0"
-                        step="0.01"
-                        className="stake-input-field"
-                      />
-                    </div>
-                    
-                    <div className="potential-payout">
-                      <span>Potential Payout:</span>
-                      <span className="payout-amount">{formatCurrency(betSlipSummary.potentialPayout)}</span>
-                    </div>
-                    
-                    <div className="bet-slip-actions">
-                      <button onClick={placeBet} className="winzo-btn winzo-btn-primary">
-                        Place Bet
-                      </button>
-                      <button onClick={clearBetSlip} className="winzo-btn winzo-btn-secondary">
-                        Clear All
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="empty-bet-slip">
-                    <p>No selections in bet slip</p>
-                    <p>Click on odds to add selections</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
         )}
 
-        {/* Floating Bet Slip Toggle */}
-        <button
-          className="bet-slip-toggle"
-          onClick={() => setShowBetSlip(true)}
-        >
-          <BetSlipIcon size="sm" /> Bet Slip ({betSlipItems.length})
-        </button>
+        {filteredAndSortedEvents.length === 0 && !eventsLoading && (
+          <div className="no-events">
+            <p>No events found matching your criteria</p>
+            <button onClick={() => setFilter('all')} className="winzo-btn winzo-btn-secondary">
+              Reset Filters
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Bet Slip */}
+      {showBetSlip && (
+        <div className="bet-slip-overlay">
+          <div className="bet-slip-modal">
+            <div className="bet-slip-header">
+              <h3><BetSlipIcon size="sm" /> Bet Slip</h3>
+              <button onClick={() => setShowBetSlip(false)} className="winzo-btn winzo-btn-ghost">×</button>
+            </div>
+            
+            <div className="bet-slip-content">
+              {betSlipItems.length > 0 ? (
+                <>
+                  <div className="bet-slip-items">
+                    {betSlipItems.map((item, index) => (
+                      <div key={index} className="bet-slip-item">
+                        <div className="item-header">
+                          <span className="item-teams">{item.awayTeam} @ {item.homeTeam}</span>
+                          <button 
+                            onClick={() => removeFromBetSlip(item.id)}
+                            className="winzo-btn winzo-btn-ghost winzo-btn-sm"
+                          >
+                            ×
+                          </button>
+                        </div>
+                        <div className="item-selection">
+                          {item.selectedTeam} @ {formatOdds(item.odds)}
+                        </div>
+                        <div className="item-stake">
+                          Stake: {formatCurrency(item.stake || 0)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="bet-slip-summary">
+                    <div className="summary-row">
+                      <span>Total Bets:</span>
+                      <span>{betSlipSummary.totalBets}</span>
+                    </div>
+                    <div className="summary-row">
+                      <span>Average Odds:</span>
+                      <span>{betSlipSummary.averageOdds.toFixed(2)}</span>
+                    </div>
+                    <div className="summary-row">
+                      <span>Confidence:</span>
+                      <span>{(betSlipSummary.confidence * 100).toFixed(1)}%</span>
+                    </div>
+                  </div>
+                  
+                  <div className="stake-input">
+                    <label>Total Stake:</label>
+                    <input
+                      type="number"
+                      value={betSlipStake}
+                      onChange={(e) => handleStakeChange(e.target.value)}
+                      placeholder="Enter stake amount"
+                      min="0"
+                      step="0.01"
+                      className="stake-input-field"
+                    />
+                  </div>
+                  
+                  <div className="potential-payout">
+                    <span>Potential Payout:</span>
+                    <span className="payout-amount">{formatCurrency(betSlipSummary.potentialPayout)}</span>
+                  </div>
+                  
+                  <div className="bet-slip-actions">
+                    <button onClick={placeBet} className="winzo-btn winzo-btn-primary">
+                      Place Bet
+                    </button>
+                    <button onClick={clearBetSlip} className="winzo-btn winzo-btn-secondary">
+                      Clear All
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="empty-bet-slip">
+                  <p>No selections in bet slip</p>
+                  <p>Click on odds to add selections</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Bet Slip Toggle */}
+      <button
+        className="bet-slip-toggle"
+        onClick={() => setShowBetSlip(true)}
+      >
+        <BetSlipIcon size="sm" /> Bet Slip ({betSlipItems.length})
+      </button>
 
       {/* Quota Info */}
       {quotaInfo && (
@@ -699,34 +686,6 @@ const SportsBetting: React.FC = () => {
           </span>
         </div>
       )}
-    </div>
-  );
-};
-
-// Sport Card Component
-interface SportCardProps {
-  sport: Sport;
-  isSelected: boolean;
-  onClick: () => void;
-}
-
-const SportCard: React.FC<SportCardProps> = ({ sport, isSelected, onClick }) => {
-  return (
-    <div
-      className={`sport-card ${isSelected ? 'selected' : ''}`}
-      onClick={onClick}
-    >
-      <div className="sport-icon">{sport.icon}</div>
-      <div className="sport-info">
-        <h3>{sport.title}</h3>
-        <p>{sport.description}</p>
-        {sport.live_events_count !== undefined && (
-          <div className="sport-stats">
-            <span className="live-count"><FireIcon size="sm" /> {sport.live_events_count} live</span>
-            <span className="upcoming-count"><ClockIcon size="sm" /> {sport.upcoming_events_count} upcoming</span>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

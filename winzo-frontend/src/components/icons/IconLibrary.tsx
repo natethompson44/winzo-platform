@@ -1,10 +1,14 @@
 import React from 'react';
 
-interface IconProps {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-  color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'neutral' | 'muted' | 'inverse';
-  variant?: 'filled' | 'outlined' | 'duotone';
+export type IconSize = 'sm' | 'md' | 'lg';
+export type IconColor = 'success' | 'primary' | 'secondary' | 'warning' | 'danger' | 'neutral' | 'muted' | 'inverse';
+export type IconVariant = 'filled' | 'outlined' | 'duotone';
+
+export interface IconProps {
   className?: string;
+  size?: IconSize;
+  color?: IconColor;
+  variant?: IconVariant;
   'aria-label'?: string;
   'aria-hidden'?: boolean;
   role?: string;
@@ -376,38 +380,69 @@ export const ChevronRightIcon: React.FC<IconProps> = (props) => (
 );
 
 // Sports Icons
-export const FootballIcon: React.FC<IconProps> = (props) => (
-  <Icon {...props} aria-label="Football" className="icon-sport icon-football">
-    <circle cx="12" cy="12" r="10" className="ball"/>
-    <path d="M12 2a10 10 0 0 1 0 20 10 10 0 0 1 0-20z" fill="none"/>
-    <path d="M12 2c2.5 0 4.5 1.5 5.5 3.5" fill="none"/>
-    <path d="M12 22c-2.5 0-4.5-1.5-5.5-3.5" fill="none"/>
-  </Icon>
+export const FootballIcon: React.FC<IconProps> = ({ className, size = 'md', color = 'primary' }) => (
+  <svg className={className} width={size === 'sm' ? 16 : size === 'md' ? 24 : 32} height={size === 'sm' ? 16 : size === 'md' ? 24 : 32} viewBox="0 0 24 24" fill="none" stroke={`var(--color-${color})`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    <path d="M2 12h20" />
+  </svg>
 );
 
-export const BasketballIcon: React.FC<IconProps> = (props) => (
-  <Icon {...props} aria-label="Basketball" className="icon-sport icon-basketball">
-    <circle cx="12" cy="12" r="10" className="ball"/>
-    <path d="M12 2a10 10 0 0 1 0 20 10 10 0 0 1 0-20z" fill="none"/>
-    <path d="M2 12h20" fill="none"/>
-    <path d="M12 2a10 10 0 0 1 0 20 10 10 0 0 1 0-20z" fill="none"/>
-  </Icon>
+export const BasketballIcon: React.FC<IconProps> = ({ className, size = 'md', color = 'primary' }) => (
+  <svg className={className} width={size === 'sm' ? 16 : size === 'md' ? 24 : 32} height={size === 'sm' ? 16 : size === 'md' ? 24 : 32} viewBox="0 0 24 24" fill="none" stroke={`var(--color-${color})`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    <path d="M2 12h20" />
+    <path d="M12 2v20" />
+  </svg>
 );
 
-export const CricketIcon: React.FC<IconProps> = (props) => (
-  <Icon {...props} aria-label="Cricket" className="icon-sport icon-cricket">
-    <path d="M12 2L8 8h8l-4-6z" className="bat"/>
-    <circle cx="12" cy="16" r="4"/>
-    <path d="M12 12v8" fill="none"/>
-  </Icon>
+export const BaseballIcon: React.FC<IconProps> = ({ className, size = 'md', color = 'primary' }) => (
+  <svg className={className} width={size === 'sm' ? 16 : size === 'md' ? 24 : 32} height={size === 'sm' ? 16 : size === 'md' ? 24 : 32} viewBox="0 0 24 24" fill="none" stroke={`var(--color-${color})`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    <path d="M2 12h20" />
+    <path d="M12 2v20" />
+    <path d="M8 8l8 8" />
+    <path d="M8 16l8-8" />
+  </svg>
 );
 
-export const TennisIcon: React.FC<IconProps> = (props) => (
-  <Icon {...props} aria-label="Tennis" className="icon-sport icon-tennis">
-    <circle cx="12" cy="12" r="8" className="ball"/>
-    <path d="M12 4v16" fill="none"/>
-    <path d="M4 12h16" fill="none"/>
-  </Icon>
+export const HockeyIcon: React.FC<IconProps> = ({ className, size = 'md', color = 'primary' }) => (
+  <svg className={className} width={size === 'sm' ? 16 : size === 'md' ? 24 : 32} height={size === 'sm' ? 16 : size === 'md' ? 24 : 32} viewBox="0 0 24 24" fill="none" stroke={`var(--color-${color})`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 12h16" />
+    <path d="M4 12a8 8 0 0 1 8-8h0a8 8 0 0 1 8 8" />
+    <path d="M4 12a8 8 0 0 0 8 8h0a8 8 0 0 0 8-8" />
+    <path d="M12 4v16" />
+  </svg>
+);
+
+export const TennisIcon: React.FC<IconProps> = ({ className, size = 'md', color = 'primary' }) => (
+  <svg className={className} width={size === 'sm' ? 16 : size === 'md' ? 24 : 32} height={size === 'sm' ? 16 : size === 'md' ? 24 : 32} viewBox="0 0 24 24" fill="none" stroke={`var(--color-${color})`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    <path d="M2 12h20" />
+    <path d="M12 2v20" />
+    <path d="M8 8l8 8" />
+    <path d="M8 16l8-8" />
+  </svg>
+);
+
+export const CricketIcon: React.FC<IconProps> = ({ className, size = 'md', color = 'primary' }) => (
+  <svg className={className} width={size === 'sm' ? 16 : size === 'md' ? 24 : 32} height={size === 'sm' ? 16 : size === 'md' ? 24 : 32} viewBox="0 0 24 24" fill="none" stroke={`var(--color-${color})`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+    <path d="M12 6v12" />
+    <path d="M6 12h12" />
+    <path d="M8 8l8 8" />
+    <path d="M8 16l8-8" />
+  </svg>
+);
+
+export const LiveIcon: React.FC<IconProps> = ({ className, size = 'sm', color = 'danger' }) => (
+  <svg className={className} width={size === 'sm' ? 16 : size === 'md' ? 24 : 32} height={size === 'sm' ? 16 : size === 'md' ? 24 : 32} viewBox="0 0 24 24" fill="none" stroke={`var(--color-${color})`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="4" fill={`var(--color-${color})`} />
+  </svg>
 );
 
 // Icon Wrapper Component
@@ -480,6 +515,7 @@ const IconLibrary = {
   TrendingUpIcon,
   TrendingDownIcon,
   DollarIcon,
-  RefreshIcon
+  RefreshIcon,
+  LiveIcon
 };
 export default IconLibrary; 
