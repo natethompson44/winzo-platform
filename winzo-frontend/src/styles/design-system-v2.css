@@ -1,0 +1,501 @@
+/* WINZO Design System v2.0 - Mobile-First Betting Platform
+ * Simplified, performance-focused design system inspired by FanDuel/DraftKings
+ * Focus: Clarity, Speed, Mobile Optimization
+ */
+
+:root {
+  /* === CORE COLOR SYSTEM === */
+  /* Primary Brand Colors - Navy + Gold */
+  --color-primary: #1a365d;        /* Navy - Trust & Stability */
+  --color-primary-light: #2d5a87;  /* Lighter navy for hover */
+  --color-primary-dark: #0f172a;   /* Darker navy for emphasis */
+  
+  --color-secondary: #d69e2e;      /* Gold - Premium accent */
+  --color-secondary-light: #ecc94b; /* Light gold for highlights */
+  --color-secondary-dark: #b7791f;  /* Dark gold for text */
+  
+  /* Semantic Colors */
+  --color-success: #38a169;        /* Green - Wins, positive actions */
+  --color-success-light: #68d391;  /* Light green */
+  --color-success-dark: #2f855a;   /* Dark green */
+  
+  --color-danger: #e53e3e;         /* Red - Losses, errors */
+  --color-danger-light: #fc8181;   /* Light red */
+  --color-danger-dark: #c53030;    /* Dark red */
+  
+  --color-warning: #dd6b20;        /* Orange - Warnings, pending */
+  --color-warning-light: #f6ad55;  /* Light orange */
+  --color-warning-dark: #c05621;   /* Dark orange */
+  
+  /* Neutral Grays - 8 shades maximum */
+  --color-white: #ffffff;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-500: #6b7280;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* === TYPOGRAPHY SYSTEM === */
+  /* Single font family */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  /* 6-level type scale (12, 14, 16, 18, 24, 32px) */
+  --text-xs: 0.75rem;      /* 12px - Legal text, captions */
+  --text-sm: 0.875rem;     /* 14px - Small UI text */
+  --text-base: 1rem;       /* 16px - Body text (mobile baseline) */
+  --text-lg: 1.125rem;     /* 18px - Large body, small headers */
+  --text-xl: 1.5rem;       /* 24px - Section headers */
+  --text-2xl: 2rem;        /* 32px - Page headers */
+  
+  /* Font weights - 4 levels maximum */
+  --font-normal: 400;      /* Regular text */
+  --font-medium: 500;      /* UI elements, labels */
+  --font-semibold: 600;    /* Headers, emphasis */
+  --font-bold: 700;        /* Strong emphasis, brands */
+  
+  /* Line heights - 3 levels */
+  --leading-tight: 1.25;   /* Headers */
+  --leading-normal: 1.5;   /* Body text */
+  --leading-relaxed: 1.625; /* Large text blocks */
+  
+  /* === SPACING SYSTEM === */
+  /* 8px grid system - 12 levels maximum */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */  
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+  --space-20: 5rem;    /* 80px */
+  --space-24: 6rem;    /* 96px */
+  
+  /* === BORDER RADIUS === */
+  /* 4 levels maximum */
+  --radius-sm: 0.25rem;    /* 4px - Small elements */
+  --radius-md: 0.5rem;     /* 8px - Buttons, cards */
+  --radius-lg: 0.75rem;    /* 12px - Large cards */
+  --radius-full: 9999px;   /* Pill buttons, avatars */
+  
+  /* === SHADOWS === */
+  /* 4 levels - subtle and performance-focused */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+  /* === TRANSITIONS === */
+  /* 3 speeds maximum */
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.2s ease-out;
+  --transition-slow: 0.3s ease-out;
+  
+  /* === RESPONSIVE BREAKPOINTS === */
+  /* Mobile-first approach - 3 breakpoints maximum */
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+  --bp-wide: 1280px;
+  
+  /* === COMPONENT-SPECIFIC TOKENS === */
+  
+  /* Touch Targets - WCAG Compliant */
+  --touch-target-min: 44px;        /* Minimum mobile touch target */
+  --touch-target-comfortable: 48px; /* Comfortable touch target */
+  
+  /* Button Heights */
+  --button-height-sm: 36px;  /* Small buttons */
+  --button-height-md: 44px;  /* Default buttons (mobile-optimized) */
+  --button-height-lg: 52px;  /* Large action buttons */
+  
+  /* Betting-specific Colors */
+  --color-odds-positive: var(--color-success);   /* + odds */
+  --color-odds-negative: var(--color-primary);   /* - odds */
+  --color-live: var(--color-danger);             /* Live events */
+  --color-bet-win: var(--color-success);         /* Won bets */
+  --color-bet-loss: var(--color-danger);         /* Lost bets */
+  --color-bet-pending: var(--color-warning);     /* Pending bets */
+  
+  /* Layout Tokens */
+  --container-max-width: 1200px;
+  --nav-height: 64px;
+  --nav-height-mobile: 56px;
+  --bet-slip-width: 320px;
+  
+  /* Z-Index Scale - Simplified */
+  --z-dropdown: 1000;
+  --z-modal: 1050;
+  --z-toast: 1100;
+}
+
+/* === GLOBAL RESET & BASE STYLES === */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-gray-900);
+  background-color: var(--color-white);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === TYPOGRAPHY UTILITIES === */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+
+.font-normal { font-weight: var(--font-normal); }
+.font-medium { font-weight: var(--font-medium); }
+.font-semibold { font-weight: var(--font-semibold); }
+.font-bold { font-weight: var(--font-bold); }
+
+.leading-tight { line-height: var(--leading-tight); }
+.leading-normal { line-height: var(--leading-normal); }
+.leading-relaxed { line-height: var(--leading-relaxed); }
+
+/* === COLOR UTILITIES === */
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-secondary); }
+.text-success { color: var(--color-success); }
+.text-danger { color: var(--color-danger); }
+.text-warning { color: var(--color-warning); }
+.text-muted { color: var(--color-gray-500); }
+
+/* === SPACING UTILITIES === */
+.m-0 { margin: 0; }
+.m-1 { margin: var(--space-1); }
+.m-2 { margin: var(--space-2); }
+.m-3 { margin: var(--space-3); }
+.m-4 { margin: var(--space-4); }
+.m-6 { margin: var(--space-6); }
+.m-8 { margin: var(--space-8); }
+
+.p-0 { padding: 0; }
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+
+/* Directional spacing */
+.mt-4 { margin-top: var(--space-4); }
+.mb-4 { margin-bottom: var(--space-4); }
+.ml-4 { margin-left: var(--space-4); }
+.mr-4 { margin-right: var(--space-4); }
+
+.pt-4 { padding-top: var(--space-4); }
+.pb-4 { padding-bottom: var(--space-4); }
+.pl-4 { padding-left: var(--space-4); }
+.pr-4 { padding-right: var(--space-4); }
+
+/* === LAYOUT UTILITIES === */
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.flex { display: flex; }
+.grid { display: grid; }
+.hidden { display: none; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+.gap-2 { gap: var(--space-2); }
+.gap-4 { gap: var(--space-4); }
+.gap-6 { gap: var(--space-6); }
+
+/* === BORDER UTILITIES === */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-full { border-radius: var(--radius-full); }
+
+.border { border: 1px solid var(--color-gray-200); }
+.border-primary { border-color: var(--color-primary); }
+.border-secondary { border-color: var(--color-secondary); }
+
+/* === SHADOW UTILITIES === */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* === RESPONSIVE UTILITIES === */
+@media (min-width: 768px) {
+  .tablet\:hidden { display: none; }
+  .tablet\:block { display: block; }
+  .tablet\:flex { display: flex; }
+  .tablet\:grid { display: grid; }
+  
+  .tablet\:text-lg { font-size: var(--text-lg); }
+  .tablet\:text-xl { font-size: var(--text-xl); }
+  .tablet\:text-2xl { font-size: var(--text-2xl); }
+}
+
+@media (min-width: 1024px) {
+  .desktop\:hidden { display: none; }
+  .desktop\:block { display: block; }
+  .desktop\:flex { display: flex; }
+  .desktop\:grid { display: grid; }
+  
+  .desktop\:text-lg { font-size: var(--text-lg); }
+  .desktop\:text-xl { font-size: var(--text-xl); }
+  .desktop\:text-2xl { font-size: var(--text-2xl); }
+}
+
+/* === ANIMATION UTILITIES === */
+.transition { transition: all var(--transition-normal); }
+.transition-fast { transition: all var(--transition-fast); }
+.transition-slow { transition: all var(--transition-slow); }
+
+/* === FOCUS STATES === */
+.focus-ring:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* === MOBILE-FIRST COMPONENT BASE CLASSES === */
+
+/* Card Component */
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-gray-200);
+  padding: var(--space-4);
+  transition: var(--transition-normal);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Button Base - Simplified to 3 core types */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--button-height-md);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+  min-width: var(--touch-target-min);
+}
+
+/* Primary Button - Main actions (Place Bet, Deposit) */
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-light);
+}
+
+.btn-primary:active {
+  background: var(--color-primary-dark);
+  transform: translateY(1px);
+}
+
+.btn-primary:disabled {
+  background: var(--color-gray-300);
+  color: var(--color-gray-500);
+  cursor: not-allowed;
+}
+
+/* Secondary Button - Secondary actions */
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.btn-secondary:hover {
+  background: var(--color-secondary-light);
+}
+
+.btn-secondary:active {
+  background: var(--color-secondary-dark);
+  transform: translateY(1px);
+}
+
+/* Tertiary Button - Text buttons, links */
+.btn-tertiary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-gray-300);
+}
+
+.btn-tertiary:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-primary);
+}
+
+/* Button Sizes */
+.btn-sm {
+  height: var(--button-height-sm);
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.btn-lg {
+  height: var(--button-height-lg);
+  padding: 0 var(--space-6);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+}
+
+/* Full Width Button */
+.btn-full {
+  width: 100%;
+}
+
+/* === MOBILE-SPECIFIC ENHANCEMENTS === */
+@media (max-width: 767px) {
+  /* Larger touch targets on mobile */
+  .btn {
+    height: var(--button-height-comfortable);
+    padding: 0 var(--space-5);
+  }
+  
+  /* Larger text on mobile */
+  .card {
+    padding: var(--space-5);
+  }
+  
+  /* Mobile typography adjustments */
+  body {
+    font-size: var(--text-base);
+  }
+}
+
+/* === ACCESSIBILITY ENHANCEMENTS === */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn {
+    border: 2px solid currentColor;
+  }
+  
+  .card {
+    border: 2px solid var(--color-gray-300);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .transition,
+  .transition-fast,
+  .transition-slow {
+    transition: none;
+  }
+  
+  .btn:active {
+    transform: none;
+  }
+}
+
+/* === COMPONENT-SPECIFIC PATTERNS === */
+
+/* Odds Display */
+.odds {
+  font-weight: var(--font-semibold);
+  font-size: var(--text-lg);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  transition: var(--transition-fast);
+}
+
+.odds:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.odds-positive {
+  color: var(--color-success);
+}
+
+.odds-negative {
+  color: var(--color-primary);
+}
+
+/* Live Indicator */
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-danger);
+  color: var(--color-white);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+}
+
+.status-won {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
+.status-lost {
+  background: var(--color-danger);  
+  color: var(--color-white);
+}
+
+.status-pending {
+  background: var(--color-warning);
+  color: var(--color-white);
+}
