@@ -486,25 +486,32 @@
   font-family: var(--font-family-primary);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
-  background: var(--bg-neutral);
+  background: rgba(255, 255, 255, 0.95);
   color: var(--text-primary);
   transition: all 0.2s ease;
   min-height: 48px; /* Touch target minimum */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.1);
+  box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
   background: var(--text-inverse);
+  transform: translateY(-1px);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .form-input:invalid {
   border-color: var(--border-danger);
+  box-shadow: 0 2px 8px rgba(229, 62, 62, 0.1);
 }
 
 .form-input::placeholder {
   color: var(--text-muted);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .form-error {

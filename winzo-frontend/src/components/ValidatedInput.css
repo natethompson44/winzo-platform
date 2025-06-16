@@ -23,14 +23,18 @@
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.2s ease-in-out;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.95);
   color: #2d3748;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .validated-input:focus {
   outline: none;
   border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
 }
 
 .validated-input:disabled {
@@ -42,22 +46,24 @@
 /* Validation states */
 .validated-input.input-error {
   border-color: #e53e3e;
-  background-color: #fff5f5;
+  background-color: rgba(255, 245, 245, 0.95);
+  box-shadow: 0 2px 8px rgba(229, 62, 62, 0.1);
 }
 
 .validated-input.input-error:focus {
   border-color: #e53e3e;
-  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1), 0 4px 12px rgba(229, 62, 62, 0.15);
 }
 
 .validated-input.input-valid {
   border-color: #48bb78;
-  background-color: #f0fff4;
+  background-color: rgba(240, 255, 244, 0.95);
+  box-shadow: 0 2px 8px rgba(72, 187, 120, 0.1);
 }
 
 .validated-input.input-valid:focus {
   border-color: #48bb78;
-  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1), 0 4px 12px rgba(72, 187, 120, 0.15);
 }
 
 /* Error message */

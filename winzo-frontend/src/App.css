@@ -555,26 +555,29 @@ body {
   border-radius: var(--luxury-border-radius);
   font-family: var(--font-family-primary);
   font-size: var(--text-base);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   transition: var(--luxury-transition-normal);
   backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .winzo-input::placeholder {
   color: var(--text-muted);
-  opacity: 0.7;
+  opacity: 0.8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .winzo-input:focus {
   outline: none;
   border-color: var(--luxury-gold);
-  box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.2);
+  box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
   background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
 }
 
 .winzo-input:invalid {
   border-color: var(--luxury-error);
-  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2), 0 4px 12px rgba(229, 62, 62, 0.15);
 }
 
 /* PREMIUM LUXURY INPUTS */
@@ -589,26 +592,29 @@ body {
   background: rgba(255, 255, 255, 0.95);
   transition: var(--luxury-transition-premium);
   backdrop-filter: blur(20px);
-  box-shadow: var(--luxury-shadow-sm);
+  box-shadow: var(--luxury-shadow-sm), 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .luxury-input::placeholder {
   color: var(--text-muted);
   opacity: 0.8;
   font-weight: var(--font-weight-normal);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .luxury-input:focus {
   outline: none;
   border-color: var(--luxury-gold);
-  box-shadow: 0 0 0 4px rgba(214, 158, 46, 0.3);
+  box-shadow: 0 0 0 4px rgba(214, 158, 46, 0.3), 0 6px 16px rgba(0, 0, 0, 0.2);
   background: rgba(255, 255, 255, 1);
   transform: translateY(-1px);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .luxury-input:invalid {
   border-color: var(--luxury-error);
-  box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.3);
+  box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.3), 0 6px 16px rgba(229, 62, 62, 0.2);
 }
 
 /* WINZO Badge System - Enhanced with Luxury */
