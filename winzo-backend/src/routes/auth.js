@@ -25,6 +25,7 @@ router.post(
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters'),
     body('email').optional().isEmail().withMessage('Valid email is required'),
+    body('invite_code').notEmpty().withMessage('Invite code is required'),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -32,14 +33,14 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, password, email } = req.body;
+    const { username, password, email, invite_code } = req.body;
     const normalizedUsername = username.toLowerCase();
 
   try {
     // Invite code must match the master code or belong to an existing user.
     const masterCode = process.env.MASTER_INVITE_CODE;
-    const inviter = await User.findOne({ where: { inviteCode } });
-    if (inviteCode !== masterCode && !inviter) {
+    const inviter = await User.findOne({ where: { inviteCode: invite_code } });
+    if (invite_code !== masterCode && !inviter) {
       return res.status(400).json({ message: 'Invalid invite code' });
     }
 

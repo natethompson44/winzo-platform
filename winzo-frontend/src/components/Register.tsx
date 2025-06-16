@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { 
   UserIcon, 
   LockIcon,
-  MailIcon,
   LoadingIcon,
   SuccessIcon,
   WarningIcon,
@@ -16,9 +15,9 @@ import './HomePage.css';
 const Register: React.FC = () => {
   const { register } = useAuth();
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,16 +28,15 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const isPasswordValid = password.length >= 8;
     const doPasswordsMatch = password === confirmPassword;
     setFormValid(
       username.trim().length > 0 && 
-      isEmailValid && 
       isPasswordValid && 
-      doPasswordsMatch
+      doPasswordsMatch &&
+      inviteCode.trim().length > 0
     );
-  }, [username, email, password, confirmPassword]);
+  }, [username, password, confirmPassword, inviteCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,14 +50,14 @@ const Register: React.FC = () => {
     }
 
     try {
-      const ok = await register(username, email, password);
+      const ok = await register(username, password, inviteCode);
       if (ok) {
         setError('');
         setSuccess(true);
         setTimeout(() => navigate('/login'), 1200);
       } else {
         setSuccess(false);
-        setError('Registration failed. Please try again.');
+        setError('Registration failed. Please check your invite code and try again.');
       }
     } catch (err) {
       console.error('Registration error:', err);
@@ -129,23 +127,23 @@ const Register: React.FC = () => {
           </div>
 
           <div className="input-group">
-            <div className={`input-wrapper ${focusedField === 'email' ? 'focused' : ''} ${email ? 'has-value' : ''}`}>
-              <MailIcon 
+            <div className={`input-wrapper ${focusedField === 'inviteCode' ? 'focused' : ''} ${inviteCode ? 'has-value' : ''}`}>
+              <LockIcon 
                 size="sm" 
-                color={focusedField === 'email' ? 'secondary' : 'neutral'} 
+                color={focusedField === 'inviteCode' ? 'secondary' : 'neutral'} 
                 className="input-icon" 
               />
               <input
                 className="luxury-input"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                onFocus={() => handleInputFocus('email')}
+                type="text"
+                placeholder="Invite Code"
+                value={inviteCode}
+                onChange={e => setInviteCode(e.target.value)}
+                onFocus={() => handleInputFocus('inviteCode')}
                 onBlur={handleInputBlur}
                 required
                 disabled={isLoading}
-                autoComplete="email"
+                autoComplete="off"
               />
             </div>
           </div>
