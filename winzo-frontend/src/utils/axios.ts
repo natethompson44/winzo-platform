@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import { API_CONFIG } from '../config/api';
 
 // Create axios instance with default config
@@ -12,7 +12,7 @@ const apiClient = axios.create({
 
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('authToken');
     if (token) {
       (config.headers as any).Authorization = `Bearer ${token}`;
