@@ -115,12 +115,12 @@
   flex-direction: column;
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
-  padding: var(--space-lg);
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: var(--luxury-border-radius-lg);
+  padding: var(--space-xl);
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: var(--luxury-border-radius-xl);
+  border: 1px solid rgba(214, 158, 46, 0.2);
+  backdrop-filter: blur(10px);
   box-shadow: var(--luxury-shadow-lg);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -155,14 +155,9 @@
 .header-content h1 {
   font-size: var(--text-2xl);
   font-weight: 700;
-  color: var(--luxury-primary);
+  color: #ffffff;
   margin-bottom: var(--space-xs);
-  background: var(--luxury-gradient-gold);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.025em;
-  position: relative;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .header-content h1::after {
@@ -177,23 +172,23 @@
 }
 
 .header-content p {
-  font-size: var(--text-base);
-  color: var(--luxury-accent);
+  font-size: var(--text-lg);
+  color: #d4af37;
   margin-bottom: var(--space-sm);
   font-weight: 500;
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .last-update {
   font-size: var(--text-sm);
-  color: var(--luxury-accent);
+  color: #a0aec0;
   display: flex;
   align-items: center;
   gap: var(--space-xs);
   padding: var(--space-xs) var(--space-sm);
-  background: rgba(214, 158, 46, 0.1);
+  background: rgba(15, 23, 42, 0.8);
   border-radius: var(--luxury-border-radius);
-  border: 1px solid rgba(214, 158, 46, 0.2);
+  border: 1px solid rgba(160, 174, 192, 0.2);
   font-weight: 500;
 }
 
@@ -1901,7 +1896,7 @@
 /* Luxury Quick Actions */
 .luxury-quick-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: var(--luxury-space-md);
 }
 
@@ -1909,44 +1904,50 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--luxury-space-sm);
-  padding: var(--luxury-space-lg);
+  padding: var(--luxury-space-lg) var(--luxury-space-xl);
   border-radius: var(--luxury-border-radius-lg);
   border: none;
   color: var(--luxury-onyx);
   font-weight: var(--luxury-font-semibold);
   transition: all var(--luxury-transition-premium);
-  min-height: 100px;
+  min-height: 120px;
   position: relative;
   overflow: hidden;
 }
 
-.luxury-action-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--luxury-gradient-glass);
-  opacity: 0;
-  transition: opacity var(--luxury-transition-normal);
-}
-
-.luxury-action-btn:hover::before {
-  opacity: 1;
-}
-
-.luxury-action-btn:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: var(--luxury-shadow-glow), var(--luxury-shadow-diamond);
+.luxury-action-btn svg {
+  width: 32px;
+  height: 32px;
+  margin-bottom: var(--luxury-space-xs);
 }
 
 .luxury-action-label {
-  font-size: var(--luxury-text-sm);
+  font-size: var(--luxury-text-lg);
   font-weight: var(--luxury-font-semibold);
-  position: relative;
-  z-index: 1;
+  text-align: center;
+}
+
+/* Adjust other action buttons to match */
+.luxury-btn {
+  padding: var(--luxury-space-md) var(--luxury-space-xl);
+  font-size: var(--luxury-text-base);
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--luxury-space-sm);
+}
+
+.luxury-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.luxury-btn-primary {
+  font-size: var(--luxury-text-base);
+  padding: var(--luxury-space-md) var(--luxury-space-xl);
 }
 
 /* Luxury Recent Bets */

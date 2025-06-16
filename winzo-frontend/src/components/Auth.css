@@ -52,11 +52,35 @@ a:hover {
 }
 
 .auth-logo {
-  width: 60px;
+  width: 80px;
   height: auto;
   margin-bottom: 30px;
   border-radius: 8px;
-  filter: brightness(0) invert(1);
+  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: all 0.3s ease;
+}
+
+.auth-logo:hover {
+  transform: scale(1.05);
+  filter: brightness(0) invert(1) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.auth-logo-container {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.auth-logo-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .auth-title {
@@ -82,48 +106,54 @@ a:hover {
 .auth-form {
   width: 100%;
   max-width: 400px;
-  background: transparent;
-  border: 1px solid #333333;
-  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(214, 158, 46, 0.2);
+  border-radius: 16px;
   padding: 40px;
   transition: all 0.3s ease;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .auth-form:hover {
-  border-color: #d4af37;
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
 .auth-form.success {
-  border-color: #d4af37;
+  border-color: rgba(212, 175, 55, 0.6);
 }
 
 .winzo-input {
   width: 100%;
   padding: 16px 20px;
-  background: transparent;
-  border: 1px solid #333333;
-  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(214, 158, 46, 0.3);
+  border-radius: 8px;
   color: #ffffff;
-  font-size: 0.9rem;
+  font-size: 1rem;
   margin-bottom: 20px;
   transition: all 0.3s ease;
   outline: none;
-  font-weight: 300;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
 }
 
 .winzo-input:focus {
   border-color: #d4af37;
-  background: rgba(212, 175, 55, 0.05);
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
 }
 
 .winzo-input::placeholder {
-  color: #666666;
-  font-weight: 300;
+  color: #a0aec0;
+  font-weight: 400;
 }
 
 .winzo-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background: rgba(15, 23, 42, 0.6);
 }
 
 .winzo-btn {
