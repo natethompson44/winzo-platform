@@ -624,7 +624,7 @@ const Dashboard: React.FC = () => {
             ) : (
               <div className="luxury-empty-state luxury-card">
                 <div className="luxury-empty-icon">
-                  <HistoryIcon size="xl" color="neutral" />
+                  <HistoryIcon size="lg" color="neutral" />
                 </div>
                 <h3 className="luxury-empty-title">No Recent Bets</h3>
                 <p className="luxury-empty-description">Start betting to see your history here</p>
