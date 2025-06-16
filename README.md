@@ -39,9 +39,49 @@ A modern, full-stack sports betting platform built with React, Node.js, and The 
 - **Error handling** and logging throughout
 
 ## Prerequisites
-- Node.js 16+ and npm
-- PostgreSQL 12+
+- Node.js 18+ (see .nvmrc for exact version)
+- npm 9+
+- PostgreSQL 14+
 - The Odds API key (get from [the-odds-api.com](https://the-odds-api.com))
+- Python 3.8+ (for testing)
+
+## Additional Documentation
+- [Deployment Guide](DEPLOYMENT.md) - Detailed deployment instructions
+- [Mobile Optimization Summary](WINZO_MOBILE_OPTIMIZATION_SUMMARY.md) - Mobile-specific features and optimizations
+- [UX/UI Improvements](WINZO_UX_UI_IMPROVEMENTS_IMPLEMENTED.md) - User experience enhancements
+- [Netlify Deployment Fix](NETLIFY_DEPLOYMENT_FIX.md) - Netlify-specific deployment solutions
+- [Netlify TypeScript Fix](NETLIFY_TYPESCRIPT_FIX.md) - TypeScript configuration for Netlify
+- [MIME Type Fix](MIME_TYPE_FIX.md) - Content type handling solutions
+
+## Available Scripts
+### Frontend
+```bash
+# Development
+npm start              # Start development server
+npm run build         # Build for production
+npm run build:debug   # Build with source maps for debugging
+npm run lint          # Run ESLint
+npm run type-check    # Run TypeScript type checking
+
+# Deployment
+npm run deploy        # Build and deploy to Netlify
+```
+
+### Backend
+```bash
+# Development
+npm start             # Start development server
+npm run dev          # Start with nodemon for development
+npm run test         # Run backend tests
+
+# Database
+npm run db:setup     # Setup database schema
+npm run db:reset     # Reset database (development only)
+npm run db:migrate   # Run database migrations
+
+# Deployment
+npm run deploy:railway  # Deploy to Railway
+```
 
 ## Quick Start
 ### 1. Clone and Setup
@@ -195,34 +235,63 @@ events.forEach(event => {
 
 ## Deployment
 ### Frontend (Netlify)
+The frontend is configured for automatic deployment to Netlify with the following features:
+- Automatic builds on git push
+- Environment variable management
+- Custom domain support
+- TypeScript compilation
+- Asset optimization
+
+Deployment can be done manually:
 ```bash
+# Using the provided script
+./rebuild-and-deploy.sh  # Unix/Mac
+.\rebuild-and-deploy.ps1 # Windows
+
+# Or manually
 cd winzo-frontend
 npm run build
-# Deploy dist/ folder to Netlify
-```
-### Backend (Your Choice)
-```bash
-cd winzo-backend
-# Set production environment variables
-NODE_ENV=production npm start
-```
-### Database Migration
-```bash
-# Run database setup on production
-npm run db:setup:production
+netlify deploy --prod
 ```
 
-## Performance Monitoring
-### API Quota Management
-- Real-time quota tracking
-- Automatic rate limiting
-- Usage analytics and reporting
-- Cost optimization strategies
-### Database Optimization
-- Indexed queries for fast lookups
-- Connection pooling
-- Query optimization
-- Regular maintenance procedures
+### Backend (Railway)
+The backend is configured for deployment on Railway with:
+- Automatic deployments from git
+- PostgreSQL database provisioning
+- Environment variable management
+- Health checks and monitoring
+
+Deployment can be done manually:
+```bash
+cd winzo-backend
+railway up
+```
+
+## Testing Infrastructure
+### Automated Testing
+The project includes comprehensive testing:
+- Python-based integration tests (`test_winzo_platform.py`)
+- Backend unit tests in `winzo-backend/tests/`
+- Frontend component tests (using Jest and React Testing Library)
+
+Run all tests:
+```bash
+# Backend tests
+cd winzo-backend
+npm test
+
+# Frontend tests
+cd winzo-frontend
+npm test
+
+# Integration tests
+python test_winzo_platform.py
+```
+
+### Test Utilities
+- `test-railway-urls.js` - Validates Railway deployment URLs
+- `reset-database.js` - Database reset utility for testing
+- `reset-and-start.js` - Combined reset and start script
 
 ## Troubleshooting
 ### Common Issues
@@ -244,6 +313,28 @@ psql -h localhost -U your_user -d winzo_platform
 # Clear node modules and reinstall
 rm -rf node_modules package-lock.json
 npm install
+```
+
+### Deployment Issues
+#### Netlify Deployment
+- Check `netlify.toml` for build settings
+- Verify environment variables in Netlify dashboard
+- Review build logs for TypeScript errors
+- Ensure proper MIME types are set
+
+#### Railway Deployment
+- Verify `railway.json` configuration
+- Check database connection settings
+- Review Railway logs for startup issues
+- Ensure proper environment variables are set
+
+### Database Issues
+```bash
+# Reset database (development only)
+node winzo-backend/reset-database.js
+
+# Check database connection
+node winzo-backend/src/utils/db-check.js
 ```
 
 ## Contributing
