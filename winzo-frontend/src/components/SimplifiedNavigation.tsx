@@ -4,8 +4,7 @@ import {
   DashboardIcon,
   SportsIcon,
   WalletIcon,
-  HistoryIcon,
-  IconProps
+  HistoryIcon
 } from './icons/IconLibrary';
 import './SimplifiedNavigation.css';
 
