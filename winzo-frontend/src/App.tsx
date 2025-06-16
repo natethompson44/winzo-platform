@@ -134,7 +134,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Use Simplified Navigation */}
       <SimplifiedNavigation 
         user={user ? {
-          name: user.username,
+          username: user.username,
           balance: user.wallet_balance
         } : undefined}
         onLogout={logout} 
