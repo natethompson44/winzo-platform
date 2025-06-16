@@ -7,7 +7,7 @@ const HomePage: React.FC = () => {
     <div className="home-page">
       <header className="hero-section">
         <h1 className="hero-title">WINZO</h1>
-        <p className="hero-subtitle">Premium Sports Betting Platform</p>
+        <p className="hero-subtitle">Exclusive Platform</p>
         <div className="hero-actions">
           <Link to="/login" className="luxury-btn luxury-btn-primary">Login</Link>
           <Link to="/register" className="luxury-btn luxury-btn-secondary">Register</Link>
