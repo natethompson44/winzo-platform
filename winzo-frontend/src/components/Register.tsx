@@ -11,7 +11,7 @@ import {
   EyeIcon,
   EyeOffIcon
 } from './icons/IconLibrary';
-import './Auth.css';
+import './HomePage.css';
 
 const Register: React.FC = () => {
   const { register } = useAuth();
@@ -86,22 +86,20 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-content">
-        <div className="auth-header">
-          <h1 className="auth-title">Join WINZO</h1>
-          <p className="auth-subtitle">Create your account</p>
-        </div>
-
+    <div className="home-page">
+      <div className="hero-section">
+        <h1 className="hero-title">Join WINZO</h1>
+        <p className="hero-subtitle">Create your exclusive account</p>
+        
         {error && (
-          <div className="error">
+          <div className="error-message">
             <WarningIcon size="sm" color="danger" />
             <span>{error}</span>
           </div>
         )}
         
         {success && (
-          <div className="success-msg">
+          <div className="success-message">
             <SuccessIcon size="sm" color="success" />
             <span>Registration Successful</span>
           </div>
@@ -116,7 +114,7 @@ const Register: React.FC = () => {
                 className="input-icon" 
               />
               <input
-                className="winzo-input"
+                className="luxury-input"
                 type="text"
                 placeholder="Username"
                 value={username}
@@ -138,7 +136,7 @@ const Register: React.FC = () => {
                 className="input-icon" 
               />
               <input
-                className="winzo-input"
+                className="luxury-input"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -160,7 +158,7 @@ const Register: React.FC = () => {
                 className="input-icon" 
               />
               <input
-                className="winzo-input"
+                className="luxury-input"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
                 value={password}
@@ -196,7 +194,7 @@ const Register: React.FC = () => {
                 className="input-icon" 
               />
               <input
-                className="winzo-input"
+                className="luxury-input"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Confirm Password"
                 value={confirmPassword}
@@ -226,7 +224,7 @@ const Register: React.FC = () => {
 
           <button 
             type="submit" 
-            className={`winzo-btn winzo-btn-primary ${!formValid ? 'disabled' : ''}`}
+            className={`luxury-btn luxury-btn-primary ${!formValid ? 'disabled' : ''}`}
             disabled={isLoading || !formValid}
           >
             {isLoading ? (
@@ -240,10 +238,9 @@ const Register: React.FC = () => {
           </button>
         </form>
 
-        <div className="auth-footer">
-          <p>
-            Already have an account? <Link to="/login" className="auth-link">Sign In</Link>
-          </p>
+        <div className="hero-actions">
+          <Link to="/" className="luxury-btn luxury-btn-secondary">Back to Home</Link>
+          <Link to="/login" className="luxury-btn luxury-btn-secondary">Already have access?</Link>
         </div>
       </div>
     </div>

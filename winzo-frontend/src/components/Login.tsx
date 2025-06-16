@@ -10,7 +10,7 @@ import {
   EyeIcon,
   EyeOffIcon
 } from './icons/IconLibrary';
-import './Auth.css';
+import './HomePage.css';
 
 const Login: React.FC = () => {
   const { login } = useAuth();
@@ -64,22 +64,20 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-content">
-        <div className="auth-header">
-          <h1 className="auth-title">Welcome Back</h1>
-          <p className="auth-subtitle">Access your WINZO account</p>
-        </div>
-
+    <div className="home-page">
+      <div className="hero-section">
+        <h1 className="hero-title">Welcome Back</h1>
+        <p className="hero-subtitle">Access your WINZO account</p>
+        
         {error && (
-          <div className="error">
+          <div className="error-message">
             <WarningIcon size="sm" color="danger" />
             <span>{error}</span>
           </div>
         )}
         
         {success && (
-          <div className="success-msg">
+          <div className="success-message">
             <SuccessIcon size="sm" color="success" />
             <span>Access Granted</span>
           </div>
@@ -94,7 +92,7 @@ const Login: React.FC = () => {
                 className="input-icon" 
               />
               <input
-                className="winzo-input"
+                className="luxury-input"
                 type="text"
                 placeholder="Username"
                 value={username}
@@ -116,7 +114,7 @@ const Login: React.FC = () => {
                 className="input-icon" 
               />
               <input
-                className="winzo-input"
+                className="luxury-input"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
                 value={password}
@@ -145,7 +143,7 @@ const Login: React.FC = () => {
 
           <button 
             type="submit" 
-            className={`winzo-btn winzo-btn-primary ${!formValid ? 'disabled' : ''}`}
+            className={`luxury-btn luxury-btn-primary ${!formValid ? 'disabled' : ''}`}
             disabled={isLoading || !formValid}
           >
             {isLoading ? (
@@ -159,10 +157,9 @@ const Login: React.FC = () => {
           </button>
         </form>
 
-        <div className="auth-footer">
-          <p>
-            New to WINZO? <Link to="/register" className="auth-link">Request Access</Link>
-          </p>
+        <div className="hero-actions">
+          <Link to="/" className="luxury-btn luxury-btn-secondary">Back to Home</Link>
+          <Link to="/register" className="luxury-btn luxury-btn-secondary">Request Access</Link>
         </div>
       </div>
     </div>
