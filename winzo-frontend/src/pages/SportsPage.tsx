@@ -129,7 +129,7 @@ const SportsPage: React.FC = () => {
     };
 
     loadData();
-  }, [selectedSport]);
+  }, [selectedSport, mockCategories, mockEvents]);
 
   const handleSportChange = (sportId: string) => {
     setSelectedSport(sportId);

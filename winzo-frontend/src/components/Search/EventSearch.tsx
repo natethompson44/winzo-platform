@@ -168,6 +168,7 @@ const EventSearch: React.FC = () => {
           aria-label="Search events"
           aria-autocomplete="list"
           aria-expanded={showResults}
+          aria-controls="event-search-results"
           role="combobox"
         />
         
@@ -184,7 +185,7 @@ const EventSearch: React.FC = () => {
       </div>
 
       {showResults && (
-        <div ref={resultsRef} className="event-search__results" role="listbox">
+        <div ref={resultsRef} className="event-search__results" role="listbox" id="event-search-results">
           {results.length > 0 ? (
             results.map((result, index) => (
               <div

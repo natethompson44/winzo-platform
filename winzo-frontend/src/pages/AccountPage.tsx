@@ -75,7 +75,7 @@ const AccountPage: React.FC = () => {
     const loadProfile = async () => {
       setIsLoading(true);
       try {
-        // Simulate API call
+        // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 1000));
         setProfile(mockProfile);
       } catch (error) {
@@ -86,7 +86,7 @@ const AccountPage: React.FC = () => {
     };
 
     loadProfile();
-  }, []);
+  }, [mockProfile]);
 
   const handleSave = async (updatedProfile: UserProfile) => {
     setIsSaving(true);
@@ -320,9 +320,9 @@ const AccountPage: React.FC = () => {
             <div className="responsible-resources">
               <h3>Get Help</h3>
               <ul>
-                <li><a href="#" target="_blank">National Problem Gambling Helpline</a></li>
-                <li><a href="#" target="_blank">Gambling Addiction Resources</a></li>
-                <li><a href="#" target="_blank">Responsible Gaming Tools</a></li>
+                <li><button className="link-button">National Problem Gambling Helpline</button></li>
+                <li><button className="link-button">Gambling Addiction Resources</button></li>
+                <li><button className="link-button">Responsible Gaming Tools</button></li>
               </ul>
             </div>
           </div>

@@ -9,13 +9,13 @@ interface SportCategory {
   isActive: boolean;
 }
 
-interface SportsCategories {
+interface SportsCategoriesProps {
   categories: SportCategory[];
   selectedSport: string;
   onSportChange: (sportId: string) => void;
 }
 
-const SportsCategories: React.FC<SportsCategories> = ({ 
+const SportsCategories: React.FC<SportsCategoriesProps> = ({ 
   categories, 
   selectedSport, 
   onSportChange 

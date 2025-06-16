@@ -33,12 +33,11 @@ const LiveEventsList: React.FC<LiveEventsListProps> = ({
   selectedBetType 
 }) => {
   const { addToBetSlip } = useBetSlip();
-  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update current time every second for live countdown
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
+      // Timer for live updates - current time is used implicitly
     }, 1000);
 
     return () => clearInterval(timer);

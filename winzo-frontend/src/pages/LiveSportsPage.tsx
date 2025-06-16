@@ -131,7 +131,7 @@ const LiveSportsPage: React.FC = () => {
     const refreshInterval = setInterval(loadData, 10000);
     
     return () => clearInterval(refreshInterval);
-  }, [selectedSport]);
+  }, [selectedSport, mockCategories, mockLiveEvents]);
 
   const handleSportChange = (sportId: string) => {
     setSelectedSport(sportId);
