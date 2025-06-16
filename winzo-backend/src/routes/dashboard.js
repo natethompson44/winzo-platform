@@ -6,26 +6,47 @@ const User = require('../models/User');
 const Bet = require('../models/Bet');
 const SportsEvent = require('../models/SportsEvent');
 const Sport = require('../models/Sport');
+const { Op } = require('sequelize');
 
 /**
  * WINZO Dashboard Routes
  * 
  * Centralized dashboard data aggregation with Big Win Energy messaging.
  * Provides comprehensive user overview combining wallet, betting, and activity data.
+ * OPTIMIZATION: Reduced N+1 queries by batching database operations.
  */
 
 /**
  * GET /api/dashboard - Get comprehensive dashboard data
  * Returns aggregated user data for the main dashboard view
+ * FIXED: Removed N+1 queries by batching all data fetches
  */
 router.get('/', auth, async (req, res) => {
   try {
     const userId = req.user;
 
-    // Get user details
-    const user = await User.findByPk(userId, {
-      attributes: { exclude: ['password'] }
-    });
+    // OPTIMIZATION: Batch all database queries to reduce N+1 issues
+    const [user, bettingData] = await Promise.all([
+      // Get user details
+      User.findByPk(userId, {
+        attributes: { exclude: ['password'] }
+      }),
+      
+      // Get all betting data in a single optimized query
+      Bet.findAll({
+        where: { user_id: userId },
+        include: [{
+          model: SportsEvent,
+          attributes: ['homeTeam', 'awayTeam'],
+          include: [{
+            model: Sport,
+            attributes: ['title']
+          }]
+        }],
+        attributes: ['id', 'amount', 'actualPayout', 'status', 'placedAt', 'selectedTeam', 'odds'],
+        order: [['placedAt', 'DESC']]
+      })
+    ]);
 
     if (!user) {
       return res.status(404).json({
@@ -34,45 +55,53 @@ router.get('/', auth, async (req, res) => {
       });
     }
 
-    // Get wallet balance
+    // OPTIMIZATION: Calculate all statistics from the single bettingData query
     const walletBalance = parseFloat(user.walletBalance || 0);
+    const totalBets = bettingData.length;
+    const activeBets = bettingData.filter(bet => bet.status === 'pending').length;
+    const wonBets = bettingData.filter(bet => bet.status === 'won').length;
+    const lostBets = bettingData.filter(bet => bet.status === 'lost').length;
 
-    // Get betting statistics
-    const totalBets = await Bet.count({ where: { user_id: userId } });
-    const activeBets = await Bet.count({ 
-      where: { user_id: userId, status: 'pending' } 
-    });
-    const wonBets = await Bet.count({ 
-      where: { user_id: userId, status: 'won' } 
-    });
-
-    // Get recent bets
-    const recentBets = await Bet.findAll({
-      where: { user_id: userId },
-      include: [{
-        model: SportsEvent,
-        attributes: ['homeTeam', 'awayTeam'],
-        include: [{
-          model: Sport,
-          attributes: ['title']
-        }]
-      }],
-      order: [['placedAt', 'DESC']],
-      limit: 5
-    });
-
-    // Calculate total wagered and winnings
-    const allBets = await Bet.findAll({
-      where: { user_id: userId },
-      attributes: ['amount', 'actualPayout', 'status']
-    });
-
-    const totalWagered = allBets.reduce((sum, bet) => sum + parseFloat(bet.amount), 0);
-    const totalWinnings = allBets
+    // Calculate financial metrics
+    const totalWagered = bettingData.reduce((sum, bet) => sum + parseFloat(bet.amount), 0);
+    const totalWinnings = bettingData
       .filter(bet => bet.status === 'won')
       .reduce((sum, bet) => sum + parseFloat(bet.actualPayout || 0), 0);
+    
+    const netProfit = totalWinnings - totalWagered;
+    const winRate = totalBets > 0 ? (wonBets / (totalBets - activeBets)) : 0;
 
-    // Generate motivational message
+    // Get recent bets (top 5)
+    const recentBets = bettingData.slice(0, 5);
+
+    // Calculate advanced metrics
+    const settledBets = bettingData.filter(bet => bet.status !== 'pending');
+    const biggestWin = settledBets
+      .filter(bet => bet.status === 'won')
+      .reduce((max, bet) => Math.max(max, parseFloat(bet.actualPayout || 0)), 0);
+
+    // Calculate streak (consecutive wins/losses)
+    let currentStreak = 0;
+    let streakType = null;
+    for (const bet of settledBets) {
+      if (bet.status === 'won') {
+        if (streakType === 'won' || streakType === null) {
+          currentStreak += (streakType === null ? 1 : 1);
+          streakType = 'won';
+        } else {
+          break;
+        }
+      } else if (bet.status === 'lost') {
+        if (streakType === 'lost' || streakType === null) {
+          currentStreak += (streakType === null ? 1 : 1);
+          streakType = 'lost';
+        } else {
+          break;
+        }
+      }
+    }
+
+    // Generate motivational message based on performance
     let welcomeMessage;
     if (wonBets >= 5) {
       welcomeMessage = `🏆 Welcome back, champion! ${wonBets} wins and counting!`;
@@ -84,6 +113,7 @@ router.get('/', auth, async (req, res) => {
       welcomeMessage = `💎 Welcome to WINZO! Ready to activate your Big Win Energy?`;
     }
 
+    // RESPONSE: Single comprehensive response with all data
     res.json({
       success: true,
       message: welcomeMessage,
@@ -103,11 +133,11 @@ router.get('/', auth, async (req, res) => {
           totalBets,
           activeBets,
           wonBets,
-          lostBets: totalBets - activeBets - wonBets,
-          winRate: totalBets > 0 ? ((wonBets / (totalBets - activeBets)) * 100).toFixed(1) : 0,
+          lostBets,
+          winRate: (winRate * 100).toFixed(1),
           totalWagered: totalWagered.toFixed(2),
           totalWinnings: totalWinnings.toFixed(2),
-          netProfit: (totalWinnings - totalWagered).toFixed(2)
+          netProfit: netProfit.toFixed(2)
         },
         recentActivity: recentBets.map(bet => ({
           id: bet.id,
@@ -120,10 +150,9 @@ router.get('/', auth, async (req, res) => {
           placedAt: bet.placedAt
         })),
         quickStats: {
-          biggestWin: allBets
-            .filter(bet => bet.status === 'won')
-            .reduce((max, bet) => Math.max(max, parseFloat(bet.actualPayout || 0)), 0),
-          currentStreak: 0, // TODO: Calculate actual streak
+          biggestWin,
+          currentStreak,
+          streakType,
           favoritesSport: 'Coming soon!', // TODO: Calculate from bet history
           nextMilestone: totalBets < 10 ? 
             `${10 - totalBets} more bets to unlock Experienced Player!` :
@@ -145,20 +174,28 @@ router.get('/', auth, async (req, res) => {
 /**
  * GET /api/dashboard/quick-stats - Get quick statistics for dashboard widgets
  * Returns essential stats for dashboard cards and widgets
+ * OPTIMIZATION: Single query for all quick stats
  */
 router.get('/quick-stats', auth, async (req, res) => {
   try {
     const userId = req.user;
 
-    // Get essential counts quickly
-    const [user, totalBets, activeBets, wonBets] = await Promise.all([
+    // OPTIMIZATION: Single query instead of multiple separate queries
+    const [user, betCounts] = await Promise.all([
       User.findByPk(userId, { attributes: ['walletBalance'] }),
-      Bet.count({ where: { user_id: userId } }),
-      Bet.count({ where: { user_id: userId, status: 'pending' } }),
-      Bet.count({ where: { user_id: userId, status: 'won' } })
+      Bet.findAll({
+        where: { user_id: userId },
+        attributes: ['status'],
+        raw: true
+      })
     ]);
 
     const walletBalance = parseFloat(user?.walletBalance || 0);
+    
+    // Calculate counts from single query result
+    const totalBets = betCounts.length;
+    const activeBets = betCounts.filter(bet => bet.status === 'pending').length;
+    const wonBets = betCounts.filter(bet => bet.status === 'won').length;
 
     res.json({
       success: true,

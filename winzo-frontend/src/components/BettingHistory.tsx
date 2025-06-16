@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/axios';
 import { API_ENDPOINTS } from '../config/api';
 import { formatCurrency, formatPercentage } from '../utils/numberUtils';
+import { Bet, ApiResponse, ApiError } from '../types';
 import './BettingHistory.css';
 
 interface BettingHistoryItem {
@@ -87,6 +88,8 @@ const BettingHistory: React.FC = () => {
   });
 
   const fetchBettingHistory = useCallback(async (loadMore = false) => {
+    if (!user) return;
+    
     try {
       if (!loadMore) {
         setLoading(true);
@@ -127,9 +130,9 @@ const BettingHistory: React.FC = () => {
       if (analyticsResponse.data.success) {
         setAnalytics(analyticsResponse.data.data);
       }
-    } catch (error: any) {
-      console.error('Error fetching betting history:', error);
-      setError(error.message);
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      setError(apiError.message || 'Failed to load betting history');
     } finally {
       setLoading(false);
     }

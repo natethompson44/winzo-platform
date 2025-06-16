@@ -218,7 +218,7 @@ const Dashboard: React.FC = () => {
         }
         
         if (recommendationsResponse.data.success) {
-          setRecommendations(generateRecommendations(recommendationsResponse.data.analytics));
+          setRecommendations(generateRecommendations(betsResponse.data.summary));
         }
 
         if (liveEventsResponse.data.success) {
@@ -226,8 +226,7 @@ const Dashboard: React.FC = () => {
         }
 
       } catch (apiError) {
-        console.log('API not available, using mock data');
-        // Use mock data when API is not available
+        // API not available, using mock data
         setRecentBets(mockRecentBets);
         setStats(mockStats);
         setRecommendations(mockRecommendations);
@@ -289,19 +288,19 @@ const Dashboard: React.FC = () => {
     }
   }, []);
 
-  const generateRecommendations = (analytics: any): Recommendation[] => {
+  const generateRecommendations = (analytics: DashboardStats): Recommendation[] => {
     const recs: Recommendation[] = [];
     
     // Sport-based recommendations
-    if (analytics.bestSport && analytics.bestSportWinRate > 60) {
+    if (analytics.bestSport && analytics.winRate > 0.6) {
       recs.push({
         type: 'sport',
         title: `Focus on ${analytics.bestSport}`,
-        description: `You have a ${analytics.bestSportWinRate}% win rate in ${analytics.bestSport}`,
-        confidence: analytics.bestSportWinRate / 100,
-        action: 'Bet on NFL',
+        description: `You have a ${Math.round(analytics.winRate * 100)}% win rate in ${analytics.bestSport}`,
+        confidence: analytics.winRate,
+        action: 'Bet on ' + analytics.bestSport,
         priority: 'high',
-        potentialValue: analytics.bestSportProfit || 0
+        potentialValue: analytics.profit || 0
       });
     }
     
@@ -314,7 +313,7 @@ const Dashboard: React.FC = () => {
         confidence: 0.7,
         action: 'Increase stake size',
         priority: 'medium',
-        potentialValue: analytics.optimalStakeValue || 0
+        potentialValue: analytics.averageStake * 2
       });
     }
     
@@ -331,7 +330,7 @@ const Dashboard: React.FC = () => {
     }
 
     // Time-based recommendations
-    if (analytics.bestBettingTime) {
+    if (analytics.bestBettingTime && analytics.bestBettingTime !== 'N/A') {
       recs.push({
         type: 'time',
         title: `Bet during ${analytics.bestBettingTime}`,
@@ -342,16 +341,16 @@ const Dashboard: React.FC = () => {
       });
     }
 
-    // Opportunity alerts
-    if (analytics.highValueOpportunities && analytics.highValueOpportunities.length > 0) {
+    // ROI-based opportunities
+    if (analytics.roi > 0.1) {
       recs.push({
         type: 'opportunity',
         title: 'High-Value Opportunities Available',
-        description: `${analytics.highValueOpportunities.length} high-value bets available`,
+        description: `Your ROI of ${Math.round(analytics.roi * 100)}% suggests continuing current strategy`,
         confidence: 0.9,
-        action: 'View opportunities',
+        action: 'Maintain strategy',
         priority: 'high',
-        potentialValue: analytics.totalOpportunityValue || 0
+        potentialValue: analytics.totalWinnings || 0
       });
     }
     

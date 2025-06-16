@@ -102,14 +102,13 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           updateViaCache: 'none' // Always check for updates
         })
         .then((registration) => {
-          console.log('Service Worker registered successfully:', registration);
+          // Service worker registered successfully
           
           // Check for updates on page load
           registration.update();
           
           // Listen for service worker updates
           registration.addEventListener('updatefound', () => {
-            console.log('Service Worker update found');
             const newWorker = registration.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
@@ -124,7 +123,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           });
         })
         .catch((error) => {
-          console.error('Service Worker registration failed:', error);
+          // Service worker registration failed - silent handling in production
         });
     }
   }, []);

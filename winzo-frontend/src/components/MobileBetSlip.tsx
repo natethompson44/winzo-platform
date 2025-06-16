@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import './MobileBetSlip.css';
+import toast from 'react-hot-toast';
+import apiClient from '../utils/axios';
+import { API_ENDPOINTS } from '../config/api';
 
 /**
  * WINZO Mobile Bet Slip Component - Website Experience
@@ -112,9 +115,7 @@ const MobileBetSlip: React.FC = () => {
       // Simulate bet placement with professional loading
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      console.log('Placing bet with items:', betSlipItems);
-      console.log('Total stake:', totalStake);
-      console.log('Total payout:', totalPayout);
+      // Removed console.log statements for production cleanup
       
       // Success feedback
       alert('Bet placed successfully! Good luck!');

@@ -81,9 +81,21 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ user, onLogout }) =
 
   // Search functionality
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    // Implement search logic here
-    console.log('Searching for:', query);
+    // Search functionality implementation
+    // Filter and navigate based on search query
+    const lowerQuery = query.toLowerCase();
+    
+    if (lowerQuery.includes('sports') || lowerQuery.includes('bet')) {
+      navigate('/sports');
+    } else if (lowerQuery.includes('wallet') || lowerQuery.includes('deposit') || lowerQuery.includes('withdraw')) {
+      navigate('/wallet');
+    } else if (lowerQuery.includes('history') || lowerQuery.includes('bet')) {
+      navigate('/history');
+    } else if (lowerQuery.includes('dashboard') || lowerQuery.includes('home')) {
+      navigate('/dashboard');
+    }
+    
+    setIsSearchOpen(false);
   };
 
   // Keyboard navigation

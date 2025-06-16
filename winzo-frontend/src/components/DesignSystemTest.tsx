@@ -10,6 +10,7 @@ import './DesignSystemTest.css';
 const DesignSystemTest: React.FC = () => {
   const [showError, setShowError] = useState(false);
   const [testError, setTestError] = useState<ErrorDetails | null>(null);
+  const [status, setStatus] = useState('idle');
 
   const testErrorHandler = () => {
     const error: ErrorDetails = {
@@ -22,14 +23,19 @@ const DesignSystemTest: React.FC = () => {
       dismissible: true,
       action: {
         label: 'Retry',
-        onClick: () => {
-          console.log('Retrying...');
-          clearError();
-        }
+        onClick: handleRetry
       }
     };
     setTestError(error);
     setShowError(true);
+  };
+
+  const handleRetry = () => {
+    setStatus('loading');
+    // Simulate retry logic
+    setTimeout(() => {
+      setStatus('success');
+    }, 2000);
   };
 
   const clearError = () => {
