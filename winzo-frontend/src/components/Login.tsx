@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import apiClient from '../utils/axios';
-import { API_ENDPOINTS, API_CONFIG } from '../config/api';
 import { 
   UserIcon, 
-  LockIcon, 
+  LockIcon,
   LoadingIcon,
   SuccessIcon,
   WarningIcon,
