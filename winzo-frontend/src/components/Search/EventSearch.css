@@ -1,0 +1,292 @@
+/* EventSearch.css - Professional search component with auto-complete */
+
+.event-search {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Input Container */
+.event-search__input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.event-search__input {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 1rem;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  background: var(--white, #ffffff);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: var(--winzo-navy, #1a365d);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-search__input::placeholder {
+  color: rgba(26, 54, 93, 0.5);
+  font-size: 0.9rem;
+}
+
+.event-search__input:focus {
+  outline: none;
+  border-color: var(--winzo-gold, #d69e2e);
+  box-shadow: 0 0 0 3px rgba(214, 158, 46, 0.1);
+}
+
+/* Search Icon */
+.event-search__icon {
+  position: absolute;
+  right: 1rem;
+  color: rgba(26, 54, 93, 0.6);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-search__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(26, 54, 93, 0.2);
+  border-top: 2px solid var(--winzo-gold, #d69e2e);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Results Dropdown */
+.event-search__results {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--winzo-navy, #1a365d);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Individual Result */
+.event-search__result {
+  padding: 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--winzo-background, #f7fafc);
+  transition: background-color 0.2s ease;
+}
+
+.event-search__result:hover,
+.event-search__result--selected {
+  background: var(--winzo-background, #f7fafc);
+}
+
+.event-search__result:last-child {
+  border-bottom: none;
+}
+
+/* Result Header */
+.event-search__result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.event-search__matchup {
+  font-weight: 600;
+  color: var(--winzo-navy, #1a365d);
+  font-size: 1rem;
+}
+
+.event-search__live-badge {
+  background: var(--danger-red, #e53e3e);
+  color: var(--white, #ffffff);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  animation: pulse 2s infinite;
+  letter-spacing: 0.05em;
+}
+
+/* Result Details */
+.event-search__result-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: rgba(26, 54, 93, 0.7);
+}
+
+.event-search__rotation {
+  font-weight: 500;
+  color: var(--winzo-gold, #d69e2e);
+}
+
+.event-search__league {
+  font-weight: 500;
+  background: var(--winzo-navy, #1a365d);
+  color: var(--white, #ffffff);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.event-search__time {
+  font-weight: 500;
+}
+
+/* No Results */
+.event-search__no-results {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: rgba(26, 54, 93, 0.6);
+  font-style: italic;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .event-search {
+    max-width: 100%;
+  }
+  
+  .event-search__input {
+    font-size: 0.9rem;
+    padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+  }
+  
+  .event-search__input::placeholder {
+    font-size: 0.8rem;
+  }
+  
+  .event-search__icon {
+    right: 0.75rem;
+  }
+  
+  .event-search__spinner {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .event-search__result {
+    padding: 0.875rem;
+  }
+  
+  .event-search__matchup {
+    font-size: 0.9rem;
+  }
+  
+  .event-search__result-details {
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+  }
+  
+  .event-search__live-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+  }
+  
+  .event-search__league {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+  .event-search__result-details {
+    gap: 0.875rem;
+  }
+}
+
+/* Accessibility */
+.event-search__input:focus-visible {
+  outline: 2px solid var(--winzo-gold, #d69e2e);
+  outline-offset: 2px;
+}
+
+.event-search__result:focus {
+  outline: 2px solid var(--winzo-gold, #d69e2e);
+  outline-offset: -2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .event-search__input {
+    border-color: var(--winzo-navy, #1a365d);
+  }
+  
+  .event-search__results {
+    border-width: 2px;
+  }
+  
+  .event-search__result {
+    border-bottom-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .event-search__input,
+  .event-search__result {
+    transition: none;
+  }
+  
+  .event-search__spinner {
+    animation: none;
+  }
+  
+  .event-search__live-badge {
+    animation: none;
+  }
+}
+
+/* Dark mode support (if implemented) */
+@media (prefers-color-scheme: dark) {
+  .event-search__input {
+    background: var(--winzo-navy, #1a365d);
+    color: var(--white, #ffffff);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .event-search__input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .event-search__results {
+    background: var(--winzo-navy, #1a365d);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .event-search__result {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .event-search__result:hover,
+  .event-search__result--selected {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .event-search__matchup {
+    color: var(--white, #ffffff);
+  }
+  
+  .event-search__result-details {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .event-search__no-results {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}

@@ -5,14 +5,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import AuthProvider, { useAuth } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
-import SimplifiedNavigation from './components/SimplifiedNavigation';
+import MainLayout from './components/Layout/MainLayout';
 import ComponentLibrary from './components/ComponentLibrary';
 import DesignSystemTest from './components/DesignSystemTest';
 import Login from './components/Login';
 import Register from './components/Register';
-import Dashboard from './components/Dashboard';
-import SportsHierarchyEnhanced from './components/SportsHierarchyEnhanced';
-import WalletDashboard from './components/WalletDashboardEnhanced';
+import SportsPage from './pages/SportsPage';
+import LiveSportsPage from './pages/LiveSportsPage';
+import AccountPage from './pages/AccountPage';
 import BettingHistory from './components/BettingHistory';
 import { BetSlipProvider } from './contexts/BetSlipContext';
 import BetSlip from './components/BetSlip';
@@ -89,67 +89,6 @@ const AdminProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 /**
- * App Layout Component with Responsive Navigation
- */
-const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, logout } = useAuth();
-
-  // Register service worker
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js', {
-          updateViaCache: 'none' // Always check for updates
-        })
-        .then((registration) => {
-          console.log('Service Worker registered successfully:', registration);
-          
-          // Check for updates on page load
-          registration.update();
-          
-          // Listen for service worker updates
-          registration.addEventListener('updatefound', () => {
-            console.log('Service Worker update found');
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New service worker is ready, prompt user to reload
-                  if (window.confirm('A new version is available! Reload to update?')) {
-                    window.location.reload();
-                  }
-                }
-              });
-            }
-          });
-        })
-        .catch((error) => {
-          console.error('Service Worker registration failed:', error);
-        });
-    }
-  }, []);
-
-  return (
-    <div className="app-layout">
-      {/* Use Simplified Navigation */}
-      <SimplifiedNavigation 
-        user={user ? {
-          username: user.username,
-          balance: user.wallet_balance
-        } : undefined}
-        onLogout={logout} 
-      />
-      
-      <main className="app-main">
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
-      </main>
-    </div>
-  );
-};
-
-/**
  * Main App Component with Enhanced Error Handling, Navigation, and Performance
  */
 function App() {
@@ -185,79 +124,79 @@ function App() {
                       <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     </Route>
                     
-                    {/* Protected Routes with Layout */}
-                    <Route path="/dashboard" element={
-                      <ProtectedRoute>
-                        <AppLayout>
-                          <ProgressiveLoading
-                            isLoading={false}
-                            skeleton={<div>Dashboard Skeleton</div>}
-                          >
-                            <Dashboard />
-                          </ProgressiveLoading>
-                        </AppLayout>
-                      </ProtectedRoute>
-                    } />
-                    
+                    {/* NEW: Sports-focused Protected Routes */}
                     <Route path="/sports" element={
                       <ProtectedRoute>
-                        <AppLayout>
+                        <MainLayout currentPage="sports">
                           <ProgressiveLoading
                             isLoading={false}
                             skeleton={<div>Sports Skeleton</div>}
                           >
-                            <SportsHierarchyEnhanced />
+                            <SportsPage />
                           </ProgressiveLoading>
-                        </AppLayout>
+                        </MainLayout>
                       </ProtectedRoute>
                     } />
                     
-                    <Route path="/wallet" element={
+                    <Route path="/live-sports" element={
                       <ProtectedRoute>
-                        <AppLayout>
+                        <MainLayout currentPage="live-sports">
                           <ProgressiveLoading
                             isLoading={false}
-                            skeleton={<div>Wallet Skeleton</div>}
+                            skeleton={<div>Live Sports Skeleton</div>}
                           >
-                            <WalletDashboard />
+                            <LiveSportsPage />
                           </ProgressiveLoading>
-                        </AppLayout>
+                        </MainLayout>
+                      </ProtectedRoute>
+                    } />
+                    
+                    <Route path="/account" element={
+                      <ProtectedRoute>
+                        <MainLayout currentPage="account">
+                          <ProgressiveLoading
+                            isLoading={false}
+                            skeleton={<div>Account Skeleton</div>}
+                          >
+                            <AccountPage />
+                          </ProgressiveLoading>
+                        </MainLayout>
                       </ProtectedRoute>
                     } />
                     
                     <Route path="/history" element={
                       <ProtectedRoute>
-                        <AppLayout>
+                        <MainLayout currentPage="history">
                           <ProgressiveLoading
                             isLoading={false}
                             skeleton={<div>History Skeleton</div>}
                           >
                             <BettingHistory />
                           </ProgressiveLoading>
-                        </AppLayout>
+                        </MainLayout>
                       </ProtectedRoute>
                     } />
                     
                     {/* Design System Component Library */}
                     <Route path="/components" element={
                       <ProtectedRoute>
-                        <AppLayout>
+                        <MainLayout currentPage="sports">
                           <ComponentLibrary />
-                        </AppLayout>
+                        </MainLayout>
                       </ProtectedRoute>
                     } />
                     
                     {/* Design System Test */}
                     <Route path="/design-system-test" element={
                       <ProtectedRoute>
-                        <AppLayout>
+                        <MainLayout currentPage="sports">
                           <DesignSystemTest />
-                        </AppLayout>
+                        </MainLayout>
                       </ProtectedRoute>
                     } />
                     
-                    {/* Catch-all redirect */}
-                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    {/* Catch-all redirect to sports instead of dashboard */}
+                    <Route path="*" element={<Navigate to="/sports" replace />} />
                   </Routes>
                 </div>
               </Router>
