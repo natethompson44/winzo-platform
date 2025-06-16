@@ -19,10 +19,6 @@ const dashboardRoutes = require('./routes/dashboard');
 const app = express();
 app.set('trust proxy', 1);
 
-console.log('\n🌟 WINZO Backend starting...');
-console.log('\n📊 Environment:', process.env.NODE_ENV || 'development');
-console.log('\n🔌 Port:', process.env.PORT || 5000);
-
 // Global security middleware with WINZO configuration
 const corsOptions = {
   origin: [
@@ -124,12 +120,22 @@ app.use(errorHandlingMiddleware);
 const oddsApiService = require('./services/oddsApiService');
 console.log('OddsApiService initialized');
 
+// Port configuration with Railway support
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
-app.listen(PORT, '0.0.0.0', () => {
+// Log environment details
+console.log('\n🌟 WINZO Backend starting...');
+console.log('\n📊 Environment:', process.env.NODE_ENV || 'development');
+console.log('\n🔌 Port:', PORT);
+console.log('\n🌐 Host:', HOST);
+console.log('\n🔑 Database URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+console.log('\n🔒 SSL Mode:', process.env.NODE_ENV === 'production' ? 'Enabled' : 'Disabled');
+
+app.listen(PORT, HOST, () => {
   console.log('\n✅ WINZO Backend started successfully');
-  console.log(`\n🌐 Server running on port ${PORT}`);
+  console.log(`\n🌐 Server running on ${HOST}:${PORT}`);
   console.log(`\n🏥 Health check available at /health`);
-  console.log(`\n🔗 CORS enabled for: ${process.env.CORS_ORIGIN}`);
+  console.log(`\n🔗 CORS enabled for: ${process.env.CORS_ORIGIN || 'default origins'}`);
 });
 
