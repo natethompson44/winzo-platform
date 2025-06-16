@@ -564,7 +564,7 @@ const SportsHierarchy: React.FC = () => {
                             </span>
                           )}
                           <span className="upcoming-events">
-                            <ClockIcon size="xs" />
+                            <ClockIcon size="sm" />
                             {league.upcomingEvents} upcoming
                           </span>
                         </div>
