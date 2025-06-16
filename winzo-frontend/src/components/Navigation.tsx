@@ -6,7 +6,7 @@ import {
   WalletIcon, 
   HistoryIcon,
   LogoutIcon 
-} from './icons';
+} from './icons/IconLibrary';
 import './Navigation.css';
 
 interface NavigationProps {
