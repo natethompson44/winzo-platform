@@ -227,7 +227,7 @@ class ApiSportsService {
   transformOdds(odd) {
     const decimal = parseFloat(odd.odds[0]);
     return {
-      bookmaker: odd.bookmaker,
+      bookmakerName: odd.bookmaker,
       bookmakerTitle: odd.bookmaker,
       market: odd.name,
       outcome: odd.value,
@@ -281,7 +281,7 @@ class ApiSportsService {
             const oddData = this.transformOdds(odd);
             const created = await Odds.create({
               sports_event_id: event.id,
-              bookmaker: oddData.bookmaker,
+              bookmakerName: oddData.bookmakerName,
               bookmakerTitle: oddData.bookmakerTitle,
               market: oddData.market,
               outcome: oddData.outcome,

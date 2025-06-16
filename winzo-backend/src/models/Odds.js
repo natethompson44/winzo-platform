@@ -24,9 +24,10 @@ Odds.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    bookmaker: {
+    bookmakerName: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: 'bookmaker',
       comment: 'Name of the bookmaker providing these odds (e.g., fanduel)',
     },
     bookmakerTitle: {

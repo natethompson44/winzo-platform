@@ -89,7 +89,7 @@ router.post('/place', auth, async (req, res) => {
         odds: bet.odds,
         stake: bet.stake,
         market_type: bet.marketType || 'h2h',
-        bookmaker: bet.bookmaker || 'winzo',
+        bookmakerName: bet.bookmaker || 'winzo',
         bet_type: betType,
         status: 'pending',
         potential_payout: calculatePayout(bet.stake, bet.odds),
