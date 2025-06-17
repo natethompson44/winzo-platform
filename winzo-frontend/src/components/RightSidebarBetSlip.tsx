@@ -80,7 +80,8 @@ const RightSidebarBetSlip: React.FC = () => {
     }
   };
 
-  if (!isOpen) {
+  // Don't render on mobile - let MobileBetSlip handle it
+  if (!isOpen || window.innerWidth <= 768) {
     return null;
   }
 

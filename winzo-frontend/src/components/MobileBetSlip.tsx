@@ -33,7 +33,20 @@ const MobileBetSlip: React.FC = () => {
   const [quickStakes] = useState([10, 25, 50, 100, 250, 500]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Swipe handlers for professional website feel
   const swipeHandlers = useSwipeable({
@@ -160,7 +173,8 @@ const MobileBetSlip: React.FC = () => {
     setInputValue(totalStake.toString());
   }, [totalStake]);
 
-  if (!isOpen) return null;
+  // Only render on mobile devices
+  if (!isOpen || !isMobile) return null;
 
   return (
     <>
