@@ -6,8 +6,9 @@
     "start": "node railway-start-simple.js",
     "dev": "nodemon src/server.js",
     "migrate": "node src/database/migrate.js",
-    "railway:start": "node railway-start.js",
+    "railway:start": "node railway-start-simple.js",
     "railway:simple": "node railway-start-simple.js",
+    "railway:full": "node railway-start.js",
     "test": "echo \"Tests not implemented yet\"",
     "lint": "echo \"Linting not configured\""
   },

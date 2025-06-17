@@ -23,6 +23,24 @@ function startServer() {
 // Main execution - simplified
 async function main() {
   try {
+    // Handle database reset if needed
+    if (process.env.RESET_DATABASE === 'true') {
+      console.log('\n🔄 RESET_DATABASE flag detected, resetting database...');
+      try {
+        const { resetDatabase } = require('./reset-database');
+        // Add timeout for database reset
+        const resetPromise = resetDatabase();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Database reset timeout')), 60000)
+        );
+        await Promise.race([resetPromise, timeoutPromise]);
+        console.log('\n✅ Database reset completed');
+      } catch (resetError) {
+        console.error('\n❌ Database reset failed:', resetError.message);
+        console.log('\n⚠️ Continuing with server start...');
+      }
+    }
+    
     // Wait briefly for Railway environment
     console.log('\n⏳ Waiting for Railway environment...');
     await new Promise(resolve => setTimeout(resolve, 2000));
