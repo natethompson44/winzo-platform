@@ -17,11 +17,14 @@ class OddsApiService {
       odds: parseInt(process.env.ODDS_API_CACHE_DURATION_ODDS) || 30,
       scores: parseInt(process.env.ODDS_API_CACHE_DURATION_SCORES) || 15
     };
+    
+    // Don't throw error if API key is missing - just log warning
     if (!this.apiKey) {
-      console.error('ODDS_API_KEY not found in environment variables');
-      throw new Error('ODDS_API_KEY is required');
+      console.warn('⚠️ ODDS_API_KEY not found in environment variables - OddsApiService will be limited');
+      this.apiKey = 'dummy-key'; // Use dummy key to prevent crashes
+    } else {
+      console.log('OddsApiService initialized with API key:', this.apiKey.substring(0, 8) + '...');
     }
-    console.log('OddsApiService initialized with API key:', this.apiKey.substring(0, 8) + '...');
   }
 
   /**

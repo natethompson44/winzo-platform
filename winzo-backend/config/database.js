@@ -12,16 +12,19 @@ const baseConfig = {
   logging: process.env.DB_LOGGING === 'true' ? console.log : false,
   define: { underscored: true, freezeTableName: true },
   pool: {
-    max: parseInt(process.env.DB_MAX_POOL || '5', 10),
+    max: parseInt(process.env.DB_MAX_POOL || '3', 10),
     min: parseInt(process.env.DB_MIN_POOL || '0', 10),
-    acquire: parseInt(process.env.DB_ACQUIRE || '30000', 10),
-    idle: parseInt(process.env.DB_IDLE || '10000', 10)
+    acquire: parseInt(process.env.DB_ACQUIRE || '60000', 10),
+    idle: parseInt(process.env.DB_IDLE || '30000', 10)
   },
   dialectOptions: {
     ssl: process.env.NODE_ENV === 'production' ? {
       require: true,
       rejectUnauthorized: false
-    } : false
+    } : false,
+    connectTimeout: 60000,
+    acquireTimeout: 60000,
+    timeout: 60000
   },
   migrationStorageTableName: null,
   seederStorageTableName: null,

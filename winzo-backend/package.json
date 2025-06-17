@@ -3,10 +3,11 @@
   "version": "2.0.0",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node railway-start-simple.js",
     "dev": "nodemon src/server.js",
     "migrate": "node src/database/migrate.js",
     "railway:start": "node railway-start.js",
+    "railway:simple": "node railway-start-simple.js",
     "test": "echo \"Tests not implemented yet\"",
     "lint": "echo \"Linting not configured\""
   },

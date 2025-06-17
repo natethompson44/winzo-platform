@@ -24,12 +24,12 @@ function runMigration() {
       resolve(); // Always resolve to continue with server start
     });
     
-    // Set a timeout for migration (5 minutes max)
+    // Set a timeout for migration (2 minutes max - reduced from 5)
     setTimeout(() => {
       console.log('\n⏰ Migration timeout reached, continuing with server start...');
       migrationProcess.kill();
       resolve();
-    }, 300000); // 5 minutes
+    }, 120000); // 2 minutes
   });
 }
 
@@ -74,8 +74,8 @@ async function main() {
 
 // Add overall timeout
 setTimeout(() => {
-  console.error('\n💥 Startup timeout reached after 10 minutes');
+  console.error('\n💥 Startup timeout reached after 5 minutes');
   process.exit(1);
-}, 600000); // 10 minutes
+}, 300000); // 5 minutes - reduced from 10
 
 main();

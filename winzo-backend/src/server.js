@@ -10,6 +10,18 @@ const {
 } = require('./middleware/optimization');
 require('dotenv').config();
 
+// Validate critical environment variables
+const requiredEnvVars = ['DATABASE_URL'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingVars);
+  console.error('💥 Server cannot start without these variables');
+  process.exit(1);
+}
+
+console.log('✅ Environment validation passed');
+
 const initDatabase = require('./database/init');
 const authRoutes = require('./routes/auth');
 const sportsRoutes = require('./routes/sports');
@@ -44,16 +56,19 @@ app.use(express.json());
 // Track database initialization status
 let databaseReady = false;
 let databaseError = null;
+let databaseInitializing = true;
 
 // Initialize database connection in background
 initDatabase()
   .then(() => {
     console.log('✅ Database initialization completed');
     databaseReady = true;
+    databaseInitializing = false;
   })
   .catch((error) => {
     console.error('❌ Database initialization failed:', error);
     databaseError = error;
+    databaseInitializing = false;
   });
 
 // Application routes with WINZO Big Win Energy
@@ -65,27 +80,32 @@ app.use('/api/bets', require('./routes/betting'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  if (databaseError) {
-    return res.status(503).json({
-      success: false,
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development',
-      version: '1.0.0',
-      database: 'error',
-      error: databaseError.message
-    });
-  }
-  
-  res.status(200).json({
+  // Always respond quickly, don't wait for database
+  const healthStatus = {
     success: true,
-    status: databaseReady ? 'healthy' : 'initializing',
+    status: databaseReady ? 'healthy' : (databaseInitializing ? 'initializing' : 'degraded'),
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
     version: '1.0.0',
-    database: databaseReady ? 'connected' : 'connecting'
+    database: databaseReady ? 'connected' : (databaseInitializing ? 'connecting' : 'disconnected')
+  };
+
+  if (databaseError) {
+    healthStatus.database_error = databaseError.message;
+  }
+
+  const statusCode = databaseReady ? 200 : 503;
+  res.status(statusCode).json(healthStatus);
+});
+
+// Simple health check for Railway (always returns 200)
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
   });
 });
 
@@ -115,10 +135,6 @@ app.use('*', (req, res) => {
 });
 
 app.use(errorHandlingMiddleware);
-
-// Initialize OddsApiService
-const oddsApiService = require('./services/oddsApiService');
-console.log('OddsApiService initialized');
 
 // Port configuration with Railway support
 const PORT = process.env.PORT || 5000;

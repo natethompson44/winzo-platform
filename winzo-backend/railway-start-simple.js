@@ -5,27 +5,29 @@ console.log('\n🚀 Starting WINZO Backend on Railway (Simple Mode)...');
 console.log('\n📊 Environment:', process.env.NODE_ENV || 'development');
 console.log('\n⏰ Start time:', new Date().toISOString());
 
-// Function to start the server directly
+// Simple startup function
 function startServer() {
-  console.log('\n🌟 Starting Express server (skipping migration)...');
+  console.log('\n🌟 Starting Express server...');
   console.log('\n⏰ Server start time:', new Date().toISOString());
+  
   try {
     const serverPath = path.join(__dirname, 'src', 'server.js');
     require(serverPath);
+    console.log('\n✅ Server module loaded successfully');
   } catch (error) {
     console.error('\n❌ Server startup failed:', error);
     process.exit(1);
   }
 }
 
-// Main execution
+// Main execution - simplified
 async function main() {
   try {
     // Wait briefly for Railway environment
     console.log('\n⏳ Waiting for Railway environment...');
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Start the server immediately
+    // Start server immediately
     startServer();
   } catch (error) {
     console.error('\n❌ Startup failed:', error);
@@ -33,10 +35,10 @@ async function main() {
   }
 }
 
-// Add overall timeout
+// Shorter timeout for simple mode
 setTimeout(() => {
-  console.error('\n💥 Startup timeout reached after 5 minutes');
+  console.error('\n💥 Startup timeout reached after 3 minutes');
   process.exit(1);
-}, 300000); // 5 minutes
+}, 180000); // 3 minutes
 
 main(); 
