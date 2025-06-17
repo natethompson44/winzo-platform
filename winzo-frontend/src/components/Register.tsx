@@ -106,11 +106,6 @@ const Register: React.FC = () => {
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="input-group">
             <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'username' ? 'focused' : ''} ${username ? 'has-value' : ''}`}>
-              <UserIcon 
-                size="sm" 
-                color={focusedField === 'username' ? 'secondary' : 'muted'} 
-                className="input-icon" 
-              />
               <input
                 className="luxury-input"
                 type="text"
@@ -128,11 +123,6 @@ const Register: React.FC = () => {
 
           <div className="input-group">
             <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'inviteCode' ? 'focused' : ''} ${inviteCode ? 'has-value' : ''}`}>
-              <LockIcon 
-                size="sm" 
-                color={focusedField === 'inviteCode' ? 'secondary' : 'muted'} 
-                className="input-icon" 
-              />
               <input
                 className="luxury-input"
                 type="text"
@@ -150,14 +140,9 @@ const Register: React.FC = () => {
 
           <div className="input-group">
             <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'password' ? 'focused' : ''} ${password ? 'has-value' : ''}`}>
-              <LockIcon 
-                size="sm" 
-                color={focusedField === 'password' ? 'secondary' : 'muted'} 
-                className="input-icon" 
-              />
               <input
                 className="luxury-input"
-                type={showPassword ? 'text' : 'password'}
+                type="password"
                 placeholder="Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -168,32 +153,14 @@ const Register: React.FC = () => {
                 autoComplete="new-password"
                 minLength={8}
               />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={togglePasswordVisibility}
-                disabled={isLoading}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? (
-                  <EyeOffIcon size="sm" color="muted" />
-                ) : (
-                  <EyeIcon size="sm" color="muted" />
-                )}
-              </button>
             </div>
           </div>
 
           <div className="input-group">
             <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'confirmPassword' ? 'focused' : ''} ${confirmPassword ? 'has-value' : ''}`}>
-              <LockIcon 
-                size="sm" 
-                color={focusedField === 'confirmPassword' ? 'secondary' : 'muted'} 
-                className="input-icon" 
-              />
               <input
                 className="luxury-input"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type="password"
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
@@ -204,19 +171,6 @@ const Register: React.FC = () => {
                 autoComplete="new-password"
                 minLength={8}
               />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={toggleConfirmPasswordVisibility}
-                disabled={isLoading}
-                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-              >
-                {showConfirmPassword ? (
-                  <EyeOffIcon size="sm" color="muted" />
-                ) : (
-                  <EyeIcon size="sm" color="muted" />
-                )}
-              </button>
             </div>
           </div>
 

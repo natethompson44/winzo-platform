@@ -86,11 +86,6 @@ const Login: React.FC = () => {
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="input-group">
             <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'username' ? 'focused' : ''} ${username ? 'has-value' : ''}`}>
-              <UserIcon 
-                size="sm" 
-                color={focusedField === 'username' ? 'secondary' : 'muted'} 
-                className="input-icon" 
-              />
               <input
                 className="luxury-input"
                 type="text"
@@ -108,14 +103,9 @@ const Login: React.FC = () => {
 
           <div className="input-group">
             <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'password' ? 'focused' : ''} ${password ? 'has-value' : ''}`}>
-              <LockIcon 
-                size="sm" 
-                color={focusedField === 'password' ? 'secondary' : 'muted'} 
-                className="input-icon" 
-              />
               <input
                 className="luxury-input"
-                type={showPassword ? 'text' : 'password'}
+                type="password"
                 placeholder="Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -125,19 +115,6 @@ const Login: React.FC = () => {
                 disabled={isLoading}
                 autoComplete="current-password"
               />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={togglePasswordVisibility}
-                disabled={isLoading}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? (
-                  <EyeOffIcon size="sm" color="muted" />
-                ) : (
-                  <EyeIcon size="sm" color="muted" />
-                )}
-              </button>
             </div>
           </div>
 
