@@ -24,7 +24,7 @@ interface LiveGameEvent {
 interface LiveEventsListProps {
   events: LiveGameEvent[];
   highlightedEventId?: string | null;
-  selectedBetType: 'straight' | 'parlay' | 'teaser' | 'if-bet';
+  selectedBetType?: 'straight' | 'parlay' | 'teaser' | 'if-bet';
 }
 
 const LiveEventsList: React.FC<LiveEventsListProps> = ({ 

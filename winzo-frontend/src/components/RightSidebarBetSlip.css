@@ -1,7 +1,7 @@
-/* Right Sidebar Bet Slip CSS */
+/* WINZO Right Sidebar Bet Slip CSS */
 
 /* Backdrop */
-.right-sidebar-betslip-backdrop {
+.bet-slip-backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -10,29 +10,39 @@
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   z-index: 999;
-  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Right Sidebar Bet Slip */
-.right-sidebar-betslip {
+.bet-slip-sidebar {
   position: fixed;
-  top: var(--header-height, 80px);
+  top: 80px; /* Below header */
   right: 0;
-  width: 300px;
-  height: calc(100vh - var(--header-height, 80px));
+  width: 350px;
+  height: calc(100vh - 80px);
   background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  border-left: 1px solid rgba(148, 163, 184, 0.15);
+  border-left: 2px solid #d97706;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
   backdrop-filter: blur(20px);
   overflow: hidden;
 }
 
+.bet-slip-sidebar.open {
+  transform: translateX(0);
+}
+
 /* Header */
-.betslip-header {
+.bet-slip-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -48,7 +58,7 @@
   width: 100%;
 }
 
-.betslip-title {
+.bet-slip-title {
   font-size: 1.25rem;
   font-weight: 700;
   color: #f8fafc;
@@ -58,7 +68,7 @@
   gap: 8px;
 }
 
-.betslip-icon {
+.bet-slip-icon {
   font-size: 1.125rem;
 }
 
@@ -85,24 +95,32 @@
   transform: scale(1.1);
 }
 
-/* Bet Type Selector */
-.bet-type-selector {
-  padding: 16px 20px;
+/* Bet Types Section (Moved from top of page) */
+.bet-types-section {
+  padding: 20px;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   background: rgba(15, 23, 42, 0.5);
 }
 
-.bet-type-options {
-  display: flex;
-  gap: 8px;
+.bet-types-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0 0 16px 0;
 }
 
-.bet-type-btn {
-  flex: 1;
-  padding: 10px 16px;
+.bet-types-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.bet-type {
+  padding: 12px;
   background: rgba(148, 163, 184, 0.1);
   border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
+  border-radius: 6px;
   color: #94a3b8;
   font-weight: 500;
   font-size: 0.875rem;
@@ -110,36 +128,75 @@
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  position: relative;
 }
 
-.bet-type-btn:hover:not(:disabled) {
+.bet-type:hover:not(:disabled) {
   background: rgba(148, 163, 184, 0.2);
   border-color: rgba(148, 163, 184, 0.3);
   color: #f8fafc;
   transform: translateY(-1px);
 }
 
-.bet-type-btn.active {
+.bet-type.active {
   background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
   border-color: #d97706;
   color: #0f172a;
   font-weight: 600;
 }
 
-.bet-type-btn:disabled {
+.bet-type:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.bet-type.disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
+.min-selections {
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
+.bet-type-info {
+  margin-top: 12px;
+}
+
+.bet-type-description {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin: 0 0 8px 0;
+  font-style: italic;
+}
+
+.teaser-info, .if-bet-info, .parlay-info {
+  padding: 8px 12px;
+  background: rgba(217, 119, 6, 0.1);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.teaser-info small, .if-bet-info small, .parlay-info small {
+  font-size: 0.75rem;
+  color: #d97706;
+  font-weight: 500;
+}
+
 /* Bet Slip Content */
-.betslip-content {
+.bet-slip-content {
   flex: 1;
   overflow-y: auto;
   padding: 16px 0;
 }
 
 /* Empty Bet Slip */
-.empty-betslip {
+.empty-bet-slip {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -155,14 +212,14 @@
   opacity: 0.5;
 }
 
-.empty-betslip h4 {
+.empty-bet-slip h4 {
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0 0 8px 0;
   color: #f8fafc;
 }
 
-.empty-betslip p {
+.empty-bet-slip p {
   font-size: 0.875rem;
   opacity: 0.8;
   line-height: 1.4;
@@ -282,6 +339,7 @@
   justify-content: space-between;
   font-size: 0.75rem;
   color: #94a3b8;
+  margin-bottom: 12px;
 }
 
 .market-type {
@@ -296,6 +354,51 @@
   font-style: italic;
 }
 
+/* Stake Input for Individual Bets */
+.stake-input-section {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.stake-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stake-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  color: #f8fafc;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.stake-input:focus {
+  outline: none;
+  border-color: #d97706;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2);
+}
+
+.potential-payout {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #10b981;
+  font-weight: 600;
+  text-align: center;
+}
+
 /* Bet Summary */
 .bet-summary {
   padding: 20px;
@@ -303,41 +406,97 @@
   border-top: 1px solid rgba(148, 163, 184, 0.1);
 }
 
+.summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.summary-header h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.bet-type-badge {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  color: #0f172a;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Combined Stake Input for Multi-Bets */
+.combined-stake-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(217, 119, 6, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.combined-stake-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  color: #f8fafc;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.combined-stake-input:focus {
+  outline: none;
+  border-color: #d97706;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2);
+}
+
+.summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .summary-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
   font-size: 0.875rem;
-}
-
-.summary-row:last-child {
-  margin-bottom: 0;
 }
 
 .summary-row span:first-child {
   color: #94a3b8;
 }
 
-.summary-row span:last-child {
+.summary-row .value {
   font-weight: 600;
   color: #f8fafc;
 }
 
-.bet-type-label {
-  color: #d97706;
-  font-weight: 600;
-}
-
-.total-stake {
+.summary-row .total-stake {
   color: #f8fafc;
   font-weight: 700;
 }
 
-.potential-win {
+.summary-row.highlight {
+  padding: 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.summary-row.highlight .potential-win {
   color: #10b981;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 /* Bet Actions */
@@ -350,7 +509,7 @@
 }
 
 .place-bet-btn {
-  padding: 14px 20px;
+  padding: 16px 20px;
   background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
   border: none;
   border-radius: 8px;
@@ -514,17 +673,17 @@
 }
 
 .detail-row.highlight {
-  background: rgba(217, 119, 6, 0.1);
-  margin: 0 -24px;
-  padding: 16px 24px;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 16px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(217, 119, 6, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  margin-top: 8px;
 }
 
 .detail-row.highlight span:last-child {
-  color: #d97706;
-  font-weight: 700;
+  color: #10b981;
   font-size: 1.125rem;
+  font-weight: 700;
 }
 
 .confirmation-actions {
@@ -545,6 +704,10 @@
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .confirm-bet-btn:hover:not(:disabled) {
@@ -553,7 +716,7 @@
 }
 
 .confirm-bet-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.7;
   cursor: not-allowed;
   transform: none;
 }
@@ -584,54 +747,60 @@
   cursor: not-allowed;
 }
 
-/* Loading Spinner */
 .loading-spinner-small {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid #ffffff;
+  border: 2px solid rgba(15, 23, 42, 0.3);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-  margin-right: 8px;
+  border-top-color: #0f172a;
+  animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Responsive Design */
 @media (max-width: 1400px) {
-  .right-sidebar-betslip {
-    width: 280px;
+  .bet-slip-sidebar {
+    width: 320px;
   }
 }
 
 @media (max-width: 1200px) {
-  .right-sidebar-betslip {
-    width: 260px;
+  .bet-slip-sidebar {
+    width: 300px;
   }
 }
 
+/* Mobile Bottom Sheet */
 @media (max-width: 768px) {
-  .right-sidebar-betslip-backdrop {
-    display: block;
-  }
-
-  .right-sidebar-betslip {
-    transform: translateX(100%);
+  .bet-slip-sidebar {
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    right: 0;
     width: 100%;
-    max-width: 400px;
+    height: 60vh;
+    border-left: none;
+    border-top: 2px solid #d97706;
+    transform: translateY(100%);
+    border-radius: 16px 16px 0 0;
+  }
+  
+  .bet-slip-sidebar.open {
+    transform: translateY(0);
   }
 
-  .right-sidebar-betslip.open {
-    transform: translateX(0);
+  .bet-types-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
-  .bet-confirmation-modal {
-    margin: 20px;
-    max-width: none;
+  .bet-type {
+    padding: 10px 8px;
+    font-size: 0.75rem;
   }
 
   .confirmation-actions {
@@ -642,11 +811,10 @@
 @media (hover: none) and (pointer: coarse) {
   .close-button,
   .remove-bet,
-  .bet-type-btn,
+  .bet-type,
   .place-bet-btn,
-  .clear-all-btn,
-  .confirm-bet-btn,
-  .cancel-bet-btn {
+  .clear-all-btn {
     min-height: 44px;
+    min-width: 44px;
   }
 } 

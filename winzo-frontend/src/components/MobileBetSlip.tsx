@@ -1,22 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useBetSlip } from '../contexts/BetSlipContext';
+import { formatCurrency } from '../utils/numberUtils';
 import './MobileBetSlip.css';
 
 /**
- * WINZO Mobile Bet Slip Component - Website Experience
+ * WINZO Mobile Bet Slip Component
  * 
- * Professional mobile betting interface that maintains website feel:
- * - Responsive odds tables
- * - Touch-optimized bet slip
- * - Easy bet amount entry
- * - Professional confirmation flows
- * - Swipe gestures for odds browsing
- * - NO mobile app-style interactions
+ * Mobile betting interface following the same pattern as desktop:
+ * - Bottom sheet design
+ * - Integrated bet types
+ * - Touch-optimized interactions
+ * - Swipe gestures
  */
 const MobileBetSlip: React.FC = () => {
   const { 
     betSlipItems, 
+    betType,
+    setBetType,
     isOpen, 
     totalStake, 
     totalPayout,
@@ -28,13 +29,16 @@ const MobileBetSlip: React.FC = () => {
   } = useBetSlip();
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showKeyboard, setShowKeyboard] = useState(false);
-  const [inputValue, setInputValue] = useState(totalStake.toString());
-  const [quickStakes] = useState([10, 25, 50, 100, 250, 500]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  const betTypeOptions = [
+    { id: 'straight' as const, label: 'Straight', description: 'Single bet on one selection' },
+    { id: 'parlay' as const, label: 'Parlay', description: 'Multiple selections combined', minSelections: 2 },
+    { id: 'teaser' as const, label: 'Teaser', description: 'Adjusted point spreads', minSelections: 2 },
+    { id: 'if-bet' as const, label: 'If Bet', description: 'Conditional betting', minSelections: 2 }
+  ];
 
   // Check if device is mobile
   useEffect(() => {
@@ -48,295 +52,264 @@ const MobileBetSlip: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Swipe handlers for professional website feel
+  // Swipe handlers
   const swipeHandlers = useSwipeable({
     onSwipedUp: () => {
       if (isOpen && !isExpanded) setIsExpanded(true);
     },
     onSwipedDown: () => {
       if (isOpen && isExpanded) setIsExpanded(false);
+      else if (isOpen) setIsOpen(false);
     },
     trackMouse: false
   });
 
-  // Handle stake input with professional validation
-  const handleStakeChange = (value: string) => {
-    const numericValue = parseFloat(value) || 0;
-    setInputValue(value);
-    
-    // Validate stake amount
-    if (numericValue < 0) {
-      setInputValue('0');
-      return;
-    }
-    
-    if (numericValue > 10000) {
-      setInputValue('10000');
-      return;
-    }
-    
-    // Update stake for all items
-    betSlipItems.forEach(item => {
-      updateStake(item.id, numericValue / betSlipItems.length);
-    });
+  const getBetTypeLabel = (type: string) => {
+    const option = betTypeOptions.find(opt => opt.id === type);
+    return option ? option.label : type;
   };
 
-  // Quick stake buttons with professional feedback
-  const handleQuickStake = (amount: number) => {
-    const newStake = Math.min(totalStake + amount, 10000);
-    setInputValue(newStake.toString());
-    
-    // Distribute stake across all items
-    betSlipItems.forEach(item => {
-      updateStake(item.id, newStake / betSlipItems.length);
-    });
-    
-    // Provide haptic feedback if available
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
+  const isBetTypeDisabled = (type: string) => {
+    const option = betTypeOptions.find(opt => opt.id === type);
+    if (option && option.minSelections) {
+      return betSlipItems.length < option.minSelections;
     }
+    return false;
   };
 
-  // Professional bet placement with confirmation
+  const handleStakeUpdate = (id: string, value: string) => {
+    const stake = parseFloat(value) || 0;
+    updateStake(id, stake);
+  };
+
   const handlePlaceBet = async () => {
-    if (betSlipItems.length === 0) {
-      alert('Please add at least one selection to your bet slip');
-      return;
-    }
-
-    if (totalStake <= 0) {
-      alert('Please enter a valid stake amount');
-      return;
-    }
-
-    if (!canPlaceBet()) {
-      alert('Please ensure all selections have valid stakes');
-      return;
-    }
-
+    if (!canPlaceBet()) return;
     setShowConfirmation(true);
   };
 
-  // Confirm bet placement
   const confirmBet = async () => {
     setIsProcessing(true);
     
     try {
-      // Simulate bet placement with professional loading
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // TODO: Implement actual bet placement API call
+      console.log('Placing bet:', {
+        items: betSlipItems,
+        totalStake,
+        totalPayout,
+        betType
+      });
       
-      console.log('Placing bet with items:', betSlipItems);
-      console.log('Total stake:', totalStake);
-      console.log('Total payout:', totalPayout);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Success feedback
-      alert('Bet placed successfully! Good luck!');
+      // Success - clear bet slip and close
       clearBetSlip();
+      setIsOpen(false);
       setShowConfirmation(false);
+      
     } catch (error) {
-      alert('Failed to place bet. Please try again.');
+      console.error('Failed to place bet:', error);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Cancel bet placement
   const cancelBet = () => {
     setShowConfirmation(false);
   };
 
-  // Auto-close on escape
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        if (showConfirmation) {
-          setShowConfirmation(false);
-        } else {
-          setIsOpen(false);
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [isOpen, setIsOpen, showConfirmation]);
-
-  // Focus input when opened
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 300);
-    }
-  }, [isOpen]);
-
-  // Update input value when totalStake changes
-  useEffect(() => {
-    setInputValue(totalStake.toString());
-  }, [totalStake]);
-
-  // Only render on mobile devices
+  // Only render on mobile devices when open
   if (!isOpen || !isMobile) return null;
 
   return (
     <>
-      {/* Mobile Bet Slip - Website Style */}
-      {isOpen && (
-        <div 
-          className="mobile-bet-slip"
-          style={{ height: isExpanded ? '85vh' : '65vh' }}
-          {...swipeHandlers}
-        >
-          {/* Header */}
-          <div className="bet-slip-header">
-            <div className="header-content">
-              <h3 className="bet-slip-title">
-                Bet Slip ({betSlipItems.length})
-              </h3>
-              <div className="header-actions">
-                <button 
-                  className="clear-btn"
-                  onClick={clearBetSlip}
-                  disabled={betSlipItems.length === 0}
-                >
-                  Clear All
-                </button>
-                <button 
-                  className="close-btn"
-                  onClick={() => setIsOpen(false)}
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            
-            {/* Swipe indicator */}
-            <div className="swipe-indicator">
-              <div className="swipe-dot"></div>
-            </div>
+      {/* Mobile Bet Slip - Bottom Sheet */}
+      <div 
+        className={`mobile-bet-slip ${isOpen ? 'open' : 'closed'}`}
+        {...swipeHandlers}
+      >
+        {/* Header */}
+        <div className="mobile-bet-slip-header">
+          <div className="swipe-indicator">
+            <div className="swipe-handle"></div>
           </div>
+          <div className="header-content">
+            <h3 className="mobile-bet-slip-title">
+              <span className="bet-slip-icon">📋</span>
+              Bet Slip ({betSlipItems.length})
+            </h3>
+            <button 
+              className="close-btn"
+              onClick={() => setIsOpen(false)}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
 
-          {/* Selections */}
-          <div className="bet-slip-content">
-            {betSlipItems.length === 0 ? (
-              <div className="empty-selections">
-                <div className="empty-icon">📝</div>
-                <h4>No selections yet</h4>
-                <p>Add selections from the sports events to start betting</p>
-              </div>
-            ) : (
-              <div className="selections-list">
-                {betSlipItems.map((item) => (
-                  <div key={item.id} className="selection-item">
-                    <div className="selection-info">
-                      <div className="selection-event">
-                        <span className="event-name">{item.homeTeam} vs {item.awayTeam}</span>
-                        <span className="event-time">{item.commenceTime}</span>
-                      </div>
-                      <div className="selection-details">
-                        <span className="selection-name">{item.selectedTeam}</span>
-                        <span className="selection-odds">{item.odds}</span>
-                      </div>
-                    </div>
-                    
-                    <button 
-                      className="remove-selection"
+        {/* Bet Types Section */}
+        <div className="mobile-bet-types-section">
+          <h4 className="bet-types-title">Bet Type</h4>
+          <div className="mobile-bet-types-grid">
+            {betTypeOptions.map((option) => (
+              <button
+                key={option.id}
+                className={`mobile-bet-type ${betType === option.id ? 'active' : ''} ${
+                  isBetTypeDisabled(option.id) ? 'disabled' : ''
+                }`}
+                onClick={() => setBetType(option.id)}
+                disabled={isBetTypeDisabled(option.id)}
+                title={option.description}
+              >
+                {option.label}
+                {option.minSelections && betSlipItems.length < option.minSelections && (
+                  <span className="min-selections">({option.minSelections}+)</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="mobile-bet-slip-content">
+          {betSlipItems.length === 0 ? (
+            <div className="empty-mobile-bet-slip">
+              <div className="empty-icon">📝</div>
+              <h4>No selections yet</h4>
+              <p>Tap on odds to add selections</p>
+            </div>
+          ) : (
+            <div className="mobile-bet-items">
+              {betSlipItems.map((item, index) => (
+                <div key={item.id} className="mobile-bet-item">
+                  <div className="mobile-bet-item-header">
+                    <div className="bet-number">#{index + 1}</div>
+                    <button
+                      className="remove-mobile-bet"
                       onClick={() => removeFromBetSlip(item.id)}
-                      aria-label="Remove selection"
+                      aria-label="Remove bet"
                     >
                       ✕
                     </button>
                   </div>
-                ))}
+                  
+                  <div className="mobile-bet-details">
+                    <div className="mobile-teams">
+                      <span className="team">{item.homeTeam}</span>
+                      <span className="vs">vs</span>
+                      <span className="team">{item.awayTeam}</span>
+                    </div>
+                    
+                    <div className="mobile-selection">
+                      <span className="selected-team">{item.selectedTeam}</span>
+                      <span className="odds">{item.odds > 0 ? `+${item.odds}` : item.odds}</span>
+                    </div>
+
+                    {/* Stake Input for Individual Bets */}
+                    {betType === 'straight' && (
+                      <div className="mobile-stake-input-section">
+                        <label className="mobile-stake-label">Stake:</label>
+                        <input
+                          type="number"
+                          className="mobile-stake-input"
+                          value={item.stake}
+                          onChange={(e) => handleStakeUpdate(item.id, e.target.value)}
+                          min="1"
+                          step="1"
+                          placeholder="0"
+                        />
+                        <div className="mobile-potential-payout">
+                          Win: {formatCurrency(item.potentialPayout)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Bet Summary */}
+        {betSlipItems.length > 0 && (
+          <div className="mobile-bet-summary">
+            <div className="mobile-summary-header">
+              <h4>Bet Summary</h4>
+              <span className="mobile-bet-type-badge">{getBetTypeLabel(betType)}</span>
+            </div>
+            
+            {/* Combined Stake Input for Multi-Bets */}
+            {betType !== 'straight' && (
+              <div className="mobile-combined-stake-section">
+                <label className="mobile-stake-label">Total Stake:</label>
+                <input
+                  type="number"
+                  className="mobile-combined-stake-input"
+                  value={totalStake}
+                  onChange={(e) => {
+                    const newStake = parseFloat(e.target.value) || 0;
+                    const stakePerBet = newStake / betSlipItems.length;
+                    betSlipItems.forEach(item => {
+                      updateStake(item.id, stakePerBet);
+                    });
+                  }}
+                  min="1"
+                  step="1"
+                  placeholder="0"
+                />
               </div>
             )}
-
-            {/* Stake Input Section */}
-            <div className="stake-section">
-              <div className="stake-input-container">
-                <label htmlFor="stake-input" className="stake-label">
-                  Stake Amount
-                </label>
-                <div className="input-group">
-                  <span className="currency-symbol">$</span>
-                  <input
-                    ref={inputRef}
-                    id="stake-input"
-                    type="number"
-                    value={inputValue}
-                    onChange={(e) => handleStakeChange(e.target.value)}
-                    placeholder="0.00"
-                    className="stake-input"
-                    min="0"
-                    max="10000"
-                    step="0.01"
-                    onFocus={() => setShowKeyboard(true)}
-                    onBlur={() => setShowKeyboard(false)}
-                  />
-                </div>
+            
+            <div className="mobile-summary-rows">
+              <div className="mobile-summary-row">
+                <span>Selections:</span>
+                <span className="value">{betSlipItems.length}</span>
               </div>
-
-              {/* Quick Stake Buttons */}
-              <div className="quick-stakes">
-                {quickStakes.map((amount) => (
-                  <button
-                    key={amount}
-                    className="quick-stake-btn"
-                    onClick={() => handleQuickStake(amount)}
-                  >
-                    +${amount}
-                  </button>
-                ))}
+              
+              <div className="mobile-summary-row">
+                <span>Total Stake:</span>
+                <span className="total-stake">{formatCurrency(totalStake)}</span>
+              </div>
+              
+              <div className="mobile-summary-row highlight">
+                <span>Potential Win:</span>
+                <span className="potential-win">{formatCurrency(totalPayout)}</span>
               </div>
             </div>
-
-            {/* Bet Summary */}
-            {betSlipItems.length > 0 && (
-              <div className="bet-summary">
-                <div className="summary-row">
-                  <span>Total Odds:</span>
-                  <span className="total-odds">
-                    {betSlipItems.reduce((acc, item) => {
-                      const decimalOdds = item.odds > 0 ? item.odds / 100 + 1 : 100 / Math.abs(item.odds) + 1;
-                      return acc * decimalOdds;
-                    }, 1).toFixed(2)}
-                  </span>
-                </div>
-                <div className="summary-row">
-                  <span>Potential Win:</span>
-                  <span className="potential-win">
-                    ${totalPayout.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Place Bet Button */}
-            <button
-              className="place-bet-btn"
-              onClick={handlePlaceBet}
-              disabled={betSlipItems.length === 0 || totalStake <= 0 || !canPlaceBet()}
-            >
-              <span className="bet-btn-text">Place Bet</span>
-              <span className="bet-btn-win">Win: ${totalPayout.toFixed(2)}</span>
-            </button>
-
-            {/* Keyboard hint */}
-            {showKeyboard && (
-              <div className="mobile-keyboard-hint">
-                <p>💡 Tip: Use quick stake buttons for faster betting</p>
-              </div>
-            )}
           </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="mobile-bet-actions">
+          {betSlipItems.length > 0 ? (
+            <>
+              <button
+                className="mobile-place-bet-btn"
+                onClick={handlePlaceBet}
+                disabled={!canPlaceBet()}
+              >
+                PLACE BET
+              </button>
+              <button className="mobile-clear-all-btn" onClick={clearBetSlip}>
+                Clear All
+              </button>
+            </>
+          ) : (
+            <button className="mobile-clear-all-btn" disabled>
+              No Selections
+            </button>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Bet Confirmation Modal */}
       {showConfirmation && (
-        <div className="bet-confirmation-modal">
-          <div className="confirmation-content">
-            <div className="confirmation-header">
+        <div className="mobile-bet-confirmation-overlay">
+          <div className="mobile-bet-confirmation-modal">
+            <div className="mobile-modal-header">
               <h3>Confirm Your Bet</h3>
-              <button 
-                className="close-confirmation"
+              <button
+                className="close-modal"
                 onClick={cancelBet}
                 disabled={isProcessing}
               >
@@ -344,59 +317,49 @@ const MobileBetSlip: React.FC = () => {
               </button>
             </div>
             
-            <div className="confirmation-details">
-              <div className="confirmation-summary">
-                <div className="summary-item">
+            <div className="mobile-modal-content">
+              <div className="mobile-confirmation-details">
+                <div className="mobile-detail-row">
+                  <span>Bet Type:</span>
+                  <span>{getBetTypeLabel(betType)}</span>
+                </div>
+                <div className="mobile-detail-row">
                   <span>Selections:</span>
                   <span>{betSlipItems.length}</span>
                 </div>
-                <div className="summary-item">
+                <div className="mobile-detail-row">
                   <span>Total Stake:</span>
-                  <span>${totalStake.toFixed(2)}</span>
+                  <span>{formatCurrency(totalStake)}</span>
                 </div>
-                <div className="summary-item">
+                <div className="mobile-detail-row highlight">
                   <span>Potential Win:</span>
-                  <span>${totalPayout.toFixed(2)}</span>
+                  <span>{formatCurrency(totalPayout)}</span>
                 </div>
               </div>
               
-              <div className="confirmation-selections">
-                <h4>Your Selections:</h4>
-                {betSlipItems.map((item) => (
-                  <div key={item.id} className="confirmation-selection">
-                    <span className="selection-text">
-                      {item.selectedTeam} @ {item.odds}
-                    </span>
-                    <span className="selection-event">
-                      {item.homeTeam} vs {item.awayTeam}
-                    </span>
-                  </div>
-                ))}
+              <div className="mobile-confirmation-actions">
+                <button
+                  className="mobile-confirm-bet-btn"
+                  onClick={confirmBet}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <>
+                      <span className="loading-spinner-small"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    'Confirm Bet'
+                  )}
+                </button>
+                <button
+                  className="mobile-cancel-bet-btn"
+                  onClick={cancelBet}
+                  disabled={isProcessing}
+                >
+                  Cancel
+                </button>
               </div>
-            </div>
-            
-            <div className="confirmation-actions">
-              <button 
-                className="cancel-btn"
-                onClick={cancelBet}
-                disabled={isProcessing}
-              >
-                Cancel
-              </button>
-              <button 
-                className="confirm-btn"
-                onClick={confirmBet}
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <>
-                    <span className="spinner"></span>
-                    Processing...
-                  </>
-                ) : (
-                  'Confirm Bet'
-                )}
-              </button>
             </div>
           </div>
         </div>
@@ -405,7 +368,7 @@ const MobileBetSlip: React.FC = () => {
       {/* Backdrop */}
       {(isOpen || showConfirmation) && (
         <div 
-          className="bet-slip-backdrop"
+          className="mobile-bet-slip-backdrop"
           onClick={() => {
             if (showConfirmation) {
               cancelBet();

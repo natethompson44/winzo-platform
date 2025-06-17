@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SportsCategories from '../components/Sports/SportsCategories';
 import EventsList from '../components/Sports/EventsList';
-import BetTypeSelector from '../components/Betting/BetTypeSelector';
 import { LoadingSpinner } from '../components/LoadingStates';
 import './SportsPage.css';
 
@@ -85,7 +84,6 @@ export const mockEvents: GameEvent[] = [
 const SportsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [selectedSport, setSelectedSport] = useState<string>('all');
-  const [selectedBetType, setSelectedBetType] = useState<'straight' | 'parlay' | 'teaser' | 'if-bet'>('straight');
   const [events, setEvents] = useState<GameEvent[]>([]);
   const [categories, setCategories] = useState<SportCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -134,10 +132,6 @@ const SportsPage: React.FC = () => {
     setSelectedSport(sportId);
   };
 
-  const handleBetTypeChange = (betType: 'straight' | 'parlay' | 'teaser' | 'if-bet') => {
-    setSelectedBetType(betType);
-  };
-
   if (error) {
     return (
       <div className="sports-page__error">
@@ -177,15 +171,7 @@ const SportsPage: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="sports-page__main">
-        {/* Bet Type Selector */}
-        <div className="sports-page__bet-types">
-          <BetTypeSelector
-            selectedType={selectedBetType}
-            onTypeChange={handleBetTypeChange}
-          />
-        </div>
-
-        {/* Events Content */}
+        {/* Events Content - Bet types now managed in bet slip */}
         <div className="sports-page__events">
           {isLoading ? (
             <div className="events-loading">
@@ -195,7 +181,6 @@ const SportsPage: React.FC = () => {
             <EventsList
               events={events}
               highlightedEventId={highlightedEventId}
-              selectedBetType={selectedBetType}
               isLiveMode={false}
             />
           )}

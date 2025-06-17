@@ -19,14 +19,14 @@ export interface BetSlipItem {
 export interface BetSlipContextType {
   betSlipItems: BetSlipItem[];
   isOpen: boolean;
-  betType: 'single' | 'parlay';
+  betType: 'straight' | 'parlay' | 'teaser' | 'if-bet';
   totalStake: number;
   totalPayout: number;
   addToBetSlip: (item: Omit<BetSlipItem, 'id' | 'stake' | 'potentialPayout' | 'addedAt'>) => void;
   removeFromBetSlip: (id: string) => void;
   updateStake: (id: string, stake: number) => void;
   clearBetSlip: () => void;
-  setBetType: (type: 'single' | 'parlay') => void;
+  setBetType: (type: 'straight' | 'parlay' | 'teaser' | 'if-bet') => void;
   setIsOpen: (open: boolean) => void;
   getItemCount: () => number;
   getTotalStake: () => number;
@@ -51,9 +51,29 @@ interface BetSlipProviderProps {
 export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) => {
   const [betSlipItems, setBetSlipItems] = useState<BetSlipItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [betType, setBetType] = useState<'single' | 'parlay'>('single');
+  const [betType, setBetType] = useState<'straight' | 'parlay' | 'teaser' | 'if-bet'>('straight');
   const [totalStake, setTotalStake] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
+
+  // Body class management for bet slip sidebar
+  useEffect(() => {
+    const handleBodyClass = () => {
+      if (isOpen && window.innerWidth > 768) {
+        document.body.classList.add('bet-slip-mode');
+      } else {
+        document.body.classList.remove('bet-slip-mode');
+      }
+    };
+
+    handleBodyClass();
+
+    // Handle window resize to manage body class properly
+    window.addEventListener('resize', handleBodyClass);
+    return () => {
+      window.removeEventListener('resize', handleBodyClass);
+      document.body.classList.remove('bet-slip-mode');
+    };
+  }, [isOpen]);
 
   // Load bet slip from localStorage on mount
   useEffect(() => {
@@ -62,7 +82,7 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
       try {
         const parsed = JSON.parse(savedBetSlip);
         setBetSlipItems(parsed.items || []);
-        setBetType(parsed.betType || 'single');
+        setBetType(parsed.betType || 'straight');
       } catch (error) {
         console.error('Error loading bet slip from localStorage:', error);
       }
@@ -94,16 +114,38 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
   const calculateTotals = () => {
     const stake = betSlipItems.reduce((sum, item) => sum + item.stake, 0);
     setTotalStake(stake);
-    if (betType === 'single') {
+    
+    if (betType === 'straight') {
       const payout = betSlipItems.reduce((sum, item) => sum + item.potentialPayout, 0);
       setTotalPayout(payout);
-    } else {
+    } else if (betType === 'parlay') {
       if (betSlipItems.length > 1 && stake > 0) {
         const combinedOdds = betSlipItems.reduce((product, item) => {
           const decimalOdds = item.odds > 0 ? item.odds / 100 + 1 : 100 / Math.abs(item.odds) + 1;
           return product * decimalOdds;
         }, 1);
         setTotalPayout(stake * (combinedOdds - 1));
+      } else {
+        setTotalPayout(betSlipItems[0]?.potentialPayout || 0);
+      }
+    } else if (betType === 'teaser') {
+      // Teaser betting with adjusted odds (typically lower payout)
+      if (betSlipItems.length >= 2 && stake > 0) {
+        const adjustedOdds = betSlipItems.reduce((product, item) => {
+          // Teaser odds are typically lower than parlay
+          const decimalOdds = item.odds > 0 ? (item.odds * 0.7) / 100 + 1 : (100 / Math.abs(item.odds * 0.7)) + 1;
+          return product * decimalOdds;
+        }, 1);
+        setTotalPayout(stake * (adjustedOdds - 1));
+      } else {
+        setTotalPayout(0); // Teaser requires at least 2 selections
+      }
+    } else if (betType === 'if-bet') {
+      // If betting - conditional betting where subsequent bets only process if previous wins
+      if (betSlipItems.length >= 2) {
+        // For if-bet, we calculate based on first bet potentially winning and rolling to second
+        const firstBetPayout = betSlipItems[0]?.potentialPayout || 0;
+        setTotalPayout(firstBetPayout);
       } else {
         setTotalPayout(betSlipItems[0]?.potentialPayout || 0);
       }
@@ -131,7 +173,7 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
       addedAt: new Date(),
     };
     setBetSlipItems(prev => [...prev, newBet]);
-    setIsOpen(true);
+    setIsOpen(true); // Auto-open bet slip when bet added
     showAddToBetSlipFeedback(item.selectedTeam);
   };
 
@@ -180,7 +222,13 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
   const getTotalPayout = (): number => totalPayout;
 
   const canPlaceBet = (): boolean => {
-    return betSlipItems.length > 0 && totalStake > 0 && betSlipItems.every(item => item.stake > 0);
+    if (betSlipItems.length === 0 || totalStake === 0) return false;
+    
+    // Bet type specific validation
+    if (betType === 'teaser' && betSlipItems.length < 2) return false;
+    if (betType === 'if-bet' && betSlipItems.length < 2) return false;
+    
+    return betSlipItems.every(item => item.stake > 0);
   };
 
   const showAddToBetSlipFeedback = (teamName: string) => {
@@ -241,6 +289,18 @@ style.textContent = `
 @keyframes slideOutRight {
   from { transform: translateX(0); opacity: 1; }
   to { transform: translateX(100%); opacity: 0; }
+}
+
+/* Bet Slip Sidebar Body Class Pattern */
+body.bet-slip-mode {
+  margin-right: 350px;
+  transition: margin-right 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  body.bet-slip-mode {
+    margin-right: 0;
+  }
 }`;
 document.head.appendChild(style);
 

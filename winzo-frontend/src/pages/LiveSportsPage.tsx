@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SportsCategories from '../components/Sports/SportsCategories';
 import LiveEventsList from '../components/Sports/LiveEventsList';
-import BetTypeSelector from '../components/Betting/BetTypeSelector';
 import { LoadingSpinner } from '../components/LoadingStates';
 import './LiveSportsPage.css';
 
@@ -82,7 +81,6 @@ export const mockLiveEvents: LiveGameEvent[] = [
 const LiveSportsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [selectedSport, setSelectedSport] = useState<string>('all');
-  const [selectedBetType, setSelectedBetType] = useState<'straight' | 'parlay' | 'teaser' | 'if-bet'>('straight');
   const [events, setEvents] = useState<LiveGameEvent[]>([]);
   const [categories, setCategories] = useState<SportCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -136,10 +134,6 @@ const LiveSportsPage: React.FC = () => {
     setSelectedSport(sportId);
   };
 
-  const handleBetTypeChange = (betType: 'straight' | 'parlay' | 'teaser' | 'if-bet') => {
-    setSelectedBetType(betType);
-  };
-
   if (error) {
     return (
       <div className="live-sports-page__error">
@@ -191,15 +185,7 @@ const LiveSportsPage: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="live-sports-page__main">
-        {/* Bet Type Selector */}
-        <div className="live-sports-page__bet-types">
-          <BetTypeSelector
-            selectedType={selectedBetType}
-            onTypeChange={handleBetTypeChange}
-          />
-        </div>
-
-        {/* Live Events Content */}
+        {/* Live Events Content - Bet types now managed in bet slip */}
         <div className="live-sports-page__events">
           {isLoading ? (
             <div className="events-loading">
@@ -209,7 +195,6 @@ const LiveSportsPage: React.FC = () => {
             <LiveEventsList
               events={events}
               highlightedEventId={highlightedEventId}
-              selectedBetType={selectedBetType}
             />
           )}
         </div>

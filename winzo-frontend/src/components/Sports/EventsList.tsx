@@ -20,7 +20,7 @@ interface GameEvent {
 interface EventsListProps {
   events: GameEvent[];
   highlightedEventId?: string | null;
-  selectedBetType: 'straight' | 'parlay' | 'teaser' | 'if-bet';
+  selectedBetType?: 'straight' | 'parlay' | 'teaser' | 'if-bet';
   isLiveMode: boolean;
 }
 
