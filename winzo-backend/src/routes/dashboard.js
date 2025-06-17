@@ -20,7 +20,7 @@ const Sport = require('../models/Sport');
  */
 router.get('/', auth, async (req, res) => {
   try {
-    const userId = req.user;
+    const userId = req.user.id;
 
     // Get user details
     const user = await User.findByPk(userId, {
@@ -148,7 +148,7 @@ router.get('/', auth, async (req, res) => {
  */
 router.get('/quick-stats', auth, async (req, res) => {
   try {
-    const userId = req.user;
+    const userId = req.user.id;
 
     // Get essential counts quickly
     const [user, totalBets, activeBets, wonBets] = await Promise.all([

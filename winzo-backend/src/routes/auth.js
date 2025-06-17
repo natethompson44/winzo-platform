@@ -141,7 +141,7 @@ router.post(
 // Return the authenticated user's data minus the password field.
 router.get('/me', auth, async (req, res) => {
   try {
-    const user = await User.findByPk(req.user, {
+    const user = await User.findByPk(req.user.id, {
       attributes: { exclude: ['password_hash'] },
     });
     if (!user) {
