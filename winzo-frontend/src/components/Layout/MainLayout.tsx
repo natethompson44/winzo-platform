@@ -76,11 +76,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage }) => {
             {children}
           </ErrorBoundary>
         </div>
-        
-        {/* Bet Slip Sidebar - persistent across pages */}
-        <aside className="main-layout__bet-slip">
-          {/* Bet slip will be rendered here by the parent App component */}
-        </aside>
       </main>
     </div>
   );

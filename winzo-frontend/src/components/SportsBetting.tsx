@@ -1,33 +1,20 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import apiClient from '../utils/axios';
-import { API_ENDPOINTS } from '../config/api';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useBetSlip } from '../contexts/BetSlipContext';
-import { formatCurrency } from '../utils/numberUtils';
 import { 
   SportsIcon, 
+  FireIcon, 
   ClockIcon, 
   CalendarIcon, 
   CalendarDaysIcon,
-  FireIcon,
-  SearchIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
-  BetSlipIcon,
-  FootballIcon,
-  BasketballIcon,
-  BaseballIcon,
-  HockeyIcon,
-  TennisIcon,
-  CricketIcon,
-  LiveIcon,
-  IconProps
+  LiveIcon
 } from './icons/IconLibrary';
+import { formatCurrency } from '../utils/numberUtils';
 import './SportsBetting.css';
 
 interface Sport {
   id: string;
   name: string;
-  icon: React.FC<IconProps>;
+  icon: React.FC<any>;
   isLive: boolean;
   eventCount: number;
 }
@@ -98,12 +85,10 @@ interface ApiResponse<T> {
   };
 }
 
-interface BetSlipSummary {
-  totalBets: number;
-  totalStake: number;
-  potentialPayout: number;
-  averageOdds: number;
-  confidence: number;
+interface QuotaInfo {
+  used: number;
+  total: number;
+  percentUsed: number;
 }
 
 const formatOdds = (price: number): string => {
@@ -115,10 +100,9 @@ const formatOdds = (price: number): string => {
 
 const calculatePayout = (stake: number, odds: number): number => {
   if (odds > 0) {
-    return stake + (stake * odds / 100);
-  } else {
-    return stake + (stake * 100 / Math.abs(odds));
+    return stake * (odds / 100);
   }
+  return stake * (100 / Math.abs(odds));
 };
 
 const getOddsMovementColor = (movement?: string): string => {
@@ -131,55 +115,38 @@ const getOddsMovementColor = (movement?: string): string => {
 
 const getOddsMovementIcon = (movement?: string): React.ReactNode => {
   switch (movement) {
-    case 'up': return <ChevronUpIcon size="sm" color="success" />;
-    case 'down': return <ChevronDownIcon size="sm" color="danger" />;
-    default: return <span>➡️</span>;
+    case 'up': return '↗';
+    case 'down': return '↘';
+    default: return '→';
   }
 };
 
-const sports: Sport[] = [
-  { id: 'football', name: 'Football', icon: FootballIcon, isLive: true, eventCount: 12 },
-  { id: 'basketball', name: 'Basketball', icon: BasketballIcon, isLive: true, eventCount: 8 },
-  { id: 'baseball', name: 'Baseball', icon: BaseballIcon, isLive: false, eventCount: 6 },
-  { id: 'hockey', name: 'Hockey', icon: HockeyIcon, isLive: true, eventCount: 4 },
-  { id: 'tennis', name: 'Tennis', icon: TennisIcon, isLive: false, eventCount: 3 },
-  { id: 'cricket', name: 'Cricket', icon: CricketIcon, isLive: true, eventCount: 5 }
-];
-
 const SportsBetting: React.FC = () => {
+  const [sports, setSports] = useState<Sport[]>([]);
   const [selectedSport, setSelectedSport] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [events, setEvents] = useState<OddsEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [eventsLoading, setEventsLoading] = useState(false);
-  const [quotaInfo, setQuotaInfo] = useState<any>(null);
-  const [liveEvents, setLiveEvents] = useState<OddsEvent[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [quotaInfo, setQuotaInfo] = useState<QuotaInfo | null>(null);
   const [filter, setFilter] = useState<'all' | 'live' | 'upcoming'>('all');
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortBy, setSortBy] = useState<'time' | 'popularity' | 'odds' | 'confidence'>('time');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [selectedMarket, setSelectedMarket] = useState<string>('h2h');
-  const [showBetSlip, setShowBetSlip] = useState(false);
-  const [betSlipStake, setBetSlipStake] = useState<string>('');
-  const [betSlipSummary, setBetSlipSummary] = useState<BetSlipSummary>({
-    totalBets: 0,
-    totalStake: 0,
-    potentialPayout: 0,
-    averageOdds: 0,
-    confidence: 0
-  });
-  
-  const { addToBetSlip, removeFromBetSlip, betSlipItems, clearBetSlip } = useBetSlip();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [liveEvents, setLiveEvents] = useState<OddsEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [selectedMarket, setSelectedMarket] = useState('h2h');
+
+  // Use global bet slip context
+  const { addToBetSlip } = useBetSlip();
   const oddsUpdateInterval = useRef<NodeJS.Timeout | null>(null);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleSportSelect = (sportId: string) => {
     setSelectedSport(sportId);
-    setIsLoading(true);
+    setEventsLoading(true);
     // Simulate loading events for the selected sport
     setTimeout(() => {
-      setIsLoading(false);
+      setEventsLoading(false);
     }, 1000);
   };
 
@@ -187,18 +154,39 @@ const SportsBetting: React.FC = () => {
     try {
       setEventsLoading(true);
       setError('');
-      const response = await apiClient.get<ApiResponse<OddsEvent[]>>(
-        API_ENDPOINTS.SPORT_ODDS(sportKey) + '?limit=100&markets=' + selectedMarket
-      );
-      if (response.data.success) {
-        const eventsData = response.data.data;
-        setEvents(eventsData);
-        setLiveEvents(eventsData.filter(event => event.timing?.isLive));
-        setQuotaInfo(response.data.quota);
-      } else {
-        setError(response.data.error || 'Failed to load odds');
-        setEvents([]);
-      }
+      // Mock API call - replace with actual API
+      const mockEvents: OddsEvent[] = [
+        {
+          id: '1',
+          sport_key: sportKey,
+          commence_time: new Date(Date.now() + 3600000).toISOString(),
+          home_team: 'Lakers',
+          away_team: 'Warriors',
+          bookmakers: [{
+            key: 'mock',
+            title: 'Mock Bookmaker',
+            markets: [{
+              key: 'h2h',
+              outcomes: [
+                { name: 'Lakers', price: -110 },
+                { name: 'Warriors', price: -110 }
+              ]
+            }]
+          }],
+          timing: {
+            date: new Date().toDateString(),
+            time: '8:00 PM',
+            hoursFromNow: 1,
+            isLive: false,
+            isUpcoming: true
+          },
+          featured: true,
+          markets_count: 1
+        }
+      ];
+      
+      setEvents(mockEvents);
+      setQuotaInfo({ used: 50, total: 100, percentUsed: 50 });
     } catch (error: any) {
       console.error('Error fetching odds:', error);
       setError(error.message || 'Failed to load odds');
@@ -211,21 +199,8 @@ const SportsBetting: React.FC = () => {
   const updateLiveOdds = useCallback(async () => {
     if (selectedSport && (filter === 'live' || liveEvents.length > 0)) {
       try {
-        const response = await apiClient.get<ApiResponse<OddsEvent[]>>(
-          API_ENDPOINTS.SPORT_ODDS(selectedSport) + '?live=true&limit=50&markets=' + selectedMarket
-        );
-        if (response.data.success) {
-          const newLiveEvents = response.data.data;
-          setLiveEvents(newLiveEvents);
-          
-          // Update events with live data
-          setEvents(prevEvents => 
-            prevEvents.map(event => {
-              const liveEvent = newLiveEvents.find(le => le.id === event.id);
-              return liveEvent || event;
-            })
-          );
-        }
+        // Mock live odds update
+        console.log('Updating live odds...');
       } catch (error) {
         console.error('Error updating live odds:', error);
       }
@@ -257,75 +232,6 @@ const SportsBetting: React.FC = () => {
     };
     
     addToBetSlip(betItem);
-    updateBetSlipSummary();
-  };
-
-  const updateBetSlipSummary = useCallback(() => {
-    const totalBets = betSlipItems.length;
-    const totalStake = betSlipItems.reduce((sum: number, item: any) => sum + (item.stake || 0), 0);
-    const averageOdds = betSlipItems.length > 0 ? betSlipItems.reduce((sum: number, item: any) => sum + item.odds, 0) / betSlipItems.length : 0;
-    const confidence = betSlipItems.length > 0 ? betSlipItems.reduce((sum: number, item: any) => sum + (item.confidence || 0), 0) / betSlipItems.length : 0;
-    
-    let potentialPayout = 0;
-    if (totalStake > 0 && averageOdds > 0) {
-      potentialPayout = calculatePayout(totalStake, averageOdds);
-    }
-    
-    setBetSlipSummary({
-      totalBets,
-      totalStake,
-      potentialPayout,
-      averageOdds,
-      confidence
-    });
-  }, [betSlipItems]);
-
-  const handleStakeChange = (value: string) => {
-    setBetSlipStake(value);
-    const stake = parseFloat(value) || 0;
-    
-    // Update bet slip items with new stake distribution
-    betSlipItems.forEach((item: any) => {
-      item.stake = stake / betSlipItems.length;
-      item.potentialPayout = calculatePayout(item.stake, item.odds);
-    });
-    
-    updateBetSlipSummary();
-  };
-
-  const placeBet = async () => {
-    const stake = parseFloat(betSlipStake);
-    if (stake <= 0 || betSlipSummary.totalBets === 0) {
-      alert('Please enter a valid stake and add selections to your bet slip');
-      return;
-    }
-
-    try {
-      const betData = {
-        bets: betSlipItems.map((item: any) => ({
-          event_id: item.eventId,
-          selection: item.selectedTeam,
-          odds: item.odds,
-          stake: item.stake,
-          market_type: item.marketType
-        })),
-        total_stake: stake
-      };
-
-      const response = await apiClient.post(API_ENDPOINTS.PLACE_BET, betData);
-      
-      if (response.data.success) {
-        alert('Bet placed successfully!');
-        clearBetSlip();
-        setBetSlipStake('');
-        setShowBetSlip(false);
-        updateBetSlipSummary();
-      } else {
-        alert(response.data.error || 'Failed to place bet');
-      }
-    } catch (error: any) {
-      alert(error.message || 'Failed to place bet');
-    }
   };
 
   const filteredAndSortedEvents = useMemo(() => {
@@ -391,10 +297,6 @@ const SportsBetting: React.FC = () => {
     };
   }, [filter, liveEvents.length, updateLiveOdds]);
 
-  useEffect(() => {
-    updateBetSlipSummary();
-  }, [updateBetSlipSummary]);
-
   const getEventStatus = (event: OddsEvent) => {
     if (event.timing?.isLive) {
       return {
@@ -427,6 +329,35 @@ const SportsBetting: React.FC = () => {
     }
   };
 
+  // Mock sports data
+  useEffect(() => {
+    const mockSports: Sport[] = [
+      {
+        id: 'basketball_nba',
+        name: 'NBA Basketball',
+        icon: SportsIcon,
+        isLive: true,
+        eventCount: 12
+      },
+      {
+        id: 'americanfootball_nfl',
+        name: 'NFL Football',
+        icon: SportsIcon,
+        isLive: false,
+        eventCount: 8
+      },
+      {
+        id: 'soccer_epl',
+        name: 'Premier League',
+        icon: SportsIcon,
+        isLive: true,
+        eventCount: 15
+      }
+    ];
+    setSports(mockSports);
+    setLoading(false);
+  }, []);
+
   if (error) {
     return (
       <div className="error-banner">
@@ -443,9 +374,22 @@ const SportsBetting: React.FC = () => {
       <header className="sports-header">
         <h1><SportsIcon size="lg" /> Sports Betting</h1>
         <p>Real-time odds and live betting</p>
+        {quotaInfo && (
+          <div className="quota-info">
+            <div className="quota-bar">
+              <div 
+                className="quota-fill" 
+                style={{ width: `${quotaInfo.percentUsed}%` }}
+              ></div>
+            </div>
+            <span className="quota-text">
+              API Quota: {quotaInfo.used}/{quotaInfo.total} ({quotaInfo.percentUsed}%)
+            </span>
+          </div>
+        )}
       </header>
 
-      {isLoading ? (
+      {loading ? (
         <div className="loading-spinner">
           <div className="spinner"></div>
           <p>Loading events...</p>
@@ -501,282 +445,56 @@ const SportsBetting: React.FC = () => {
             </button>
           </div>
         </div>
-
-        <div className="search-sort-controls">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Search teams..."
-              value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="search-input"
-            />
-            <SearchIcon size="sm" className="search-icon" />
-          </div>
-
-          <div className="sort-controls">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="sort-select"
-            >
-              <option value="time">Time</option>
-              <option value="popularity">Popularity</option>
-              <option value="odds">Best Odds</option>
-              <option value="confidence">Confidence</option>
-            </select>
-            <button
-              className="sort-order-btn"
-              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-            >
-              {sortOrder === 'asc' ? '↑' : '↓'}
-            </button>
-          </div>
-
-          <div className="market-selector">
-            <select
-              value={selectedMarket}
-              onChange={(e) => setSelectedMarket(e.target.value)}
-              className="market-select"
-            >
-              <option value="h2h">Head to Head</option>
-              <option value="spreads">Spreads</option>
-              <option value="totals">Totals</option>
-            </select>
-          </div>
-        </div>
       </div>
 
-      {/* Events Grid */}
-      <div className="events-section">
-        {eventsLoading ? (
-          <div className="loading-events">
-            <div className="loading-spinner"></div>
-            <p>Loading events...</p>
-          </div>
-        ) : (
+      {/* Events List */}
+      {selectedSport && events.length > 0 && (
+        <div className="events-section">
+          <h2>{selectedSport} Events</h2>
           <div className="events-grid">
             {filteredAndSortedEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                onOddsClick={handleOddsClick}
-                getEventStatus={getEventStatus}
-              />
+              <div key={event.id} className="event-card">
+                <div className="event-header">
+                  <h3>{event.home_team} vs {event.away_team}</h3>
+                  <span className="event-time">{event.timing?.time}</span>
+                </div>
+                <div className="odds-section">
+                  {event.bookmakers.map((bookmaker) => (
+                    <div key={bookmaker.key} className="bookmaker-odds">
+                      <h4>{bookmaker.title}</h4>
+                      <div className="odds-grid">
+                        {bookmaker.markets.map((market) => (
+                          <div key={market.key} className="market-odds">
+                            <h5>{market.key}</h5>
+                            <div className="odds-buttons">
+                              {market.outcomes.map((outcome) => (
+                                <button
+                                  key={outcome.name}
+                                  className="odds-button"
+                                  onClick={() => handleOddsClick(event, outcome, market.key)}
+                                >
+                                  <span className="team-name">{outcome.name}</span>
+                                  <span className="odds-value">{formatOdds(outcome.price)}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        )}
-
-        {filteredAndSortedEvents.length === 0 && !eventsLoading && (
-          <div className="no-events">
-            <p>No events found matching your criteria</p>
-            <button onClick={() => setFilter('all')} className="winzo-btn winzo-btn-secondary">
-              Reset Filters
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Bet Slip */}
-      {showBetSlip && (
-        <div className="bet-slip-overlay">
-          <div className="bet-slip-modal">
-            <div className="bet-slip-header">
-              <h3><BetSlipIcon size="sm" /> Bet Slip</h3>
-              <button onClick={() => setShowBetSlip(false)} className="winzo-btn winzo-btn-ghost">×</button>
-            </div>
-            
-            <div className="bet-slip-content">
-              {betSlipItems.length > 0 ? (
-                <>
-                  <div className="bet-slip-items">
-                    {betSlipItems.map((item, index) => (
-                      <div key={index} className="bet-slip-item">
-                        <div className="item-header">
-                          <span className="item-teams">{item.awayTeam} @ {item.homeTeam}</span>
-                          <button 
-                            onClick={() => removeFromBetSlip(item.id)}
-                            className="winzo-btn winzo-btn-ghost winzo-btn-sm"
-                          >
-                            ×
-                          </button>
-                        </div>
-                        <div className="item-selection">
-                          {item.selectedTeam} @ {formatOdds(item.odds)}
-                        </div>
-                        <div className="item-stake">
-                          Stake: {formatCurrency(item.stake || 0)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="bet-slip-summary">
-                    <div className="summary-row">
-                      <span>Total Bets:</span>
-                      <span>{betSlipSummary.totalBets}</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Average Odds:</span>
-                      <span>{betSlipSummary.averageOdds.toFixed(2)}</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Confidence:</span>
-                      <span>{(betSlipSummary.confidence * 100).toFixed(1)}%</span>
-                    </div>
-                  </div>
-                  
-                  <div className="stake-input">
-                    <label>Total Stake:</label>
-                    <input
-                      type="number"
-                      value={betSlipStake}
-                      onChange={(e) => handleStakeChange(e.target.value)}
-                      placeholder="Enter stake amount"
-                      min="0"
-                      step="0.01"
-                      className="stake-input-field"
-                    />
-                  </div>
-                  
-                  <div className="potential-payout">
-                    <span>Potential Payout:</span>
-                    <span className="payout-amount">{formatCurrency(betSlipSummary.potentialPayout)}</span>
-                  </div>
-                  
-                  <div className="bet-slip-actions">
-                    <button onClick={placeBet} className="winzo-btn winzo-btn-primary">
-                      Place Bet
-                    </button>
-                    <button onClick={clearBetSlip} className="winzo-btn winzo-btn-secondary">
-                      Clear All
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="empty-bet-slip">
-                  <p>No selections in bet slip</p>
-                  <p>Click on odds to add selections</p>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Floating Bet Slip Toggle */}
-      <button
-        className="bet-slip-toggle"
-        onClick={() => setShowBetSlip(true)}
-      >
-        <BetSlipIcon size="sm" /> Bet Slip ({betSlipItems.length})
-      </button>
-
-      {/* Quota Info */}
-      {quotaInfo && (
-        <div className="quota-info">
-          <div className="quota-bar">
-            <div 
-              className="quota-fill" 
-              style={{ width: `${quotaInfo.percentUsed}%` }}
-            ></div>
-          </div>
-          <span className="quota-text">
-            API Quota: {quotaInfo.used}/{quotaInfo.total} ({quotaInfo.percentUsed}%)
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Event Card Component
-interface EventCardProps {
-  event: OddsEvent;
-  onOddsClick: (event: OddsEvent, outcome: Outcome, marketType?: string) => void;
-  getEventStatus: (event: OddsEvent) => { status: string; text: string; color: string; icon: React.ReactNode };
-}
-
-const EventCard: React.FC<EventCardProps> = ({ event, onOddsClick, getEventStatus }) => {
-  const status = getEventStatus(event);
-  const bookmaker = event.bookmakers?.[0];
-  const market = bookmaker?.markets?.find(m => m.key === 'h2h');
-
-  return (
-    <div className="event-card">
-      <div className="event-header">
-        <div className="event-status">
-          <span 
-            className="status-badge"
-            style={{ color: status.color }}
-          >
-            {status.icon} {status.text}
-          </span>
-        </div>
-        <div className="event-time">
-          {event.timing?.time}
-        </div>
-      </div>
-
-      <div className="event-teams">
-        <div className="team away-team">
-          <span className="team-name">{event.away_team}</span>
-          {event.live_score && (
-            <span className="team-score">{event.live_score.away}</span>
-          )}
-        </div>
-        <div className="vs-separator">vs</div>
-        <div className="team home-team">
-          <span className="team-name">{event.home_team}</span>
-          {event.live_score && (
-            <span className="team-score">{event.live_score.home}</span>
-          )}
-        </div>
-      </div>
-
-      {event.live_score && (
-        <div className="live-info">
-          <span className="period">{event.live_score.period}</span>
-          {event.live_score.time_remaining && (
-            <span className="time-remaining">{event.live_score.time_remaining}</span>
-          )}
-        </div>
-      )}
-
-      <div className="odds-section">
-        {market?.outcomes.map((outcome, index) => (
-          <button
-            key={index}
-            className="odds-button"
-            onClick={() => onOddsClick(event, outcome, market.key)}
-          >
-            <div className="odds-content">
-              <span className="outcome-name">{outcome.name}</span>
-              <span className="odds-value">{formatOdds(outcome.price)}</span>
-              {outcome.odds_movement && (
-                <span 
-                  className="odds-movement"
-                  style={{ color: getOddsMovementColor(outcome.odds_movement) }}
-                >
-                  {getOddsMovementIcon(outcome.odds_movement)}
-                </span>
-              )}
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {event.confidence_level && (
-        <div className="confidence-indicator">
-          <div className="confidence-bar">
-            <div 
-              className="confidence-fill" 
-              style={{ width: `${event.confidence_level * 100}%` }}
-            ></div>
-          </div>
-          <span className="confidence-text">
-            Confidence: {(event.confidence_level * 100).toFixed(1)}%
-          </span>
+      {/* Empty State */}
+      {selectedSport && events.length === 0 && !loading && (
+        <div className="empty-state">
+          <p>No events available for {selectedSport} at the moment.</p>
+          <p>Please check back later or try another sport.</p>
         </div>
       )}
     </div>

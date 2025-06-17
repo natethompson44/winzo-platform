@@ -15,7 +15,7 @@ import LiveSportsPage from './pages/LiveSportsPage';
 import AccountPage from './pages/AccountPage';
 import BettingHistory from './components/BettingHistory';
 import { BetSlipProvider } from './contexts/BetSlipContext';
-import BetSlip from './components/BetSlip';
+import RightSidebarBetSlip from './components/RightSidebarBetSlip';
 import MobileBetSlip from './components/MobileBetSlip';
 import BetSlipToggle from './components/BetSlipToggle';
 import { ProgressiveLoading, LoadingSpinner } from './components/LoadingStates';
@@ -201,12 +201,16 @@ function App() {
                 </div>
               </Router>
               
-              {/* Responsive Bet Slip */}
+              {/* Responsive Bet Slip System */}
               <div className="bet-slip-container">
-                <BetSlip />
+                {/* Desktop: Right Sidebar Bet Slip */}
+                <RightSidebarBetSlip />
+                
+                {/* Mobile: Bottom Sheet Bet Slip */}
                 <MobileBetSlip />
               </div>
               
+              {/* Bet Slip Toggle Button */}
               <BetSlipToggle />
               
               {/* Toast Notifications */}
