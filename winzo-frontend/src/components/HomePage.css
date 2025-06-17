@@ -345,27 +345,27 @@
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .input-wrapper.focused {
   border-color: #d4af37;
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
-  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 1);
 }
 
 .input-wrapper.has-value {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 .input-icon {
   padding: 0 1rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.5);
   transition: color 0.3s ease;
 }
 
@@ -378,23 +378,21 @@
   background: transparent;
   border: none;
   padding: 1rem 1rem 1rem 0;
-  color: #ffffff;
+  color: #000000;
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 500;
   outline: none;
   width: 100%;
   letter-spacing: 0.05em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .luxury-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 300;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 400;
 }
 
 .luxury-input:focus {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  color: #000000;
 }
 
 .luxury-input:disabled {
@@ -406,7 +404,7 @@
   background: transparent;
   border: none;
   padding: 0.5rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: color 0.3s ease;
   border-radius: 6px;
