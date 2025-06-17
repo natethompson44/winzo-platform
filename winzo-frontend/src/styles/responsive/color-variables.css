@@ -1,0 +1,65 @@
+/* ===========================
+   Temporary Color Variables
+   For Responsive Components
+   =========================== */
+
+:root {
+  /* Base Colors */
+  --color-primary: #3b82f6;
+  --color-primary-light: #dbeafe;
+  --color-primary-dark: #1e40af;
+  
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
+  --color-success-dark: #059669;
+  
+  --color-error: #ef4444;
+  --color-error-light: #fee2e2;
+  --color-error-dark: #dc2626;
+  
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #d97706;
+
+  /* Surface Colors */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #f8fafc;
+  --color-background: #f1f5f9;
+  
+  /* Border Colors */
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  --color-border-dark: #cbd5e1;
+  
+  /* Text Colors */
+  --color-text: #1e293b;
+  --color-text-light: #64748b;
+  --color-muted: #94a3b8;
+  --color-muted-light: #f1f5f9;
+
+  /* Interactive States */
+  --color-hover: #f8fafc;
+  --color-active: #e2e8f0;
+  --color-focus: #3b82f6;
+}
+
+/* Dark mode support (future implementation) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface: #1e293b;
+    --color-surface-elevated: #334155;
+    --color-background: #0f172a;
+    
+    --color-border: #475569;
+    --color-border-light: #334155;
+    --color-border-dark: #64748b;
+    
+    --color-text: #f1f5f9;
+    --color-text-light: #cbd5e1;
+    --color-muted: #64748b;
+    --color-muted-light: #334155;
+    
+    --color-hover: #334155;
+    --color-active: #475569;
+  }
+}
