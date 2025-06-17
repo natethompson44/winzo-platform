@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import { formatCurrency } from '../utils/numberUtils';

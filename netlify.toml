@@ -1,6 +1,6 @@
 [build]
   base = "winzo-frontend"
-  command = "npm install && npm run build"
+  command = "npm install && CI=false npm run build"
   publish = "build"
 
 [build.environment]
