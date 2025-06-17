@@ -108,7 +108,7 @@ const Register: React.FC = () => {
             <div className={`input-wrapper ${focusedField === 'username' ? 'focused' : ''} ${username ? 'has-value' : ''}`}>
               <UserIcon 
                 size="sm" 
-                color={focusedField === 'username' ? 'secondary' : 'neutral'} 
+                color={focusedField === 'username' ? 'secondary' : 'muted'} 
                 className="input-icon" 
               />
               <input
@@ -130,7 +130,7 @@ const Register: React.FC = () => {
             <div className={`input-wrapper ${focusedField === 'inviteCode' ? 'focused' : ''} ${inviteCode ? 'has-value' : ''}`}>
               <LockIcon 
                 size="sm" 
-                color={focusedField === 'inviteCode' ? 'secondary' : 'neutral'} 
+                color={focusedField === 'inviteCode' ? 'secondary' : 'muted'} 
                 className="input-icon" 
               />
               <input
@@ -152,7 +152,7 @@ const Register: React.FC = () => {
             <div className={`input-wrapper ${focusedField === 'password' ? 'focused' : ''} ${password ? 'has-value' : ''}`}>
               <LockIcon 
                 size="sm" 
-                color={focusedField === 'password' ? 'secondary' : 'neutral'} 
+                color={focusedField === 'password' ? 'secondary' : 'muted'} 
                 className="input-icon" 
               />
               <input
@@ -176,9 +176,9 @@ const Register: React.FC = () => {
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? (
-                  <EyeOffIcon size="sm" color="neutral" />
+                  <EyeOffIcon size="sm" color="muted" />
                 ) : (
-                  <EyeIcon size="sm" color="neutral" />
+                  <EyeIcon size="sm" color="muted" />
                 )}
               </button>
             </div>
@@ -188,7 +188,7 @@ const Register: React.FC = () => {
             <div className={`input-wrapper ${focusedField === 'confirmPassword' ? 'focused' : ''} ${confirmPassword ? 'has-value' : ''}`}>
               <LockIcon 
                 size="sm" 
-                color={focusedField === 'confirmPassword' ? 'secondary' : 'neutral'} 
+                color={focusedField === 'confirmPassword' ? 'secondary' : 'muted'} 
                 className="input-icon" 
               />
               <input
@@ -212,9 +212,9 @@ const Register: React.FC = () => {
                 aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
               >
                 {showConfirmPassword ? (
-                  <EyeOffIcon size="sm" color="neutral" />
+                  <EyeOffIcon size="sm" color="muted" />
                 ) : (
-                  <EyeIcon size="sm" color="neutral" />
+                  <EyeIcon size="sm" color="muted" />
                 )}
               </button>
             </div>

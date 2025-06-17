@@ -88,7 +88,7 @@ const Login: React.FC = () => {
             <div className={`input-wrapper ${focusedField === 'username' ? 'focused' : ''} ${username ? 'has-value' : ''}`}>
               <UserIcon 
                 size="sm" 
-                color={focusedField === 'username' ? 'secondary' : 'neutral'} 
+                color={focusedField === 'username' ? 'secondary' : 'muted'} 
                 className="input-icon" 
               />
               <input
@@ -110,7 +110,7 @@ const Login: React.FC = () => {
             <div className={`input-wrapper ${focusedField === 'password' ? 'focused' : ''} ${password ? 'has-value' : ''}`}>
               <LockIcon 
                 size="sm" 
-                color={focusedField === 'password' ? 'secondary' : 'neutral'} 
+                color={focusedField === 'password' ? 'secondary' : 'muted'} 
                 className="input-icon" 
               />
               <input
@@ -133,9 +133,9 @@ const Login: React.FC = () => {
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? (
-                  <EyeOffIcon size="sm" color="neutral" />
+                  <EyeOffIcon size="sm" color="muted" />
                 ) : (
-                  <EyeIcon size="sm" color="neutral" />
+                  <EyeIcon size="sm" color="muted" />
                 )}
               </button>
             </div>
