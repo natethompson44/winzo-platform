@@ -373,7 +373,7 @@
 }
 
 .input-icon {
-  padding: 0 1rem;
+  padding: 0 0.75rem 0 0.75rem;
   color: rgba(0, 0, 0, 0.7);
   transition: color 0.3s ease;
 }
@@ -384,9 +384,10 @@
 
 .luxury-input {
   flex: 1;
+  min-width: 0;
   background: transparent !important;
   border: none !important;
-  padding: 1rem 1rem 1rem 0;
+  padding: 1rem 1rem 1rem 0.25rem;
   color: #000000;
   font-size: 1rem;
   font-weight: 500;
@@ -417,7 +418,11 @@
   cursor: pointer;
   transition: color 0.3s ease;
   border-radius: 6px;
-  margin-right: 0.5rem;
+  margin-right: 0;
+  margin-left: 0.25rem;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
 }
 
 .password-toggle:hover {
