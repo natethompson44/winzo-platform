@@ -17,7 +17,6 @@ import BettingHistory from './components/BettingHistory';
 import { BetSlipProvider } from './contexts/BetSlipContext';
 import RightSidebarBetSlip from './components/RightSidebarBetSlip';
 import MobileBetSlip from './components/MobileBetSlip';
-import BetSlipToggle from './components/BetSlipToggle';
 import { ProgressiveLoading, LoadingSpinner } from './components/LoadingStates';
 import HomePage from './components/HomePage';
 
@@ -209,9 +208,6 @@ function App() {
                 {/* Mobile: Bottom Sheet Bet Slip */}
                 <MobileBetSlip />
               </div>
-              
-              {/* Bet Slip Toggle Button */}
-              <BetSlipToggle />
               
               {/* Toast Notifications */}
               <Toaster

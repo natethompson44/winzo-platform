@@ -55,7 +55,7 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
   const [totalStake, setTotalStake] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
 
-  // Body class management for bet slip sidebar
+  // Body class management for BigDog247 pattern
   useEffect(() => {
     const handleBodyClass = () => {
       if (isOpen && window.innerWidth > 768) {
@@ -291,7 +291,7 @@ style.textContent = `
   to { transform: translateX(100%); opacity: 0; }
 }
 
-/* Bet Slip Sidebar Body Class Pattern */
+/* BigDog247 Body Class Pattern */
 body.bet-slip-mode {
   margin-right: 350px;
   transition: margin-right 0.3s ease-in-out;

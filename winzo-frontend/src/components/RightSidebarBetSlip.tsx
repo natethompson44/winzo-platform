@@ -15,7 +15,8 @@ const RightSidebarBetSlip: React.FC = () => {
     canPlaceBet,
     isOpen,
     setIsOpen,
-    updateStake
+    updateStake,
+    addToBetSlip
   } = useBetSlip();
 
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -103,19 +104,35 @@ const RightSidebarBetSlip: React.FC = () => {
     updateStake(id, stake);
   };
 
-  // Don't render if not open
-  if (!isOpen) {
+  // TEMPORARY: Add test bet function for debugging
+  const addTestBet = () => {
+    const testBet = {
+      eventId: `test-${Date.now()}`,
+      sport: 'basketball',
+      homeTeam: 'Lakers',
+      awayTeam: 'Warriors',
+      selectedTeam: 'Lakers -3.5',
+      odds: -110,
+      bookmaker: 'WINZO',
+      marketType: 'spread' as const,
+      commenceTime: new Date().toISOString()
+    };
+    addToBetSlip(testBet);
+  };
+
+  // Only render on desktop (mobile uses MobileBetSlip)
+  if (window.innerWidth <= 768) {
     return null;
   }
 
   return (
     <>
-      {/* Backdrop for mobile */}
-      {window.innerWidth <= 768 && (
+      {/* Backdrop only when open */}
+      {isOpen && (
         <div className="bet-slip-backdrop" onClick={handleClose} />
       )}
       
-      {/* Right Sidebar Bet Slip */}
+      {/* Right Sidebar Bet Slip - Always render for smooth animations */}
       <div className={`bet-slip-sidebar ${isOpen ? 'open' : 'closed'}`}>
         {/* Header */}
         <div className="bet-slip-header">
@@ -171,6 +188,60 @@ const RightSidebarBetSlip: React.FC = () => {
               </div>
             )}
           </div>
+          
+          {/* TEMPORARY DEBUG SECTION - REMOVE IN PRODUCTION */}
+          {process.env.NODE_ENV === 'development' && (
+            <div style={{ marginTop: '12px', padding: '8px', background: 'rgba(255,0,0,0.1)', borderRadius: '4px' }}>
+              <small style={{ color: '#ff6b6b', fontWeight: '600' }}>DEBUG MODE</small>
+              <br />
+              <small style={{ color: '#94a3b8' }}>Items: {betSlipItems.length} | isOpen: {isOpen.toString()}</small>
+              <br />
+              <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                <button 
+                  style={{ 
+                    padding: '4px 8px', 
+                    background: '#10b981', 
+                    border: 'none', 
+                    borderRadius: '4px', 
+                    color: 'white', 
+                    fontSize: '0.75rem',
+                    cursor: 'pointer'
+                  }}
+                  onClick={addTestBet}
+                >
+                  Add Test Bet
+                </button>
+                <button 
+                  style={{ 
+                    padding: '4px 8px', 
+                    background: '#3b82f6', 
+                    border: 'none', 
+                    borderRadius: '4px', 
+                    color: 'white', 
+                    fontSize: '0.75rem',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setIsOpen(!isOpen)}
+                >
+                  Toggle Open
+                </button>
+                <button 
+                  style={{ 
+                    padding: '4px 8px', 
+                    background: '#ef4444', 
+                    border: 'none', 
+                    borderRadius: '4px', 
+                    color: 'white', 
+                    fontSize: '0.75rem',
+                    cursor: 'pointer'
+                  }}
+                  onClick={clearBetSlip}
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Bet Items */}

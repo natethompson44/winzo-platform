@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import { formatCurrency } from '../utils/numberUtils';
 import './MobileBetSlip.css';
 
 /**
- * WINZO Mobile Bet Slip Component
+ * WINZO Mobile Bet Slip Component - BigDog247 Pattern
  * 
  * Mobile betting interface following the same pattern as desktop:
  * - Bottom sheet design
