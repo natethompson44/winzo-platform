@@ -85,7 +85,7 @@ const Login: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="input-group">
-            <div className={`input-wrapper ${focusedField === 'username' ? 'focused' : ''} ${username ? 'has-value' : ''}`}>
+            <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'username' ? 'focused' : ''} ${username ? 'has-value' : ''}`}>
               <UserIcon 
                 size="sm" 
                 color={focusedField === 'username' ? 'secondary' : 'muted'} 
@@ -107,7 +107,7 @@ const Login: React.FC = () => {
           </div>
 
           <div className="input-group">
-            <div className={`input-wrapper ${focusedField === 'password' ? 'focused' : ''} ${password ? 'has-value' : ''}`}>
+            <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'password' ? 'focused' : ''} ${password ? 'has-value' : ''}`}>
               <LockIcon 
                 size="sm" 
                 color={focusedField === 'password' ? 'secondary' : 'muted'} 

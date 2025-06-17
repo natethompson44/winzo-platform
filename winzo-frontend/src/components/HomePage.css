@@ -363,6 +363,12 @@
   border-color: rgba(0, 0, 0, 0.2);
 }
 
+.input-wrapper.error {
+  border-color: #e53e3e !important;
+  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.15), 0 4px 12px rgba(229, 62, 62, 0.10);
+  background: rgba(255, 245, 245, 0.98);
+}
+
 .input-icon {
   padding: 0 1rem;
   color: rgba(0, 0, 0, 0.7);
@@ -375,8 +381,8 @@
 
 .luxury-input {
   flex: 1;
-  background: transparent;
-  border: none;
+  background: transparent !important;
+  border: none !important;
   padding: 1rem 1rem 1rem 0;
   color: #000000;
   font-size: 1rem;

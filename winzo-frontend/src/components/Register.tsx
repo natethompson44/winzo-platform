@@ -105,7 +105,7 @@ const Register: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="input-group">
-            <div className={`input-wrapper ${focusedField === 'username' ? 'focused' : ''} ${username ? 'has-value' : ''}`}>
+            <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'username' ? 'focused' : ''} ${username ? 'has-value' : ''}`}>
               <UserIcon 
                 size="sm" 
                 color={focusedField === 'username' ? 'secondary' : 'muted'} 
@@ -127,7 +127,7 @@ const Register: React.FC = () => {
           </div>
 
           <div className="input-group">
-            <div className={`input-wrapper ${focusedField === 'inviteCode' ? 'focused' : ''} ${inviteCode ? 'has-value' : ''}`}>
+            <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'inviteCode' ? 'focused' : ''} ${inviteCode ? 'has-value' : ''}`}>
               <LockIcon 
                 size="sm" 
                 color={focusedField === 'inviteCode' ? 'secondary' : 'muted'} 
@@ -149,7 +149,7 @@ const Register: React.FC = () => {
           </div>
 
           <div className="input-group">
-            <div className={`input-wrapper ${focusedField === 'password' ? 'focused' : ''} ${password ? 'has-value' : ''}`}>
+            <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'password' ? 'focused' : ''} ${password ? 'has-value' : ''}`}>
               <LockIcon 
                 size="sm" 
                 color={focusedField === 'password' ? 'secondary' : 'muted'} 
@@ -185,7 +185,7 @@ const Register: React.FC = () => {
           </div>
 
           <div className="input-group">
-            <div className={`input-wrapper ${focusedField === 'confirmPassword' ? 'focused' : ''} ${confirmPassword ? 'has-value' : ''}`}>
+            <div className={`input-wrapper${error ? ' error' : ''} ${focusedField === 'confirmPassword' ? 'focused' : ''} ${confirmPassword ? 'has-value' : ''}`}>
               <LockIcon 
                 size="sm" 
                 color={focusedField === 'confirmPassword' ? 'secondary' : 'muted'} 
