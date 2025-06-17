@@ -12,7 +12,6 @@ const RightSidebarBetSlip: React.FC = () => {
     clearBetSlip,
     totalStake,
     totalPayout,
-    updateStake,
     canPlaceBet,
     isOpen,
     setIsOpen
