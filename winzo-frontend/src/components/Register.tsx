@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { 
-  UserIcon, 
-  LockIcon,
-  LoadingIcon,
-  SuccessIcon,
-  WarningIcon,
-  EyeIcon,
-  EyeOffIcon
-} from './icons/IconLibrary';
+import { LoadingIcon, SuccessIcon, WarningIcon } from './icons/IconLibrary';
 import './HomePage.css';
 
 const Register: React.FC = () => {
@@ -21,8 +13,6 @@ const Register: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [formValid, setFormValid] = useState(false);
   const navigate = useNavigate();
@@ -73,14 +63,6 @@ const Register: React.FC = () => {
 
   const handleInputBlur = () => {
     setFocusedField(null);
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (

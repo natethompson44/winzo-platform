@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { 
-  UserIcon, 
-  LockIcon,
-  LoadingIcon,
-  SuccessIcon,
-  WarningIcon,
-  EyeIcon,
-  EyeOffIcon
-} from './icons/IconLibrary';
+import { LoadingIcon, SuccessIcon, WarningIcon } from './icons/IconLibrary';
 import './HomePage.css';
 
 const Login: React.FC = () => {
@@ -57,10 +49,6 @@ const Login: React.FC = () => {
 
   const handleInputBlur = () => {
     setFocusedField(null);
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
   };
 
   return (
