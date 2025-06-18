@@ -102,21 +102,16 @@ const MobileBetSlip: React.FC = () => {
   };
 
   const isBetTypeDisabled = (type: string): boolean => {
-    const option = betTypeOptions.find(opt => opt.id === type);
-    if (!option) return true;
-    
-    if (option.minSelections && betSlipItems.length < option.minSelections) {
-      return true;
-    }
-    
-    return false;
+    if (type === 'straight') return false;
+    if (type === 'parlay' && betSlipItems.length >= 2) return false;
+    if (type === 'teaser' && betSlipItems.length >= 2) return false;
+    if (type === 'if-bet' && betSlipItems.length >= 2) return false;
+    return true;
   };
-
-  if (!isOpen) return null;
 
   return (
     <>
-      {/* Mobile Bet Slip - Bottom Sheet */}
+      {/* Mobile Bet Slip - Bottom Sheet - always render but control visibility with CSS */}
       <div 
         className={`mobile-bet-slip ${isOpen ? 'open' : 'closed'}`}
         {...swipeHandlers}

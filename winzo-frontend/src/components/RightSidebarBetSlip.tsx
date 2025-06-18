@@ -80,30 +80,32 @@ const RightSidebarBetSlip: React.FC = () => {
   };
 
   const getBetTypeLabel = (type: string): string => {
-    const option = betTypeOptions.find(opt => opt.id === type);
-    return option ? option.label : type;
+    const labels = {
+      'straight': 'Straight',
+      'parlay': 'Parlay',
+      'teaser': 'Teaser',
+      'if-bet': 'If Bet'
+    };
+    return labels[type as keyof typeof labels] || type;
   };
 
   const isBetTypeDisabled = (type: string): boolean => {
-    const option = betTypeOptions.find(opt => opt.id === type);
-    if (!option) return true;
-    
-    if (option.minSelections && betSlipItems.length < option.minSelections) {
-      return true;
-    }
-    
-    return false;
+    if (type === 'straight') return false;
+    if (type === 'parlay' && betSlipItems.length >= 2) return false;
+    if (type === 'teaser' && betSlipItems.length >= 2) return false;
+    if (type === 'if-bet' && betSlipItems.length >= 2) return false;
+    return true;
   };
-
-  if (!isOpen) return null;
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="bet-slip-backdrop" onClick={() => setIsOpen(false)} />
+      {/* Backdrop - only show when open */}
+      {isOpen && (
+        <div className="bet-slip-backdrop" onClick={() => setIsOpen(false)} />
+      )}
       
-      {/* Right Sidebar Bet Slip */}
-      <div className="bet-slip-sidebar">
+      {/* Right Sidebar Bet Slip - always render but control visibility with CSS */}
+      <div className={`bet-slip-sidebar ${isOpen ? 'open' : ''}`}>
         {/* Header */}
         <div className="bet-slip-header">
           <div className="header-content">
