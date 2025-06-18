@@ -28,6 +28,9 @@ const RightSidebarBetSlip: React.FC = () => {
     { id: 'if-bet' as const, label: 'If Bet', description: 'Conditional betting', minSelections: 2 }
   ];
 
+  // Preset stake amounts for quick selection
+  const presetStakes = [5, 10, 25, 50, 100, 250];
+
   const formatOdds = (odds: number): string => {
     if (odds > 0) {
       return `+${odds}`;
@@ -41,82 +44,66 @@ const RightSidebarBetSlip: React.FC = () => {
     setShowConfirmation(true);
   };
 
-  const confirmBet = async () => {
+  const handleConfirmBet = async () => {
     setIsProcessing(true);
     
     try {
-      // TODO: Implement actual bet placement API call
-      console.log('Placing bet:', {
-        items: betSlipItems,
-        totalStake,
-        totalPayout,
-        betType
-      });
-      
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Success - clear bet slip and close
+      // Clear bet slip after successful placement
       clearBetSlip();
-      setIsOpen(false);
       setShowConfirmation(false);
       
-      // Show success notification
-      // You can integrate with your notification system here
-      
+      // Show success message (you can integrate with your toast system)
+      console.log('Bet placed successfully!');
     } catch (error) {
-      console.error('Failed to place bet:', error);
-      // Show error notification
+      console.error('Error placing bet:', error);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const cancelBet = () => {
-    setShowConfirmation(false);
+  const handlePresetStake = (amount: number) => {
+    if (betType === 'straight') {
+      // For straight bets, apply to all individual bets
+      betSlipItems.forEach(item => {
+        updateStake(item.id, amount);
+      });
+    } else {
+      // For multi-bets, set the total stake
+      const stakePerBet = amount / betSlipItems.length;
+      betSlipItems.forEach(item => {
+        updateStake(item.id, stakePerBet);
+      });
+    }
   };
 
-  const handleClose = () => {
-    setIsOpen(false);
-  };
-
-  const getBetTypeLabel = (type: string) => {
+  const getBetTypeLabel = (type: string): string => {
     const option = betTypeOptions.find(opt => opt.id === type);
     return option ? option.label : type;
   };
 
-  const getBetTypeDescription = (type: string) => {
+  const isBetTypeDisabled = (type: string): boolean => {
     const option = betTypeOptions.find(opt => opt.id === type);
-    return option ? option.description : '';
-  };
-
-  const isBetTypeDisabled = (type: string) => {
-    const option = betTypeOptions.find(opt => opt.id === type);
-    if (option && option.minSelections) {
-      return betSlipItems.length < option.minSelections;
+    if (!option) return true;
+    
+    if (option.minSelections && betSlipItems.length < option.minSelections) {
+      return true;
     }
+    
     return false;
   };
 
-  const handleStakeUpdate = (id: string, value: string) => {
-    const stake = parseFloat(value) || 0;
-    updateStake(id, stake);
-  };
-
-  // Don't render if not open
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
     <>
-      {/* Backdrop for mobile */}
-      {window.innerWidth <= 768 && (
-        <div className="bet-slip-backdrop" onClick={handleClose} />
-      )}
+      {/* Backdrop */}
+      <div className="bet-slip-backdrop" onClick={() => setIsOpen(false)} />
       
       {/* Right Sidebar Bet Slip */}
-      <div className={`bet-slip-sidebar ${isOpen ? 'open' : 'closed'}`}>
+      <div className="bet-slip-sidebar">
         {/* Header */}
         <div className="bet-slip-header">
           <div className="header-content">
@@ -124,13 +111,17 @@ const RightSidebarBetSlip: React.FC = () => {
               <span className="bet-slip-icon">📋</span>
               Bet Slip ({betSlipItems.length})
             </h3>
-            <button className="close-button" onClick={handleClose}>
+            <button 
+              className="close-button"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close bet slip"
+            >
               ✕
             </button>
           </div>
         </div>
 
-        {/* Bet Types Section (Moved from top of page) */}
+        {/* Bet Types Section */}
         <div className="bet-types-section">
           <h4 className="bet-types-title">Bet Type</h4>
           <div className="bet-types-grid">
@@ -152,45 +143,49 @@ const RightSidebarBetSlip: React.FC = () => {
             ))}
           </div>
           
-          {/* Bet Type Info */}
           <div className="bet-type-info">
-            <p className="bet-type-description">{getBetTypeDescription(betType)}</p>
-            {betType === 'teaser' && betSlipItems.length >= 2 && (
+            <p className="bet-type-description">
+              {betTypeOptions.find(opt => opt.id === betType)?.description}
+            </p>
+            
+            {betType === 'teaser' && (
               <div className="teaser-info">
-                <small>✨ Adjusted odds with better spreads but lower payouts</small>
+                <small>Teaser bets adjust point spreads in your favor but reduce potential payouts.</small>
               </div>
             )}
-            {betType === 'if-bet' && betSlipItems.length >= 2 && (
+            
+            {betType === 'if-bet' && (
               <div className="if-bet-info">
-                <small>🔄 Second bet only processes if first bet wins</small>
+                <small>If-bets allow conditional betting where subsequent bets only occur if previous bets win.</small>
               </div>
             )}
-            {betType === 'parlay' && betSlipItems.length >= 2 && (
+            
+            {betType === 'parlay' && (
               <div className="parlay-info">
-                <small>🚀 All selections must win - Higher risk, higher reward!</small>
+                <small>Parlay bets combine multiple selections for higher potential payouts.</small>
               </div>
             )}
           </div>
         </div>
 
-        {/* Bet Items */}
+        {/* Bet Slip Content */}
         <div className="bet-slip-content">
           {betSlipItems.length === 0 ? (
             <div className="empty-bet-slip">
-              <div className="empty-icon">📝</div>
-              <h4>No selections yet</h4>
-              <p>Click on odds to add selections to your bet slip</p>
+              <div className="empty-icon">📋</div>
+              <h4>Your Bet Slip is Empty</h4>
+              <p>Select teams and odds from the sports listings to start building your bet.</p>
             </div>
           ) : (
             <div className="bet-items">
               {betSlipItems.map((item, index) => (
                 <div key={item.id} className="bet-item">
                   <div className="bet-item-header">
-                    <div className="bet-number">#{index + 1}</div>
-                    <button
+                    <span className="bet-number">{index + 1}</span>
+                    <button 
                       className="remove-bet"
                       onClick={() => removeFromBetSlip(item.id)}
-                      aria-label="Remove bet"
+                      aria-label={`Remove ${item.selectedTeam} from bet slip`}
                     >
                       ✕
                     </button>
@@ -212,26 +207,29 @@ const RightSidebarBetSlip: React.FC = () => {
                       <span className="market-type">{item.marketType}</span>
                       <span className="bookmaker">{item.bookmaker}</span>
                     </div>
-
-                    {/* Stake Input for Individual Bets */}
-                    {betType === 'straight' && (
-                      <div className="stake-input-section">
-                        <label className="stake-label">Stake:</label>
-                        <input
-                          type="number"
-                          className="stake-input"
-                          value={item.stake}
-                          onChange={(e) => handleStakeUpdate(item.id, e.target.value)}
-                          min="1"
-                          step="1"
-                          placeholder="0"
-                        />
-                        <div className="potential-payout">
-                          Win: {formatCurrency(item.potentialPayout)}
-                        </div>
-                      </div>
-                    )}
                   </div>
+                  
+                  {/* Individual Stake Input for Straight Bets */}
+                  {betType === 'straight' && (
+                    <div className="stake-input-section">
+                      <label className="stake-label">Stake Amount:</label>
+                      <input
+                        type="number"
+                        className="stake-input"
+                        value={item.stake}
+                        onChange={(e) => {
+                          const newStake = parseFloat(e.target.value) || 0;
+                          updateStake(item.id, newStake);
+                        }}
+                        min="1"
+                        step="1"
+                        placeholder="0"
+                      />
+                      <div className="potential-payout">
+                        Potential Win: {formatCurrency(item.potentialPayout)}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -244,6 +242,23 @@ const RightSidebarBetSlip: React.FC = () => {
             <div className="summary-header">
               <h4>Bet Summary</h4>
               <span className="bet-type-badge">{getBetTypeLabel(betType)}</span>
+            </div>
+            
+            {/* Preset Stake Buttons */}
+            <div className="preset-stakes-section">
+              <label className="stake-label">Quick Stake:</label>
+              <div className="preset-stakes-grid">
+                {presetStakes.map((amount) => (
+                  <button
+                    key={amount}
+                    className="preset-stake-btn"
+                    onClick={() => handlePresetStake(amount)}
+                    title={`Set stake to $${amount}`}
+                  >
+                    ${amount}
+                  </button>
+                ))}
+              </div>
             </div>
             
             {/* Combined Stake Input for Parlay/Teaser/If-Bet */}
@@ -289,24 +304,21 @@ const RightSidebarBetSlip: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="bet-actions">
-          {betSlipItems.length > 0 ? (
-            <>
-              <button
-                className="place-bet-btn"
-                onClick={handlePlaceBets}
-                disabled={!canPlaceBet()}
-              >
-                PLACE BET
-              </button>
-              <button className="clear-all-btn" onClick={clearBetSlip}>
-                Clear All
-              </button>
-            </>
-          ) : (
-            <button className="clear-all-btn" disabled>
-              No Selections
-            </button>
-          )}
+          <button 
+            className="place-bet-btn"
+            onClick={handlePlaceBets}
+            disabled={!canPlaceBet()}
+          >
+            Place Bet
+          </button>
+          
+          <button 
+            className="clear-all-btn"
+            onClick={clearBetSlip}
+            disabled={betSlipItems.length === 0}
+          >
+            Clear All
+          </button>
         </div>
       </div>
 
@@ -316,9 +328,9 @@ const RightSidebarBetSlip: React.FC = () => {
           <div className="bet-confirmation-modal">
             <div className="modal-header">
               <h3>Confirm Your Bet</h3>
-              <button
+              <button 
                 className="close-modal"
-                onClick={cancelBet}
+                onClick={() => setShowConfirmation(false)}
                 disabled={isProcessing}
               >
                 ✕
@@ -331,43 +343,47 @@ const RightSidebarBetSlip: React.FC = () => {
                   <span>Bet Type:</span>
                   <span>{getBetTypeLabel(betType)}</span>
                 </div>
+                
                 <div className="detail-row">
                   <span>Selections:</span>
                   <span>{betSlipItems.length}</span>
                 </div>
+                
                 <div className="detail-row">
                   <span>Total Stake:</span>
                   <span>{formatCurrency(totalStake)}</span>
                 </div>
+                
                 <div className="detail-row highlight">
                   <span>Potential Win:</span>
                   <span>{formatCurrency(totalPayout)}</span>
                 </div>
               </div>
+            </div>
+            
+            <div className="confirmation-actions">
+              <button 
+                className="confirm-bet-btn"
+                onClick={handleConfirmBet}
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <>
+                    Processing...
+                    <div className="loading-spinner-small"></div>
+                  </>
+                ) : (
+                  'Confirm Bet'
+                )}
+              </button>
               
-              <div className="confirmation-actions">
-                <button
-                  className="confirm-bet-btn"
-                  onClick={confirmBet}
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? (
-                    <>
-                      <span className="loading-spinner-small"></span>
-                      Processing...
-                    </>
-                  ) : (
-                    'Confirm Bet'
-                  )}
-                </button>
-                <button
-                  className="cancel-bet-btn"
-                  onClick={cancelBet}
-                  disabled={isProcessing}
-                >
-                  Cancel
-                </button>
-              </div>
+              <button 
+                className="cancel-bet-btn"
+                onClick={() => setShowConfirmation(false)}
+                disabled={isProcessing}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>

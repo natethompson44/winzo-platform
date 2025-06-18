@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useBetSlip } from '../contexts/BetSlipContext';
 import { formatCurrency } from '../utils/numberUtils';
@@ -28,10 +28,8 @@ const MobileBetSlip: React.FC = () => {
     canPlaceBet
   } = useBetSlip();
 
-  const [isExpanded, setIsExpanded] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   const betTypeOptions = [
     { id: 'straight' as const, label: 'Straight', description: 'Single bet on one selection' },
@@ -40,86 +38,81 @@ const MobileBetSlip: React.FC = () => {
     { id: 'if-bet' as const, label: 'If Bet', description: 'Conditional betting', minSelections: 2 }
   ];
 
-  // Check if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  // Preset stake amounts for quick selection
+  const presetStakes = [5, 10, 25, 50, 100, 250];
 
-  // Swipe handlers
+  // Swipe handlers for mobile
   const swipeHandlers = useSwipeable({
-    onSwipedUp: () => {
-      if (isOpen && !isExpanded) setIsExpanded(true);
-    },
-    onSwipedDown: () => {
-      if (isOpen && isExpanded) setIsExpanded(false);
-      else if (isOpen) setIsOpen(false);
-    },
+    onSwipedDown: () => setIsOpen(false),
+    onSwipedUp: () => setIsOpen(true),
     trackMouse: false
   });
 
-  const getBetTypeLabel = (type: string) => {
-    const option = betTypeOptions.find(opt => opt.id === type);
-    return option ? option.label : type;
-  };
-
-  const isBetTypeDisabled = (type: string) => {
-    const option = betTypeOptions.find(opt => opt.id === type);
-    if (option && option.minSelections) {
-      return betSlipItems.length < option.minSelections;
+  const formatOdds = (odds: number): string => {
+    if (odds > 0) {
+      return `+${odds}`;
     }
-    return false;
+    return odds.toString();
   };
 
-  const handleStakeUpdate = (id: string, value: string) => {
-    const stake = parseFloat(value) || 0;
-    updateStake(id, stake);
-  };
-
-  const handlePlaceBet = async () => {
+  const handlePlaceBets = async () => {
     if (!canPlaceBet()) return;
+    
     setShowConfirmation(true);
   };
 
-  const confirmBet = async () => {
+  const handleConfirmBet = async () => {
     setIsProcessing(true);
     
     try {
-      // TODO: Implement actual bet placement API call
-      console.log('Placing bet:', {
-        items: betSlipItems,
-        totalStake,
-        totalPayout,
-        betType
-      });
-      
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Success - clear bet slip and close
+      // Clear bet slip after successful placement
       clearBetSlip();
-      setIsOpen(false);
       setShowConfirmation(false);
       
+      // Show success message (you can integrate with your toast system)
+      console.log('Bet placed successfully!');
     } catch (error) {
-      console.error('Failed to place bet:', error);
+      console.error('Error placing bet:', error);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const cancelBet = () => {
-    setShowConfirmation(false);
+  const handlePresetStake = (amount: number) => {
+    if (betType === 'straight') {
+      // For straight bets, apply to all individual bets
+      betSlipItems.forEach(item => {
+        updateStake(item.id, amount);
+      });
+    } else {
+      // For multi-bets, set the total stake
+      const stakePerBet = amount / betSlipItems.length;
+      betSlipItems.forEach(item => {
+        updateStake(item.id, stakePerBet);
+      });
+    }
   };
 
-  // Only render on mobile devices when open
-  if (!isOpen || !isMobile) return null;
+  const getBetTypeLabel = (type: string): string => {
+    const option = betTypeOptions.find(opt => opt.id === type);
+    return option ? option.label : type;
+  };
+
+  const isBetTypeDisabled = (type: string): boolean => {
+    const option = betTypeOptions.find(opt => opt.id === type);
+    if (!option) return true;
+    
+    if (option.minSelections && betSlipItems.length < option.minSelections) {
+      return true;
+    }
+    
+    return false;
+  };
+
+  if (!isOpen) return null;
 
   return (
     <>
@@ -141,6 +134,7 @@ const MobileBetSlip: React.FC = () => {
             <button 
               className="close-btn"
               onClick={() => setIsOpen(false)}
+              aria-label="Close bet slip"
             >
               ✕
             </button>
@@ -173,21 +167,21 @@ const MobileBetSlip: React.FC = () => {
         {/* Content */}
         <div className="mobile-bet-slip-content">
           {betSlipItems.length === 0 ? (
-            <div className="empty-mobile-bet-slip">
-              <div className="empty-icon">📝</div>
-              <h4>No selections yet</h4>
-              <p>Tap on odds to add selections</p>
+            <div className="mobile-empty-bet-slip">
+              <div className="mobile-empty-icon">📋</div>
+              <h4>Your Bet Slip is Empty</h4>
+              <p>Select teams and odds from the sports listings to start building your bet.</p>
             </div>
           ) : (
             <div className="mobile-bet-items">
               {betSlipItems.map((item, index) => (
                 <div key={item.id} className="mobile-bet-item">
                   <div className="mobile-bet-item-header">
-                    <div className="bet-number">#{index + 1}</div>
-                    <button
-                      className="remove-mobile-bet"
+                    <span className="mobile-bet-number">{index + 1}</span>
+                    <button 
+                      className="mobile-remove-bet"
                       onClick={() => removeFromBetSlip(item.id)}
-                      aria-label="Remove bet"
+                      aria-label={`Remove ${item.selectedTeam} from bet slip`}
                     >
                       ✕
                     </button>
@@ -195,35 +189,43 @@ const MobileBetSlip: React.FC = () => {
                   
                   <div className="mobile-bet-details">
                     <div className="mobile-teams">
-                      <span className="team">{item.homeTeam}</span>
-                      <span className="vs">vs</span>
-                      <span className="team">{item.awayTeam}</span>
+                      <span className="mobile-team">{item.homeTeam}</span>
+                      <span className="mobile-vs">vs</span>
+                      <span className="mobile-team">{item.awayTeam}</span>
                     </div>
                     
                     <div className="mobile-selection">
-                      <span className="selected-team">{item.selectedTeam}</span>
-                      <span className="odds">{item.odds > 0 ? `+${item.odds}` : item.odds}</span>
+                      <span className="mobile-selected-team">{item.selectedTeam}</span>
+                      <span className="mobile-odds">{formatOdds(item.odds)}</span>
                     </div>
-
-                    {/* Stake Input for Individual Bets */}
-                    {betType === 'straight' && (
-                      <div className="mobile-stake-input-section">
-                        <label className="mobile-stake-label">Stake:</label>
-                        <input
-                          type="number"
-                          className="mobile-stake-input"
-                          value={item.stake}
-                          onChange={(e) => handleStakeUpdate(item.id, e.target.value)}
-                          min="1"
-                          step="1"
-                          placeholder="0"
-                        />
-                        <div className="mobile-potential-payout">
-                          Win: {formatCurrency(item.potentialPayout)}
-                        </div>
-                      </div>
-                    )}
+                    
+                    <div className="mobile-market-info">
+                      <span className="mobile-market-type">{item.marketType}</span>
+                      <span className="mobile-bookmaker">{item.bookmaker}</span>
+                    </div>
                   </div>
+                  
+                  {/* Individual Stake Input for Straight Bets */}
+                  {betType === 'straight' && (
+                    <div className="mobile-stake-input-section">
+                      <label className="mobile-stake-label">Stake Amount:</label>
+                      <input
+                        type="number"
+                        className="mobile-stake-input"
+                        value={item.stake}
+                        onChange={(e) => {
+                          const newStake = parseFloat(e.target.value) || 0;
+                          updateStake(item.id, newStake);
+                        }}
+                        min="1"
+                        step="1"
+                        placeholder="0"
+                      />
+                      <div className="mobile-potential-payout">
+                        Potential Win: {formatCurrency(item.potentialPayout)}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -236,6 +238,23 @@ const MobileBetSlip: React.FC = () => {
             <div className="mobile-summary-header">
               <h4>Bet Summary</h4>
               <span className="mobile-bet-type-badge">{getBetTypeLabel(betType)}</span>
+            </div>
+            
+            {/* Preset Stake Buttons */}
+            <div className="mobile-preset-stakes-section">
+              <label className="mobile-stake-label">Quick Stake:</label>
+              <div className="mobile-preset-stakes-grid">
+                {presetStakes.map((amount) => (
+                  <button
+                    key={amount}
+                    className="mobile-preset-stake-btn"
+                    onClick={() => handlePresetStake(amount)}
+                    title={`Set stake to $${amount}`}
+                  >
+                    ${amount}
+                  </button>
+                ))}
+              </div>
             </div>
             
             {/* Combined Stake Input for Multi-Bets */}
@@ -281,102 +300,89 @@ const MobileBetSlip: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="mobile-bet-actions">
-          {betSlipItems.length > 0 ? (
-            <>
-              <button
-                className="mobile-place-bet-btn"
-                onClick={handlePlaceBet}
-                disabled={!canPlaceBet()}
-              >
-                PLACE BET
-              </button>
-              <button className="mobile-clear-all-btn" onClick={clearBetSlip}>
-                Clear All
-              </button>
-            </>
-          ) : (
-            <button className="mobile-clear-all-btn" disabled>
-              No Selections
-            </button>
-          )}
+          <button 
+            className="mobile-place-bet-btn"
+            onClick={handlePlaceBets}
+            disabled={!canPlaceBet()}
+          >
+            Place Bet
+          </button>
+          
+          <button 
+            className="mobile-clear-all-btn"
+            onClick={clearBetSlip}
+            disabled={betSlipItems.length === 0}
+          >
+            Clear All
+          </button>
         </div>
       </div>
 
       {/* Bet Confirmation Modal */}
       {showConfirmation && (
-        <div className="mobile-bet-confirmation-overlay">
-          <div className="mobile-bet-confirmation-modal">
-            <div className="mobile-modal-header">
+        <div className="bet-confirmation-overlay">
+          <div className="bet-confirmation-modal">
+            <div className="modal-header">
               <h3>Confirm Your Bet</h3>
-              <button
+              <button 
                 className="close-modal"
-                onClick={cancelBet}
+                onClick={() => setShowConfirmation(false)}
                 disabled={isProcessing}
               >
                 ✕
               </button>
             </div>
             
-            <div className="mobile-modal-content">
-              <div className="mobile-confirmation-details">
-                <div className="mobile-detail-row">
+            <div className="modal-content">
+              <div className="confirmation-details">
+                <div className="detail-row">
                   <span>Bet Type:</span>
                   <span>{getBetTypeLabel(betType)}</span>
                 </div>
-                <div className="mobile-detail-row">
+                
+                <div className="detail-row">
                   <span>Selections:</span>
                   <span>{betSlipItems.length}</span>
                 </div>
-                <div className="mobile-detail-row">
+                
+                <div className="detail-row">
                   <span>Total Stake:</span>
                   <span>{formatCurrency(totalStake)}</span>
                 </div>
-                <div className="mobile-detail-row highlight">
+                
+                <div className="detail-row highlight">
                   <span>Potential Win:</span>
                   <span>{formatCurrency(totalPayout)}</span>
                 </div>
               </div>
+            </div>
+            
+            <div className="confirmation-actions">
+              <button 
+                className="confirm-bet-btn"
+                onClick={handleConfirmBet}
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <>
+                    Processing...
+                    <div className="loading-spinner-small"></div>
+                  </>
+                ) : (
+                  'Confirm Bet'
+                )}
+              </button>
               
-              <div className="mobile-confirmation-actions">
-                <button
-                  className="mobile-confirm-bet-btn"
-                  onClick={confirmBet}
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? (
-                    <>
-                      <span className="loading-spinner-small"></span>
-                      Processing...
-                    </>
-                  ) : (
-                    'Confirm Bet'
-                  )}
-                </button>
-                <button
-                  className="mobile-cancel-bet-btn"
-                  onClick={cancelBet}
-                  disabled={isProcessing}
-                >
-                  Cancel
-                </button>
-              </div>
+              <button 
+                className="cancel-bet-btn"
+                onClick={() => setShowConfirmation(false)}
+                disabled={isProcessing}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
-      )}
-
-      {/* Backdrop */}
-      {(isOpen || showConfirmation) && (
-        <div 
-          className="mobile-bet-slip-backdrop"
-          onClick={() => {
-            if (showConfirmation) {
-              cancelBet();
-            } else {
-              setIsOpen(false);
-            }
-          }}
-        />
       )}
     </>
   );
