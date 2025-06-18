@@ -1,6 +1,6 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/database');
-const Country = require('./Country');
+const { DataTypes, Model } = require('sequelize')
+const sequelize = require('../../config/database')
+const Country = require('./Country')
 
 /**
  * Venue model stores information about stadiums or arenas where events are held.
@@ -14,18 +14,18 @@ Venue.init(
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+      primaryKey: true
     },
-    api_id: { 
-      type: DataTypes.INTEGER, 
-      allowNull: false, 
+    api_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
       unique: true,
       field: 'api_id'
     },
     country_id: {
       type: DataTypes.UUID,
       allowNull: true,
-      references: { model: 'countries', key: 'id' },
+      references: { model: 'countries', key: 'id' }
     },
     name: { type: DataTypes.STRING, allowNull: false },
     city: { type: DataTypes.STRING, allowNull: true },
@@ -34,7 +34,7 @@ Venue.init(
     surface: { type: DataTypes.STRING, allowNull: true },
     image: { type: DataTypes.STRING, allowNull: true },
     createdBy: { type: DataTypes.UUID, allowNull: true, field: 'created_by' },
-    updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' },
+    updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' }
   },
   {
     sequelize,
@@ -43,9 +43,9 @@ Venue.init(
     paranoid: true,
     indexes: [
       { fields: ['api_id'] },
-      { fields: ['country_id'] },
-    ],
+      { fields: ['country_id'] }
+    ]
   }
-);
+)
 
-module.exports = Venue;
+module.exports = Venue

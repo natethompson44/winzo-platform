@@ -1,4 +1,4 @@
-const { sequelize, applyAssociations } = require('../models');
+const { sequelize, applyAssociations } = require('../models')
 
 /**
  * Initialize connection to the PostgreSQL database.
@@ -6,19 +6,18 @@ const { sequelize, applyAssociations } = require('../models');
  * Exits the process if authentication fails because the app cannot work
  * without a persistent database connection.
  */
-async function initDatabase() {
+async function initDatabase () {
   try {
-    await sequelize.authenticate();
-    console.log('Database connection established');
-    
+    await sequelize.authenticate()
+    console.log('Database connection established')
+
     // Apply model associations only
-    applyAssociations();
-    console.log('Database models synchronized successfully');
+    applyAssociations()
+    console.log('Database models synchronized successfully')
   } catch (err) {
-    console.error('Unable to connect to the database:', err);
-    process.exit(1);
+    console.error('Unable to connect to the database:', err)
+    process.exit(1)
   }
 }
 
-module.exports = initDatabase;
-
+module.exports = initDatabase

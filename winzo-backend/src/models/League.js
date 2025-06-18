@@ -1,7 +1,7 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/database');
-const Sport = require('./Sport');
-const Country = require('./Country');
+const { DataTypes, Model } = require('sequelize')
+const sequelize = require('../../config/database')
+const Sport = require('./Sport')
+const Country = require('./Country')
 
 /**
  * League model aligns with API-Sports league objects. Multiple leagues belong
@@ -14,8 +14,8 @@ class League extends Model {
    * Determine if this league is currently active based on current flag.
    * @returns {boolean}
    */
-  isCurrent() {
-    return !!this.currentSeason && this.currentSeason === this.season;
+  isCurrent () {
+    return !!this.currentSeason && this.currentSeason === this.season
   }
 }
 
@@ -24,66 +24,66 @@ League.init(
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+      primaryKey: true
     },
     api_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
       field: 'api_id',
-      comment: 'API-Sports league id',
+      comment: 'API-Sports league id'
     },
     sport_id: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'sports',
-        key: 'id',
-      },
+        key: 'id'
+      }
     },
     country_id: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: 'countries',
-        key: 'id',
-      },
+        key: 'id'
+      }
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     logo: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     },
     flag: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     },
     season: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: true
     },
     seasons: {
       type: DataTypes.JSONB,
-      allowNull: true,
+      allowNull: true
     },
     currentSeason: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: 'current_season',
+      field: 'current_season'
     },
     createdBy: {
       type: DataTypes.UUID,
       allowNull: true,
-      field: 'created_by',
+      field: 'created_by'
     },
     updatedBy: {
       type: DataTypes.UUID,
       allowNull: true,
-      field: 'updated_by',
-    },
+      field: 'updated_by'
+    }
   },
   {
     sequelize,
@@ -93,9 +93,9 @@ League.init(
     indexes: [
       { fields: ['api_id'] },
       { fields: ['sport_id'] },
-      { fields: ['country_id'] },
-    ],
+      { fields: ['country_id'] }
+    ]
   }
-);
+)
 
-module.exports = League;
+module.exports = League

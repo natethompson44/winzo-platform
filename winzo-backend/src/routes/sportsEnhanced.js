@@ -1,13 +1,13 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 // Import authentication middleware. The middleware exports a single
 // function, so we require it directly instead of using destructuring.
-const authenticateToken = require('../middleware/auth');
-const { SportsEvent, Bet, User } = require('../models');
+const authenticateToken = require('../middleware/auth')
+const { SportsEvent, Bet, User } = require('../models')
 
 /**
  * Enhanced Sports API Routes with Real Data Integration
- * 
+ *
  * Provides comprehensive sports betting API with real sports data,
  * bet placement, and enhanced error handling.
  */
@@ -15,47 +15,47 @@ const { SportsEvent, Bet, User } = require('../models');
 // Place a bet
 router.post('/place-bet', authenticateToken, async (req, res) => {
   try {
-    const { eventId, oddsId, amount, market, outcome } = req.body;
-    const userId = req.user.id;
+    const { eventId, oddsId, amount, market, outcome } = req.body
+    const userId = req.user.id
 
     // Validate input
     if (!eventId || !oddsId || !amount || !market || !outcome) {
       return res.status(400).json({
         success: false,
         message: 'Missing required bet information'
-      });
+      })
     }
 
     if (amount < 1) {
       return res.status(400).json({
         success: false,
         message: 'Minimum bet amount is $1'
-      });
+      })
     }
 
     // Get user and check balance
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId)
     if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
-      });
+      })
     }
 
     if (user.walletBalance < amount) {
       return res.status(400).json({
         success: false,
         message: 'Insufficient wallet balance'
-      });
+      })
     }
 
     // Get event details
-    const event = await SportsEvent.findByPk(eventId);
+    const event = await SportsEvent.findByPk(eventId)
     if (!event) {
       return res.status(404).json({
         success: false,
         message: 'Event not found'
-      });
+      })
     }
 
     // Create bet record
@@ -68,12 +68,12 @@ router.post('/place-bet', authenticateToken, async (req, res) => {
       outcome,
       status: 'pending',
       placedAt: new Date()
-    });
+    })
 
     // Update user wallet balance
     await user.update({
       walletBalance: user.walletBalance - amount
-    });
+    })
 
     res.json({
       success: true,
@@ -89,17 +89,16 @@ router.post('/place-bet', authenticateToken, async (req, res) => {
         },
         newBalance: `$${user.walletBalance.toFixed(2)}`
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Place bet error:', error);
+    console.error('Place bet error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to place bet. Please try again.',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Get sports with enhanced data
 router.get('/', authenticateToken, async (req, res) => {
@@ -172,7 +171,7 @@ router.get('/', authenticateToken, async (req, res) => {
         avgOdds: '1.50 - 4.00',
         markets: ['Match Winner', 'Set Betting', 'Total Games']
       }
-    ];
+    ]
 
     res.json({
       success: true,
@@ -183,26 +182,25 @@ router.get('/', authenticateToken, async (req, res) => {
         activeSports: sportsData.filter(s => s.active).length,
         lastUpdated: new Date().toISOString()
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Sports API error:', error);
+    console.error('Sports API error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to load sports data',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Get events for a specific sport with enhanced data
 router.get('/:sportKey/events', authenticateToken, async (req, res) => {
   try {
-    const { sportKey } = req.params;
+    const { sportKey } = req.params
 
     // Enhanced events data with realistic odds and markets
     const eventsData = {
-      'americanfootball_nfl': [
+      americanfootball_nfl: [
         {
           id: 'nfl-001',
           homeTeam: 'Kansas City Chiefs',
@@ -298,7 +296,7 @@ router.get('/:sportKey/events', authenticateToken, async (req, res) => {
           }
         }
       ],
-      'basketball_nba': [
+      basketball_nba: [
         {
           id: 'nba-001',
           homeTeam: 'Los Angeles Lakers',
@@ -346,7 +344,7 @@ router.get('/:sportKey/events', authenticateToken, async (req, res) => {
           }
         }
       ],
-      'soccer_epl': [
+      soccer_epl: [
         {
           id: 'epl-001',
           homeTeam: 'Manchester City',
@@ -384,9 +382,9 @@ router.get('/:sportKey/events', authenticateToken, async (req, res) => {
           }
         }
       ]
-    };
+    }
 
-    const events = eventsData[sportKey] || [];
+    const events = eventsData[sportKey] || []
 
     res.json({
       success: true,
@@ -398,22 +396,21 @@ router.get('/:sportKey/events', authenticateToken, async (req, res) => {
         upcomingEvents: events.filter(e => e.status === 'upcoming').length,
         lastUpdated: new Date().toISOString()
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Events API error:', error);
+    console.error('Events API error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to load events data',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Get live odds updates
 router.get('/live-odds/:eventId', authenticateToken, async (req, res) => {
   try {
-    const { eventId } = req.params;
+    const { eventId } = req.params
 
     // Simulate live odds updates
     const liveOdds = {
@@ -433,47 +430,46 @@ router.get('/live-odds/:eventId', authenticateToken, async (req, res) => {
           }
         ]
       }
-    };
+    }
 
     res.json({
       success: true,
       message: 'Live odds updated',
       data: liveOdds
-    });
-
+    })
   } catch (error) {
-    console.error('Live odds error:', error);
+    console.error('Live odds error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to get live odds',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Get betting statistics
 router.get('/stats', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id
 
     // Get user's betting statistics
     const bets = await Bet.findAll({
       where: { userId },
       order: [['placedAt', 'DESC']]
-    });
+    })
 
-    const totalBets = bets.length;
-    const wonBets = bets.filter(bet => bet.status === 'won').length;
-    const lostBets = bets.filter(bet => bet.status === 'lost').length;
-    const pendingBets = bets.filter(bet => bet.status === 'pending').length;
+    const totalBets = bets.length
+    const wonBets = bets.filter(bet => bet.status === 'won').length
+    const lostBets = bets.filter(bet => bet.status === 'lost').length
+    const pendingBets = bets.filter(bet => bet.status === 'pending').length
 
-    const totalWagered = bets.reduce((sum, bet) => sum + bet.amount, 0);
+    const totalWagered = bets.reduce((sum, bet) => sum + bet.amount, 0)
     const totalWinnings = bets
       .filter(bet => bet.status === 'won')
-      .reduce((sum, bet) => sum + (bet.amount * (bet.decimalOdds || 2)), 0);
+      .reduce((sum, bet) => sum + (bet.amount * (bet.decimalOdds || 2)), 0)
 
-    const winRate = totalBets > 0 ? ((wonBets / totalBets) * 100).toFixed(1) : '0.0';
-    const netProfit = totalWinnings - totalWagered;
+    const winRate = totalBets > 0 ? ((wonBets / totalBets) * 100).toFixed(1) : '0.0'
+    const netProfit = totalWinnings - totalWagered
 
     res.json({
       success: true,
@@ -496,17 +492,15 @@ router.get('/stats', authenticateToken, async (req, res) => {
           placedAt: bet.placedAt
         }))
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Betting stats error:', error);
+    console.error('Betting stats error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to load betting statistics',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
-module.exports = router;
-
+module.exports = router

@@ -1,0 +1,159 @@
+name: WINZO Platform CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+  CI: true
+
+jobs:
+  # Frontend CI
+  frontend-ci:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: winzo-frontend/package-lock.json
+        
+    - name: Install frontend dependencies
+      working-directory: winzo-frontend
+      run: npm ci
+      
+    - name: Run frontend linting
+      working-directory: winzo-frontend
+      run: npm run lint
+      
+    - name: Run frontend type checking
+      working-directory: winzo-frontend
+      run: npm run type-check
+      
+    - name: Run frontend tests
+      working-directory: winzo-frontend
+      run: npm run test:ci
+      
+    - name: Build frontend
+      working-directory: winzo-frontend
+      run: npm run build
+      
+    - name: Upload frontend build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build
+        path: winzo-frontend/build/
+        retention-days: 7
+
+  # Backend CI
+  backend-ci:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: winzo-backend/package-lock.json
+        
+    - name: Install backend dependencies
+      working-directory: winzo-backend
+      run: npm ci
+      
+    - name: Run backend linting
+      working-directory: winzo-backend
+      run: npm run lint
+      
+    - name: Run backend tests
+      working-directory: winzo-backend
+      run: npm run test:ci
+      
+    - name: Security audit
+      working-directory: winzo-backend
+      run: npm audit --audit-level=moderate
+
+  # Security Scan
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [frontend-ci, backend-ci]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Quality Gate - Only runs on main branch pushes
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [frontend-ci, backend-ci, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Download frontend build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: frontend-build
+        path: winzo-frontend/build/
+        
+    - name: Verify frontend build
+      working-directory: winzo-frontend
+      run: |
+        if [ ! -d "build" ]; then
+          echo "❌ Frontend build not found"
+          exit 1
+        fi
+        echo "✅ Frontend build verified"
+        
+    - name: Verify backend health
+      working-directory: winzo-backend
+      run: |
+        npm ci --only=production
+        npm run healthcheck
+        
+    - name: Deployment Ready Notification
+      run: |
+        echo "🎯 WINZO Platform Quality Gate Passed!"
+        echo "✅ Frontend: Ready for Netlify deployment"
+        echo "✅ Backend: Ready for Railway deployment"
+        echo "✅ Security: All checks passed"
+        echo ""
+        echo "🚀 Your existing deployment flow will handle:"
+        echo "   - Netlify: Automatic frontend deployment"
+        echo "   - Railway: Automatic backend deployment" 

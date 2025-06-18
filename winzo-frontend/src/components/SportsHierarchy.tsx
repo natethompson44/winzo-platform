@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChevronDownIcon, ChevronRightIcon, FireIcon, ClockIcon } from './icons/IconLibrary';
+import { ChevronDownIcon, ChevronRightIcon, ClockIcon } from './icons/IconLibrary';
 import './SportsHierarchy.css';
 
 interface SportCategory {
@@ -458,10 +458,10 @@ const SportsHierarchy: React.FC = () => {
         <div className="header-left">
           <div className="logo">WINZO SPORTS</div>
           <nav className="header-nav">
-            <a href="#" className="nav-item active">Sports</a>
-            <a href="#" className="nav-item">Live</a>
-            <a href="#" className="nav-item">Favorites</a>
-            <a href="#" className="nav-item">History</a>
+            <button className="nav-item active">Sports</button>
+            <button className="nav-item">Live</button>
+            <button className="nav-item">Favorites</button>
+            <button className="nav-item">History</button>
           </nav>
         </div>
         <div className="header-right">

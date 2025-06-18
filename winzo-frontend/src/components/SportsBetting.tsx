@@ -2,13 +2,10 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useBetSlip } from '../contexts/BetSlipContext';
 import { 
   SportsIcon, 
-  FireIcon, 
+  FireIcon,
   ClockIcon, 
-  CalendarIcon, 
-  CalendarDaysIcon,
   LiveIcon
 } from './icons/IconLibrary';
-import { formatCurrency } from '../utils/numberUtils';
 import './SportsBetting.css';
 
 interface Sport {
@@ -71,20 +68,6 @@ interface Outcome {
   odds_movement?: 'up' | 'down' | 'stable';
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  count?: number;
-  error?: string;
-  message?: string;
-  quota?: {
-    used: number;
-    remaining: number;
-    total: number;
-    percentUsed: number;
-  };
-}
-
 interface QuotaInfo {
   used: number;
   total: number;
@@ -98,29 +81,6 @@ const formatOdds = (price: number): string => {
   return price.toString();
 };
 
-const calculatePayout = (stake: number, odds: number): number => {
-  if (odds > 0) {
-    return stake * (odds / 100);
-  }
-  return stake * (100 / Math.abs(odds));
-};
-
-const getOddsMovementColor = (movement?: string): string => {
-  switch (movement) {
-    case 'up': return 'var(--color-success)';
-    case 'down': return 'var(--color-danger)';
-    default: return 'var(--color-neutral-400)';
-  }
-};
-
-const getOddsMovementIcon = (movement?: string): React.ReactNode => {
-  switch (movement) {
-    case 'up': return '↗';
-    case 'down': return '↘';
-    default: return '→';
-  }
-};
-
 const SportsBetting: React.FC = () => {
   const [sports, setSports] = useState<Sport[]>([]);
   const [selectedSport, setSelectedSport] = useState<string | null>(null);
@@ -129,30 +89,21 @@ const SportsBetting: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [quotaInfo, setQuotaInfo] = useState<QuotaInfo | null>(null);
   const [filter, setFilter] = useState<'all' | 'live' | 'upcoming'>('all');
-  const [sortBy, setSortBy] = useState<'time' | 'popularity' | 'odds' | 'confidence'>('time');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [liveEvents, setLiveEvents] = useState<OddsEvent[]>([]);
-  const [eventsLoading, setEventsLoading] = useState(false);
-  const [selectedMarket, setSelectedMarket] = useState('h2h');
 
   // Use global bet slip context
   const { addToBetSlip } = useBetSlip();
   const oddsUpdateInterval = useRef<NodeJS.Timeout | null>(null);
-  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleSportSelect = (sportId: string) => {
     setSelectedSport(sportId);
-    setEventsLoading(true);
     // Simulate loading events for the selected sport
     setTimeout(() => {
-      setEventsLoading(false);
+      // Loading simulation
     }, 1000);
   };
 
   const fetchOdds = useCallback(async (sportKey: string) => {
     try {
-      setEventsLoading(true);
       setError('');
       // Mock API call - replace with actual API
       const mockEvents: OddsEvent[] = [
@@ -191,13 +142,11 @@ const SportsBetting: React.FC = () => {
       console.error('Error fetching odds:', error);
       setError(error.message || 'Failed to load odds');
       setEvents([]);
-    } finally {
-      setEventsLoading(false);
     }
-  }, [selectedMarket]);
+  }, []);
 
   const updateLiveOdds = useCallback(async () => {
-    if (selectedSport && (filter === 'live' || liveEvents.length > 0)) {
+    if (selectedSport && filter === 'live') {
       try {
         // Mock live odds update
         console.log('Updating live odds...');
@@ -205,17 +154,7 @@ const SportsBetting: React.FC = () => {
         console.error('Error updating live odds:', error);
       }
     }
-  }, [selectedSport, filter, liveEvents.length, selectedMarket]);
-
-  const handleSearch = useCallback((value: string) => {
-    setSearchTerm(value);
-    if (searchTimeout.current) {
-      clearTimeout(searchTimeout.current);
-    }
-    searchTimeout.current = setTimeout(() => {
-      // Trigger search with debounce
-    }, 300);
-  }, []);
+  }, [selectedSport, filter]);
 
   const handleOddsClick = (event: OddsEvent, outcome: Outcome, marketType: string = 'h2h') => {
     const bookmaker = event.bookmakers?.[0];
@@ -236,43 +175,24 @@ const SportsBetting: React.FC = () => {
 
   const filteredAndSortedEvents = useMemo(() => {
     let filtered = events.filter(event => {
-      const matchesSearch = searchTerm === '' || 
-        event.home_team.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.away_team.toLowerCase().includes(searchTerm.toLowerCase());
-      
       const matchesFilter = filter === 'all' || 
         (filter === 'live' && event.timing?.isLive) ||
         (filter === 'upcoming' && !event.timing?.isLive);
       
-      return matchesSearch && matchesFilter;
+      return matchesFilter;
     });
 
     // Sort events
     filtered.sort((a, b) => {
       let comparison = 0;
       
-      switch (sortBy) {
-        case 'time':
-          comparison = new Date(a.commence_time).getTime() - new Date(b.commence_time).getTime();
-          break;
-        case 'popularity':
-          comparison = (b.popularity_score || 0) - (a.popularity_score || 0);
-          break;
-        case 'odds':
-          const aOdds = a.bookmakers?.[0]?.markets?.[0]?.outcomes?.[0]?.price || 0;
-          const bOdds = b.bookmakers?.[0]?.markets?.[0]?.outcomes?.[0]?.price || 0;
-          comparison = aOdds - bOdds;
-          break;
-        case 'confidence':
-          comparison = (b.confidence_level || 0) - (a.confidence_level || 0);
-          break;
-      }
+      comparison = new Date(a.commence_time).getTime() - new Date(b.commence_time).getTime();
       
-      return sortOrder === 'asc' ? comparison : -comparison;
+      return comparison;
     });
 
     return filtered;
-  }, [events, searchTerm, filter, sortBy, sortOrder]);
+  }, [events, filter]);
 
   useEffect(() => {
     if (selectedSport) {
@@ -282,7 +202,7 @@ const SportsBetting: React.FC = () => {
 
   useEffect(() => {
     // Set up real-time odds updates for live events
-    if (filter === 'live' || liveEvents.length > 0) {
+    if (filter === 'live') {
       oddsUpdateInterval.current = setInterval(updateLiveOdds, 15000); // Update every 15 seconds
     } else {
       if (oddsUpdateInterval.current) {
@@ -295,39 +215,7 @@ const SportsBetting: React.FC = () => {
         clearInterval(oddsUpdateInterval.current);
       }
     };
-  }, [filter, liveEvents.length, updateLiveOdds]);
-
-  const getEventStatus = (event: OddsEvent) => {
-    if (event.timing?.isLive) {
-      return {
-        status: 'live',
-        text: 'LIVE',
-        color: 'var(--color-danger)',
-        icon: <FireIcon size="sm" color="danger" />
-      };
-    } else if (event.timing?.hoursFromNow <= 1) {
-      return {
-        status: 'starting-soon',
-        text: 'Starting Soon',
-        color: 'var(--color-warning)',
-        icon: <ClockIcon size="sm" color="warning" />
-      };
-    } else if (event.timing?.hoursFromNow <= 24) {
-      return {
-        status: 'today',
-        text: 'Today',
-        color: 'var(--color-success)',
-        icon: <CalendarIcon size="sm" color="success" />
-      };
-    } else {
-      return {
-        status: 'upcoming',
-        text: 'Upcoming',
-        color: 'var(--color-neutral-400)',
-        icon: <CalendarDaysIcon size="sm" color="neutral" />
-      };
-    }
-  };
+  }, [filter, updateLiveOdds]);
 
   // Mock sports data
   useEffect(() => {
@@ -435,7 +323,7 @@ const SportsBetting: React.FC = () => {
               className={`filter-btn ${filter === 'live' ? 'active' : ''}`}
               onClick={() => setFilter('live')}
             >
-              <FireIcon size="sm" /> Live ({liveEvents.length})
+              <FireIcon size="sm" /> Live ({events.filter(e => e.timing?.isLive).length})
             </button>
             <button
               className={`filter-btn ${filter === 'upcoming' ? 'active' : ''}`}

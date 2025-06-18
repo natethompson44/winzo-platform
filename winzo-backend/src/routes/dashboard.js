@@ -1,15 +1,15 @@
-const express = require('express');
-const router = express.Router();
-const auth = require('../middleware/auth');
-const walletService = require('../services/walletService');
-const User = require('../models/User');
-const Bet = require('../models/Bet');
-const SportsEvent = require('../models/SportsEvent');
-const Sport = require('../models/Sport');
+const express = require('express')
+const router = express.Router()
+const auth = require('../middleware/auth')
+const walletService = require('../services/walletService')
+const User = require('../models/User')
+const Bet = require('../models/Bet')
+const SportsEvent = require('../models/SportsEvent')
+const Sport = require('../models/Sport')
 
 /**
  * WINZO Dashboard Routes
- * 
+ *
  * Centralized dashboard data aggregation with Big Win Energy messaging.
  * Provides comprehensive user overview combining wallet, betting, and activity data.
  */
@@ -20,31 +20,31 @@ const Sport = require('../models/Sport');
  */
 router.get('/', auth, async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id
 
     // Get user details
     const user = await User.findByPk(userId, {
       attributes: { exclude: ['password'] }
-    });
+    })
 
     if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
-      });
+      })
     }
 
     // Get wallet balance
-    const walletBalance = parseFloat(user.walletBalance || 0);
+    const walletBalance = parseFloat(user.walletBalance || 0)
 
     // Get betting statistics
-    const totalBets = await Bet.count({ where: { user_id: userId } });
-    const activeBets = await Bet.count({ 
-      where: { user_id: userId, status: 'pending' } 
-    });
-    const wonBets = await Bet.count({ 
-      where: { user_id: userId, status: 'won' } 
-    });
+    const totalBets = await Bet.count({ where: { user_id: userId } })
+    const activeBets = await Bet.count({
+      where: { user_id: userId, status: 'pending' }
+    })
+    const wonBets = await Bet.count({
+      where: { user_id: userId, status: 'won' }
+    })
 
     // Get recent bets
     const recentBets = await Bet.findAll({
@@ -59,29 +59,29 @@ router.get('/', auth, async (req, res) => {
       }],
       order: [['placedAt', 'DESC']],
       limit: 5
-    });
+    })
 
     // Calculate total wagered and winnings
     const allBets = await Bet.findAll({
       where: { user_id: userId },
       attributes: ['amount', 'actualPayout', 'status']
-    });
+    })
 
-    const totalWagered = allBets.reduce((sum, bet) => sum + parseFloat(bet.amount), 0);
+    const totalWagered = allBets.reduce((sum, bet) => sum + parseFloat(bet.amount), 0)
     const totalWinnings = allBets
       .filter(bet => bet.status === 'won')
-      .reduce((sum, bet) => sum + parseFloat(bet.actualPayout || 0), 0);
+      .reduce((sum, bet) => sum + parseFloat(bet.actualPayout || 0), 0)
 
     // Generate motivational message
-    let welcomeMessage;
+    let welcomeMessage
     if (wonBets >= 5) {
-      welcomeMessage = `🏆 Welcome back, champion! ${wonBets} wins and counting!`;
+      welcomeMessage = `🏆 Welcome back, champion! ${wonBets} wins and counting!`
     } else if (totalBets >= 10) {
-      welcomeMessage = `⚡ Your Big Win Energy is building! ${totalBets} bets placed!`;
+      welcomeMessage = `⚡ Your Big Win Energy is building! ${totalBets} bets placed!`
     } else if (totalBets > 0) {
-      welcomeMessage = `🚀 Great start! Your winning journey is underway!`;
+      welcomeMessage = '🚀 Great start! Your winning journey is underway!'
     } else {
-      welcomeMessage = `💎 Welcome to WINZO! Ready to activate your Big Win Energy?`;
+      welcomeMessage = '💎 Welcome to WINZO! Ready to activate your Big Win Energy?'
     }
 
     res.json({
@@ -111,9 +111,9 @@ router.get('/', auth, async (req, res) => {
         },
         recentActivity: recentBets.map(bet => ({
           id: bet.id,
-          event: bet.sportsEvent ? 
-            `${bet.sportsEvent.homeTeam} vs ${bet.sportsEvent.awayTeam}` : 
-            'Event not found',
+          event: bet.sportsEvent
+            ? `${bet.sportsEvent.homeTeam} vs ${bet.sportsEvent.awayTeam}`
+            : 'Event not found',
           sport: bet.sportsEvent?.sport?.title || 'Unknown',
           amount: parseFloat(bet.amount),
           status: bet.status,
@@ -125,22 +125,21 @@ router.get('/', auth, async (req, res) => {
             .reduce((max, bet) => Math.max(max, parseFloat(bet.actualPayout || 0)), 0),
           currentStreak: 0, // TODO: Calculate actual streak
           favoritesSport: 'Coming soon!', // TODO: Calculate from bet history
-          nextMilestone: totalBets < 10 ? 
-            `${10 - totalBets} more bets to unlock Experienced Player!` :
-            'Keep building that Big Win Energy!'
+          nextMilestone: totalBets < 10
+            ? `${10 - totalBets} more bets to unlock Experienced Player!`
+            : 'Keep building that Big Win Energy!'
         }
       }
-    });
-
+    })
   } catch (error) {
-    console.error('WINZO Dashboard: Error loading dashboard:', error.message);
+    console.error('WINZO Dashboard: Error loading dashboard:', error.message)
     res.status(500).json({
       success: false,
       message: "Let's try loading your dashboard again!",
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 /**
  * GET /api/dashboard/quick-stats - Get quick statistics for dashboard widgets
@@ -148,7 +147,7 @@ router.get('/', auth, async (req, res) => {
  */
 router.get('/quick-stats', auth, async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id
 
     // Get essential counts quickly
     const [user, totalBets, activeBets, wonBets] = await Promise.all([
@@ -156,13 +155,13 @@ router.get('/quick-stats', auth, async (req, res) => {
       Bet.count({ where: { user_id: userId } }),
       Bet.count({ where: { user_id: userId, status: 'pending' } }),
       Bet.count({ where: { user_id: userId, status: 'won' } })
-    ]);
+    ])
 
-    const walletBalance = parseFloat(user?.walletBalance || 0);
+    const walletBalance = parseFloat(user?.walletBalance || 0)
 
     res.json({
       success: true,
-      message: "Quick stats loaded with Big Win Energy!",
+      message: 'Quick stats loaded with Big Win Energy!',
       data: {
         walletBalance: walletBalance.toFixed(2),
         activeBets,
@@ -170,17 +169,15 @@ router.get('/quick-stats', auth, async (req, res) => {
         totalBets,
         status: 'active'
       }
-    });
-
+    })
   } catch (error) {
-    console.error('WINZO Dashboard: Error loading quick stats:', error.message);
+    console.error('WINZO Dashboard: Error loading quick stats:', error.message)
     res.status(500).json({
       success: false,
       message: "Let's try loading those stats again!",
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
-module.exports = router;
-
+module.exports = router

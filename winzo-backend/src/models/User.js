@@ -1,5 +1,5 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/database');
+const { DataTypes, Model } = require('sequelize')
+const sequelize = require('../../config/database')
 
 /**
  * User model represents a player on the WINZO platform. Each user is
@@ -14,21 +14,21 @@ User.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
+      autoIncrement: true
     },
     username: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      unique: true,
+      unique: true
     },
     email: {
       type: DataTypes.STRING(100),
       allowNull: true,
-      unique: true,
+      unique: true
     },
     password_hash: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: false
     },
     wallet_balance: {
       type: DataTypes.DECIMAL(10, 2),
@@ -39,18 +39,18 @@ User.init(
     is_active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: true
     },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
+      defaultValue: DataTypes.NOW
     },
     updated_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
+      defaultValue: DataTypes.NOW
+    }
   },
   {
     sequelize,
@@ -58,8 +58,8 @@ User.init(
     tableName: 'users',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: 'updated_at',
+    updatedAt: 'updated_at'
   }
-);
+)
 
-module.exports = User;
+module.exports = User

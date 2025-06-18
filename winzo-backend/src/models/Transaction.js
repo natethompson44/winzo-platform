@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize')
 module.exports = (sequelize) => {
   const Transaction = sequelize.define('Transaction', {
     id: {
@@ -56,6 +56,6 @@ module.exports = (sequelize) => {
       { fields: ['created_at'] },
       { fields: ['reference_id'] }
     ]
-  });
-  return Transaction;
-};
+  })
+  return Transaction
+}

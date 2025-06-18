@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken')
 
 /**
  * Middleware that verifies JWT tokens present in the Authorization header.
@@ -7,23 +7,23 @@ const jwt = require('jsonwebtoken');
  */
 module.exports = (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const token = req.header('Authorization')?.replace('Bearer ', '')
     if (!token) {
       return res.status(401).json({
         success: false,
         error: 'Access denied. No token provided.'
-      });
+      })
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
     req.user = {
       id: decoded.id || decoded.userId,
       username: decoded.username
-    };
-    next();
+    }
+    next()
   } catch (error) {
     res.status(400).json({
       success: false,
       error: 'Invalid token.'
-    });
+    })
   }
-};
+}

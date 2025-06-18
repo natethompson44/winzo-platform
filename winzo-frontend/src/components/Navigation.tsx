@@ -4,8 +4,7 @@ import {
   HomeIcon, 
   SportsIcon, 
   WalletIcon, 
-  HistoryIcon,
-  LogoutIcon 
+  HistoryIcon
 } from './icons/IconLibrary';
 import './Navigation.css';
 

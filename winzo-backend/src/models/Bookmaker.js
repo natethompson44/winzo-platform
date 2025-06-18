@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize')
 module.exports = (sequelize) => {
   const Bookmaker = sequelize.define('Bookmaker', {
     id: {
@@ -43,6 +43,6 @@ module.exports = (sequelize) => {
         fields: ['region']
       }
     ]
-  });
-  return Bookmaker;
-};
+  })
+  return Bookmaker
+}

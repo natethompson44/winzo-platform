@@ -1,25 +1,25 @@
-const express = require('express');
-const router = express.Router();
-const oddsApiService = require('../services/oddsApiService');
-const { SportsEvent, Odds, Bookmaker } = require('../models');
+const express = require('express')
+const router = express.Router()
+const oddsApiService = require('../services/oddsApiService')
+const { SportsEvent, Odds, Bookmaker } = require('../models')
 const {
   validateApiResponse,
   isValidSportKey,
   parseCommenceTime
-} = require('../utils/apiUtils');
+} = require('../utils/apiUtils')
 const {
   checkQuota,
   addCorsHeaders,
   logApiRequest,
   validateSportParam
-} = require('../middleware/sportsMiddleware');
+} = require('../middleware/sportsMiddleware')
 
 // Apply middleware to all routes
-router.use(addCorsHeaders);
-router.use(logApiRequest);
-router.use('/:sport/odds', checkQuota);
-router.use('/:sport/scores', checkQuota);
-router.use('/:sport/*', validateSportParam);
+router.use(addCorsHeaders)
+router.use(logApiRequest)
+router.use('/:sport/odds', checkQuota)
+router.use('/:sport/scores', checkQuota)
+router.use('/:sport/*', validateSportParam)
 
 /**
  * GET /api/sports - Get all available sports
@@ -27,41 +27,41 @@ router.use('/:sport/*', validateSportParam);
  */
 router.get('/', async (req, res) => {
   try {
-    console.log('Fetching sports list...');
-    const { include_inactive = false } = req.query;
-    const sports = await oddsApiService.getSports(include_inactive === 'true');
+    console.log('Fetching sports list...')
+    const { include_inactive = false } = req.query
+    const sports = await oddsApiService.getSports(include_inactive === 'true')
     // Validate API response
     if (!validateApiResponse(sports, 'sports')) {
-      throw new Error('Invalid sports data received from API');
+      throw new Error('Invalid sports data received from API')
     }
     // Filter to active sports only unless requested otherwise
     const activeSports =
-      include_inactive === 'true' ? sports : sports.filter(s => s.active);
+      include_inactive === 'true' ? sports : sports.filter(s => s.active)
     // Add additional metadata
     const enrichedSports = activeSports.map(sport => ({
       ...sport,
       icon: getSportIcon(sport.group),
       category: categorizeSport(sport.group),
       popularity: getSportPopularity(sport.key)
-    }));
+    }))
     res.json({
       success: true,
       data: enrichedSports,
       count: enrichedSports.length,
       quota: oddsApiService.getQuotaStatus(),
       timestamp: new Date().toISOString()
-    });
-    console.log(`Returned ${enrichedSports.length} sports`);
+    })
+    console.log(`Returned ${enrichedSports.length} sports`)
   } catch (error) {
-    console.error('Error in GET /api/sports:', error);
+    console.error('Error in GET /api/sports:', error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sports data',
       message: error.message,
       quota: oddsApiService.getQuotaStatus()
-    });
+    })
   }
-});
+})
 
 /**
  * GET /api/sports/:sport/odds - Get odds for specific sport
@@ -69,34 +69,34 @@ router.get('/', async (req, res) => {
  */
 router.get('/:sport/odds', async (req, res) => {
   try {
-    const { sport } = req.params;
+    const { sport } = req.params
     const {
       regions = 'us',
       markets = 'h2h',
       bookmakers = null,
       limit = null
-    } = req.query;
-    console.log(`Fetching odds for ${sport}...`);
+    } = req.query
+    console.log(`Fetching odds for ${sport}...`)
     // Validate sport key
     if (!isValidSportKey(sport)) {
       return res.status(400).json({
         success: false,
         error: 'Invalid sport key format'
-      });
+      })
     }
     const odds = await oddsApiService.getOdds(sport, {
       regions,
       markets,
       bookmakers
-    });
+    })
     // Validate API response
     if (!validateApiResponse(odds, 'odds')) {
-      throw new Error('Invalid odds data received from API');
+      throw new Error('Invalid odds data received from API')
     }
     // Store odds in database for persistence
-    await storeOddsInDatabase(odds);
+    await storeOddsInDatabase(odds)
     // Apply limit if specified
-    const limitedOdds = limit ? odds.slice(0, parseInt(limit)) : odds;
+    const limitedOdds = limit ? odds.slice(0, parseInt(limit)) : odds
     // Enrich odds data with additional information
     const enrichedOdds = limitedOdds.map(event => ({
       ...event,
@@ -107,28 +107,28 @@ router.get('/:sport/odds', async (req, res) => {
           (sum, bm) => sum + (bm.markets?.length || 0),
           0
         ) || 0
-    }));
+    }))
     res.json({
       success: true,
       data: enrichedOdds,
       count: enrichedOdds.length,
-      sport: sport,
+      sport,
       markets: markets.split(','),
       quota: oddsApiService.getQuotaStatus(),
       timestamp: new Date().toISOString()
-    });
-    console.log(`Returned ${enrichedOdds.length} events with odds for ${sport}`);
+    })
+    console.log(`Returned ${enrichedOdds.length} events with odds for ${sport}`)
   } catch (error) {
-    console.error(`Error in GET /api/sports/${req.params.sport}/odds:`, error);
+    console.error(`Error in GET /api/sports/${req.params.sport}/odds:`, error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch odds data',
       message: error.message,
       sport: req.params.sport,
       quota: oddsApiService.getQuotaStatus()
-    });
+    })
   }
-});
+})
 
 /**
  * GET /api/sports/:sport/scores - Get scores for specific sport
@@ -136,31 +136,31 @@ router.get('/:sport/odds', async (req, res) => {
  */
 router.get('/:sport/scores', async (req, res) => {
   try {
-    const { sport } = req.params;
-    const { daysFrom = 1, completed_only = false, live_only = false } = req.query;
-    console.log(`Fetching scores for ${sport}...`);
+    const { sport } = req.params
+    const { daysFrom = 1, completed_only = false, live_only = false } = req.query
+    console.log(`Fetching scores for ${sport}...`)
     // Validate sport key
     if (!isValidSportKey(sport)) {
       return res.status(400).json({
         success: false,
         error: 'Invalid sport key format'
-      });
+      })
     }
     const scores = await oddsApiService.getScores(sport, {
       daysFrom: parseInt(daysFrom)
-    });
+    })
     // Validate API response
     if (!validateApiResponse(scores, 'scores')) {
-      throw new Error('Invalid scores data received from API');
+      throw new Error('Invalid scores data received from API')
     }
     // Store scores in database for persistence
-    await storeScoresInDatabase(scores);
+    await storeScoresInDatabase(scores)
     // Filter based on query parameters
-    let filteredScores = scores;
+    let filteredScores = scores
     if (completed_only === 'true') {
-      filteredScores = scores.filter(game => game.completed);
+      filteredScores = scores.filter(game => game.completed)
     } else if (live_only === 'true') {
-      filteredScores = scores.filter(game => !game.completed && isGameLive(game));
+      filteredScores = scores.filter(game => !game.completed && isGameLive(game))
     }
     // Enrich scores data
     const enrichedScores = filteredScores.map(game => ({
@@ -168,12 +168,12 @@ router.get('/:sport/scores', async (req, res) => {
       timing: parseCommenceTime(game.commence_time),
       status: getGameStatus(game),
       score_summary: getScoreSummary(game)
-    }));
+    }))
     res.json({
       success: true,
       data: enrichedScores,
       count: enrichedScores.length,
-      sport: sport,
+      sport,
       filters: {
         daysFrom: parseInt(daysFrom),
         completed_only: completed_only === 'true',
@@ -181,19 +181,19 @@ router.get('/:sport/scores', async (req, res) => {
       },
       quota: oddsApiService.getQuotaStatus(),
       timestamp: new Date().toISOString()
-    });
-    console.log(`Returned ${enrichedScores.length} games with scores for ${sport}`);
+    })
+    console.log(`Returned ${enrichedScores.length} games with scores for ${sport}`)
   } catch (error) {
-    console.error(`Error in GET /api/sports/${req.params.sport}/scores:`, error);
+    console.error(`Error in GET /api/sports/${req.params.sport}/scores:`, error)
     res.status(500).json({
       success: false,
       error: 'Failed to fetch scores data',
       message: error.message,
       sport: req.params.sport,
       quota: oddsApiService.getQuotaStatus()
-    });
+    })
   }
-});
+})
 
 /**
  * GET /api/sports/:sport/participants - Get participants for specific sport
@@ -201,43 +201,43 @@ router.get('/:sport/scores', async (req, res) => {
  */
 router.get('/:sport/participants', async (req, res) => {
   try {
-    const { sport } = req.params;
-    console.log(`Fetching participants for ${sport}...`);
+    const { sport } = req.params
+    console.log(`Fetching participants for ${sport}...`)
     // Validate sport key
     if (!isValidSportKey(sport)) {
       return res.status(400).json({
         success: false,
         error: 'Invalid sport key format'
-      });
+      })
     }
-    const participants = await oddsApiService.getParticipants(sport);
+    const participants = await oddsApiService.getParticipants(sport)
     // Validate API response
     if (!validateApiResponse(participants, 'participants')) {
-      throw new Error('Invalid participants data received from API');
+      throw new Error('Invalid participants data received from API')
     }
     res.json({
       success: true,
       data: participants,
       count: participants.length,
-      sport: sport,
+      sport,
       quota: oddsApiService.getQuotaStatus(),
       timestamp: new Date().toISOString()
-    });
-    console.log(`Returned ${participants.length} participants for ${sport}`);
+    })
+    console.log(`Returned ${participants.length} participants for ${sport}`)
   } catch (error) {
     console.error(
       `Error in GET /api/sports/${req.params.sport}/participants:`,
       error
-    );
+    )
     res.status(500).json({
       success: false,
       error: 'Failed to fetch participants data',
       message: error.message,
       sport: req.params.sport,
       quota: oddsApiService.getQuotaStatus()
-    });
+    })
   }
-});
+})
 
 /**
  * GET /api/sports/:sport/events/:eventId - Get specific event details
@@ -245,28 +245,28 @@ router.get('/:sport/participants', async (req, res) => {
  */
 router.get('/:sport/events/:eventId', async (req, res) => {
   try {
-    const { sport, eventId } = req.params;
-    console.log(`Fetching event ${eventId} for ${sport}...`);
+    const { sport, eventId } = req.params
+    console.log(`Fetching event ${eventId} for ${sport}...`)
     // Get odds for the specific event
     const odds = await oddsApiService.getOdds(sport, {
       eventIds: eventId
-    });
+    })
     if (!odds || odds.length === 0) {
       return res.status(404).json({
         success: false,
         error: 'Event not found',
-        eventId: eventId,
-        sport: sport
-      });
+        eventId,
+        sport
+      })
     }
-    const event = odds[0];
+    const event = odds[0]
     // Get scores for the event
-    let scores = [];
+    let scores = []
     try {
-      const scoresData = await oddsApiService.getScores(sport);
-      scores = scoresData.filter(game => game.id === eventId);
+      const scoresData = await oddsApiService.getScores(sport)
+      scores = scoresData.filter(game => game.id === eventId)
     } catch (error) {
-      console.log('No scores available for this event');
+      console.log('No scores available for this event')
     }
     // Combine odds and scores data
     const eventDetails = {
@@ -274,21 +274,21 @@ router.get('/:sport/events/:eventId', async (req, res) => {
       scores: scores.length > 0 ? scores[0] : null,
       timing: parseCommenceTime(event.commence_time),
       all_markets: getAllMarketsForEvent(event)
-    };
+    }
     res.json({
       success: true,
       data: eventDetails,
-      eventId: eventId,
-      sport: sport,
+      eventId,
+      sport,
       quota: oddsApiService.getQuotaStatus(),
       timestamp: new Date().toISOString()
-    });
-    console.log(`Returned detailed event data for ${eventId}`);
+    })
+    console.log(`Returned detailed event data for ${eventId}`)
   } catch (error) {
     console.error(
       `Error in GET /api/sports/${req.params.sport}/events/${req.params.eventId}:`,
       error
-    );
+    )
     res.status(500).json({
       success: false,
       error: 'Failed to fetch event details',
@@ -296,15 +296,15 @@ router.get('/:sport/events/:eventId', async (req, res) => {
       eventId: req.params.eventId,
       sport: req.params.sport,
       quota: oddsApiService.getQuotaStatus()
-    });
+    })
   }
-});
+})
 
 // Helper Functions
 /**
  * Store odds data in database for persistence
  */
-async function storeOddsInDatabase(oddsData) {
+async function storeOddsInDatabase (oddsData) {
   try {
     for (const event of oddsData) {
       // Create or update sports event
@@ -319,7 +319,7 @@ async function storeOddsInDatabase(oddsData) {
           completed: event.completed || false,
           last_update: new Date()
         }
-      });
+      })
       // Update existing event if needed
       if (sportsEvent) {
         await sportsEvent.update({
@@ -328,7 +328,7 @@ async function storeOddsInDatabase(oddsData) {
           commence_time: new Date(event.commence_time),
           completed: event.completed || false,
           last_update: new Date()
-        });
+        })
       }
       // Store odds for each bookmaker
       for (const bookmaker of event.bookmakers || []) {
@@ -339,7 +339,7 @@ async function storeOddsInDatabase(oddsData) {
             title: bookmaker.title,
             active: true
           }
-        });
+        })
         // Store odds for each market
         for (const market of bookmaker.markets || []) {
           for (const outcome of market.outcomes || []) {
@@ -350,29 +350,29 @@ async function storeOddsInDatabase(oddsData) {
               outcome_name: outcome.name,
               price: outcome.price,
               last_update: new Date()
-            });
+            })
           }
         }
       }
     }
-    console.log(`Stored ${oddsData.length} events in database`);
+    console.log(`Stored ${oddsData.length} events in database`)
   } catch (error) {
-    console.error('Error storing odds in database:', error);
+    console.error('Error storing odds in database:', error)
   }
 }
 
 /**
  * Store scores data in database for persistence
  */
-async function storeScoresInDatabase(scoresData) {
+async function storeScoresInDatabase (scoresData) {
   try {
     for (const game of scoresData) {
       const homeScore = game.scores
         ? game.scores.find(s => s.name === game.home_team)?.score
-        : null;
+        : null
       const awayScore = game.scores
         ? game.scores.find(s => s.name === game.away_team)?.score
-        : null;
+        : null
       await SportsEvent.upsert({
         external_id: game.id,
         sport_key: game.sport_key,
@@ -383,18 +383,18 @@ async function storeScoresInDatabase(scoresData) {
         home_score: homeScore,
         away_score: awayScore,
         last_update: new Date()
-      });
+      })
     }
-    console.log(`Stored ${scoresData.length} game scores in database`);
+    console.log(`Stored ${scoresData.length} game scores in database`)
   } catch (error) {
-    console.error('Error storing scores in database:', error);
+    console.error('Error storing scores in database:', error)
   }
 }
 
 /**
  * Get sport icon based on group
  */
-function getSportIcon(group) {
+function getSportIcon (group) {
   const icons = {
     'American Football': '',
     Basketball: '',
@@ -405,14 +405,14 @@ function getSportIcon(group) {
     Golf: '',
     Boxing: '',
     'Mixed Martial Arts': ''
-  };
-  return icons[group] || '';
+  }
+  return icons[group] || ''
 }
 
 /**
  * Categorize sport for UI grouping
  */
-function categorizeSport(group) {
+function categorizeSport (group) {
   const categories = {
     'American Football': 'US Sports',
     Basketball: 'US Sports',
@@ -423,14 +423,14 @@ function categorizeSport(group) {
     Golf: 'Individual',
     Boxing: 'Combat',
     'Mixed Martial Arts': 'Combat'
-  };
-  return categories[group] || 'Other';
+  }
+  return categories[group] || 'Other'
 }
 
 /**
  * Get sport popularity ranking
  */
-function getSportPopularity(sportKey) {
+function getSportPopularity (sportKey) {
   const popularity = {
     americanfootball_nfl: 10,
     basketball_nba: 9,
@@ -439,73 +439,73 @@ function getSportPopularity(sportKey) {
     soccer_epl: 6,
     americanfootball_ncaaf: 5,
     basketball_ncaab: 4
-  };
-  return popularity[sportKey] || 1;
+  }
+  return popularity[sportKey] || 1
 }
 
 /**
  * Check if event is featured
  */
-function isFeaturedEvent(event) {
+function isFeaturedEvent (event) {
   // Consider events with multiple bookmakers as featured
-  return event.bookmakers && event.bookmakers.length >= 3;
+  return event.bookmakers && event.bookmakers.length >= 3
 }
 
 /**
  * Check if game is currently live
  */
-function isGameLive(game) {
-  const now = new Date();
-  const commenceTime = new Date(game.commence_time);
-  const hoursSinceStart = (now - commenceTime) / (1000 * 60 * 60);
+function isGameLive (game) {
+  const now = new Date()
+  const commenceTime = new Date(game.commence_time)
+  const hoursSinceStart = (now - commenceTime) / (1000 * 60 * 60)
   // Consider live if started within last 4 hours and not completed
-  return hoursSinceStart > 0 && hoursSinceStart < 4 && !game.completed;
+  return hoursSinceStart > 0 && hoursSinceStart < 4 && !game.completed
 }
 
 /**
  * Get game status description
  */
-function getGameStatus(game) {
+function getGameStatus (game) {
   if (game.completed) {
-    return 'Final';
+    return 'Final'
   }
-  const timing = parseCommenceTime(game.commence_time);
+  const timing = parseCommenceTime(game.commence_time)
   if (timing.isLive) {
-    return 'Live';
+    return 'Live'
   } else if (timing.isUpcoming) {
-    return `${timing.hoursFromNow}h`;
+    return `${timing.hoursFromNow}h`
   } else {
-    return 'Scheduled';
+    return 'Scheduled'
   }
 }
 
 /**
  * Get score summary
  */
-function getScoreSummary(game) {
+function getScoreSummary (game) {
   if (!game.scores || game.scores.length === 0) {
-    return null;
+    return null
   }
-  const homeScore = game.scores.find(s => s.name === game.home_team);
-  const awayScore = game.scores.find(s => s.name === game.away_team);
+  const homeScore = game.scores.find(s => s.name === game.home_team)
+  const awayScore = game.scores.find(s => s.name === game.away_team)
   return {
     home: homeScore?.score || 0,
     away: awayScore?.score || 0,
     display: `${awayScore?.score || 0} - ${homeScore?.score || 0}`
-  };
+  }
 }
 
 /**
  * Get all markets for an event
  */
-function getAllMarketsForEvent(event) {
-  const markets = new Set();
+function getAllMarketsForEvent (event) {
+  const markets = new Set()
   for (const bookmaker of event.bookmakers || []) {
     for (const market of bookmaker.markets || []) {
-      markets.add(market.key);
+      markets.add(market.key)
     }
   }
-  return Array.from(markets);
+  return Array.from(markets)
 }
 
-module.exports = router;
+module.exports = router

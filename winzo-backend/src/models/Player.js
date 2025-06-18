@@ -1,5 +1,5 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../../config/database');
+const { DataTypes, Model } = require('sequelize')
+const sequelize = require('../../config/database')
 
 /**
  * Player model stores detailed info about individual players.
@@ -13,23 +13,23 @@ Player.init(
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+      primaryKey: true
     },
-    api_id: { 
-      type: DataTypes.INTEGER, 
-      allowNull: false, 
+    api_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
       unique: true,
       field: 'api_id'
     },
     team_id: {
       type: DataTypes.UUID,
       allowNull: true,
-      references: { model: 'teams', key: 'id' },
+      references: { model: 'teams', key: 'id' }
     },
     country_id: {
       type: DataTypes.UUID,
       allowNull: true,
-      references: { model: 'countries', key: 'id' },
+      references: { model: 'countries', key: 'id' }
     },
     firstName: { type: DataTypes.STRING, allowNull: false, field: 'first_name' },
     lastName: { type: DataTypes.STRING, allowNull: false, field: 'last_name' },
@@ -41,7 +41,7 @@ Player.init(
     injured: { type: DataTypes.BOOLEAN, allowNull: true },
     photo: { type: DataTypes.STRING, allowNull: true },
     createdBy: { type: DataTypes.UUID, allowNull: true, field: 'created_by' },
-    updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' },
+    updatedBy: { type: DataTypes.UUID, allowNull: true, field: 'updated_by' }
   },
   {
     sequelize,
@@ -51,9 +51,9 @@ Player.init(
     indexes: [
       { fields: ['api_id'] },
       { fields: ['team_id'] },
-      { fields: ['country_id'] },
-    ],
+      { fields: ['country_id'] }
+    ]
   }
-);
+)
 
-module.exports = Player;
+module.exports = Player

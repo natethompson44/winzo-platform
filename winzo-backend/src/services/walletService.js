@@ -1,7 +1,6 @@
-const User = require('../models/User');
-const Bet = require('../models/Bet');
-const { Op } = require('sequelize');
-const sequelize = require('../../config/database');
+const { User, Transaction } = require('../models')
+const Bet = require('../models/Bet')
+const sequelize = require('../../config/database')
 
 /**
  * WalletService manages all WINZO Wallet operations including balance updates,
@@ -10,23 +9,22 @@ const sequelize = require('../../config/database');
  * across all betting activities on the WINZO platform.
  */
 class WalletService {
-  
   /**
    * Get user's current WINZO Wallet balance
    * @param {string} userId - User ID
    * @returns {Promise<number>} Current wallet balance
    */
-  async getBalance(userId) {
+  async getBalance (userId) {
     try {
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(userId)
       if (!user) {
-        throw new Error('WINZO user not found');
+        throw new Error('WINZO user not found')
       }
-      
-      return parseFloat(user.walletBalance);
+
+      return parseFloat(user.walletBalance)
     } catch (error) {
-      console.error('WINZO Wallet: Error getting balance:', error.message);
-      throw new Error('Failed to retrieve WINZO Wallet balance');
+      console.error('WINZO Wallet: Error getting balance:', error.message)
+      throw new Error('Failed to retrieve WINZO Wallet balance')
     }
   }
 
@@ -37,23 +35,23 @@ class WalletService {
    * @param {string} reason - Reason for credit (e.g., 'bet_win', 'admin_credit')
    * @returns {Promise<Object>} Updated balance and transaction details
    */
-  async addFunds(userId, amount, reason = 'manual_credit') {
-    const t = await sequelize.transaction();
+  async addFunds (userId, amount, reason = 'manual_credit') {
+    const t = await sequelize.transaction()
     try {
-      const user = await User.findByPk(userId, { transaction: t, lock: t.LOCK.UPDATE });
+      const user = await User.findByPk(userId, { transaction: t, lock: t.LOCK.UPDATE })
       if (!user) {
-        throw new Error('WINZO user not found');
+        throw new Error('WINZO user not found')
       }
 
-      const previousBalance = parseFloat(user.walletBalance);
-      const newBalance = previousBalance + parseFloat(amount);
+      const previousBalance = parseFloat(user.walletBalance)
+      const newBalance = previousBalance + parseFloat(amount)
 
-      await user.update({ walletBalance: newBalance }, { transaction: t });
+      await user.update({ walletBalance: newBalance }, { transaction: t })
 
-      await t.commit();
+      await t.commit()
 
-      console.log(`WINZO Wallet: Added $${amount} to user ${user.username} (${reason})`);
-      console.log(`WINZO Wallet: Balance updated from $${previousBalance} to $${newBalance}`);
+      console.log(`WINZO Wallet: Added $${amount} to user ${user.username} (${reason})`)
+      console.log(`WINZO Wallet: Balance updated from $${previousBalance} to $${newBalance}`)
 
       return {
         userId,
@@ -63,12 +61,11 @@ class WalletService {
         newBalance,
         reason,
         timestamp: new Date()
-      };
-
+      }
     } catch (error) {
-      await t.rollback();
-      console.error('WINZO Wallet: Error adding funds:', error.message);
-      throw new Error('Failed to add funds to WINZO Wallet');
+      await t.rollback()
+      console.error('WINZO Wallet: Error adding funds:', error.message)
+      throw new Error('Failed to add funds to WINZO Wallet')
     }
   }
 
@@ -79,28 +76,28 @@ class WalletService {
    * @param {string} reason - Reason for debit (e.g., 'bet_placed', 'admin_debit')
    * @returns {Promise<Object>} Updated balance and transaction details
    */
-  async deductFunds(userId, amount, reason = 'manual_debit') {
-    const t = await sequelize.transaction();
+  async deductFunds (userId, amount, reason = 'manual_debit') {
+    const t = await sequelize.transaction()
     try {
-      const user = await User.findByPk(userId, { transaction: t, lock: t.LOCK.UPDATE });
+      const user = await User.findByPk(userId, { transaction: t, lock: t.LOCK.UPDATE })
       if (!user) {
-        throw new Error('WINZO user not found');
+        throw new Error('WINZO user not found')
       }
 
-      const previousBalance = parseFloat(user.walletBalance);
-      const deductAmount = parseFloat(amount);
+      const previousBalance = parseFloat(user.walletBalance)
+      const deductAmount = parseFloat(amount)
 
       if (previousBalance < deductAmount) {
-        throw new Error('Insufficient WINZO Wallet balance');
+        throw new Error('Insufficient WINZO Wallet balance')
       }
 
-      const newBalance = previousBalance - deductAmount;
-      await user.update({ walletBalance: newBalance }, { transaction: t });
+      const newBalance = previousBalance - deductAmount
+      await user.update({ walletBalance: newBalance }, { transaction: t })
 
-      await t.commit();
+      await t.commit()
 
-      console.log(`WINZO Wallet: Deducted $${amount} from user ${user.username} (${reason})`);
-      console.log(`WINZO Wallet: Balance updated from $${previousBalance} to $${newBalance}`);
+      console.log(`WINZO Wallet: Deducted $${amount} from user ${user.username} (${reason})`)
+      console.log(`WINZO Wallet: Balance updated from $${previousBalance} to $${newBalance}`)
 
       return {
         userId,
@@ -110,12 +107,11 @@ class WalletService {
         newBalance,
         reason,
         timestamp: new Date()
-      };
-
+      }
     } catch (error) {
-      await t.rollback();
-      console.error('WINZO Wallet: Error deducting funds:', error.message);
-      throw new Error('Failed to deduct funds from WINZO Wallet');
+      await t.rollback()
+      console.error('WINZO Wallet: Error deducting funds:', error.message)
+      throw new Error('Failed to deduct funds from WINZO Wallet')
     }
   }
 
@@ -125,16 +121,16 @@ class WalletService {
    * @param {number} betAmount - Amount to bet
    * @returns {Promise<Object>} Transaction details
    */
-  async processBetPlacement(userId, betAmount) {
+  async processBetPlacement (userId, betAmount) {
     try {
-      const result = await this.deductFunds(userId, betAmount, 'bet_placed');
-      
-      console.log(`WINZO: Processed bet placement of $${betAmount} for user ${result.username}`);
-      
-      return result;
+      const result = await this.deductFunds(userId, betAmount, 'bet_placed')
+
+      console.log(`WINZO: Processed bet placement of $${betAmount} for user ${result.username}`)
+
+      return result
     } catch (error) {
-      console.error('WINZO: Error processing bet placement:', error.message);
-      throw error;
+      console.error('WINZO: Error processing bet placement:', error.message)
+      throw error
     }
   }
 
@@ -145,16 +141,16 @@ class WalletService {
    * @param {string} betId - Bet ID for reference
    * @returns {Promise<Object>} Transaction details
    */
-  async processBetWin(userId, payout, betId) {
+  async processBetWin (userId, payout, betId) {
     try {
-      const result = await this.addFunds(userId, payout, `bet_win_${betId}`);
-      
-      console.log(`WINZO: Processed bet win payout of $${payout} for user ${result.username}`);
-      
-      return result;
+      const result = await this.addFunds(userId, payout, `bet_win_${betId}`)
+
+      console.log(`WINZO: Processed bet win payout of $${payout} for user ${result.username}`)
+
+      return result
     } catch (error) {
-      console.error('WINZO: Error processing bet win:', error.message);
-      throw error;
+      console.error('WINZO: Error processing bet win:', error.message)
+      throw error
     }
   }
 
@@ -163,24 +159,24 @@ class WalletService {
    * @param {string} userId - User ID
    * @returns {Promise<Object>} User betting and wallet statistics
    */
-  async getUserStats(userId) {
+  async getUserStats (userId) {
     try {
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(userId)
       if (!user) {
-        throw new Error('WINZO user not found');
+        throw new Error('WINZO user not found')
       }
 
       // Get betting statistics
-      const totalBets = await Bet.count({ where: { user_id: userId } });
-      const pendingBets = await Bet.count({ where: { user_id: userId, status: 'pending' } });
-      const wonBets = await Bet.count({ where: { user_id: userId, status: 'won' } });
-      const lostBets = await Bet.count({ where: { user_id: userId, status: 'lost' } });
+      const totalBets = await Bet.count({ where: { user_id: userId } })
+      const pendingBets = await Bet.count({ where: { user_id: userId, status: 'pending' } })
+      const wonBets = await Bet.count({ where: { user_id: userId, status: 'won' } })
+      const lostBets = await Bet.count({ where: { user_id: userId, status: 'lost' } })
 
       // Calculate total amounts
-      const totalWagered = await Bet.sum('amount', { where: { user_id: userId } }) || 0;
+      const totalWagered = await Bet.sum('amount', { where: { user_id: userId } }) || 0
       const totalWinnings = await Bet.sum('actualPayout', {
         where: { user_id: userId, status: 'won' }
-      }) || 0;
+      }) || 0
 
       // Get recent bets
       const recentBets = await Bet.findAll({
@@ -188,7 +184,7 @@ class WalletService {
         order: [['placedAt', 'DESC']],
         limit: 10,
         include: ['sportsEvent']
-      });
+      })
 
       return {
         userId,
@@ -214,11 +210,10 @@ class WalletService {
           status: bet.status,
           placedAt: bet.placedAt
         }))
-      };
-
+      }
     } catch (error) {
-      console.error('WINZO: Error getting user stats:', error.message);
-      throw new Error('Failed to retrieve WINZO user statistics');
+      console.error('WINZO: Error getting user stats:', error.message)
+      throw new Error('Failed to retrieve WINZO user statistics')
     }
   }
 
@@ -228,16 +223,15 @@ class WalletService {
    * @param {number} betAmount - Amount to validate
    * @returns {Promise<boolean>} Whether user has sufficient balance
    */
-  async validateBalance(userId, betAmount) {
+  async validateBalance (userId, betAmount) {
     try {
-      const balance = await this.getBalance(userId);
-      return balance >= parseFloat(betAmount);
+      const balance = await this.getBalance(userId)
+      return balance >= parseFloat(betAmount)
     } catch (error) {
-      console.error('WINZO Wallet: Error validating balance:', error.message);
-      return false;
+      console.error('WINZO Wallet: Error validating balance:', error.message)
+      return false
     }
   }
 }
 
-module.exports = new WalletService();
-
+module.exports = new WalletService()

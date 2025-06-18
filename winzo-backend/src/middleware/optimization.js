@@ -1,18 +1,18 @@
-const compression = require('compression');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const compression = require('compression')
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
 
 // Compression middleware
 const compressionMiddleware = compression({
   filter: (req, res) => {
     if (req.headers['x-no-compression']) {
-      return false;
+      return false
     }
-    return compression.filter(req, res);
+    return compression.filter(req, res)
   },
   level: 6,
-  threshold: 1024,
-});
+  threshold: 1024
+})
 
 // Security middleware
 const securityMiddleware = helmet({
@@ -22,11 +22,11 @@ const securityMiddleware = helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'", 'https://api.the-odds-api.com'],
-    },
+      connectSrc: ["'self'", 'https://api.the-odds-api.com']
+    }
   },
-  crossOriginEmbedderPolicy: false,
-});
+  crossOriginEmbedderPolicy: false
+})
 
 // Rate limiting
 const rateLimitMiddleware = rateLimit({
@@ -34,11 +34,11 @@ const rateLimitMiddleware = rateLimit({
   max: parseInt(process.env.API_RATE_LIMIT) || 100,
   message: {
     success: false,
-    error: 'Too many requests from this IP, please try again later.',
+    error: 'Too many requests from this IP, please try again later.'
   },
   standardHeaders: true,
-  legacyHeaders: false,
-});
+  legacyHeaders: false
+})
 
 // API-specific rate limiting
 const apiRateLimitMiddleware = rateLimit({
@@ -46,18 +46,18 @@ const apiRateLimitMiddleware = rateLimit({
   max: 60,
   message: {
     success: false,
-    error: 'API rate limit exceeded. Please slow down your requests.',
+    error: 'API rate limit exceeded. Please slow down your requests.'
   },
   skip: (req) => {
-    return req.path === '/health' || req.path === '/api/health';
-  },
-});
+    return req.path === '/health' || req.path === '/api/health'
+  }
+})
 
 // Request logging middleware
 const requestLoggingMiddleware = (req, res, next) => {
-  const start = Date.now();
+  const start = Date.now()
   res.on('finish', () => {
-    const duration = Date.now() - start;
+    const duration = Date.now() - start
     const logData = {
       method: req.method,
       url: req.url,
@@ -65,25 +65,25 @@ const requestLoggingMiddleware = (req, res, next) => {
       duration: `${duration}ms`,
       ip: req.ip,
       userAgent: req.get('User-Agent'),
-      timestamp: new Date().toISOString(),
-    };
-    if (process.env.NODE_ENV !== 'test') {
-      console.log(`${req.method} ${req.url} ${res.statusCode} ${duration}ms`);
+      timestamp: new Date().toISOString()
     }
-  });
-  next();
-};
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(`${req.method} ${req.url} ${res.statusCode} ${duration}ms`)
+    }
+  })
+  next()
+}
 
 // Error handling middleware
 const errorHandlingMiddleware = (err, req, res, next) => {
-  console.error('Error:', err);
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  console.error('Error:', err)
+  const isDevelopment = process.env.NODE_ENV === 'development'
   res.status(err.status || 500).json({
     success: false,
     error: isDevelopment ? err.message : 'Internal server error',
-    ...(isDevelopment && { stack: err.stack }),
-  });
-};
+    ...(isDevelopment && { stack: err.stack })
+  })
+}
 
 module.exports = {
   compressionMiddleware,
@@ -91,5 +91,5 @@ module.exports = {
   rateLimitMiddleware,
   apiRateLimitMiddleware,
   requestLoggingMiddleware,
-  errorHandlingMiddleware,
-};
+  errorHandlingMiddleware
+}

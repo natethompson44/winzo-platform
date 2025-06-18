@@ -1,13 +1,13 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 // Import authentication middleware. The file exports a single function,
 // so we require it directly rather than using object destructuring.
-const authenticateToken = require('../middleware/auth');
-const { User } = require('../models');
+const authenticateToken = require('../middleware/auth')
+const { User } = require('../models')
 
 /**
  * Enhanced Wallet API Routes with Full Financial Management
- * 
+ *
  * Provides comprehensive wallet functionality including deposits,
  * withdrawals, transaction history, and balance management.
  */
@@ -15,32 +15,32 @@ const { User } = require('../models');
 // Get wallet balance with enhanced data
 router.get('/balance', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await User.findByPk(userId);
+    const userId = req.user.id
+    const user = await User.findByPk(userId)
 
     if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
-      });
+      })
     }
 
-    const balance = user.walletBalance || 0;
-    
+    const balance = user.walletBalance || 0
+
     // Determine status and encouragement based on balance
-    let status, encouragement;
+    let status, encouragement
     if (balance >= 100) {
-      status = 'ready';
-      encouragement = '🔥 You\'re loaded and ready for Big Win Energy!';
+      status = 'ready'
+      encouragement = '🔥 You\'re loaded and ready for Big Win Energy!'
     } else if (balance >= 50) {
-      status = 'good';
-      encouragement = '💪 Good balance! Time to make some winning moves!';
+      status = 'good'
+      encouragement = '💪 Good balance! Time to make some winning moves!'
     } else if (balance >= 10) {
-      status = 'low';
-      encouragement = '⚡ Add more funds to maximize your winning potential!';
+      status = 'low'
+      encouragement = '⚡ Add more funds to maximize your winning potential!'
     } else {
-      status = 'empty';
-      encouragement = '💎 Power up your wallet and activate that Big Win Energy!';
+      status = 'empty'
+      encouragement = '💎 Power up your wallet and activate that Big Win Energy!'
     }
 
     res.json({
@@ -53,64 +53,63 @@ router.get('/balance', authenticateToken, async (req, res) => {
         encouragement,
         lastUpdated: new Date().toISOString()
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Wallet balance error:', error);
+    console.error('Wallet balance error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve wallet balance',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Add funds to wallet
 router.post('/add-funds', authenticateToken, async (req, res) => {
   try {
-    const { amount, method } = req.body;
-    const userId = req.user.id;
+    const { amount, method } = req.body
+    const userId = req.user.id
 
     // Validate input
     if (!amount || amount <= 0) {
       return res.status(400).json({
         success: false,
         message: 'Invalid amount. Minimum deposit is $1.'
-      });
+      })
     }
 
     if (amount > 10000) {
       return res.status(400).json({
         success: false,
         message: 'Maximum deposit is $10,000 per transaction.'
-      });
+      })
     }
 
-    const validMethods = ['credit_card', 'bank_transfer', 'crypto'];
+    const validMethods = ['credit_card', 'bank_transfer', 'crypto']
     if (!validMethods.includes(method)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid payment method'
-      });
+      })
     }
 
     // Get user
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId)
     if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
-      });
+      })
     }
 
     // Simulate payment processing
     // In production, this would integrate with actual payment processors
-    const processingTime = method === 'crypto' ? 100 : method === 'credit_card' ? 200 : 500;
-    await new Promise(resolve => setTimeout(resolve, processingTime));
+    const processingTime = method === 'crypto' ? 100 : method === 'credit_card' ? 200 : 500
+    await new Promise(resolve => setTimeout(resolve, processingTime))
 
     // Update user balance
-    const newBalance = user.walletBalance + amount;
-    await user.update({ walletBalance: newBalance });
+    const newBalance = user.walletBalance + amount
+    await user.update({ walletBalance: newBalance })
 
     // Create transaction record (simplified for demo)
     const transaction = {
@@ -121,7 +120,7 @@ router.post('/add-funds', authenticateToken, async (req, res) => {
       timestamp: new Date().toISOString(),
       status: 'completed',
       method
-    };
+    }
 
     res.json({
       success: true,
@@ -131,70 +130,69 @@ router.post('/add-funds', authenticateToken, async (req, res) => {
         newBalance: `$${newBalance.toFixed(2)}`,
         balanceIncrease: `+$${amount.toFixed(2)}`
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Add funds error:', error);
+    console.error('Add funds error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to add funds. Please try again.',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Withdraw funds from wallet
 router.post('/withdraw', authenticateToken, async (req, res) => {
   try {
-    const { amount, method, details } = req.body;
-    const userId = req.user.id;
+    const { amount, method, details } = req.body
+    const userId = req.user.id
 
     // Validate input
     if (!amount || amount < 10) {
       return res.status(400).json({
         success: false,
         message: 'Minimum withdrawal amount is $10.'
-      });
+      })
     }
 
     if (!details || details.trim().length < 5) {
       return res.status(400).json({
         success: false,
         message: 'Please provide valid withdrawal details.'
-      });
+      })
     }
 
-    const validMethods = ['bank_transfer', 'crypto'];
+    const validMethods = ['bank_transfer', 'crypto']
     if (!validMethods.includes(method)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid withdrawal method'
-      });
+      })
     }
 
     // Get user and check balance
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId)
     if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
-      });
+      })
     }
 
     if (user.walletBalance < amount) {
       return res.status(400).json({
         success: false,
         message: 'Insufficient balance for withdrawal.'
-      });
+      })
     }
 
     // Simulate withdrawal processing
-    const processingTime = method === 'crypto' ? 200 : 800;
-    await new Promise(resolve => setTimeout(resolve, processingTime));
+    const processingTime = method === 'crypto' ? 200 : 800
+    await new Promise(resolve => setTimeout(resolve, processingTime))
 
     // Update user balance
-    const newBalance = user.walletBalance - amount;
-    await user.update({ walletBalance: newBalance });
+    const newBalance = user.walletBalance - amount
+    await user.update({ walletBalance: newBalance })
 
     // Create transaction record
     const transaction = {
@@ -206,7 +204,7 @@ router.post('/withdraw', authenticateToken, async (req, res) => {
       status: 'processing',
       method,
       estimatedCompletion: method === 'crypto' ? '1-2 hours' : '1-3 business days'
-    };
+    }
 
     res.json({
       success: true,
@@ -216,23 +214,22 @@ router.post('/withdraw', authenticateToken, async (req, res) => {
         newBalance: `$${newBalance.toFixed(2)}`,
         estimatedCompletion: transaction.estimatedCompletion
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Withdraw error:', error);
+    console.error('Withdraw error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to process withdrawal. Please try again.',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Get transaction history
 router.get('/transactions', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { limit = 20, offset = 0 } = req.query;
+    const userId = req.user.id
+    const { limit = 20, offset = 0 } = req.query
 
     // In production, this would fetch from a transactions table
     // For demo, we'll generate some sample transactions
@@ -277,9 +274,9 @@ router.get('/transactions', authenticateToken, async (req, res) => {
         friendlyDescription: 'Winning bet payout - NFL Chiefs vs Bills',
         icon: '🏆'
       }
-    ];
+    ]
 
-    const paginatedTransactions = sampleTransactions.slice(offset, offset + parseInt(limit));
+    const paginatedTransactions = sampleTransactions.slice(offset, offset + parseInt(limit))
 
     res.json({
       success: true,
@@ -300,41 +297,40 @@ router.get('/transactions', authenticateToken, async (req, res) => {
           netActivity: '+$200.00'
         }
       }
-    });
-
+    })
   } catch (error) {
-    console.error('Transaction history error:', error);
+    console.error('Transaction history error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve transaction history',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Get wallet statistics
 router.get('/stats', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await User.findByPk(userId);
+    const userId = req.user.id
+    const user = await User.findByPk(userId)
 
     if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
-      });
+      })
     }
 
     // Generate comprehensive wallet and user statistics
-    const walletBalance = user.walletBalance || 0;
-    
+    const walletBalance = user.walletBalance || 0
+
     // Determine user status based on activity and balance
-    let userStatus;
-    if (walletBalance >= 500) userStatus = 'champion';
-    else if (walletBalance >= 200) userStatus = 'experienced';
-    else if (walletBalance >= 100) userStatus = 'rising';
-    else if (walletBalance >= 50) userStatus = 'hot_streak';
-    else userStatus = 'fresh';
+    let userStatus
+    if (walletBalance >= 500) userStatus = 'champion'
+    else if (walletBalance >= 200) userStatus = 'experienced'
+    else if (walletBalance >= 100) userStatus = 'rising'
+    else if (walletBalance >= 50) userStatus = 'hot_streak'
+    else userStatus = 'fresh'
 
     const stats = {
       user: {
@@ -378,23 +374,22 @@ router.get('/stats', authenticateToken, async (req, res) => {
           rarity: 'common'
         }
       ]
-    };
+    }
 
     res.json({
       success: true,
       message: 'Wallet statistics retrieved successfully',
       data: stats
-    });
-
+    })
   } catch (error) {
-    console.error('Wallet stats error:', error);
+    console.error('Wallet stats error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve wallet statistics',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
 // Get payment methods
 router.get('/payment-methods', authenticateToken, async (req, res) => {
@@ -454,23 +449,21 @@ router.get('/payment-methods', authenticateToken, async (req, res) => {
           popular: false
         }
       ]
-    };
+    }
 
     res.json({
       success: true,
       message: 'Payment methods retrieved successfully',
       data: paymentMethods
-    });
-
+    })
   } catch (error) {
-    console.error('Payment methods error:', error);
+    console.error('Payment methods error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve payment methods',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    })
   }
-});
+})
 
-module.exports = router;
-
+module.exports = router
