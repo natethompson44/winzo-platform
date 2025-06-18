@@ -18,7 +18,7 @@ import { BetSlipProvider } from './contexts/BetSlipContext';
 import { ProgressiveLoading, LoadingSpinner } from './components/LoadingStates';
 import HomePage from './components/HomePage';
 import { useResponsive } from './hooks/responsive/useResponsive';
-import { BetSlip } from './components/layout/BetSlip/BetSlip';
+import { BetSlip } from './components/Layout/BetSlip/BetSlip';
 import './styles/responsive/responsive-system.css';
 
 // Admin Components
