@@ -23,15 +23,19 @@ function startServer() {
 // Main execution - simplified
 async function main() {
   try {
-    // Handle database reset if needed
+    // Check for RESET_DATABASE flag and warn if it's causing issues
     if (process.env.RESET_DATABASE === 'true') {
-      console.log('\n🔄 RESET_DATABASE flag detected, resetting database...');
+      console.log('\n⚠️  WARNING: RESET_DATABASE=true detected!');
+      console.log('\n📋 This will reset your database on every startup.');
+      console.log('\n💡 To fix Railway crashes, set RESET_DATABASE=false in Railway dashboard.');
+      console.log('\n🔄 Proceeding with database reset (this may take time)...');
+      
       try {
         const { resetDatabase } = require('./reset-database');
-        // Add timeout for database reset
+        // Add timeout for database reset (reduced to 45 seconds)
         const resetPromise = resetDatabase();
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Database reset timeout')), 60000)
+          setTimeout(() => reject(new Error('Database reset timeout - Railway may kill the process')), 45000)
         );
         await Promise.race([resetPromise, timeoutPromise]);
         console.log('\n✅ Database reset completed');
@@ -39,11 +43,13 @@ async function main() {
         console.error('\n❌ Database reset failed:', resetError.message);
         console.log('\n⚠️ Continuing with server start...');
       }
+    } else {
+      console.log('\n✅ RESET_DATABASE not set - normal startup mode');
     }
     
     // Wait briefly for Railway environment
     console.log('\n⏳ Waiting for Railway environment...');
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Reduced wait time
     
     // Start server immediately
     startServer();
@@ -53,10 +59,14 @@ async function main() {
   }
 }
 
-// Shorter timeout for simple mode
+// Shorter timeout for simple mode (2.5 minutes to avoid Railway timeout)
 setTimeout(() => {
-  console.error('\n💥 Startup timeout reached after 3 minutes');
+  console.error('\n💥 Startup timeout reached after 2.5 minutes');
+  console.error('\n🔧 To fix this issue:');
+  console.error('1. Go to Railway dashboard → Variables');
+  console.error('2. Set RESET_DATABASE=false');
+  console.error('3. Redeploy the service');
   process.exit(1);
-}, 180000); // 3 minutes
+}, 150000); // 2.5 minutes
 
 main(); 
