@@ -1,0 +1,474 @@
+/* ===========================
+   WINZO Responsive System CSS
+   Enhanced Architecture V2.0
+   =========================== */
+
+@import './color-variables.css';
+
+/* Base Responsive Variables */
+:root {
+  /* Breakpoints */
+  --bp-mobile: 768px;
+  --bp-tablet: 1024px;
+  --bp-desktop: 1200px;
+  --bp-wide: 1440px;
+
+  /* Container Sizes */
+  --container-mobile: 100%;
+  --container-tablet: 740px;
+  --container-desktop: 1140px;
+  --container-wide: 1320px;
+
+  /* Spacing Scale - Mobile First */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Typography Scale - Mobile First */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* Layout Properties */
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --border-radius-xl: 1rem;
+
+  /* Interactive Elements */
+  --touch-target-min: 44px;
+  --hover-target-min: 32px;
+
+  /* Transition Timing */
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.25s ease-out;
+  --transition-slow: 0.35s ease-out;
+}
+
+/* Platform-Specific Adjustments */
+
+/* Mobile Platform (< 768px) */
+@media (max-width: 767px) {
+  :root {
+    --space-xs: 0.125rem;
+    --space-sm: 0.25rem;
+    --space-md: 0.75rem;
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
+    --space-3xl: 2.5rem;
+
+    --text-xs: 0.625rem;
+    --text-sm: 0.75rem;
+    --text-base: 0.875rem;
+    --text-lg: 1rem;
+    --text-xl: 1.125rem;
+    --text-2xl: 1.25rem;
+    --text-3xl: 1.5rem;
+    --text-4xl: 1.875rem;
+  }
+}
+
+/* Tablet Platform (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --space-lg: 1.25rem;
+    --space-xl: 1.75rem;
+    --space-2xl: 2.5rem;
+    --space-3xl: 3.5rem;
+  }
+}
+
+/* Desktop Platform (1024px - 1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  :root {
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+  }
+}
+
+/* Wide Platform (1200px+) */
+@media (min-width: 1200px) {
+  :root {
+    --space-xl: 2.5rem;
+    --space-2xl: 3.5rem;
+    --space-3xl: 5rem;
+
+    --text-2xl: 1.75rem;
+    --text-3xl: 2.25rem;
+    --text-4xl: 3rem;
+  }
+}
+
+/* Platform Classes for JavaScript Integration */
+.platform-mobile {
+  --current-platform: 'mobile';
+}
+
+.platform-tablet {
+  --current-platform: 'tablet';
+}
+
+.platform-desktop {
+  --current-platform: 'desktop';
+}
+
+.platform-wide {
+  --current-platform: 'wide';
+}
+
+/* Touch vs Non-Touch Adjustments */
+.touch-device {
+  --interactive-min-size: var(--touch-target-min);
+  --interactive-spacing: var(--space-md);
+}
+
+.no-touch {
+  --interactive-min-size: var(--hover-target-min);
+  --interactive-spacing: var(--space-sm);
+}
+
+/* High Density Display Adjustments */
+.high-density {
+  --border-width: 0.5px;
+  --icon-stroke-width: 1.5px;
+}
+
+.standard-density {
+  --border-width: 1px;
+  --icon-stroke-width: 2px;
+}
+
+/* Orientation-Specific Styles */
+.orientation-portrait {
+  --orientation-primary-axis: column;
+  --orientation-secondary-axis: row;
+}
+
+.orientation-landscape {
+  --orientation-primary-axis: row;
+  --orientation-secondary-axis: column;
+}
+
+/* Responsive Container System */
+.container {
+  width: 100%;
+  max-width: var(--container-mobile);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: var(--container-tablet);
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-desktop);
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: var(--container-wide);
+  }
+}
+
+/* Responsive Grid System */
+.grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.grid-auto {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.grid-responsive {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid-responsive {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Flexbox Utilities */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-sm {
+  gap: var(--space-sm);
+}
+
+.gap-md {
+  gap: var(--space-md);
+}
+
+.gap-lg {
+  gap: var(--space-lg);
+}
+
+/* Responsive Visibility Utilities */
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+/* Platform-specific visibility */
+.mobile-only {
+  display: none;
+}
+
+.tablet-only {
+  display: none;
+}
+
+.desktop-only {
+  display: none;
+}
+
+.wide-only {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .tablet-up,
+  .desktop-up,
+  .wide-up {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tablet-only {
+    display: block;
+  }
+  
+  .mobile-only {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .desktop-only {
+    display: block;
+  }
+}
+
+@media (min-width: 1200px) {
+  .wide-only {
+    display: block;
+  }
+}
+
+@media (min-width: 768px) {
+  .tablet-up {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktop-up {
+    display: block;
+  }
+}
+
+@media (min-width: 1200px) {
+  .wide-up {
+    display: block;
+  }
+}
+
+/* Touch Target Utilities */
+.touch-target {
+  min-height: var(--interactive-min-size);
+  min-width: var(--interactive-min-size);
+  padding: var(--interactive-spacing);
+}
+
+/* Responsive Text Utilities */
+.text-responsive-xs {
+  font-size: var(--text-xs);
+}
+
+.text-responsive-sm {
+  font-size: var(--text-sm);
+}
+
+.text-responsive-base {
+  font-size: var(--text-base);
+}
+
+.text-responsive-lg {
+  font-size: var(--text-lg);
+}
+
+.text-responsive-xl {
+  font-size: var(--text-xl);
+}
+
+.text-responsive-2xl {
+  font-size: var(--text-2xl);
+}
+
+.text-responsive-3xl {
+  font-size: var(--text-3xl);
+}
+
+.text-responsive-4xl {
+  font-size: var(--text-4xl);
+}
+
+/* Responsive Spacing Utilities */
+.p-responsive-xs {
+  padding: var(--space-xs);
+}
+
+.p-responsive-sm {
+  padding: var(--space-sm);
+}
+
+.p-responsive-md {
+  padding: var(--space-md);
+}
+
+.p-responsive-lg {
+  padding: var(--space-lg);
+}
+
+.p-responsive-xl {
+  padding: var(--space-xl);
+}
+
+.m-responsive-xs {
+  margin: var(--space-xs);
+}
+
+.m-responsive-sm {
+  margin: var(--space-sm);
+}
+
+.m-responsive-md {
+  margin: var(--space-md);
+}
+
+.m-responsive-lg {
+  margin: var(--space-lg);
+}
+
+.m-responsive-xl {
+  margin: var(--space-xl);
+}
+
+/* Component Loading States */
+.responsive-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  min-height: 200px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-md);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.responsive-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  text-align: center;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  border-radius: var(--border-radius-lg);
+  background: rgba(231, 76, 60, 0.05);
+}
+
+.responsive-no-variant {
+  padding: var(--space-lg);
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: var(--border-radius-md);
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,11 +15,11 @@ import LiveSportsPage from './pages/LiveSportsPage';
 import AccountPage from './pages/AccountPage';
 import BettingHistory from './components/BettingHistory';
 import { BetSlipProvider } from './contexts/BetSlipContext';
-import RightSidebarBetSlip from './components/RightSidebarBetSlip';
-import MobileBetSlip from './components/MobileBetSlip';
-import BetSlipToggle from './components/BetSlipToggle';
 import { ProgressiveLoading, LoadingSpinner } from './components/LoadingStates';
 import HomePage from './components/HomePage';
+import { useResponsive } from './hooks/responsive/useResponsive';
+import { BetSlip } from './components/layout/BetSlip/BetSlip';
+import './styles/responsive/responsive-system.css';
 
 // Admin Components
 import AdminLogin from './components/admin/AdminLogin';
@@ -92,6 +92,13 @@ const AdminProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children
  * Main App Component with Enhanced Error Handling, Navigation, and Performance
  */
 function App() {
+  const responsive = useResponsive();
+
+  useEffect(() => {
+    // Apply responsive classes to body
+    document.body.className = responsive.getResponsiveClasses();
+  }, [responsive]);
+
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
@@ -201,17 +208,10 @@ function App() {
                 </div>
               </Router>
               
-              {/* Responsive Bet Slip System */}
+              {/* Unified Responsive Bet Slip System */}
               <div className="bet-slip-container">
-                {/* Desktop: Right Sidebar Bet Slip */}
-                <RightSidebarBetSlip />
-                
-                {/* Mobile: Bottom Sheet Bet Slip */}
-                <MobileBetSlip />
+                <BetSlip />
               </div>
-              
-              {/* Bet Slip Toggle Button */}
-              <BetSlipToggle />
               
               {/* Toast Notifications */}
               <Toaster
