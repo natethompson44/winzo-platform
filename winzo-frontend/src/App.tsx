@@ -14,10 +14,8 @@ import SportsPage from './pages/SportsPage';
 import LiveSportsPage from './pages/LiveSportsPage';
 import AccountPage from './pages/AccountPage';
 import BettingHistory from './components/BettingHistory';
-import { BetSlipProvider } from './contexts/BetSlipContext';
-import RightSidebarBetSlip from './components/RightSidebarBetSlip';
-import MobileBetSlip from './components/MobileBetSlip';
-import BetSlipToggle from './components/BetSlipToggle';
+import { BetSlipProvider, useBetSlip } from './contexts/BetSlipContext';
+import { BetslipPanel, BetslipTrigger } from './components/betslip';
 import { ProgressiveLoading, LoadingSpinner } from './components/LoadingStates';
 import HomePage from './components/HomePage';
 
@@ -86,6 +84,23 @@ const AdminProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children
   // In production, you should check for admin privileges
   
   return <>{children}</>;
+};
+
+/**
+ * Betslip Container Component
+ */
+const BetslipContainer: React.FC = () => {
+  const { isOpen, setIsOpen } = useBetSlip();
+  
+  return (
+    <>
+      <BetslipPanel 
+        isOpen={isOpen} 
+        onClose={() => setIsOpen(false)} 
+      />
+      <BetslipTrigger />
+    </>
+  );
 };
 
 /**
@@ -201,17 +216,8 @@ function App() {
                 </div>
               </Router>
               
-              {/* Responsive Bet Slip System */}
-              <div className="bet-slip-container">
-                {/* Desktop: Right Sidebar Bet Slip */}
-                <RightSidebarBetSlip />
-                
-                {/* Mobile: Bottom Sheet Bet Slip */}
-                <MobileBetSlip />
-              </div>
-              
-              {/* Bet Slip Toggle Button */}
-              <BetSlipToggle />
+              {/* Unified Betslip System */}
+              <BetslipContainer />
               
               {/* Toast Notifications */}
               <Toaster

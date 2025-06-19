@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useBetSlip } from '../contexts/BetSlipContext';
-import { formatCurrency } from '../utils/numberUtils';
-import './BetSlipToggle.css';
+import { useBetSlip } from '../../contexts/BetSlipContext';
+import { formatCurrency } from '../../utils/numberUtils';
+import './BetslipTrigger.css';
 
-const BetSlipToggle: React.FC = () => {
+const BetslipTrigger: React.FC = () => {
   const { getItemCount, setIsOpen, getTotalStake, betSlipItems, totalPayout } = useBetSlip();
   const [isExpanded, setIsExpanded] = useState(false);
   const itemCount = getItemCount();
@@ -24,36 +24,36 @@ const BetSlipToggle: React.FC = () => {
 
   return (
     <div 
-      className="bet-slip-toggle-container"
+      className="betslip-trigger-container"
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      {/* Enhanced Floating Button */}
+      {/* Main Trigger Button */}
       <button 
-        className="bet-slip-toggle" 
+        className="betslip-trigger" 
         onClick={() => setIsOpen(true)}
         aria-label={`Open bet slip with ${itemCount} selections`}
       >
-        <div className="bet-slip-toggle-content">
+        <div className="betslip-trigger-content">
           <span className="bet-count-badge">{itemCount}</span>
-          <div className="bet-slip-toggle-text">
-            <div className="bet-slip-label">Bet Slip</div>
-            <div className="bet-slip-total">{formatCurrency(totalStake)}</div>
+          <div className="betslip-trigger-text">
+            <div className="betslip-label">Bet Slip</div>
+            <div className="betslip-total">{formatCurrency(totalStake)}</div>
           </div>
-          <div className="bet-slip-toggle-arrow">›</div>
+          <div className="betslip-trigger-arrow">›</div>
         </div>
       </button>
 
-      {/* Enhanced Preview Panel */}
+      {/* Preview Panel */}
       {isExpanded && (
-        <div className="bet-slip-preview-panel">
+        <div className="betslip-preview-panel">
           <div className="preview-header">
             <h4>Bet Preview</h4>
             <span className="preview-count">{itemCount} selections</span>
           </div>
           
           <div className="preview-bets">
-            {previewBets.map((bet, index) => (
+            {previewBets.map((bet) => (
               <div key={bet.id} className="preview-bet-item">
                 <div className="preview-teams">
                   <span className="preview-team">{bet.homeTeam}</span>
@@ -97,4 +97,4 @@ const BetSlipToggle: React.FC = () => {
   );
 };
 
-export default BetSlipToggle;
+export default BetslipTrigger; 
