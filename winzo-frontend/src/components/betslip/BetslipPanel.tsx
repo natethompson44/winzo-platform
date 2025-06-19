@@ -166,15 +166,6 @@ const BetslipPanel: React.FC<BetslipPanelProps> = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Real-time Validation Display */}
-        {betSlipItems.length > 0 && (
-          <ValidationDisplay
-            validationResult={validationResult}
-            betType={betType}
-            className="compact"
-          />
-        )}
-
         {/* Content */}
         <div className="betslip-content">
           {betSlipItems.length === 0 ? (
@@ -184,18 +175,29 @@ const BetslipPanel: React.FC<BetslipPanelProps> = ({ isOpen, onClose }) => {
               <p>Select teams and odds from the sports listings to start building your bet.</p>
             </div>
           ) : (
-            <div className="bet-items">
-              {betSlipItems.map((item, index) => (
-                <BetItem
-                  key={item.id}
-                  bet={item}
-                  index={index}
-                  onRemove={() => removeFromBetSlip(item.id)}
-                  onUpdateStake={(stake) => updateStake(item.id, stake)}
-                  formatOdds={formatOdds}
+            <>
+              {/* Real-time Validation Display - Only show errors */}
+              {!validationResult.isValid && (
+                <ValidationDisplay
+                  validationResult={validationResult}
+                  betType={betType}
+                  className="compact"
                 />
-              ))}
-            </div>
+              )}
+              
+              <div className="bet-items">
+                {betSlipItems.map((item, index) => (
+                  <BetItem
+                    key={item.id}
+                    bet={item}
+                    index={index}
+                    onRemove={() => removeFromBetSlip(item.id)}
+                    onUpdateStake={(stake) => updateStake(item.id, stake)}
+                    formatOdds={formatOdds}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
