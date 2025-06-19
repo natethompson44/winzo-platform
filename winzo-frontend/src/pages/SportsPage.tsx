@@ -28,65 +28,15 @@ export interface SportCategory {
   icon: string;
   eventCount: number;
   isActive: boolean;
-  description: string;
-  color: string;
 }
 
 export const mockCategories: SportCategory[] = [
-  { 
-    id: 'all', 
-    name: 'All Sports', 
-    icon: 'bi-trophy', 
-    eventCount: 28, 
-    isActive: false,
-    description: 'All available sports',
-    color: '#4154f1'
-  },
-  { 
-    id: 'football', 
-    name: 'NFL Football', 
-    icon: 'bi-shield-check', 
-    eventCount: 12, 
-    isActive: false,
-    description: 'National Football League',
-    color: '#2eca6a'
-  },
-  { 
-    id: 'basketball', 
-    name: 'NBA Basketball', 
-    icon: 'bi-circle', 
-    eventCount: 8, 
-    isActive: false,
-    description: 'National Basketball Association',
-    color: '#ff771d'
-  },
-  { 
-    id: 'baseball', 
-    name: 'MLB Baseball', 
-    icon: 'bi-diamond', 
-    eventCount: 6, 
-    isActive: false,
-    description: 'Major League Baseball',
-    color: '#e83e8c'
-  },
-  { 
-    id: 'hockey', 
-    name: 'NHL Hockey', 
-    icon: 'bi-snow', 
-    eventCount: 2, 
-    isActive: false,
-    description: 'National Hockey League',
-    color: '#6f42c1'
-  },
-  { 
-    id: 'soccer', 
-    name: 'Soccer', 
-    icon: 'bi-globe', 
-    eventCount: 15, 
-    isActive: false,
-    description: 'Premier League & More',
-    color: '#20c997'
-  },
+  { id: 'all', name: 'All Sports', icon: 'bi-trophy', eventCount: 28, isActive: false },
+  { id: 'football', name: 'NFL', icon: 'bi-shield-check', eventCount: 12, isActive: false },
+  { id: 'basketball', name: 'NBA', icon: 'bi-circle', eventCount: 8, isActive: false },
+  { id: 'baseball', name: 'MLB', icon: 'bi-diamond', eventCount: 6, isActive: false },
+  { id: 'hockey', name: 'NHL', icon: 'bi-snow', eventCount: 2, isActive: false },
+  { id: 'soccer', name: 'Soccer', icon: 'bi-globe', eventCount: 15, isActive: false },
 ];
 
 export const mockEvents: GameEvent[] = [
@@ -94,7 +44,7 @@ export const mockEvents: GameEvent[] = [
     id: '1',
     homeTeam: 'Los Angeles Lakers',
     awayTeam: 'Golden State Warriors',
-    gameTime: new Date(Date.now() + 3600000), // 1 hour from now
+    gameTime: new Date(Date.now() + 3600000),
     rotationNumbers: { home: '501', away: '502' },
     odds: {
       spread: { home: -3.5, away: 3.5, odds: -110 },
@@ -112,7 +62,7 @@ export const mockEvents: GameEvent[] = [
     id: '2',
     homeTeam: 'Dallas Cowboys',
     awayTeam: 'Philadelphia Eagles',
-    gameTime: new Date(Date.now() + 7200000), // 2 hours from now
+    gameTime: new Date(Date.now() + 7200000),
     rotationNumbers: { home: '601', away: '602' },
     odds: {
       spread: { home: -7, away: 7, odds: -110 },
@@ -130,7 +80,7 @@ export const mockEvents: GameEvent[] = [
     id: '3',
     homeTeam: 'New York Yankees',
     awayTeam: 'Boston Red Sox',
-    gameTime: new Date(Date.now() + 5400000), // 1.5 hours from now
+    gameTime: new Date(Date.now() + 5400000),
     rotationNumbers: { home: '701', away: '702' },
     odds: {
       spread: { home: -1.5, away: 1.5, odds: -110 },
@@ -147,7 +97,7 @@ export const mockEvents: GameEvent[] = [
     id: '4',
     homeTeam: 'Manchester City',
     awayTeam: 'Arsenal',
-    gameTime: new Date(Date.now() + 10800000), // 3 hours from now
+    gameTime: new Date(Date.now() + 10800000),
     rotationNumbers: { home: '801', away: '802' },
     odds: {
       spread: { home: -0.5, away: 0.5, odds: -110 },
@@ -159,6 +109,74 @@ export const mockEvents: GameEvent[] = [
     venue: 'Etihad Stadium',
     status: 'upcoming',
     isFeatured: true,
+    lastOddsUpdate: new Date()
+  },
+  {
+    id: '5',
+    homeTeam: 'Tampa Bay Lightning',
+    awayTeam: 'Boston Bruins',
+    gameTime: new Date(Date.now() + 9000000),
+    rotationNumbers: { home: '901', away: '902' },
+    odds: {
+      spread: { home: -1.5, away: 1.5, odds: -110 },
+      total: { over: 6.5, under: 6.5, odds: -110 },
+      moneyline: { home: -130, away: +110 }
+    },
+    sport: 'hockey',
+    league: 'NHL',
+    venue: 'Amalie Arena',
+    status: 'upcoming',
+    lastOddsUpdate: new Date()
+  },
+  {
+    id: '6',
+    homeTeam: 'Denver Nuggets',
+    awayTeam: 'Phoenix Suns',
+    gameTime: new Date(Date.now() + 12600000),
+    rotationNumbers: { home: '503', away: '504' },
+    odds: {
+      spread: { home: -2.5, away: 2.5, odds: -110 },
+      total: { over: 218.5, under: 218.5, odds: -110 },
+      moneyline: { home: -125, away: +105 }
+    },
+    sport: 'basketball',
+    league: 'NBA',
+    venue: 'Ball Arena',
+    status: 'upcoming',
+    lastOddsUpdate: new Date()
+  },
+  {
+    id: '7',
+    homeTeam: 'Green Bay Packers',
+    awayTeam: 'Chicago Bears',
+    gameTime: new Date(Date.now() + 14400000),
+    rotationNumbers: { home: '603', away: '604' },
+    odds: {
+      spread: { home: -4.5, away: 4.5, odds: -110 },
+      total: { over: 42.5, under: 42.5, odds: -110 },
+      moneyline: { home: -200, away: +170 }
+    },
+    sport: 'football',
+    league: 'NFL',
+    venue: 'Lambeau Field',
+    status: 'upcoming',
+    lastOddsUpdate: new Date()
+  },
+  {
+    id: '8',
+    homeTeam: 'Los Angeles Dodgers',
+    awayTeam: 'San Francisco Giants',
+    gameTime: new Date(Date.now() + 16200000),
+    rotationNumbers: { home: '703', away: '704' },
+    odds: {
+      spread: { home: -1.5, away: 1.5, odds: -110 },
+      total: { over: 7.5, under: 7.5, odds: -110 },
+      moneyline: { home: -160, away: +140 }
+    },
+    sport: 'baseball',
+    league: 'MLB',
+    venue: 'Dodger Stadium',
+    status: 'upcoming',
     lastOddsUpdate: new Date()
   }
 ];
@@ -172,22 +190,16 @@ const SportsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'time' | 'popular' | 'odds'>('time');
-  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
-  // Get highlighted event from search
   const highlightedEventId = searchParams.get('highlight');
 
-  // Load data on component mount
   const loadData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 400));
       
-      // Set active category
       const updatedCategories = mockCategories.map(cat => ({
         ...cat,
         isActive: cat.id === selectedSport
@@ -195,13 +207,11 @@ const SportsPage: React.FC = () => {
       
       setCategories(updatedCategories);
       
-      // Filter events by selected sport
       let filteredEvents = mockEvents;
       if (selectedSport !== 'all') {
         filteredEvents = mockEvents.filter(event => event.sport === selectedSport);
       }
 
-      // Apply search filter
       if (searchTerm) {
         filteredEvents = filteredEvents.filter(event => 
           event.homeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -210,24 +220,7 @@ const SportsPage: React.FC = () => {
         );
       }
 
-      // Apply featured filter
-      if (showFeaturedOnly) {
-        filteredEvents = filteredEvents.filter(event => event.isFeatured);
-      }
-
-      // Sort events
-      filteredEvents.sort((a, b) => {
-        switch (sortBy) {
-          case 'time':
-            return a.gameTime.getTime() - b.gameTime.getTime();
-          case 'popular':
-            return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
-          case 'odds':
-            return Math.abs(a.odds.moneyline.home) - Math.abs(b.odds.moneyline.home);
-          default:
-            return 0;
-        }
-      });
+      filteredEvents.sort((a, b) => a.gameTime.getTime() - b.gameTime.getTime());
       
       setEvents(filteredEvents);
     } catch (err) {
@@ -236,7 +229,7 @@ const SportsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedSport, searchTerm, sortBy, showFeaturedOnly]);
+  }, [selectedSport, searchTerm]);
 
   useEffect(() => {
     loadData();
@@ -276,29 +269,22 @@ const SportsPage: React.FC = () => {
     const now = new Date();
     const diffInHours = (gameTime.getTime() - now.getTime()) / (1000 * 60 * 60);
     
-    if (diffInHours < 1) {
-      const diffInMinutes = Math.round((gameTime.getTime() - now.getTime()) / (1000 * 60));
-      return `${diffInMinutes}min`;
-    } else if (diffInHours < 24) {
-      return `${Math.round(diffInHours)}h`;
+    if (diffInHours < 24) {
+      return gameTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else {
-      return gameTime.toLocaleDateString();
+      return gameTime.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
   };
 
   if (error) {
     return (
       <div className="sports-page-error">
-        <div className="card">
-          <div className="card-body text-center">
-            <i className="bi bi-exclamation-triangle text-warning" style={{fontSize: '3rem'}}></i>
-            <h3 className="mt-3">Something went wrong</h3>
-            <p className="text-muted">{error}</p>
-            <button className="btn btn-primary" onClick={() => window.location.reload()}>
-              <i className="bi bi-arrow-clockwise me-2"></i>
-              Try Again
-            </button>
-          </div>
+        <div className="alert alert-danger">
+          <i className="bi bi-exclamation-triangle me-2"></i>
+          {error}
+          <button className="btn btn-sm btn-outline-danger ms-3" onClick={() => window.location.reload()}>
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -306,221 +292,144 @@ const SportsPage: React.FC = () => {
 
   return (
     <div className="sports-page">
-      {/* Search and Filters */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-4">
-                  <div className="search-box">
-                    <i className="bi bi-search"></i>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search teams, leagues..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-3">
-                  <select 
-                    className="form-select" 
-                    value={sortBy} 
-                    onChange={(e) => setSortBy(e.target.value as 'time' | 'popular' | 'odds')}
-                  >
-                    <option value="time">Sort by Time</option>
-                    <option value="popular">Sort by Popular</option>
-                    <option value="odds">Sort by Odds</option>
-                  </select>
-                </div>
-                <div className="col-md-3">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="featuredOnly"
-                      checked={showFeaturedOnly}
-                      onChange={(e) => setShowFeaturedOnly(e.target.checked)}
-                    />
-                    <label className="form-check-label" htmlFor="featuredOnly">
-                      Featured Only
-                    </label>
-                  </div>
-                </div>
-                <div className="col-md-2">
-                  <button className="btn btn-outline-secondary w-100" onClick={loadData}>
-                    <i className="bi bi-arrow-clockwise me-1"></i>
-                    Refresh
-                  </button>
-                </div>
-              </div>
-            </div>
+      {/* Header Controls */}
+      <div className="sports-header">
+        <div className="sports-nav">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              className={`sport-tab ${category.isActive ? 'active' : ''}`}
+              onClick={() => handleSportChange(category.id)}
+            >
+              <i className={category.icon}></i>
+              <span>{category.name}</span>
+              <span className="count">{category.eventCount}</span>
+            </button>
+          ))}
+        </div>
+        
+        <div className="search-controls">
+          <div className="search-input">
+            <i className="bi bi-search"></i>
+            <input
+              type="text"
+              placeholder="Search teams, leagues..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
+          <button className="refresh-btn" onClick={loadData} disabled={isLoading}>
+            <i className={`bi bi-arrow-clockwise ${isLoading ? 'spin' : ''}`}></i>
+          </button>
         </div>
       </div>
 
-      {/* Sports Categories */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="sports-categories">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className={`sport-category-card ${category.isActive ? 'active' : ''}`}
-                onClick={() => handleSportChange(category.id)}
-                style={{ '--category-color': category.color } as React.CSSProperties}
-              >
-                <div className="category-icon">
-                  <i className={category.icon}></i>
-                </div>
-                <div className="category-info">
-                  <h6>{category.name}</h6>
-                  <p>{category.description}</p>
-                  <span className="event-count">{category.eventCount} events</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Events List */}
-      <div className="row">
+      {/* Betting Table */}
+      <div className="betting-table-container">
         {isLoading ? (
-          <div className="col-12">
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-              <p className="mt-3 text-muted">Loading events...</p>
+          <div className="loading-state">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
             </div>
+            <p>Loading events...</p>
           </div>
         ) : events.length === 0 ? (
-          <div className="col-12">
-            <div className="card">
-              <div className="card-body text-center py-5">
-                <i className="bi bi-search text-muted" style={{fontSize: '3rem'}}></i>
-                <h5 className="mt-3">No events found</h5>
-                <p className="text-muted">Try adjusting your search or filters.</p>
-              </div>
-            </div>
+          <div className="empty-state">
+            <i className="bi bi-search"></i>
+            <h5>No events found</h5>
+            <p>Try adjusting your search or sport selection.</p>
           </div>
         ) : (
-          events.map((event) => (
-            <div key={event.id} className="col-lg-6 col-xl-4 mb-4">
-              <div className={`event-card ${event.id === highlightedEventId ? 'highlighted' : ''} ${event.isFeatured ? 'featured' : ''}`}>
-                {event.isFeatured && (
-                  <div className="featured-badge">
-                    <i className="bi bi-star-fill"></i>
-                    Featured
-                  </div>
-                )}
-                
-                <div className="event-header">
-                  <div className="teams">
-                    <div className="team away-team">
-                      <span className="team-name">{event.awayTeam}</span>
-                      <span className="rotation-number">#{event.rotationNumbers.away}</span>
-                    </div>
-                    <div className="vs-divider">
-                      <span>@</span>
-                    </div>
-                    <div className="team home-team">
-                      <span className="team-name">{event.homeTeam}</span>
-                      <span className="rotation-number">#{event.rotationNumbers.home}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="game-info">
-                    <div className="league-time">
-                      <span className="league">{event.league}</span>
-                      <span className="game-time">{formatGameTime(event.gameTime)}</span>
-                    </div>
-                    {event.venue && (
-                      <div className="venue">
-                        <i className="bi bi-geo-alt"></i>
-                        {event.venue}
+          <table className="betting-table">
+            <thead>
+              <tr>
+                <th className="game-col">Game</th>
+                <th className="spread-col">Spread</th>
+                <th className="total-col">Total</th>
+                <th className="moneyline-col">Moneyline</th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((event) => (
+                <tr key={event.id} className={`game-row ${event.id === highlightedEventId ? 'highlighted' : ''} ${event.isFeatured ? 'featured' : ''}`}>
+                  <td className="game-cell">
+                    <div className="game-info">
+                      <div className="teams">
+                        <div className="away-team">
+                          <span className="team-name">{event.awayTeam}</span>
+                          <span className="rotation">#{event.rotationNumbers.away}</span>
+                        </div>
+                        <div className="home-team">
+                          <span className="team-name">{event.homeTeam}</span>
+                          <span className="rotation">#{event.rotationNumbers.home}</span>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="betting-options">
-                  {/* Moneyline */}
-                  <div className="bet-type">
-                    <h6>Moneyline</h6>
-                    <div className="bet-buttons">
-                      <button
-                        className="bet-btn"
-                        onClick={() => handleAddToBetSlip(event, 'moneyline', event.odds.moneyline.away, `${event.awayTeam} ML`)}
-                      >
-                        <span className="team">{event.awayTeam}</span>
-                        <span className="odds">{formatOdds(event.odds.moneyline.away)}</span>
-                      </button>
-                      <button
-                        className="bet-btn"
-                        onClick={() => handleAddToBetSlip(event, 'moneyline', event.odds.moneyline.home, `${event.homeTeam} ML`)}
-                      >
-                        <span className="team">{event.homeTeam}</span>
-                        <span className="odds">{formatOdds(event.odds.moneyline.home)}</span>
-                      </button>
+                      <div className="game-meta">
+                        <span className="time">{formatGameTime(event.gameTime)}</span>
+                        <span className="league">{event.league}</span>
+                        {event.isFeatured && <span className="featured-badge">Featured</span>}
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Spread */}
-                  <div className="bet-type">
-                    <h6>Point Spread</h6>
-                    <div className="bet-buttons">
+                  </td>
+                  
+                  <td className="spread-cell">
+                    <div className="bet-options">
                       <button
                         className="bet-btn"
                         onClick={() => handleAddToBetSlip(event, 'spread', event.odds.spread.odds, `${event.awayTeam} ${formatOdds(event.odds.spread.away)}`)}
                       >
-                        <span className="team">{event.awayTeam} {formatOdds(event.odds.spread.away)}</span>
+                        <span className="line">{formatOdds(event.odds.spread.away)}</span>
                         <span className="odds">{formatOdds(event.odds.spread.odds)}</span>
                       </button>
                       <button
                         className="bet-btn"
                         onClick={() => handleAddToBetSlip(event, 'spread', event.odds.spread.odds, `${event.homeTeam} ${formatOdds(event.odds.spread.home)}`)}
                       >
-                        <span className="team">{event.homeTeam} {formatOdds(event.odds.spread.home)}</span>
+                        <span className="line">{formatOdds(event.odds.spread.home)}</span>
                         <span className="odds">{formatOdds(event.odds.spread.odds)}</span>
                       </button>
                     </div>
-                  </div>
-
-                  {/* Total */}
-                  <div className="bet-type">
-                    <h6>Total Points</h6>
-                    <div className="bet-buttons">
+                  </td>
+                  
+                  <td className="total-cell">
+                    <div className="bet-options">
                       <button
                         className="bet-btn"
                         onClick={() => handleAddToBetSlip(event, 'total', event.odds.total.odds, `Over ${event.odds.total.over}`)}
                       >
-                        <span className="team">Over {event.odds.total.over}</span>
+                        <span className="line">O {event.odds.total.over}</span>
                         <span className="odds">{formatOdds(event.odds.total.odds)}</span>
                       </button>
                       <button
                         className="bet-btn"
                         onClick={() => handleAddToBetSlip(event, 'total', event.odds.total.odds, `Under ${event.odds.total.under}`)}
                       >
-                        <span className="team">Under {event.odds.total.under}</span>
+                        <span className="line">U {event.odds.total.under}</span>
                         <span className="odds">{formatOdds(event.odds.total.odds)}</span>
                       </button>
                     </div>
-                  </div>
-                </div>
-
-                {event.lastOddsUpdate && (
-                  <div className="odds-update">
-                    <i className="bi bi-clock"></i>
-                    Updated {formatGameTime(event.lastOddsUpdate)} ago
-                  </div>
-                )}
-              </div>
-            </div>
-          ))
+                  </td>
+                  
+                  <td className="moneyline-cell">
+                    <div className="bet-options">
+                      <button
+                        className="bet-btn"
+                        onClick={() => handleAddToBetSlip(event, 'moneyline', event.odds.moneyline.away, `${event.awayTeam} ML`)}
+                      >
+                        <span className="odds">{formatOdds(event.odds.moneyline.away)}</span>
+                      </button>
+                      <button
+                        className="bet-btn"
+                        onClick={() => handleAddToBetSlip(event, 'moneyline', event.odds.moneyline.home, `${event.homeTeam} ML`)}
+                      >
+                        <span className="odds">{formatOdds(event.odds.moneyline.home)}</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

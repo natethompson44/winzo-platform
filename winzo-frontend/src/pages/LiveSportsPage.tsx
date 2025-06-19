@@ -32,56 +32,14 @@ export interface SportCategory {
   icon: string;
   eventCount: number;
   isActive: boolean;
-  description: string;
-  color: string;
 }
 
 export const mockCategories: SportCategory[] = [
-  { 
-    id: 'all', 
-    name: 'All Live', 
-    icon: 'bi-broadcast', 
-    eventCount: 8, 
-    isActive: false,
-    description: 'All live events',
-    color: '#dc3545'
-  },
-  { 
-    id: 'football', 
-    name: 'NFL Live', 
-    icon: 'bi-shield-check', 
-    eventCount: 3, 
-    isActive: false,
-    description: 'Live football games',
-    color: '#2eca6a'
-  },
-  { 
-    id: 'basketball', 
-    name: 'NBA Live', 
-    icon: 'bi-circle', 
-    eventCount: 4, 
-    isActive: false,
-    description: 'Live basketball games',
-    color: '#ff771d'
-  },
-  { 
-    id: 'hockey', 
-    name: 'NHL Live', 
-    icon: 'bi-snow', 
-    eventCount: 1, 
-    isActive: false,
-    description: 'Live hockey games',
-    color: '#6f42c1'
-  },
-  { 
-    id: 'soccer', 
-    name: 'Soccer Live', 
-    icon: 'bi-globe', 
-    eventCount: 5, 
-    isActive: false,
-    description: 'Live soccer matches',
-    color: '#20c997'
-  },
+  { id: 'all', name: 'All Live', icon: 'bi-broadcast', eventCount: 8, isActive: false },
+  { id: 'football', name: 'NFL Live', icon: 'bi-shield-check', eventCount: 3, isActive: false },
+  { id: 'basketball', name: 'NBA Live', icon: 'bi-circle', eventCount: 4, isActive: false },
+  { id: 'hockey', name: 'NHL Live', icon: 'bi-snow', eventCount: 1, isActive: false },
+  { id: 'soccer', name: 'Soccer Live', icon: 'bi-globe', eventCount: 5, isActive: false },
 ];
 
 export const mockLiveEvents: LiveGameEvent[] = [
@@ -125,7 +83,7 @@ export const mockLiveEvents: LiveGameEvent[] = [
     gameStatus: '2nd Quarter',
     timeRemaining: '3:45',
     venue: 'AT&T Stadium',
-    lastOddsUpdate: new Date(Date.now() - 30000), // 30 seconds ago
+    lastOddsUpdate: new Date(Date.now() - 30000),
     oddsMovement: 'down',
     isFeatured: true
   },
@@ -147,7 +105,7 @@ export const mockLiveEvents: LiveGameEvent[] = [
     gameStatus: '67\' 2nd Half',
     timeRemaining: '23 min',
     venue: 'Etihad Stadium',
-    lastOddsUpdate: new Date(Date.now() - 60000), // 1 minute ago
+    lastOddsUpdate: new Date(Date.now() - 60000),
     oddsMovement: 'stable'
   }
 ];
@@ -163,22 +121,17 @@ const LiveSportsPage: React.FC = () => {
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [autoRefresh, setAutoRefresh] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'score' | 'time' | 'odds'>('time');
 
-  // Get highlighted event from search
   const highlightedEventId = searchParams.get('highlight');
 
-  // Auto-refresh live data
   const loadData = useCallback(async () => {
     if (!autoRefresh && !isLoading) return;
     
     setError(null);
     
     try {
-      // Simulate API call delay (shorter for live updates)
       await new Promise(resolve => setTimeout(resolve, 400));
       
-      // Set active category
       const updatedCategories = mockCategories.map(cat => ({
         ...cat,
         isActive: cat.id === selectedSport
@@ -186,13 +139,11 @@ const LiveSportsPage: React.FC = () => {
       
       setCategories(updatedCategories);
       
-      // Filter events by selected sport
       let filteredEvents = mockLiveEvents;
       if (selectedSport !== 'all') {
         filteredEvents = mockLiveEvents.filter(event => event.sport === selectedSport);
       }
 
-      // Apply search filter
       if (searchTerm) {
         filteredEvents = filteredEvents.filter(event => 
           event.homeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -201,21 +152,7 @@ const LiveSportsPage: React.FC = () => {
         );
       }
 
-      // Sort events
-      filteredEvents.sort((a, b) => {
-        switch (sortBy) {
-          case 'score':
-            const aTotalScore = a.currentScore.home + a.currentScore.away;
-            const bTotalScore = b.currentScore.home + b.currentScore.away;
-            return bTotalScore - aTotalScore;
-          case 'time':
-            return a.gameTime.getTime() - b.gameTime.getTime();
-          case 'odds':
-            return Math.abs(a.odds.moneyline.home) - Math.abs(b.odds.moneyline.home);
-          default:
-            return 0;
-        }
-      });
+      filteredEvents.sort((a, b) => a.gameTime.getTime() - b.gameTime.getTime());
       
       setEvents(filteredEvents);
       setLastUpdate(new Date());
@@ -225,12 +162,11 @@ const LiveSportsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedSport, autoRefresh, isLoading, searchTerm, sortBy]);
+  }, [selectedSport, autoRefresh, isLoading, searchTerm]);
 
   useEffect(() => {
     loadData();
 
-    // Auto-refresh every 5 seconds for live data
     if (autoRefresh) {
       const refreshInterval = setInterval(loadData, 5000);
       return () => clearInterval(refreshInterval);
@@ -290,21 +226,16 @@ const LiveSportsPage: React.FC = () => {
   if (error) {
     return (
       <div className="live-sports-error">
-        <div className="card">
-          <div className="card-body text-center">
-            <i className="bi bi-wifi-off text-danger" style={{fontSize: '3rem'}}></i>
-            <h3 className="mt-3">Connection Error</h3>
-            <p className="text-muted">{error}</p>
-            <div className="d-flex gap-2 justify-content-center">
-              <button className="btn btn-primary" onClick={() => window.location.reload()}>
-                <i className="bi bi-arrow-clockwise me-2"></i>
-                Reconnect
-              </button>
-              <button className="btn btn-outline-secondary" onClick={() => setAutoRefresh(!autoRefresh)}>
-                <i className={`bi ${autoRefresh ? 'bi-pause' : 'bi-play'} me-2`}></i>
-                {autoRefresh ? 'Pause' : 'Resume'} Updates
-              </button>
-            </div>
+        <div className="alert alert-danger">
+          <i className="bi bi-wifi-off me-2"></i>
+          {error}
+          <div className="ms-auto">
+            <button className="btn btn-sm btn-outline-danger me-2" onClick={() => window.location.reload()}>
+              Reconnect
+            </button>
+            <button className="btn btn-sm btn-outline-secondary" onClick={() => setAutoRefresh(!autoRefresh)}>
+              {autoRefresh ? 'Pause' : 'Resume'} Updates
+            </button>
           </div>
         </div>
       </div>
@@ -313,252 +244,179 @@ const LiveSportsPage: React.FC = () => {
 
   return (
     <div className="live-sports-page">
-      {/* Live Status Bar */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="live-status-card">
-            <div className="live-indicator">
-              <div className="live-dot pulsing"></div>
-              <span className="live-text">LIVE BETTING</span>
-            </div>
-            <div className="live-stats">
-              <span className="event-count">{events.length} Live Events</span>
-              <span className="last-updated">
-                <i className="bi bi-clock me-1"></i>
-                Updated {formatTimeAgo(lastUpdate)}
-              </span>
-            </div>
-            <div className="live-controls">
-              <button 
-                className={`btn btn-sm ${autoRefresh ? 'btn-success' : 'btn-outline-secondary'}`}
-                onClick={() => setAutoRefresh(!autoRefresh)}
-              >
-                <i className={`bi ${autoRefresh ? 'bi-pause' : 'bi-play'} me-1`}></i>
-                {autoRefresh ? 'Auto-updating' : 'Paused'}
-              </button>
-              <button className="btn btn-sm btn-outline-primary" onClick={loadData}>
-                <i className="bi bi-arrow-clockwise me-1"></i>
-                Refresh
-              </button>
-            </div>
+      {/* Live Header */}
+      <div className="live-header">
+        <div className="live-status">
+          <div className="live-indicator">
+            <div className="live-dot pulsing"></div>
+            <span className="live-text">LIVE BETTING</span>
+          </div>
+          <div className="live-stats">
+            <span className="event-count">{events.length} Live Events</span>
+            <span className="last-updated">Updated {formatTimeAgo(lastUpdate)}</span>
+          </div>
+        </div>
+        
+        <div className="live-controls">
+          <button 
+            className={`auto-refresh-btn ${autoRefresh ? 'active' : ''}`}
+            onClick={() => setAutoRefresh(!autoRefresh)}
+          >
+            <i className={`bi ${autoRefresh ? 'bi-pause-fill' : 'bi-play-fill'}`}></i>
+            {autoRefresh ? 'Auto-updating' : 'Paused'}
+          </button>
+          <button className="refresh-btn" onClick={loadData} disabled={isLoading}>
+            <i className={`bi bi-arrow-clockwise ${isLoading ? 'spin' : ''}`}></i>
+          </button>
+        </div>
+      </div>
+
+      {/* Sports Navigation */}
+      <div className="sports-header">
+        <div className="sports-nav">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              className={`sport-tab live-tab ${category.isActive ? 'active' : ''}`}
+              onClick={() => handleSportChange(category.id)}
+            >
+              <i className={category.icon}></i>
+              <span>{category.name}</span>
+              <span className="count live-count">{category.eventCount}</span>
+            </button>
+          ))}
+        </div>
+        
+        <div className="search-controls">
+          <div className="search-input">
+            <i className="bi bi-search"></i>
+            <input
+              type="text"
+              placeholder="Search live games..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <div className="search-box">
-                    <i className="bi bi-search"></i>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search live games..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <select 
-                    className="form-select" 
-                    value={sortBy} 
-                    onChange={(e) => setSortBy(e.target.value as 'score' | 'time' | 'odds')}
-                  >
-                    <option value="time">Sort by Start Time</option>
-                    <option value="score">Sort by Total Score</option>
-                    <option value="odds">Sort by Odds</option>
-                  </select>
-                </div>
-                <div className="col-md-2">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="autoRefresh"
-                      checked={autoRefresh}
-                      onChange={(e) => setAutoRefresh(e.target.checked)}
-                    />
-                    <label className="form-check-label" htmlFor="autoRefresh">
-                      Auto-refresh
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Sports Categories */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="sports-categories">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className={`sport-category-card live-category ${category.isActive ? 'active' : ''}`}
-                onClick={() => handleSportChange(category.id)}
-                style={{ '--category-color': category.color } as React.CSSProperties}
-              >
-                <div className="category-icon">
-                  <i className={category.icon}></i>
-                </div>
-                <div className="category-info">
-                  <h6>{category.name}</h6>
-                  <p>{category.description}</p>
-                  <span className="event-count">{category.eventCount} live</span>
-                </div>
-                {category.id === 'all' && (
-                  <div className="live-pulse"></div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Live Events */}
-      <div className="row">
+      {/* Live Betting Table */}
+      <div className="betting-table-container live-table-container">
         {isLoading ? (
-          <div className="col-12">
-            <div className="text-center py-5">
-              <div className="spinner-border text-danger" role="status">
-                <span className="visually-hidden">Loading live events...</span>
-              </div>
-              <p className="mt-3 text-muted">Loading live events...</p>
+          <div className="loading-state">
+            <div className="spinner-border text-danger" role="status">
+              <span className="visually-hidden">Loading live events...</span>
             </div>
+            <p>Loading live events...</p>
           </div>
         ) : events.length === 0 ? (
-          <div className="col-12">
-            <div className="card">
-              <div className="card-body text-center py-5">
-                <i className="bi bi-broadcast text-muted" style={{fontSize: '3rem'}}></i>
-                <h5 className="mt-3">No live events found</h5>
-                <p className="text-muted">Check back soon for live games or adjust your filters.</p>
-              </div>
-            </div>
+          <div className="empty-state">
+            <i className="bi bi-broadcast"></i>
+            <h5>No live events found</h5>
+            <p>Check back soon for live games or adjust your filters.</p>
           </div>
         ) : (
-          events.map((event) => (
-            <div key={event.id} className="col-lg-6 col-xl-4 mb-4">
-              <div className={`live-event-card ${event.id === highlightedEventId ? 'highlighted' : ''} ${event.isFeatured ? 'featured' : ''}`}>
-                <div className="live-badge">
-                  <div className="live-dot pulsing"></div>
-                  LIVE
-                </div>
-                
-                {event.isFeatured && (
-                  <div className="featured-badge">
-                    <i className="bi bi-star-fill"></i>
-                    Featured
-                  </div>
-                )}
-
-                <div className="event-header">
-                  <div className="teams-score">
-                    <div className="team away-team">
-                      <span className="team-name">{event.awayTeam}</span>
-                      <span className="team-score">{event.currentScore.away}</span>
+          <table className="betting-table live-table">
+            <thead>
+              <tr>
+                <th className="game-col">Live Game</th>
+                <th className="spread-col">Live Spread</th>
+                <th className="total-col">Live Total</th>
+                <th className="moneyline-col">Live Moneyline</th>
+                <th className="odds-col">Movement</th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((event) => (
+                <tr key={event.id} className={`game-row live-row ${event.id === highlightedEventId ? 'highlighted' : ''} ${event.isFeatured ? 'featured' : ''}`}>
+                  <td className="game-cell live-game-cell">
+                    <div className="live-badge-mini">
+                      <div className="live-dot pulsing"></div>
                     </div>
-                    <div className="vs-divider">
-                      <span className="game-status">{event.gameStatus}</span>
-                      <span className="time-remaining">{event.timeRemaining}</span>
+                    <div className="game-info">
+                      <div className="teams">
+                        <div className="away-team">
+                          <span className="team-name">{event.awayTeam}</span>
+                          <span className="score">{event.currentScore.away}</span>
+                        </div>
+                        <div className="home-team">
+                          <span className="team-name">{event.homeTeam}</span>
+                          <span className="score">{event.currentScore.home}</span>
+                        </div>
+                      </div>
+                      <div className="game-meta">
+                        <span className="status">{event.gameStatus}</span>
+                        <span className="league">{event.league}</span>
+                        {event.isFeatured && <span className="featured-badge">Featured</span>}
+                      </div>
                     </div>
-                    <div className="team home-team">
-                      <span className="team-name">{event.homeTeam}</span>
-                      <span className="team-score">{event.currentScore.home}</span>
-                    </div>
-                  </div>
+                  </td>
                   
-                  <div className="game-info">
-                    <div className="league-venue">
-                      <span className="league">{event.league}</span>
-                      {event.venue && (
-                        <span className="venue">
-                          <i className="bi bi-geo-alt"></i>
-                          {event.venue}
-                        </span>
-                      )}
-                    </div>
-                    <div className="odds-movement">
-                      {getOddsMovementIcon(event.oddsMovement)}
-                      <span className="update-time">{formatTimeAgo(event.lastOddsUpdate)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="betting-options">
-                  {/* Live Moneyline */}
-                  <div className="bet-type">
-                    <h6>Live Moneyline</h6>
-                    <div className="bet-buttons">
-                      <button
-                        className="bet-btn live-bet-btn"
-                        onClick={() => handleAddToBetSlip(event, 'moneyline', event.odds.moneyline.away, `${event.awayTeam} ML (Live)`)}
-                      >
-                        <span className="team">{event.awayTeam}</span>
-                        <span className="odds">{formatOdds(event.odds.moneyline.away)}</span>
-                      </button>
-                      <button
-                        className="bet-btn live-bet-btn"
-                        onClick={() => handleAddToBetSlip(event, 'moneyline', event.odds.moneyline.home, `${event.homeTeam} ML (Live)`)}
-                      >
-                        <span className="team">{event.homeTeam}</span>
-                        <span className="odds">{formatOdds(event.odds.moneyline.home)}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Live Spread */}
-                  <div className="bet-type">
-                    <h6>Live Spread</h6>
-                    <div className="bet-buttons">
+                  <td className="spread-cell">
+                    <div className="bet-options">
                       <button
                         className="bet-btn live-bet-btn"
                         onClick={() => handleAddToBetSlip(event, 'spread', event.odds.spread.odds, `${event.awayTeam} ${formatOdds(event.odds.spread.away)} (Live)`)}
                       >
-                        <span className="team">{event.awayTeam} {formatOdds(event.odds.spread.away)}</span>
+                        <span className="line">{formatOdds(event.odds.spread.away)}</span>
                         <span className="odds">{formatOdds(event.odds.spread.odds)}</span>
                       </button>
                       <button
                         className="bet-btn live-bet-btn"
                         onClick={() => handleAddToBetSlip(event, 'spread', event.odds.spread.odds, `${event.homeTeam} ${formatOdds(event.odds.spread.home)} (Live)`)}
                       >
-                        <span className="team">{event.homeTeam} {formatOdds(event.odds.spread.home)}</span>
+                        <span className="line">{formatOdds(event.odds.spread.home)}</span>
                         <span className="odds">{formatOdds(event.odds.spread.odds)}</span>
                       </button>
                     </div>
-                  </div>
-
-                  {/* Live Total */}
-                  <div className="bet-type">
-                    <h6>Live Total</h6>
-                    <div className="bet-buttons">
+                  </td>
+                  
+                  <td className="total-cell">
+                    <div className="bet-options">
                       <button
                         className="bet-btn live-bet-btn"
                         onClick={() => handleAddToBetSlip(event, 'total', event.odds.total.odds, `Over ${event.odds.total.over} (Live)`)}
                       >
-                        <span className="team">Over {event.odds.total.over}</span>
+                        <span className="line">O {event.odds.total.over}</span>
                         <span className="odds">{formatOdds(event.odds.total.odds)}</span>
                       </button>
                       <button
                         className="bet-btn live-bet-btn"
                         onClick={() => handleAddToBetSlip(event, 'total', event.odds.total.odds, `Under ${event.odds.total.under} (Live)`)}
                       >
-                        <span className="team">Under {event.odds.total.under}</span>
+                        <span className="line">U {event.odds.total.under}</span>
                         <span className="odds">{formatOdds(event.odds.total.odds)}</span>
                       </button>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
+                  </td>
+                  
+                  <td className="moneyline-cell">
+                    <div className="bet-options">
+                      <button
+                        className="bet-btn live-bet-btn"
+                        onClick={() => handleAddToBetSlip(event, 'moneyline', event.odds.moneyline.away, `${event.awayTeam} ML (Live)`)}
+                      >
+                        <span className="odds">{formatOdds(event.odds.moneyline.away)}</span>
+                      </button>
+                      <button
+                        className="bet-btn live-bet-btn"
+                        onClick={() => handleAddToBetSlip(event, 'moneyline', event.odds.moneyline.home, `${event.homeTeam} ML (Live)`)}
+                      >
+                        <span className="odds">{formatOdds(event.odds.moneyline.home)}</span>
+                      </button>
+                    </div>
+                  </td>
+                  
+                  <td className="odds-cell">
+                    <div className="odds-movement">
+                      {getOddsMovementIcon(event.oddsMovement)}
+                      <span className="update-time">{formatTimeAgo(event.lastOddsUpdate)}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>
