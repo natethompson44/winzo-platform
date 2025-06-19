@@ -60,7 +60,6 @@ const WinzoDashboard: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [timeFilter, setTimeFilter] = useState<'today' | 'week' | 'month'>('today');
 
   // Fetch dashboard data
   const fetchDashboardData = useCallback(async () => {
@@ -162,7 +161,7 @@ const WinzoDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.wallet_balance, timeFilter]);
+  }, [user?.wallet_balance]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -285,11 +284,11 @@ const WinzoDashboard: React.FC = () => {
                     </thead>
                     <tbody>
                       {recentBets.map((bet) => (
-                        <tr key={bet.id}>
-                          <td>
-                            <a href="#" className="text-primary fw-bold">{bet.event}</a>
-                            <div className="small text-muted">{bet.placedAt}</div>
-                          </td>
+                                                 <tr key={bet.id}>
+                           <td>
+                             <span className="text-primary fw-bold">{bet.event}</span>
+                             <div className="small text-muted">{bet.placedAt}</div>
+                           </td>
                           <td>{bet.selection}</td>
                           <td>
                             <span className={bet.odds > 0 ? 'text-success' : 'text-primary'}>

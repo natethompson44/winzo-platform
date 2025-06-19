@@ -12,14 +12,13 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     const checkDevice = () => {
-      setIsMobile(window.innerWidth <= 768);
-      if (window.innerWidth <= 768) {
+      const isMobileDevice = window.innerWidth <= 768;
+      if (isMobileDevice) {
         setSidebarOpen(false);
       }
     };
@@ -27,7 +26,7 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
     checkDevice();
     window.addEventListener('resize', checkDevice);
     return () => window.removeEventListener('resize', checkDevice);
-  }, []);
+  }, [setSidebarOpen]);
 
   const handleLogout = () => {
     logout();
@@ -122,26 +121,26 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
         <nav className="header-nav ms-auto">
           <ul className="d-flex align-items-center">
             <li className="nav-item d-block d-lg-none">
-              <a className="nav-link nav-icon search-bar-toggle" href="#">
+              <button className="nav-link nav-icon search-bar-toggle btn btn-link">
                 <i className="bi bi-search"></i>
-              </a>
+              </button>
             </li>
 
             {/* Notifications */}
             <li className="nav-item dropdown">
-              <a 
-                className="nav-link nav-icon" 
-                href="#" 
+              <button 
+                className="nav-link nav-icon btn btn-link" 
                 onClick={() => setShowNotifications(!showNotifications)}
+                type="button"
               >
                 <i className="bi bi-bell"></i>
                 <span className="badge bg-primary badge-number">3</span>
-              </a>
+              </button>
               {showNotifications && (
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications show">
                   <li className="dropdown-header">
                     You have 3 new notifications
-                    <a href="#"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                    <button className="btn btn-link p-0"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></button>
                   </li>
                   <li><hr className="dropdown-divider" /></li>
                   <li className="notification-item">
@@ -172,7 +171,7 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
                   </li>
                   <li><hr className="dropdown-divider" /></li>
                   <li className="dropdown-footer">
-                    <a href="#">Show all notifications</a>
+                    <button className="btn btn-link">Show all notifications</button>
                   </li>
                 </ul>
               )}
@@ -180,14 +179,14 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
 
             {/* User Profile */}
             <li className="nav-item dropdown pe-3">
-              <a 
-                className="nav-link nav-profile d-flex align-items-center pe-0" 
-                href="#"
+              <button 
+                className="nav-link nav-profile d-flex align-items-center pe-0 btn btn-link" 
                 onClick={() => setShowProfile(!showProfile)}
+                type="button"
               >
                 <img src="/assets/img/default-avatar.png" alt="Profile" className="rounded-circle" />
                 <span className="d-none d-md-block dropdown-toggle ps-2">{user?.username}</span>
-              </a>
+              </button>
               {showProfile && (
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile show">
                   <li className="dropdown-header">
@@ -210,10 +209,10 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
                   </li>
                   <li><hr className="dropdown-divider" /></li>
                   <li>
-                    <a className="dropdown-item d-flex align-items-center" href="#" onClick={handleLogout}>
+                    <button className="dropdown-item d-flex align-items-center" onClick={handleLogout} type="button">
                       <i className="bi bi-box-arrow-right"></i>
                       <span>Sign Out</span>
-                    </a>
+                    </button>
                   </li>
                 </ul>
               )}
@@ -240,17 +239,17 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
           <li className="nav-heading">Quick Actions</li>
           
           <li className="nav-item">
-            <a className="nav-link collapsed" href="#" onClick={() => navigate('/account?tab=deposit')}>
+            <button className="nav-link collapsed btn btn-link" onClick={() => navigate('/account?tab=deposit')} type="button">
               <i className="bi bi-plus-circle"></i>
               <span>Deposit Funds</span>
-            </a>
+            </button>
           </li>
           
           <li className="nav-item">  
-            <a className="nav-link collapsed" href="#" onClick={() => navigate('/account?tab=withdraw')}>
+            <button className="nav-link collapsed btn btn-link" onClick={() => navigate('/account?tab=withdraw')} type="button">
               <i className="bi bi-dash-circle"></i>
               <span>Withdraw</span>
-            </a>
+            </button>
           </li>
         </ul>
       </aside>
