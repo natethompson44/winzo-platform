@@ -26,8 +26,7 @@ const BetslipPanel: React.FC<BetslipPanelProps> = ({ isOpen, onClose }) => {
     removeFromBetSlip,
     updateStake,
     clearBetSlip,
-    canPlaceBet,
-    validateCurrentBet
+    canPlaceBet
   } = useBetSlip();
 
   const [showConfirmation, setShowConfirmation] = useState(false);
