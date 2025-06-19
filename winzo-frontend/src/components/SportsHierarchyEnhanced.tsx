@@ -405,6 +405,18 @@ const SportsHierarchyEnhanced: React.FC = () => {
       navigator.vibrate(50);
     }
 
+    // Map market types to standardized values
+    const marketTypeMap: Record<string, 'h2h' | 'spreads' | 'totals' | 'player_props' | 'team_props'> = {
+      'h2h': 'h2h',
+      'spreads': 'spreads',
+      'totals': 'totals',
+      'player_props': 'player_props',
+      'team_props': 'team_props',
+      'unknown': 'h2h' // Default fallback
+    };
+
+    const rawMarketType = bookmaker.markets.find(m => m.outcomes.includes(outcome))?.key || 'unknown';
+
     addToBetSlip({
       eventId: event.id,
       sport: event.sport_key,
@@ -414,7 +426,7 @@ const SportsHierarchyEnhanced: React.FC = () => {
       odds: outcome.price,
       commenceTime: event.commence_time,
       bookmaker: bookmaker.title,
-      marketType: bookmaker.markets.find(m => m.outcomes.includes(outcome))?.key || 'unknown'
+      marketType: marketTypeMap[rawMarketType] || 'h2h'
     });
   }, [addToBetSlip, isMobileView]);
 

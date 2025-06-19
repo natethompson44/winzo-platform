@@ -157,6 +157,15 @@ const SportsBetting: React.FC = () => {
   }, [selectedSport, filter]);
 
   const handleOddsClick = (event: OddsEvent, outcome: Outcome, marketType: string = 'h2h') => {
+    // Map market types to standardized values
+    const marketTypeMap: Record<string, 'h2h' | 'spreads' | 'totals' | 'player_props' | 'team_props'> = {
+      'h2h': 'h2h',
+      'spreads': 'spreads',
+      'totals': 'totals',
+      'player_props': 'player_props',
+      'team_props': 'team_props'
+    };
+
     const bookmaker = event.bookmakers?.[0];
     const betItem = {
       eventId: event.id,
@@ -166,7 +175,7 @@ const SportsBetting: React.FC = () => {
       selectedTeam: outcome.name,
       odds: outcome.price,
       bookmaker: bookmaker?.title || 'Unknown',
-      marketType: marketType,
+      marketType: marketTypeMap[marketType] || 'h2h',
       commenceTime: event.commence_time,
     };
     

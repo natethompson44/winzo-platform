@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BetSlipItem } from '../../contexts/BetSlipContext';
 
 interface StakeInputProps {
-  betType: 'straight' | 'parlay' | 'teaser' | 'if-bet';
+  betType: 'straight' | 'parlay' | 'sgp' | 'teaser' | 'if-bet';
   betSlipItems: BetSlipItem[];
   onUpdateStake: (id: string, stake: number) => void;
 }
@@ -24,7 +24,7 @@ const StakeInput: React.FC<StakeInputProps> = ({
         onUpdateStake(item.id, amount);
       });
     } else {
-      // For parlay/teaser/if-bet, set combined stake
+      // For parlay/sgp/teaser/if-bet, set combined stake
       setCombinedStake(amount);
       const stakePerBet = amount / betSlipItems.length;
       betSlipItems.forEach(item => {
@@ -63,7 +63,7 @@ const StakeInput: React.FC<StakeInputProps> = ({
         </div>
       </div>
 
-      {/* Combined Stake Input for Parlay/Teaser/If-Bet */}
+      {/* Combined Stake Input for Parlay/SGP/Teaser/If-Bet */}
       {betType !== 'straight' && betSlipItems.length > 1 && (
         <div className="combined-stake-section">
           <label className="combined-stake-label">Total Stake</label>

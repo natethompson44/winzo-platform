@@ -55,6 +55,13 @@ const EventsList: React.FC<EventsListProps> = ({
     selection: string,
     odds: number
   ) => {
+    // Map old market types to new standardized ones
+    const marketTypeMap: Record<string, 'h2h' | 'spreads' | 'totals' | 'player_props' | 'team_props'> = {
+      'moneyline': 'h2h',
+      'spread': 'spreads', 
+      'total': 'totals'
+    };
+
     addToBetSlip({
       eventId: event.id,
       sport: event.sport,
@@ -63,7 +70,7 @@ const EventsList: React.FC<EventsListProps> = ({
       selectedTeam: selection,
       odds: odds,
       bookmaker: 'WINZO',
-      marketType: betType,
+      marketType: marketTypeMap[betType],
       commenceTime: event.gameTime.toISOString()
     });
   };

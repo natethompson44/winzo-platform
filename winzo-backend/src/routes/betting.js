@@ -3,6 +3,7 @@ const router = express.Router()
 const { Bet, User, SportsEvent, Transaction, sequelize } = require('../models')
 const auth = require('../middleware/auth')
 const { calculatePayout, formatOdds } = require('../utils/apiUtils')
+const { validateBettingRequest, validateBetTiming, calculateTeaserOdds, calculateIfBetPayout } = require('../utils/bettingValidation')
 const { Op } = require('sequelize')
 
 /**
@@ -12,9 +13,10 @@ const { Op } = require('sequelize')
 router.post('/place', auth, async (req, res) => {
   const transaction = await sequelize.transaction()
   try {
-    const { bets, betType = 'single', totalStake, potentialPayout } = req.body
+    const { bets, betType = 'straight', totalStake, potentialPayout, teaserPoints } = req.body
     const userId = req.user.id
     console.log(` Processing ${betType} bet for user ${userId}...`)
+    
     // Validate request data
     if (!bets || !Array.isArray(bets) || bets.length === 0) {
       return res.status(400).json({
@@ -27,6 +29,20 @@ router.post('/place', auth, async (req, res) => {
         success: false,
         error: 'Total stake must be greater than 0'
       })
+    }
+
+    // Use comprehensive betting rules validation
+    const validationOptions = { teaserPoints: teaserPoints || 6 };
+    const validation = validateBettingRequest(bets, betType, validationOptions);
+    
+    if (!validation.isValid) {
+      await transaction.rollback();
+      return res.status(400).json({
+        success: false,
+        error: 'Bet validation failed',
+        errors: validation.errors,
+        warnings: validation.warnings
+      });
     }
     // Get user and validate balance
     const user = await User.findByPk(userId, { transaction })
@@ -67,11 +83,8 @@ router.post('/place', auth, async (req, res) => {
           error: `Event ${bet.eventId} not found`
         })
       }
-      // Check if event has already started (with 5-minute buffer)
-      const now = new Date()
-      const eventStart = new Date(event.commence_time)
-      const bufferTime = 5 * 60 * 1000 // 5 minutes in milliseconds
-      if (now > new Date(eventStart.getTime() - bufferTime)) {
+      // Check if event has already started using enhanced timing validation
+      if (!validateBetTiming(event.commence_time, 5)) {
         await transaction.rollback()
         return res.status(400).json({
           success: false,
@@ -79,8 +92,18 @@ router.post('/place', auth, async (req, res) => {
         })
       }
     }
-    // Create bet records
+    // Create bet records with enhanced bet type support
     const createdBets = []
+    let calculatedPayout = potentialPayout;
+
+    // Calculate payout based on bet type
+    if (betType === 'teaser') {
+      const teaserOdds = calculateTeaserOdds(bets.length, teaserPoints || 6, bets[0]?.sport);
+      calculatedPayout = teaserOdds > 0 ? totalStake * (teaserOdds / 100) : totalStake * (100 / Math.abs(teaserOdds));
+    } else if (betType === 'if-bet') {
+      calculatedPayout = calculateIfBetPayout(bets);
+    }
+
     for (const bet of bets) {
       const betRecord = await Bet.create({
         user_id: userId,
@@ -89,10 +112,12 @@ router.post('/place', auth, async (req, res) => {
         odds: bet.odds,
         stake: bet.stake,
         market_type: bet.marketType || 'h2h',
+        point: bet.point || null,
         bookmakerName: bet.bookmaker || 'winzo',
         bet_type: betType,
         status: 'pending',
-        potential_payout: calculatePayout(bet.stake, bet.odds),
+        potential_payout: betType === 'straight' ? calculatePayout(bet.stake, bet.odds) : calculatedPayout / bets.length,
+        teaser_points: betType === 'teaser' ? (teaserPoints || 6) : null,
         placed_at: new Date()
       }, { transaction })
       createdBets.push(betRecord)
@@ -118,8 +143,9 @@ router.post('/place', auth, async (req, res) => {
         betIds: createdBets.map(b => b.id),
         betType,
         totalStake,
-        potentialPayout,
-        newBalance: user.wallet_balance - totalStake
+        potentialPayout: calculatedPayout,
+        newBalance: user.wallet_balance - totalStake,
+        warnings: validation.warnings || []
       }
     })
     console.log(` ${betType} bet placed successfully for user ${userId}`)

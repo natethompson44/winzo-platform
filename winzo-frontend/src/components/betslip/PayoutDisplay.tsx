@@ -4,7 +4,7 @@ import { formatCurrency } from '../../utils/numberUtils';
 interface PayoutDisplayProps {
   totalStake: number;
   totalPayout: number;
-  betType: 'straight' | 'parlay' | 'teaser' | 'if-bet';
+  betType: 'straight' | 'parlay' | 'sgp' | 'teaser' | 'if-bet';
   betCount: number;
 }
 
@@ -18,7 +18,9 @@ const PayoutDisplay: React.FC<PayoutDisplayProps> = ({
     <div className="payout-display">
       <div className="payout-header">
         <h4>Bet Summary</h4>
-        <span className="bet-type-badge">{betType.toUpperCase()}</span>
+        <span className="bet-type-badge">
+          {betType === 'sgp' ? 'SGP' : betType.toUpperCase()}
+        </span>
       </div>
       
       <div className="payout-rows">

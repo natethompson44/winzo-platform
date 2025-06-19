@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { bettingRulesValidator, BetSelection, ValidationResult } from '../utils/bettingRules';
 
 export interface BetSlipItem {
   id: string;
@@ -11,7 +12,8 @@ export interface BetSlipItem {
   stake: number;
   potentialPayout: number;
   bookmaker: string;
-  marketType: string;
+  marketType: 'h2h' | 'spreads' | 'totals' | 'player_props' | 'team_props';
+  point?: number;
   commenceTime: string;
   addedAt: Date;
 }
@@ -19,19 +21,25 @@ export interface BetSlipItem {
 export interface BetSlipContextType {
   betSlipItems: BetSlipItem[];
   isOpen: boolean;
-  betType: 'straight' | 'parlay' | 'teaser' | 'if-bet';
+  betType: 'straight' | 'parlay' | 'sgp' | 'teaser' | 'if-bet';
   totalStake: number;
   totalPayout: number;
+  validationResult: ValidationResult;
+  teaserPoints?: number;
   addToBetSlip: (item: Omit<BetSlipItem, 'id' | 'stake' | 'potentialPayout' | 'addedAt'>) => void;
   removeFromBetSlip: (id: string) => void;
   updateStake: (id: string, stake: number) => void;
   clearBetSlip: () => void;
-  setBetType: (type: 'straight' | 'parlay' | 'teaser' | 'if-bet') => void;
+  setBetType: (type: 'straight' | 'parlay' | 'sgp' | 'teaser' | 'if-bet') => void;
+  setTeaserPoints: (points: number) => void;
   setIsOpen: (open: boolean) => void;
   getItemCount: () => number;
   getTotalStake: () => number;
   getTotalPayout: () => number;
   canPlaceBet: () => boolean;
+  isSelectionBlocked: (eventId: string, marketType: string, selectedTeam: string) => boolean;
+  getBlockedReason: (eventId: string, marketType: string, selectedTeam: string) => string;
+  validateCurrentBet: () => ValidationResult;
 }
 
 const BetSlipContext = createContext<BetSlipContextType | undefined>(undefined);
@@ -51,9 +59,11 @@ interface BetSlipProviderProps {
 export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) => {
   const [betSlipItems, setBetSlipItems] = useState<BetSlipItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [betType, setBetType] = useState<'straight' | 'parlay' | 'teaser' | 'if-bet'>('straight');
+  const [betType, setBetType] = useState<'straight' | 'parlay' | 'sgp' | 'teaser' | 'if-bet'>('straight');
   const [totalStake, setTotalStake] = useState(0);
   const [totalPayout, setTotalPayout] = useState(0);
+  const [validationResult, setValidationResult] = useState<ValidationResult>({ isValid: true, errors: [], warnings: [] });
+  const [teaserPoints, setTeaserPoints] = useState<number>(6);
 
   // Body class management for bet slip sidebar
   useEffect(() => {
@@ -104,6 +114,13 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [betSlipItems, betType]);
 
+  // Update validation result whenever betslip items or bet type changes
+  useEffect(() => {
+    const newValidation = validateCurrentBet();
+    setValidationResult(newValidation);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [betSlipItems, betType]);
+
   const calculatePayout = (stake: number, odds: number): number => {
     if (odds > 0) {
       return stake * (odds / 100);
@@ -128,24 +145,53 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
       } else {
         setTotalPayout(betSlipItems[0]?.potentialPayout || 0);
       }
-    } else if (betType === 'teaser') {
-      // Teaser betting with adjusted odds (typically lower payout)
-      if (betSlipItems.length >= 2 && stake > 0) {
-        const adjustedOdds = betSlipItems.reduce((product, item) => {
-          // Teaser odds are typically lower than parlay
-          const decimalOdds = item.odds > 0 ? (item.odds * 0.7) / 100 + 1 : (100 / Math.abs(item.odds * 0.7)) + 1;
+    } else if (betType === 'sgp') {
+      // Same Game Parlay - similar to parlay but typically with adjusted odds
+      if (betSlipItems.length > 1 && stake > 0) {
+        const combinedOdds = betSlipItems.reduce((product, item) => {
+          // SGP odds are often adjusted down due to correlation
+          const decimalOdds = item.odds > 0 ? (item.odds * 0.85) / 100 + 1 : (100 / Math.abs(item.odds * 0.85)) + 1;
           return product * decimalOdds;
         }, 1);
-        setTotalPayout(stake * (adjustedOdds - 1));
+        setTotalPayout(stake * (combinedOdds - 1));
+      } else {
+        setTotalPayout(betSlipItems[0]?.potentialPayout || 0);
+      }
+    } else if (betType === 'teaser') {
+      // Teaser betting with adjusted odds based on point selection
+      if (betSlipItems.length >= 2 && stake > 0) {
+        // Teaser odds based on points and number of legs
+        const legs = betSlipItems.length;
+        let teaserOdds = 1;
+        
+        // Standard teaser odds table (simplified)
+        if (teaserPoints === 6) {
+          teaserOdds = legs === 2 ? -110 : legs === 3 ? 160 : legs === 4 ? 260 : 400;
+        } else if (teaserPoints === 6.5) {
+          teaserOdds = legs === 2 ? -120 : legs === 3 ? 140 : legs === 4 ? 240 : 380;
+        } else if (teaserPoints === 7) {
+          teaserOdds = legs === 2 ? -130 : legs === 3 ? 120 : legs === 4 ? 200 : 350;
+        }
+        
+        const payout = teaserOdds > 0 ? stake * (teaserOdds / 100) : stake * (100 / Math.abs(teaserOdds));
+        setTotalPayout(payout);
       } else {
         setTotalPayout(0); // Teaser requires at least 2 selections
       }
     } else if (betType === 'if-bet') {
       // If betting - conditional betting where subsequent bets only process if previous wins
       if (betSlipItems.length >= 2) {
-        // For if-bet, we calculate based on first bet potentially winning and rolling to second
-        const firstBetPayout = betSlipItems[0]?.potentialPayout || 0;
-        setTotalPayout(firstBetPayout);
+        // For if-bet, calculate cascading potential
+        let cascadingPayout = 0;
+        let currentStake = betSlipItems[0]?.stake || 0;
+        
+        for (const item of betSlipItems) {
+          const itemPayout = calculatePayout(currentStake, item.odds);
+          cascadingPayout += itemPayout;
+          currentStake = itemPayout; // Next bet uses previous payout as stake
+        }
+        
+        setTotalPayout(cascadingPayout);
       } else {
         setTotalPayout(betSlipItems[0]?.potentialPayout || 0);
       }
@@ -224,11 +270,100 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
   const canPlaceBet = (): boolean => {
     if (betSlipItems.length === 0 || totalStake === 0) return false;
     
-    // Bet type specific validation
-    if (betType === 'teaser' && betSlipItems.length < 2) return false;
-    if (betType === 'if-bet' && betSlipItems.length < 2) return false;
+    // Use the comprehensive validation system
+    const validation = validateCurrentBet();
+    if (!validation.isValid) return false;
     
     return betSlipItems.every(item => item.stake > 0);
+  };
+
+  const validateCurrentBet = (): ValidationResult => {
+    const selections: BetSelection[] = betSlipItems.map(item => ({
+      id: item.id,
+      eventId: item.eventId,
+      sport: item.sport,
+      homeTeam: item.homeTeam,
+      awayTeam: item.awayTeam,
+      selectedTeam: item.selectedTeam,
+      odds: item.odds,
+      marketType: item.marketType,
+      point: item.point,
+      stake: item.stake,
+      bookmaker: item.bookmaker,
+      commenceTime: item.commenceTime
+    }));
+
+    return bettingRulesValidator.validate(selections, betType);
+  };
+
+  const isSelectionBlocked = (eventId: string, marketType: string, selectedTeam: string): boolean => {
+    // Create a mock selection to test against current betslip
+    const mockSelection: BetSelection = {
+      id: `test_${Date.now()}`,
+      eventId,
+      sport: 'american_football', // Default sport for validation
+      homeTeam: 'Team A',
+      awayTeam: 'Team B',
+      selectedTeam,
+      odds: -110,
+      marketType: marketType as any,
+      stake: 10,
+      bookmaker: 'test',
+      commenceTime: new Date().toISOString()
+    };
+
+    const currentSelections: BetSelection[] = betSlipItems.map(item => ({
+      id: item.id,
+      eventId: item.eventId,
+      sport: item.sport,
+      homeTeam: item.homeTeam,
+      awayTeam: item.awayTeam,
+      selectedTeam: item.selectedTeam,
+      odds: item.odds,
+      marketType: item.marketType,
+      point: item.point,
+      stake: item.stake,
+      bookmaker: item.bookmaker,
+      commenceTime: item.commenceTime
+    }));
+
+    const validation = bettingRulesValidator.validate([...currentSelections, mockSelection], betType);
+    return !validation.isValid;
+  };
+
+  const getBlockedReason = (eventId: string, marketType: string, selectedTeam: string): string => {
+    const mockSelection: BetSelection = {
+      id: `test_${Date.now()}`,
+      eventId,
+      sport: 'american_football',
+      homeTeam: 'Team A',
+      awayTeam: 'Team B',
+      selectedTeam,
+      odds: -110,
+      marketType: marketType as any,
+      stake: 10,
+      bookmaker: 'test',
+      commenceTime: new Date().toISOString()
+    };
+
+    return bettingRulesValidator.getBlockedReasonTooltip(
+      mockSelection,
+      betSlipItems.map(item => ({
+        id: item.id,
+        eventId: item.eventId,
+        sport: item.sport,
+        homeTeam: item.homeTeam,
+        awayTeam: item.awayTeam,
+        selectedTeam: item.selectedTeam,
+        odds: item.odds,
+        marketType: item.marketType,
+        point: item.point,
+        stake: item.stake,
+        bookmaker: item.bookmaker,
+        commenceTime: item.commenceTime
+      })),
+      betType
+    );
   };
 
   const showAddToBetSlipFeedback = (teamName: string) => {
@@ -265,16 +400,22 @@ export const BetSlipProvider: React.FC<BetSlipProviderProps> = ({ children }) =>
     betType,
     totalStake,
     totalPayout,
+    validationResult,
+    teaserPoints,
     addToBetSlip,
     removeFromBetSlip,
     updateStake,
     clearBetSlip,
     setBetType,
+    setTeaserPoints,
     setIsOpen,
     getItemCount,
     getTotalStake,
     getTotalPayout,
     canPlaceBet,
+    isSelectionBlocked,
+    getBlockedReason,
+    validateCurrentBet,
   };
 
   return <BetSlipContext.Provider value={contextValue}>{children}</BetSlipContext.Provider>;

@@ -5,6 +5,7 @@ import { formatCurrency } from '../../utils/numberUtils';
 import BetItem from './BetItem';
 import StakeInput from './StakeInput';
 import PayoutDisplay from './PayoutDisplay';
+import ValidationDisplay from './ValidationDisplay';
 import './BetslipPanel.css';
 
 interface BetslipPanelProps {
@@ -19,10 +20,14 @@ const BetslipPanel: React.FC<BetslipPanelProps> = ({ isOpen, onClose }) => {
     setBetType,
     totalStake,
     totalPayout,
+    validationResult,
+    teaserPoints,
+    setTeaserPoints,
     removeFromBetSlip,
     updateStake,
     clearBetSlip,
-    canPlaceBet
+    canPlaceBet,
+    validateCurrentBet
   } = useBetSlip();
 
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -31,6 +36,7 @@ const BetslipPanel: React.FC<BetslipPanelProps> = ({ isOpen, onClose }) => {
   const betTypeOptions = [
     { id: 'straight' as const, label: 'Straight', description: 'Single bet on one selection' },
     { id: 'parlay' as const, label: 'Parlay', description: 'Multiple selections combined', minSelections: 2 },
+    { id: 'sgp' as const, label: 'SGP', description: 'Same Game Parlay', minSelections: 2 },
     { id: 'teaser' as const, label: 'Teaser', description: 'Adjusted point spreads', minSelections: 2 },
     { id: 'if-bet' as const, label: 'If Bet', description: 'Conditional betting', minSelections: 2 }
   ];
@@ -73,8 +79,9 @@ const BetslipPanel: React.FC<BetslipPanelProps> = ({ isOpen, onClose }) => {
     }
   }, [betSlipItems, clearBetSlip]);
 
-  const isBetTypeDisabled = (type: typeof betType): boolean => {
+  const isBetTypeDisabled = (type: 'straight' | 'parlay' | 'sgp' | 'teaser' | 'if-bet'): boolean => {
     if (type === 'parlay' && betSlipItems.length < 2) return true;
+    if (type === 'sgp' && betSlipItems.length < 2) return true;
     if (type === 'teaser' && betSlipItems.length < 2) return true;
     if (type === 'if-bet' && betSlipItems.length < 2) return true;
     return false;
@@ -129,8 +136,8 @@ const BetslipPanel: React.FC<BetslipPanelProps> = ({ isOpen, onClose }) => {
                 className={`bet-type ${betType === option.id ? 'active' : ''} ${
                   isBetTypeDisabled(option.id) ? 'disabled' : ''
                 }`}
-                onClick={() => setBetType(option.id)}
-                disabled={isBetTypeDisabled(option.id)}
+                onClick={() => setBetType(option.id as any)}
+                disabled={isBetTypeDisabled(option.id as any)}
                 title={option.description}
               >
                 {option.label}
@@ -140,7 +147,34 @@ const BetslipPanel: React.FC<BetslipPanelProps> = ({ isOpen, onClose }) => {
               </button>
             ))}
           </div>
+
+          {/* Teaser Points Selection */}
+          {betType === 'teaser' && betSlipItems.length >= 2 && (
+            <div className="teaser-points-section">
+              <h5 className="teaser-points-title">Points</h5>
+              <div className="teaser-points-grid">
+                {[6, 6.5, 7].map((points) => (
+                  <button
+                    key={points}
+                    className={`teaser-point ${teaserPoints === points ? 'active' : ''}`}
+                    onClick={() => setTeaserPoints(points)}
+                  >
+                    {points}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Real-time Validation Display */}
+        {betSlipItems.length > 0 && (
+          <ValidationDisplay
+            validationResult={validationResult}
+            betType={betType}
+            className="compact"
+          />
+        )}
 
         {/* Content */}
         <div className="betslip-content">
