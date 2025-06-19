@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import AuthProvider, { useAuth } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
-import MainLayout from './components/Layout/MainLayout';
+import WinzoLayout from './components/Layout/WinzoLayout';
+import WinzoDashboard from './components/WinzoDashboard';
 import ComponentLibrary from './components/ComponentLibrary';
 import DesignSystemTest from './components/DesignSystemTest';
 import Login from './components/Login';
@@ -49,7 +50,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   if (isLoading) {
     return (
       <div className="app-loading">
-        <LoadingSpinner size="large" message="Loading Platform..." />
+        <LoadingSpinner size="large" message="Loading WINZO Platform..." />
       </div>
     );
   }
@@ -139,79 +140,92 @@ function App() {
                       <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     </Route>
                     
-                    {/* NEW: Sports-focused Protected Routes */}
-                    <Route path="/sports" element={
+                    {/* NEW: WINZO Platform Routes with New Layout */}
+                    <Route path="/dashboard" element={
                       <ProtectedRoute>
-                        <MainLayout currentPage="sports">
+                        <WinzoLayout>
                           <ProgressiveLoading
                             isLoading={false}
-                            skeleton={<div>Sports Skeleton</div>}
+                            skeleton={<div>Dashboard Loading...</div>}
+                          >
+                            <WinzoDashboard />
+                          </ProgressiveLoading>
+                        </WinzoLayout>
+                      </ProtectedRoute>
+                    } />
+                    
+                    <Route path="/sports" element={
+                      <ProtectedRoute>
+                        <WinzoLayout>
+                          <ProgressiveLoading
+                            isLoading={false}
+                            skeleton={<div>Sports Loading...</div>}
                           >
                             <SportsPage />
                           </ProgressiveLoading>
-                        </MainLayout>
+                        </WinzoLayout>
                       </ProtectedRoute>
                     } />
                     
                     <Route path="/live-sports" element={
                       <ProtectedRoute>
-                        <MainLayout currentPage="live-sports">
+                        <WinzoLayout>
                           <ProgressiveLoading
                             isLoading={false}
-                            skeleton={<div>Live Sports Skeleton</div>}
+                            skeleton={<div>Live Sports Loading...</div>}
                           >
                             <LiveSportsPage />
                           </ProgressiveLoading>
-                        </MainLayout>
+                        </WinzoLayout>
                       </ProtectedRoute>
                     } />
                     
                     <Route path="/account" element={
                       <ProtectedRoute>
-                        <MainLayout currentPage="account">
+                        <WinzoLayout>
                           <ProgressiveLoading
                             isLoading={false}
-                            skeleton={<div>Account Skeleton</div>}
+                            skeleton={<div>Account Loading...</div>}
                           >
                             <AccountPage />
                           </ProgressiveLoading>
-                        </MainLayout>
+                        </WinzoLayout>
                       </ProtectedRoute>
                     } />
                     
                     <Route path="/history" element={
                       <ProtectedRoute>
-                        <MainLayout currentPage="history">
+                        <WinzoLayout>
                           <ProgressiveLoading
                             isLoading={false}
-                            skeleton={<div>History Skeleton</div>}
+                            skeleton={<div>History Loading...</div>}
                           >
                             <BettingHistory />
                           </ProgressiveLoading>
-                        </MainLayout>
+                        </WinzoLayout>
                       </ProtectedRoute>
                     } />
                     
                     {/* Design System Component Library */}
                     <Route path="/components" element={
                       <ProtectedRoute>
-                        <MainLayout currentPage="sports">
+                        <WinzoLayout>
                           <ComponentLibrary />
-                        </MainLayout>
+                        </WinzoLayout>
                       </ProtectedRoute>
                     } />
                     
                     {/* Design System Test */}
                     <Route path="/design-system-test" element={
                       <ProtectedRoute>
-                        <MainLayout currentPage="sports">
+                        <WinzoLayout>
                           <DesignSystemTest />
-                        </MainLayout>
+                        </WinzoLayout>
                       </ProtectedRoute>
                     } />
                     
-                    {/* Catch-all redirect to sports instead of dashboard */}
-                    <Route path="*" element={<Navigate to="/sports" replace />} />
+                    {/* Catch-all redirect to dashboard */}
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   </Routes>
                 </div>
               </Router>
@@ -225,21 +239,21 @@ function App() {
                 toastOptions={{
                   duration: 4000,
                   style: {
-                    background: 'var(--winzo-navy)',
-                    color: 'var(--white)',
-                    border: '1px solid var(--winzo-teal)',
+                    background: '#1a365d',
+                    color: '#ffffff',
+                    border: '1px solid #d69e2e',
                     borderRadius: '12px',
                   },
                   success: {
                     iconTheme: {
-                      primary: 'var(--win-green)',
-                      secondary: 'var(--white)',
+                      primary: '#38a169',
+                      secondary: '#ffffff',
                     },
                   },
                   error: {
                     iconTheme: {
-                      primary: 'var(--danger-red)',
-                      secondary: 'var(--white)',
+                      primary: '#e53e3e',
+                      secondary: '#ffffff',
                     },
                   },
                 }}
