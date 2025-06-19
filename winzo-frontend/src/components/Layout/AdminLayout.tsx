@@ -12,13 +12,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     const checkDevice = () => {
-      setIsMobile(window.innerWidth <= 768);
       if (window.innerWidth <= 768) {
         setSidebarOpen(false);
       }
@@ -120,21 +118,21 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <nav className="header-nav ms-auto">
           <ul className="d-flex align-items-center">
             <li className="nav-item d-block d-lg-none">
-              <a className="nav-link nav-icon search-bar-toggle" href="#">
+              <button className="nav-link nav-icon search-bar-toggle" type="button">
                 <i className="bi bi-search"></i>
-              </a>
+              </button>
             </li>
 
             {/* Notifications */}
             <li className="nav-item dropdown">
-              <a 
+              <button 
                 className="nav-link nav-icon" 
-                href="#" 
+                type="button"
                 onClick={() => setShowNotifications(!showNotifications)}
               >
                 <i className="bi bi-bell"></i>
                 <span className="badge bg-primary badge-number">3</span>
-              </a>
+              </button>
               {showNotifications && (
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications show">
                   <li className="dropdown-header">
@@ -164,14 +162,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
             {/* User Profile */}
             <li className="nav-item dropdown pe-3">
-              <a 
+              <button 
                 className="nav-link nav-profile d-flex align-items-center pe-0" 
-                href="#"
+                type="button"
                 onClick={() => setShowProfile(!showProfile)}
               >
                 <img src="/assets/img/default-avatar.png" alt="Profile" className="rounded-circle" />
                 <span className="d-none d-md-block dropdown-toggle ps-2">{user?.username}</span>
-              </a>
+              </button>
               {showProfile && (
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile show">
                   <li className="dropdown-header">
@@ -187,10 +185,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   </li>
                   <li><hr className="dropdown-divider" /></li>
                   <li>
-                    <a className="dropdown-item d-flex align-items-center" href="#" onClick={handleLogout}>
+                    <button className="dropdown-item d-flex align-items-center" type="button" onClick={handleLogout}>
                       <i className="bi bi-box-arrow-right"></i>
                       <span>Sign Out</span>
-                    </a>
+                    </button>
                   </li>
                 </ul>
               )}

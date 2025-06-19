@@ -59,13 +59,11 @@ const WinzoDashboard: React.FC = () => {
   const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
 
   // Fetch dashboard data
   const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      setError('');
 
       // Mock data - replace with real API calls
       const mockStats: DashboardStats = {
@@ -157,7 +155,6 @@ const WinzoDashboard: React.FC = () => {
 
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
-      setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }

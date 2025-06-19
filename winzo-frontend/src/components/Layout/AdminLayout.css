@@ -1,0 +1,101 @@
+/* Admin Layout Styles */
+
+/* ... existing code ... */
+
+/* Button styling for nav elements */
+button.nav-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  text-decoration: none;
+}
+
+button.nav-icon {
+  color: #899bbd;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+button.nav-icon:hover {
+  color: #4154f1;
+  background: rgba(65, 84, 241, 0.1);
+}
+
+button.nav-profile {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  text-decoration: none;
+  color: #899bbd;
+}
+
+button.nav-profile:hover {
+  color: #4154f1;
+}
+
+button.dropdown-item {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  text-decoration: none;
+  width: 100%;
+  text-align: left;
+  color: #012970;
+  transition: all 0.3s;
+}
+
+button.dropdown-item:hover {
+  background-color: #f6f9ff;
+  color: #4154f1;
+}
+
+button.search-bar-toggle {
+  color: #899bbd;
+  font-size: 20px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+button.search-bar-toggle:hover {
+  color: #4154f1;
+}
+
+/* Focus states for accessibility */
+button.nav-link:focus,
+button.nav-icon:focus,
+button.nav-profile:focus,
+button.dropdown-item:focus {
+  outline: 2px solid #4154f1;
+  outline-offset: 2px;
+}
+
+/* Ensure buttons in nav take full width */
+.nav-item button {
+  width: 100%;
+}
+
+/* Fix button alignment in dropdown menus */
+.dropdown-menu button.dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+}
+
+/* ... existing code ... */ 
