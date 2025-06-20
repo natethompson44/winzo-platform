@@ -1,29 +1,33 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AppLayout } from './components/layout';
+import Dashboard from './pages/Dashboard';
+import Sports from './pages/Sports';
+import LayoutDemo from './pages/LayoutDemo';
 import './styles/globals.css';
 
-// Temporary App component for demonstration
 const App: React.FC = () => {
   return (
-    <div className="app">
-      <div className="content">
-        <h1>WINZO Platform</h1>
-        <p>Fresh foundation ready for development!</p>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-          <button className="btn btn-primary btn-md">Primary Button</button>
-          <button className="btn btn-secondary btn-md">Secondary Button</button>
-          <button className="btn btn-accent btn-md">Accent Button</button>
-        </div>
-        <div className="card" style={{ marginTop: '2rem', maxWidth: '400px' }}>
-          <div className="card-header">
-            <h3>Design System Test</h3>
-          </div>
-          <div className="card-body">
-            <p>This card demonstrates the new design system foundation.</p>
-            <div className="badge badge-success">Foundation Ready</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Router>
+      <AppLayout>
+        <Routes>
+          {/* Default route redirects to dashboard */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          
+          {/* Dashboard - main landing page after login */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          
+          {/* Sports Betting - main money-making interface */}
+          <Route path="/sports" element={<Sports />} />
+          
+          {/* Layout demo page */}
+          <Route path="/layout-demo" element={<LayoutDemo />} />
+          
+          {/* Catch-all route - redirect to dashboard */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </AppLayout>
+    </Router>
   );
 };
 
