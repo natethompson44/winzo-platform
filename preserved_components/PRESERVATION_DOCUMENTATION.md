@@ -27,6 +27,21 @@ This directory contains the key working components that were preserved during th
 - **AuthContext.tsx** - Authentication state management and login/logout logic
 - **BetSlipContext.tsx** - Betting slip state management and bet operations
 
+### API Configuration & Utilities
+**Location:** `config/`
+- **api.ts** - Main API configuration and endpoints
+
+**Location:** `utils/`
+- **axios.ts** - API client setup and configuration
+- **constants.ts** - Application constants and API endpoints
+- **bettingRules.ts** - Betting logic and validation rules
+- **validationUtils.ts** - Form and data validation utilities
+
+### Environment Configuration
+**Location:** `env/`
+- **.env** - Environment variables for API endpoints and configuration
+- **.env.example** - Environment configuration template
+
 ## Integration Notes
 
 ### Authentication Flow
@@ -42,6 +57,13 @@ This directory contains the key working components that were preserved during th
   - `placeBets()` - Submit bets to backend
 - BetslipTrigger shows current bet count
 - BetslipPanel provides full betting interface
+
+### API Configuration
+- **api.ts** - Contains base API URL and endpoint configurations
+- **axios.ts** - HTTP client with interceptors and authentication headers
+- **constants.ts** - API endpoints, routes, and application constants
+- **bettingRules.ts** - Business logic for betting validation and rules
+- **validationUtils.ts** - Reusable validation functions
 
 ### Routes to Preserve
 - `/` - HomePage
@@ -67,6 +89,11 @@ Update login redirect from `/dashboard` to new primary route (likely `/sports`)
 - Update preserved components to use new design system
 - Enhance betslip UI to match new professional design
 - Add accessibility improvements
+
+### Phase 5: API Integration
+- Restore API configuration files to new project structure
+- Ensure axios client works with new component architecture
+- Test all API endpoints with preserved authentication logic
 
 ## API Dependencies
 
@@ -102,6 +129,9 @@ Update login redirect from `/dashboard` to new primary route (likely `/sports`)
 3. Route navigation between preserved pages
 4. Mobile responsiveness of preserved components
 5. Integration with new layout components
+6. API connectivity and error handling
+7. Betting rules validation
+8. Form validation utilities
 
 ## Backup Information
 - **Backup Location:** `../backups/winzo_backup_2025-06-20/`
@@ -109,6 +139,31 @@ Update login redirect from `/dashboard` to new primary route (likely `/sports`)
 - **Branch:** `feature/design-system-overhaul`
 - **Date:** June 20, 2025
 
+## Complete Preservation Checklist ✅
+
+### UI Components ✅
+- ✅ HomePage.tsx - Landing page
+- ✅ Login.tsx - Authentication form
+- ✅ Register.tsx - Registration form
+- ✅ Complete betting slip system (6 components)
+
+### Logic & State ✅
+- ✅ AuthContext.tsx - Authentication management
+- ✅ BetSlipContext.tsx - Betting state management
+
+### API & Configuration ✅
+- ✅ api.ts - API endpoint configuration
+- ✅ axios.ts - HTTP client setup
+- ✅ constants.ts - Application constants
+- ✅ .env files - Environment configuration
+
+### Business Logic ✅
+- ✅ bettingRules.ts - Betting validation logic
+- ✅ validationUtils.ts - Form validation utilities
+
+### Styling ✅
+- ✅ HomePage.css - Landing page styles
+
 ---
 
-**Note:** These components are the foundation of WINZO's core functionality and should be maintained throughout the overhaul process. 
+**Note:** These components are the foundation of WINZO's core functionality and should be maintained throughout the overhaul process. All critical API configurations and business logic have been preserved for seamless integration into the new architecture. 
