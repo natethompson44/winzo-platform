@@ -11,7 +11,7 @@ const User = require('../models/User')
 const adminAuth = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '')
-    
+
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -66,23 +66,23 @@ const adminAuth = async (req, res, next) => {
 const logAdminAction = (action) => {
   return (req, res, next) => {
     const originalSend = res.send
-    
-    res.send = function(data) {
+
+    res.send = function (data) {
       // Log the admin action
       console.log(`[ADMIN ACTION] User ${req.user.username} (ID: ${req.user.id}) performed: ${action}`, {
         timestamp: new Date().toISOString(),
         userId: req.user.id,
         username: req.user.username,
-        action: action,
+        action,
         method: req.method,
         path: req.originalUrl,
         ip: req.ip,
         userAgent: req.get('User-Agent')
       })
-      
+
       originalSend.call(this, data)
     }
-    
+
     next()
   }
 }
@@ -90,4 +90,4 @@ const logAdminAction = (action) => {
 module.exports = {
   adminAuth,
   logAdminAction
-} 
+}

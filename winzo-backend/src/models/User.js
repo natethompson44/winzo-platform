@@ -122,11 +122,11 @@ User.init(
     preferences: {
       type: DataTypes.TEXT,
       allowNull: true,
-      get() {
+      get () {
         const rawValue = this.getDataValue('preferences')
         return rawValue ? JSON.parse(rawValue) : null
       },
-      set(value) {
+      set (value) {
         this.setDataValue('preferences', JSON.stringify(value))
       }
     },

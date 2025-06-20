@@ -76,7 +76,7 @@ router.get('/cors-test', (req, res) => {
  */
 router.post('/data-test', (req, res) => {
   const { testData, format } = req.body
-  
+
   res.json({
     success: true,
     message: 'Data handling working correctly! 📊',

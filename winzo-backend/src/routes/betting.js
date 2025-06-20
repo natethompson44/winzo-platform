@@ -184,14 +184,14 @@ router.get('/history', auth, async (req, res) => {
       sortOrder = 'DESC',
       includeAnalytics = false
     } = req.query
-    
+
     console.log(`🏈 Fetching betting history for user ${userId} with filters:`, {
       status, betType, sport, minStake, maxStake, search
     })
-    
+
     // Build where clause with advanced filtering
     const whereClause = { user_id: userId }
-    
+
     if (status) {
       whereClause.status = status
     }
@@ -213,7 +213,7 @@ router.get('/history', auth, async (req, res) => {
       if (startDate) whereClause.placed_at[Op.gte] = new Date(startDate)
       if (endDate) whereClause.placed_at[Op.lte] = new Date(endDate)
     }
-    
+
     // Build include clause for sports filtering and search
     const includeClause = {
       model: SportsEvent,
@@ -222,12 +222,12 @@ router.get('/history', auth, async (req, res) => {
         'commence_time', 'completed', 'home_score', 'away_score'],
       required: false
     }
-    
+
     if (sport) {
       includeClause.where = { sport_key: sport }
       includeClause.required = true
     }
-    
+
     if (search) {
       includeClause.where = {
         ...includeClause.where,
@@ -239,13 +239,13 @@ router.get('/history', auth, async (req, res) => {
       }
       includeClause.required = true
     }
-    
+
     // Validate sort parameters
     const validSortFields = ['placed_at', 'stake', 'odds', 'potential_payout', 'status']
     const validSortOrders = ['ASC', 'DESC']
     const finalSortBy = validSortFields.includes(sortBy) ? sortBy : 'placed_at'
     const finalSortOrder = validSortOrders.includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'DESC'
-    
+
     const bets = await Bet.findAndCountAll({
       where: whereClause,
       include: [includeClause],
@@ -253,13 +253,13 @@ router.get('/history', auth, async (req, res) => {
       limit: parseInt(limit),
       offset: parseInt(offset)
     })
-    
+
     // Calculate summary statistics if requested
     let summary = null
     if (includeAnalytics || bets.count > 0) {
       summary = await calculateBettingSummary(userId, whereClause)
     }
-    
+
     // Format response data with enhanced information
     const formattedBets = bets.rows.map(bet => ({
       id: bet.id,
@@ -274,19 +274,21 @@ router.get('/history', auth, async (req, res) => {
       potentialPayout: parseFloat(bet.potential_payout || 0),
       actualPayout: bet.status === 'won' ? parseFloat(bet.potential_payout || 0) : 0,
       status: bet.status,
-      profit: bet.status === 'won' ? 
-        parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0) :
-        bet.status === 'lost' ? -parseFloat(bet.stake || 0) : 0,
-      teams: bet.sportsEvent ? {
-        home: bet.sportsEvent.home_team,
-        away: bet.sportsEvent.away_team
-      } : null,
+      profit: bet.status === 'won'
+        ? parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0)
+        : bet.status === 'lost' ? -parseFloat(bet.stake || 0) : 0,
+      teams: bet.sportsEvent
+        ? {
+            home: bet.sportsEvent.home_team,
+            away: bet.sportsEvent.away_team
+          }
+        : null,
       eventTime: bet.sportsEvent?.commence_time,
       bookmaker: bet.bookmakerName || 'winzo',
       point: bet.point,
       teaserPoints: bet.teaser_points
     }))
-    
+
     res.json({
       success: true,
       message: `Found ${bets.count} betting records`,
@@ -301,8 +303,18 @@ router.get('/history', auth, async (req, res) => {
       },
       summary,
       filters: {
-        status, betType, sport, minStake, maxStake, minOdds, maxOdds,
-        search, startDate, endDate, sortBy: finalSortBy, sortOrder: finalSortOrder
+        status,
+        betType,
+        sport,
+        minStake,
+        maxStake,
+        minOdds,
+        maxOdds,
+        search,
+        startDate,
+        endDate,
+        sortBy: finalSortBy,
+        sortOrder: finalSortOrder
       },
       availableFilters: {
         sports: await getAvailableSports(userId),
@@ -310,7 +322,7 @@ router.get('/history', auth, async (req, res) => {
         statuses: ['pending', 'won', 'lost', 'cancelled']
       }
     })
-    
+
     console.log(`🏈 Returned ${bets.rows.length} betting records for user ${userId}`)
   } catch (error) {
     console.error('Error fetching betting history:', error)
@@ -410,7 +422,7 @@ router.post('/:betId/cancel', auth, async (req, res) => {
 async function calculateBettingSummary (userId, whereClause = null) {
   try {
     const baseWhereClause = whereClause || { user_id: userId }
-    
+
     const summary = await Bet.findAll({
       where: baseWhereClause,
       attributes: [
@@ -435,12 +447,12 @@ async function calculateBettingSummary (userId, whereClause = null) {
       ],
       raw: true
     })
-    
+
     const stats = summary[0]
     const winRate = stats.betsWon > 0 ? (stats.betsWon / (stats.betsWon + stats.betsLost)) * 100 : 0
     const profit = (stats.totalWinnings || 0) - (stats.totalStaked || 0)
     const roi = stats.totalStaked > 0 ? (profit / stats.totalStaked) * 100 : 0
-    
+
     return {
       totalBets: parseInt(stats.totalBets) || 0,
       totalStaked: parseFloat(stats.totalStaked) || 0,
@@ -479,7 +491,7 @@ async function calculateBettingSummary (userId, whereClause = null) {
 /**
  * Get available sports for a user's betting history
  */
-async function getAvailableSports(userId) {
+async function getAvailableSports (userId) {
   try {
     const sports = await sequelize.query(
       `SELECT DISTINCT se.sport_key 
@@ -502,7 +514,7 @@ async function getAvailableSports(userId) {
 /**
  * Get available bet types for a user's betting history
  */
-async function getAvailableBetTypes(userId) {
+async function getAvailableBetTypes (userId) {
   try {
     const betTypes = await Bet.findAll({
       where: { user_id: userId },

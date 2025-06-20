@@ -117,7 +117,7 @@ router.get('/summary', auth, async (req, res) => {
     const { period = 'all' } = req.query
 
     // Calculate date range
-    let whereClause = { user_id: userId }
+    const whereClause = { user_id: userId }
     if (period !== 'all') {
       const now = new Date()
       let startDate
@@ -195,7 +195,7 @@ router.get('/export', auth, async (req, res) => {
 
     if (format === 'csv') {
       const csvData = generateCSVExport(bets, includeCharts)
-      
+
       res.setHeader('Content-Type', 'text/csv')
       res.setHeader('Content-Disposition', `attachment; filename="winzo-analytics-${new Date().toISOString().split('T')[0]}.csv"`)
       res.send(csvData)
@@ -217,14 +217,14 @@ router.get('/export', auth, async (req, res) => {
 
 // Helper Functions
 
-function generateProfitOverTimeData(bets, timeRange) {
+function generateProfitOverTimeData (bets, timeRange) {
   const groupedData = {}
   let runningProfit = 0
-  
+
   bets.forEach(bet => {
     const date = new Date(bet.placed_at)
     let dateKey
-    
+
     // Group by appropriate time period
     switch (timeRange) {
       case '1month':
@@ -240,20 +240,20 @@ function generateProfitOverTimeData(bets, timeRange) {
       default:
         dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
     }
-    
+
     if (!groupedData[dateKey]) {
       groupedData[dateKey] = { profit: 0, bets: 0 }
     }
-    
-    const betProfit = bet.status === 'won' ? 
-      parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0) :
-      bet.status === 'lost' ? -parseFloat(bet.stake || 0) : 0
-    
+
+    const betProfit = bet.status === 'won'
+      ? parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0)
+      : bet.status === 'lost' ? -parseFloat(bet.stake || 0) : 0
+
     groupedData[dateKey].profit += betProfit
     groupedData[dateKey].bets += 1
     runningProfit += betProfit
   })
-  
+
   return Object.keys(groupedData).sort().map(date => ({
     date,
     profit: groupedData[date].profit,
@@ -262,7 +262,7 @@ function generateProfitOverTimeData(bets, timeRange) {
   }))
 }
 
-function generateWinLossDistribution(bets) {
+function generateWinLossDistribution (bets) {
   const distribution = { won: 0, lost: 0, pending: 0 }
   bets.forEach(bet => {
     distribution[bet.status]++
@@ -270,7 +270,7 @@ function generateWinLossDistribution(bets) {
   return distribution
 }
 
-function generateSportsBreakdown(bets) {
+function generateSportsBreakdown (bets) {
   const breakdown = {}
   bets.forEach(bet => {
     const sport = bet.sportsEvent?.sport_key || 'Unknown'
@@ -278,14 +278,14 @@ function generateSportsBreakdown(bets) {
       breakdown[sport] = { bets: 0, profit: 0, winRate: 0 }
     }
     breakdown[sport].bets++
-    
+
     if (bet.status === 'won') {
       breakdown[sport].profit += parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0)
     } else if (bet.status === 'lost') {
       breakdown[sport].profit -= parseFloat(bet.stake || 0)
     }
   })
-  
+
   // Calculate win rates
   Object.keys(breakdown).forEach(sport => {
     const sportBets = bets.filter(bet => (bet.sportsEvent?.sport_key || 'Unknown') === sport)
@@ -293,11 +293,11 @@ function generateSportsBreakdown(bets) {
     const settled = sportBets.filter(bet => bet.status !== 'pending').length
     breakdown[sport].winRate = settled > 0 ? (wins / settled) * 100 : 0
   })
-  
+
   return breakdown
 }
 
-function generateBetTypePerformance(bets) {
+function generateBetTypePerformance (bets) {
   const performance = {}
   bets.forEach(bet => {
     const betType = bet.bet_type || 'straight'
@@ -305,14 +305,14 @@ function generateBetTypePerformance(bets) {
       performance[betType] = { bets: 0, profit: 0, winRate: 0 }
     }
     performance[betType].bets++
-    
+
     if (bet.status === 'won') {
       performance[betType].profit += parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0)
     } else if (bet.status === 'lost') {
       performance[betType].profit -= parseFloat(bet.stake || 0)
     }
   })
-  
+
   // Calculate win rates
   Object.keys(performance).forEach(betType => {
     const typeBets = bets.filter(bet => (bet.bet_type || 'straight') === betType)
@@ -320,19 +320,19 @@ function generateBetTypePerformance(bets) {
     const settled = typeBets.filter(bet => bet.status !== 'pending').length
     performance[betType].winRate = settled > 0 ? (wins / settled) * 100 : 0
   })
-  
+
   return performance
 }
 
-function generateStakeDistribution(bets) {
+function generateStakeDistribution (bets) {
   const ranges = {
-    'under_10': { min: 0, max: 10, count: 0 },
+    under_10: { min: 0, max: 10, count: 0 },
     '10_25': { min: 10, max: 25, count: 0 },
     '25_50': { min: 25, max: 50, count: 0 },
     '50_100': { min: 50, max: 100, count: 0 },
-    'over_100': { min: 100, max: Infinity, count: 0 }
+    over_100: { min: 100, max: Infinity, count: 0 }
   }
-  
+
   bets.forEach(bet => {
     const stake = parseFloat(bet.stake || 0)
     Object.keys(ranges).forEach(range => {
@@ -342,52 +342,52 @@ function generateStakeDistribution(bets) {
       }
     })
   })
-  
+
   return ranges
 }
 
-function generateMonthlyPerformance(bets) {
+function generateMonthlyPerformance (bets) {
   const monthly = {}
   bets.forEach(bet => {
     const date = new Date(bet.placed_at)
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-    
+
     if (!monthly[monthKey]) {
       monthly[monthKey] = { bets: 0, profit: 0, stake: 0 }
     }
-    
+
     monthly[monthKey].bets++
     monthly[monthKey].stake += parseFloat(bet.stake || 0)
-    
+
     if (bet.status === 'won') {
       monthly[monthKey].profit += parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0)
     } else if (bet.status === 'lost') {
       monthly[monthKey].profit -= parseFloat(bet.stake || 0)
     }
   })
-  
+
   return monthly
 }
 
-async function calculateComprehensiveAnalytics(bets) {
+async function calculateComprehensiveAnalytics (bets) {
   const totalBets = bets.length
   const totalStake = bets.reduce((sum, bet) => sum + parseFloat(bet.stake || 0), 0)
   const wonBets = bets.filter(bet => bet.status === 'won')
   const lostBets = bets.filter(bet => bet.status === 'lost')
   const pendingBets = bets.filter(bet => bet.status === 'pending')
-  
+
   const totalWinnings = wonBets.reduce((sum, bet) => sum + parseFloat(bet.potential_payout || 0), 0)
   const netProfit = totalWinnings - totalStake
   const winRate = (wonBets.length + lostBets.length) > 0 ? (wonBets.length / (wonBets.length + lostBets.length)) * 100 : 0
   const roi = totalStake > 0 ? (netProfit / totalStake) * 100 : 0
-  
+
   // Calculate streaks
   let currentStreak = { type: 'none', count: 0 }
   let longestWinStreak = 0
   let longestLoseStreak = 0
   let tempWinStreak = 0
   let tempLoseStreak = 0
-  
+
   bets.slice().reverse().forEach(bet => {
     if (bet.status === 'won') {
       tempWinStreak++
@@ -405,7 +405,7 @@ async function calculateComprehensiveAnalytics(bets) {
       }
     }
   })
-  
+
   return {
     totalBets,
     totalStake,
@@ -429,7 +429,7 @@ async function calculateComprehensiveAnalytics(bets) {
   }
 }
 
-function generateCSVExport(bets, includeCharts) {
+function generateCSVExport (bets, includeCharts) {
   const headers = [
     'Date',
     'Sport',
@@ -444,14 +444,14 @@ function generateCSVExport(bets, includeCharts) {
     'Status',
     'Profit/Loss'
   ]
-  
+
   let csvContent = headers.join(',') + '\n'
-  
+
   bets.forEach(bet => {
-    const profitLoss = bet.status === 'won' ? 
-      parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0) :
-      bet.status === 'lost' ? -parseFloat(bet.stake || 0) : 0
-    
+    const profitLoss = bet.status === 'won'
+      ? parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0)
+      : bet.status === 'lost' ? -parseFloat(bet.stake || 0) : 0
+
     const row = [
       new Date(bet.placed_at).toISOString().split('T')[0],
       bet.sportsEvent?.sport_key || 'Unknown',
@@ -466,10 +466,10 @@ function generateCSVExport(bets, includeCharts) {
       bet.status,
       profitLoss
     ]
-    
+
     csvContent += row.join(',') + '\n'
   })
-  
+
   if (includeCharts) {
     csvContent += '\n\n--- ANALYTICS SUMMARY ---\n'
     const analytics = calculateComprehensiveAnalytics(bets)
@@ -478,7 +478,7 @@ function generateCSVExport(bets, includeCharts) {
     csvContent += `Net Profit,${analytics.netProfit.toFixed(2)}\n`
     csvContent += `ROI,${analytics.roi.toFixed(2)}%\n`
   }
-  
+
   return csvContent
 }
 

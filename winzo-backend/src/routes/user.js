@@ -25,14 +25,14 @@ const storage = multer.diskStorage({
   }
 })
 
-const upload = multer({ 
-  storage: storage,
+const upload = multer({
+  storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: function (req, file, cb) {
     const allowedTypes = /jpeg|jpg|png|gif/
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase())
     const mimetype = allowedTypes.test(file.mimetype)
-    
+
     if (mimetype && extname) {
       return cb(null, true)
     } else {
@@ -47,11 +47,11 @@ const upload = multer({
 router.get('/profile', auth, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: { 
-        exclude: ['password_hash'] 
+      attributes: {
+        exclude: ['password_hash']
       }
     })
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -226,7 +226,7 @@ router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
       success: true,
       message: 'Avatar uploaded successfully',
       data: {
-        avatarUrl: avatarUrl,
+        avatarUrl,
         filename: req.file.filename
       }
     })
@@ -254,20 +254,22 @@ router.get('/preferences', auth, async (req, res) => {
     }
 
     // Parse preferences JSON or provide defaults
-    const preferences = user.preferences ? JSON.parse(user.preferences) : {
-      defaultStake: 10.00,
-      quickStakeAmounts: [5.00, 10.00, 25.00, 50.00, 100.00],
-      oddsFormat: 'decimal',
-      autoAcceptOddsChanges: false,
-      enableNotifications: true,
-      emailNotifications: true,
-      smsNotifications: false,
-      betConfirmations: true,
-      winLossUpdates: true,
-      promotionalOffers: true,
-      favoritesSports: [],
-      favoritesTeams: []
-    }
+    const preferences = user.preferences
+      ? JSON.parse(user.preferences)
+      : {
+          defaultStake: 10.00,
+          quickStakeAmounts: [5.00, 10.00, 25.00, 50.00, 100.00],
+          oddsFormat: 'decimal',
+          autoAcceptOddsChanges: false,
+          enableNotifications: true,
+          emailNotifications: true,
+          smsNotifications: false,
+          betConfirmations: true,
+          winLossUpdates: true,
+          promotionalOffers: true,
+          favoritesSports: [],
+          favoritesTeams: []
+        }
 
     res.json({
       success: true,
@@ -393,7 +395,7 @@ router.put('/password', [
 
     // Hash new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 10)
-    
+
     // Update password
     await user.update({
       password_hash: hashedNewPassword,

@@ -111,37 +111,41 @@ function validateBettingRequest (bets, betType = 'straight', options = {}) {
 
   // Bet type specific validations
   switch (betType) {
-    case 'parlay':
+    case 'parlay': {
       const parlayValidation = validateParlayRules(bets, marketsByEvent, eventIds)
       if (!parlayValidation.isValid) {
         result.isValid = false
         result.errors.push(...parlayValidation.errors)
       }
       break
+    }
 
-    case 'sgp':
+    case 'sgp': {
       const sgpValidation = validateSameGameParlayRules(bets, marketsByEvent, eventIds, rules)
       if (!sgpValidation.isValid) {
         result.isValid = false
         result.errors.push(...sgpValidation.errors)
       }
       break
+    }
 
-    case 'teaser':
+    case 'teaser': {
       const teaserValidation = validateTeaserRules(bets, rules, options.teaserPoints)
       if (!teaserValidation.isValid) {
         result.isValid = false
         result.errors.push(...teaserValidation.errors)
       }
       break
+    }
 
-    case 'if-bet':
+    case 'if-bet': {
       const ifBetValidation = validateIfBetRules(bets, rules)
       if (!ifBetValidation.isValid) {
         result.isValid = false
         result.errors.push(...ifBetValidation.errors)
       }
       break
+    }
   }
 
   return result

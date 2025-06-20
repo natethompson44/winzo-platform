@@ -281,7 +281,7 @@ router.put('/bets/:id', logAdminAction('SETTLE_BET'), async (req, res) => {
     // Update bet
     await bet.update({
       status: 'settled',
-      result: result, // 'win', 'loss', 'void'
+      result, // 'win', 'loss', 'void'
       actual_payout: actual_payout || 0,
       settled_at: new Date(),
       notes: notes || null
@@ -382,10 +382,10 @@ router.get('/transactions', logAdminAction('VIEW_TRANSACTIONS'), async (req, res
 router.get('/analytics', logAdminAction('VIEW_ANALYTICS'), async (req, res) => {
   try {
     const { timeframe = '30d' } = req.query
-    
+
     let dateFilter
     const now = new Date()
-    
+
     switch (timeframe) {
       case '7d':
         dateFilter = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -514,4 +514,4 @@ router.post('/announcements', logAdminAction('CREATE_ANNOUNCEMENT'), async (req,
   }
 })
 
-module.exports = router 
+module.exports = router
