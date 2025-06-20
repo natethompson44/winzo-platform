@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Before making any changes, reference these documents:
+- Design System: winzo_design_system.pdf
+- CSS Variables: css_variables_components.pdf
+- Migration Plan: migration_strategy.pdf
+- Nice Admin Template: _OverhaulTempRef/
+
+Follow the established patterns and use the documented CSS classes.

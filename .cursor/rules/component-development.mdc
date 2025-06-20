@@ -1,0 +1,11 @@
+---
+description: When creating new components
+globs: 
+alwaysApply: false
+---
+When creating new components:
+1. Use the established CSS variables
+2. Follow the component patterns from the library
+3. Maintain consistency with existing components
+
+4. Test on both desktop and mobile
