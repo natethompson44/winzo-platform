@@ -46,7 +46,7 @@ The core issue isn't the technology choice—it's the lack of a systematic desig
 - Consistent visual language throughout
 
 ### 2. CSS Variables & Component Library
-**Document**: `css_variables_components.pdf`
+**Document**: `css_variables_components.md`
 
 **What It Provides:**
 - Complete CSS variables system (200+ variables)
@@ -65,7 +65,7 @@ The core issue isn't the technology choice—it's the lack of a systematic desig
 - Performance optimized CSS
 
 ### 3. Migration Strategy & Implementation Plan
-**Document**: `migration_strategy.pdf`
+**Document**: `migration_strategy.md`
 
 **What It Provides:**
 - 8-week phase-by-phase migration plan
