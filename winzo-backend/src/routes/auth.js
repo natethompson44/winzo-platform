@@ -42,14 +42,14 @@ router.post(
       const testCodes = ['WINZO2024', 'TESTCODE', 'DEMO', 'MASTER', 'TEST']
       console.log('WINZO Registration: Master invite code configured:', masterCode ? 'Yes' : 'No')
       console.log('WINZO Registration: Received invite code:', invite_code)
-      
+
       const inviter = await User.findOne({ where: { inviteCode: invite_code } }).catch(() => null)
-      
+
       // Accept master code, test codes, or valid inviter codes
-      const isValidCode = invite_code === masterCode || 
-                         testCodes.includes(invite_code) || 
+      const isValidCode = invite_code === masterCode ||
+                         testCodes.includes(invite_code) ||
                          !!inviter
-      
+
       if (!isValidCode) {
         console.log('WINZO Registration: Invalid invite code - not master, test code, or valid inviter')
         return res.status(400).json({ message: 'Invalid invite code' })
@@ -79,9 +79,9 @@ router.post(
       const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
         expiresIn: '7d'
       })
-      
+
       console.log('WINZO Registration: JWT token generated')
-      
+
       res.json({
         success: true,
         message: 'User registered successfully',

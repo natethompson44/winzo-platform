@@ -485,16 +485,20 @@
 .filter-group select,
 .filter-group input {
   padding: 10px 12px;
-  border: 1px solid #ced4da;
+  border: 2px solid #e9ecef;
   border-radius: 6px;
   font-size: 14px;
+  background: #ffffff;
+  color: #212529;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .filter-group select:focus,
 .filter-group input:focus {
   outline: none;
   border-color: #4154f1;
+  background: #ffffff;
   box-shadow: 0 0 0 3px rgba(65, 84, 241, 0.1);
 }
 
