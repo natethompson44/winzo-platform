@@ -1,0 +1,303 @@
+/* BaseLayout Component - Foundation Layout System
+ * Integrates Nice Admin template structure with WINZO design system
+ */
+
+.winzo-base-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--winzo-background);
+  font-family: var(--font-family-primary);
+  color: var(--gray-800);
+}
+
+/* === HEADER === */
+.winzo-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  background-color: var(--winzo-surface);
+  border-bottom: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-fixed);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+}
+
+/* === CONTENT WRAPPER === */
+.winzo-content-wrapper {
+  display: flex;
+  flex: 1;
+  margin-top: var(--navbar-height);
+  min-height: calc(100vh - var(--navbar-height));
+}
+
+/* === SIDEBAR === */
+.winzo-sidebar {
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--navbar-height));
+  background-color: var(--winzo-surface);
+  border-right: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-sticky);
+  overflow-y: auto;
+  transition: transform var(--transition-base);
+}
+
+.winzo-sidebar-content {
+  padding: var(--space-4);
+  height: 100%;
+}
+
+/* === MAIN CONTENT === */
+.winzo-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left var(--transition-base);
+}
+
+.winzo-main-content.with-sidebar {
+  margin-left: var(--sidebar-width);
+}
+
+.winzo-main-content.full-width {
+  margin-left: 0;
+}
+
+.winzo-content-container {
+  padding: var(--space-6);
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* === FOOTER === */
+.winzo-footer {
+  background-color: var(--winzo-surface);
+  border-top: 1px solid var(--gray-200);
+  padding: var(--space-4);
+  margin-top: auto;
+}
+
+/* === RESPONSIVE DESIGN === */
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .winzo-content-container {
+    max-width: var(--container-xl);
+  }
+}
+
+/* Medium screens */
+@media (max-width: 1024px) {
+  .winzo-content-container {
+    padding: var(--space-4);
+  }
+}
+
+/* Tablet and mobile */
+@media (max-width: 768px) {
+  .winzo-sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+  
+  .winzo-sidebar.is-open {
+    transform: translateX(0);
+  }
+  
+  .winzo-main-content.with-sidebar {
+    margin-left: 0;
+  }
+  
+  .winzo-content-container {
+    padding: var(--space-3);
+  }
+  
+  .winzo-header {
+    padding: 0 var(--space-3);
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .winzo-content-container {
+    padding: var(--space-2);
+  }
+  
+  .winzo-header {
+    padding: 0 var(--space-2);
+  }
+  
+  .winzo-sidebar-content {
+    padding: var(--space-3);
+  }
+}
+
+/* === SIDEBAR COLLAPSED STATE === */
+.winzo-sidebar.is-collapsed {
+  width: var(--sidebar-width-collapsed);
+}
+
+.winzo-main-content.sidebar-collapsed {
+  margin-left: var(--sidebar-width-collapsed);
+}
+
+@media (max-width: 768px) {
+  .winzo-sidebar.is-collapsed {
+    transform: translateX(-100%);
+  }
+  
+  .winzo-main-content.sidebar-collapsed {
+    margin-left: 0;
+  }
+}
+
+/* === OVERLAY FOR MOBILE === */
+.winzo-sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--winzo-overlay);
+  z-index: calc(var(--z-sticky) - 1);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+@media (max-width: 768px) {
+  .winzo-sidebar-overlay.is-visible {
+    display: block;
+    opacity: 1;
+  }
+}
+
+/* === LOADING STATE === */
+.winzo-base-layout.is-loading {
+  pointer-events: none;
+}
+
+.winzo-base-layout.is-loading::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === ACCESSIBILITY === */
+@media (prefers-reduced-motion: reduce) {
+  .winzo-sidebar,
+  .winzo-main-content,
+  .winzo-sidebar-overlay {
+    transition: none;
+  }
+}
+
+/* Focus styles */
+.winzo-base-layout *:focus {
+  outline: 2px solid var(--winzo-gold);
+  outline-offset: 2px;
+}
+
+/* === PRINT STYLES === */
+@media print {
+  .winzo-header,
+  .winzo-sidebar,
+  .winzo-footer {
+    display: none;
+  }
+  
+  .winzo-main-content {
+    margin: 0;
+  }
+  
+  .winzo-content-container {
+    padding: 0;
+    max-width: none;
+  }
+}
+
+/* === NICE ADMIN INTEGRATION === */
+/* Maintain Nice Admin's grid system compatibility */
+.winzo-content-container .row {
+  margin-left: calc(var(--space-3) * -1);
+  margin-right: calc(var(--space-3) * -1);
+}
+
+.winzo-content-container .col,
+.winzo-content-container [class*="col-"] {
+  padding-left: var(--space-3);
+  padding-right: var(--space-3);
+}
+
+/* Nice Admin card styling integration */
+.winzo-content-container .card {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-sm);
+  background-color: var(--winzo-surface);
+}
+
+.winzo-content-container .card-body {
+  padding: var(--card-padding);
+}
+
+/* Nice Admin form styling integration */
+.winzo-content-container .form-control {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  height: var(--input-height-base);
+  font-size: var(--font-size-base);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.winzo-content-container .form-control:focus {
+  border-color: var(--winzo-gold);
+  box-shadow: 0 0 0 0.2rem rgba(214, 158, 46, 0.25);
+}
+
+/* Nice Admin button styling integration */
+.winzo-content-container .btn {
+  height: var(--button-height-base);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+}
+
+.winzo-content-container .btn-primary {
+  background-color: var(--winzo-navy);
+  border-color: var(--winzo-navy);
+}
+
+.winzo-content-container .btn-primary:hover {
+  background-color: var(--winzo-navy-dark);
+  border-color: var(--winzo-navy-dark);
+}
+
+.winzo-content-container .btn-secondary {
+  background-color: var(--winzo-gold);
+  border-color: var(--winzo-gold);
+  color: var(--winzo-navy);
+}
+
+.winzo-content-container .btn-secondary:hover {
+  background-color: var(--winzo-gold-dark);
+  border-color: var(--winzo-gold-dark);
+} 
