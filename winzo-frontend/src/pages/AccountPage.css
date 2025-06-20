@@ -392,8 +392,9 @@
   border-radius: var(--border-radius-sm);
   font-size: 14px;
   transition: var(--transition);
-  background: var(--bg-card);
+  background: #ffffff;
   color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .form-group input:focus,
@@ -404,9 +405,10 @@
 }
 
 .form-group input:disabled {
-  background: var(--bg-light);
+  background: #f8f9fa;
   color: var(--text-muted);
   cursor: not-allowed;
+  border-color: #e9ecef;
 }
 
 .input-with-icon {
@@ -1271,186 +1273,254 @@ input:checked + .toggle-slider:before {
   }
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .form-group.span-2 {
-    grid-column: span 1;
-  }
+/* Enhanced Responsive Design for Desktop vs Mobile Experience */
 
-  .limits-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+/* Desktop-first approach with larger, more spacious design */
+@media (min-width: 1200px) {
+  .user-details h1 {
+    font-size: 32px;
+    line-height: 1.2;
   }
-}
-
-@media (max-width: 992px) {
-  .account-header {
-    flex-direction: column;
-    gap: 24px;
-    text-align: center;
+  
+  .balance-amount {
+    font-size: 36px;
+    line-height: 1.1;
   }
-
-  .account-info {
-    flex-direction: column;
-    text-align: center;
+  
+  .panel-header h2 {
+    font-size: 28px;
   }
-
-  .balance-card {
-    min-width: auto;
-    width: 100%;
-  }
-
-  .balance-actions {
-    justify-content: center;
-  }
-
-  .tab-panel {
-    padding: 24px;
-  }
-
+  
   .form-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
   }
-
-  .wallet-stats {
-    grid-template-columns: 1fr;
+  
+  .tab-panel {
+    padding: 40px;
   }
-
-  .benefits-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  
+  .nav-tab {
+    padding: 20px 32px;
+    font-size: 16px;
   }
 }
 
-@media (max-width: 768px) {
-  .account-page {
-    padding: 0;
-  }
-
-  .account-header {
-    margin: 0 12px 12px 12px;
-    padding: 24px 16px;
-  }
-
+/* Large desktop experience */
+@media (min-width: 1400px) {
   .account-content {
-    padding: 0 12px 12px 12px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
-
-  .tab-panel {
-    border-radius: var(--border-radius);
-    padding: 20px;
+  
+  .form-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
+}
 
+/* Standard desktop (most common) */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .user-details h1 {
+    font-size: 28px;
+  }
+  
+  .balance-amount {
+    font-size: 32px;
+  }
+  
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  
   .nav-tab {
-    padding: 16px 12px;
+    padding: 18px 24px;
+    font-size: 15px;
   }
+}
 
-  .nav-tab span {
-    display: none;
+/* Tablet experience - hybrid approach */
+@media (min-width: 768px) and (max-width: 991px) {
+  .account-header {
+    flex-direction: row;
+    gap: 24px;
   }
-
-  .user-avatar,
-  .user-avatar img,
-  .avatar-placeholder {
-    width: 60px;
-    height: 60px;
-  }
-
-  .avatar-edit {
-    width: 24px;
-    height: 24px;
-    font-size: 10px;
-  }
-
+  
   .user-details h1 {
     font-size: 24px;
   }
-
+  
   .balance-amount {
     font-size: 28px;
   }
-
-  .payment-method-card {
-    flex-direction: column;
-    text-align: center;
+  
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
-
-  .method-actions {
-    justify-content: center;
+  
+  .tab-panel {
+    padding: 28px;
   }
-
-  .security-item,
-  .notification-item,
-  .action-card {
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
+  
+  .nav-tab {
+    padding: 16px 20px;
+    font-size: 14px;
   }
-
-  .verification-step {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .login-item {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .limits-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .help-resources {
-    grid-template-columns: 1fr;
+  
+  /* Better touch targets for tablet */
+  .btn {
+    min-height: 44px;
+    padding: 12px 20px;
+    font-size: 15px;
   }
 }
 
-@media (max-width: 576px) {
+/* Mobile-first optimizations */
+@media (max-width: 767px) {
+  .account-page {
+    padding: 12px;
+  }
+  
   .account-header {
-    margin: 0 8px 8px 8px;
-  }
-
-  .account-content {
-    padding: 0 8px 8px 8px;
-  }
-
-  .tab-panel {
-    padding: 16px;
-  }
-
-  .panel-header {
-    margin-bottom: 24px;
-  }
-
-  .panel-header h2 {
-    font-size: 20px;
-  }
-
-  .section-divider {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
   }
-
+  
+  .account-info {
+    text-align: center;
+  }
+  
   .user-details h1 {
-    font-size: 20px;
+    font-size: 22px;
+    margin-bottom: 8px;
   }
-
+  
+  .user-details p {
+    font-size: 14px;
+  }
+  
   .balance-amount {
     font-size: 24px;
   }
-
-  .stat-card {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
+  
+  .balance-card {
+    padding: 20px;
   }
-
+  
+  /* Mobile-optimized form layout */
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 14px 16px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 48px; /* Better touch target */
+  }
+  
+  .tab-panel {
+    padding: 20px;
+  }
+  
+  .panel-header h2 {
+    font-size: 20px;
+  }
+  
+  /* Mobile navigation improvements */
+  .nav-tab {
+    padding: 14px 16px;
+    font-size: 13px;
+    min-width: 80px;
+  }
+  
+  .nav-tab span {
+    display: none; /* Hide text labels on very small screens */
+  }
+  
+  .nav-tab i {
+    font-size: 18px;
+  }
+  
+  /* Mobile-optimized buttons */
+  .btn {
+    min-height: 48px;
+    padding: 14px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  
+  .btn-sm {
+    min-height: 40px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  /* Mobile table improvements */
   .transactions-table {
-    font-size: 12px;
+    font-size: 13px;
   }
-
+  
   .transactions-table th,
   .transactions-table td {
-    padding: 8px 4px;
+    padding: 12px 8px;
+  }
+  
+  /* Mobile stat cards */
+  .stat-card {
+    padding: 16px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 575px) {
+  .account-page {
+    padding: 8px;
+  }
+  
+  .account-header {
+    padding: 16px;
+  }
+  
+  .user-details h1 {
+    font-size: 20px;
+  }
+  
+  .balance-amount {
+    font-size: 22px;
+  }
+  
+  .nav-tab {
+    padding: 12px 8px;
+    min-width: 60px;
+  }
+  
+  .tab-panel {
+    padding: 16px;
+  }
+  
+  .panel-header h2 {
+    font-size: 18px;
+  }
+  
+  .form-group input,
+  .form-group select {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+  
+  .btn {
+    font-size: 13px;
+    padding: 12px 16px;
   }
 }
 
@@ -1521,7 +1591,7 @@ input:checked + .toggle-slider:before {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(65, 84, 241, 0.1);
-  background-color: var(--bg-card);
+  background-color: #ffffff;
 }
 
 .form-group input::placeholder {
