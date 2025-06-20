@@ -16,7 +16,7 @@ router.post('/place', auth, async (req, res) => {
     const { bets, betType = 'straight', totalStake, potentialPayout, teaserPoints } = req.body
     const userId = req.user.id
     console.log(` Processing ${betType} bet for user ${userId}...`)
-    
+
     // Validate request data
     if (!bets || !Array.isArray(bets) || bets.length === 0) {
       return res.status(400).json({
@@ -32,17 +32,17 @@ router.post('/place', auth, async (req, res) => {
     }
 
     // Use comprehensive betting rules validation
-    const validationOptions = { teaserPoints: teaserPoints || 6 };
-    const validation = validateBettingRequest(bets, betType, validationOptions);
-    
+    const validationOptions = { teaserPoints: teaserPoints || 6 }
+    const validation = validateBettingRequest(bets, betType, validationOptions)
+
     if (!validation.isValid) {
-      await transaction.rollback();
+      await transaction.rollback()
       return res.status(400).json({
         success: false,
         error: 'Bet validation failed',
         errors: validation.errors,
         warnings: validation.warnings
-      });
+      })
     }
     // Get user and validate balance
     const user = await User.findByPk(userId, { transaction })
@@ -94,14 +94,14 @@ router.post('/place', auth, async (req, res) => {
     }
     // Create bet records with enhanced bet type support
     const createdBets = []
-    let calculatedPayout = potentialPayout;
+    let calculatedPayout = potentialPayout
 
     // Calculate payout based on bet type
     if (betType === 'teaser') {
-      const teaserOdds = calculateTeaserOdds(bets.length, teaserPoints || 6, bets[0]?.sport);
-      calculatedPayout = teaserOdds > 0 ? totalStake * (teaserOdds / 100) : totalStake * (100 / Math.abs(teaserOdds));
+      const teaserOdds = calculateTeaserOdds(bets.length, teaserPoints || 6, bets[0]?.sport)
+      calculatedPayout = teaserOdds > 0 ? totalStake * (teaserOdds / 100) : totalStake * (100 / Math.abs(teaserOdds))
     } else if (betType === 'if-bet') {
-      calculatedPayout = calculateIfBetPayout(bets);
+      calculatedPayout = calculateIfBetPayout(bets)
     }
 
     for (const bet of bets) {

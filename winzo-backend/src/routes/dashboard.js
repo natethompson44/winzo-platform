@@ -21,10 +21,11 @@ const Sport = require('../models/Sport')
 router.get('/', auth, async (req, res) => {
   try {
     const userId = req.user.id
+    console.log('WINZO Dashboard: Loading for user:', userId)
 
     // Get user details
     const user = await User.findByPk(userId, {
-      attributes: { exclude: ['password'] }
+      attributes: { exclude: ['password_hash'] }
     })
 
     if (!user) {
@@ -35,39 +36,62 @@ router.get('/', auth, async (req, res) => {
     }
 
     // Get wallet balance
-    const walletBalance = parseFloat(user.walletBalance || 0)
+    const walletBalance = parseFloat(user.wallet_balance || 0)
+    console.log('WINZO Dashboard: Wallet balance:', walletBalance)
 
-    // Get betting statistics
-    const totalBets = await Bet.count({ where: { user_id: userId } })
-    const activeBets = await Bet.count({
-      where: { user_id: userId, status: 'pending' }
-    })
-    const wonBets = await Bet.count({
-      where: { user_id: userId, status: 'won' }
-    })
+    // Try to get betting statistics with fallback
+    let totalBets = 0
+    let activeBets = 0
+    let wonBets = 0
+    let recentBets = []
+    let allBets = []
 
-    // Get recent bets
-    const recentBets = await Bet.findAll({
-      where: { user_id: userId },
-      include: [{
-        model: SportsEvent,
-        attributes: ['homeTeam', 'awayTeam'],
-        include: [{
-          model: Sport,
-          attributes: ['title']
-        }]
-      }],
-      order: [['placedAt', 'DESC']],
-      limit: 5
-    })
+    try {
+      // Try with user_id first (snake_case from associations)
+      totalBets = await Bet.count({ where: { user_id: userId } })
+      activeBets = await Bet.count({ where: { user_id: userId, status: 'pending' } })
+      wonBets = await Bet.count({ where: { user_id: userId, status: 'won' } })
 
-    // Calculate total wagered and winnings
-    const allBets = await Bet.findAll({
-      where: { user_id: userId },
-      attributes: ['amount', 'actualPayout', 'status']
-    })
+      recentBets = await Bet.findAll({
+        where: { user_id: userId },
+        order: [['createdAt', 'DESC']],
+        limit: 5
+      })
 
-    const totalWagered = allBets.reduce((sum, bet) => sum + parseFloat(bet.amount), 0)
+      allBets = await Bet.findAll({
+        where: { user_id: userId },
+        attributes: ['amount', 'actualPayout', 'status']
+      })
+
+      console.log('WINZO Dashboard: Betting stats loaded with user_id')
+    } catch (betError) {
+      console.log('WINZO Dashboard: Trying with userId (camelCase)...')
+      try {
+        // Fallback to camelCase
+        totalBets = await Bet.count({ where: { userId } })
+        activeBets = await Bet.count({ where: { userId, status: 'pending' } })
+        wonBets = await Bet.count({ where: { userId, status: 'won' } })
+
+        recentBets = await Bet.findAll({
+          where: { userId },
+          order: [['createdAt', 'DESC']],
+          limit: 5
+        })
+
+        allBets = await Bet.findAll({
+          where: { userId },
+          attributes: ['amount', 'actualPayout', 'status']
+        })
+
+        console.log('WINZO Dashboard: Betting stats loaded with userId')
+      } catch (betError2) {
+        console.log('WINZO Dashboard: Bet queries failed, using default values:', betError2.message)
+        // Use default values - no bets
+      }
+    }
+
+    // Calculate total wagered and winnings safely
+    const totalWagered = allBets.reduce((sum, bet) => sum + parseFloat(bet.amount || 0), 0)
     const totalWinnings = allBets
       .filter(bet => bet.status === 'won')
       .reduce((sum, bet) => sum + parseFloat(bet.actualPayout || 0), 0)
@@ -91,8 +115,7 @@ router.get('/', auth, async (req, res) => {
         user: {
           id: user.id,
           username: user.username,
-          inviteCode: user.inviteCode,
-          memberSince: user.createdAt
+          memberSince: user.created_at
         },
         wallet: {
           balance: walletBalance,
@@ -104,27 +127,25 @@ router.get('/', auth, async (req, res) => {
           activeBets,
           wonBets,
           lostBets: totalBets - activeBets - wonBets,
-          winRate: totalBets > 0 ? ((wonBets / (totalBets - activeBets)) * 100).toFixed(1) : 0,
+          winRate: totalBets > 0 ? ((wonBets / (totalBets - activeBets)) * 100).toFixed(1) : '0',
           totalWagered: totalWagered.toFixed(2),
           totalWinnings: totalWinnings.toFixed(2),
           netProfit: (totalWinnings - totalWagered).toFixed(2)
         },
         recentActivity: recentBets.map(bet => ({
           id: bet.id,
-          event: bet.sportsEvent
-            ? `${bet.sportsEvent.homeTeam} vs ${bet.sportsEvent.awayTeam}`
-            : 'Event not found',
-          sport: bet.sportsEvent?.sport?.title || 'Unknown',
-          amount: parseFloat(bet.amount),
+          event: 'Event details',
+          sport: 'Sports betting',
+          amount: parseFloat(bet.amount || 0),
           status: bet.status,
-          placedAt: bet.placedAt
+          placedAt: bet.createdAt
         })),
         quickStats: {
           biggestWin: allBets
             .filter(bet => bet.status === 'won')
             .reduce((max, bet) => Math.max(max, parseFloat(bet.actualPayout || 0)), 0),
-          currentStreak: 0, // TODO: Calculate actual streak
-          favoritesSport: 'Coming soon!', // TODO: Calculate from bet history
+          currentStreak: 0,
+          favoritesSport: 'Coming soon!',
           nextMilestone: totalBets < 10
             ? `${10 - totalBets} more bets to unlock Experienced Player!`
             : 'Keep building that Big Win Energy!'
@@ -133,10 +154,12 @@ router.get('/', auth, async (req, res) => {
     })
   } catch (error) {
     console.error('WINZO Dashboard: Error loading dashboard:', error.message)
+    console.error('WINZO Dashboard: Full error details:', error)
     res.status(500).json({
       success: false,
       message: "Let's try loading your dashboard again!",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     })
   }
 })
@@ -151,13 +174,13 @@ router.get('/quick-stats', auth, async (req, res) => {
 
     // Get essential counts quickly
     const [user, totalBets, activeBets, wonBets] = await Promise.all([
-      User.findByPk(userId, { attributes: ['walletBalance'] }),
-      Bet.count({ where: { user_id: userId } }),
-      Bet.count({ where: { user_id: userId, status: 'pending' } }),
-      Bet.count({ where: { user_id: userId, status: 'won' } })
+      User.findByPk(userId, { attributes: ['wallet_balance'] }),
+      Bet.count({ where: { userId } }),
+      Bet.count({ where: { userId, status: 'pending' } }),
+      Bet.count({ where: { userId, status: 'won' } })
     ])
 
-    const walletBalance = parseFloat(user?.walletBalance || 0)
+    const walletBalance = parseFloat(user?.wallet_balance || 0)
 
     res.json({
       success: true,

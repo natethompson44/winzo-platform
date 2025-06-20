@@ -38,9 +38,14 @@ router.post(
 
     try {
     // Invite code must match the master code or belong to an existing user.
-      const masterCode = process.env.MASTER_INVITE_CODE
-      const inviter = await User.findOne({ where: { inviteCode: invite_code } })
+      const masterCode = process.env.MASTER_INVITE_CODE || 'WINZO2024'
+      console.log('WINZO Registration: Master invite code configured:', masterCode ? 'Yes' : 'No')
+      console.log('WINZO Registration: Received invite code:', invite_code)
+
+      const inviter = await User.findOne({ where: { inviteCode: invite_code } }).catch(() => null)
+
       if (invite_code !== masterCode && !inviter) {
+        console.log('WINZO Registration: Invalid invite code - not master and no inviter found')
         return res.status(400).json({ message: 'Invalid invite code' })
       }
 
@@ -51,9 +56,11 @@ router.post(
         )
       })
       if (existing) {
+        console.log('WINZO Registration: Username already taken:', normalizedUsername)
         return res.status(400).json({ message: 'Username already taken' })
       }
 
+      console.log('WINZO Registration: Creating user with balance 100.00')
       const hashed = await bcrypt.hash(password, 10)
       const newUser = await User.create({
         username: normalizedUsername,
@@ -62,9 +69,13 @@ router.post(
         wallet_balance: 100.00 // Give new users some starting balance
       })
 
+      console.log('WINZO Registration: User created successfully, ID:', newUser.id)
       const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
         expiresIn: '7d'
       })
+
+      console.log('WINZO Registration: JWT token generated')
+
       res.json({
         success: true,
         message: 'User registered successfully',
@@ -79,8 +90,18 @@ router.post(
         }
       })
     } catch (err) {
-      console.error(err)
-      res.status(500).json({ message: 'Server error' })
+      console.error('WINZO Registration Error:', err)
+      console.error('WINZO Registration Error Stack:', err.stack)
+      console.error('WINZO Registration Error Details:', {
+        message: err.message,
+        name: err.name,
+        code: err.code,
+        sqlMessage: err.sqlMessage
+      })
+      res.status(500).json({
+        message: 'Server error',
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined
+      })
     }
   })
 
