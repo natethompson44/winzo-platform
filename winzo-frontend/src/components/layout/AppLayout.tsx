@@ -21,8 +21,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [betSlipCount, setBetSlipCount] = useState(2); // Mock bet slip count
-  const [liveGamesCount, setLiveGamesCount] = useState(12); // Mock live games count
+  const betSlipCount = 2; // Mock bet slip count  
+  const liveGamesCount = 12; // Mock live games count
 
   // Check if device is mobile
   useEffect(() => {
