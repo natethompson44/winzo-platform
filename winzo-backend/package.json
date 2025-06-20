@@ -33,26 +33,27 @@
   "description": "WINZO Backend API - Sports Betting Platform with Big Win Energy",
   "dependencies": {
     "axios": "^1.6.0",
-    "node-cache": "^5.1.2",
     "bcryptjs": "^3.0.2",
+    "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "express-rate-limit": "^6.7.0",
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
-    "compression": "^1.7.4",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "node-cache": "^5.1.2",
     "pg": "^8.16.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint-plugin-promise": "^6.1.1",
+    "nodemon": "^3.1.10"
   }
 }

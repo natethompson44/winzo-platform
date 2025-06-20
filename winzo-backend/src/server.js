@@ -27,6 +27,9 @@ const authRoutes = require('./routes/auth')
 const sportsRoutes = require('./routes/sports')
 const walletRoutes = require('./routes/walletEnhanced')
 const dashboardRoutes = require('./routes/dashboard')
+const userRoutes = require('./routes/user')
+const analyticsRoutes = require('./routes/analytics')
+const adminRoutes = require('./routes/admin')
 
 const app = express()
 app.set('trust proxy', 1)
@@ -77,6 +80,13 @@ app.use('/api/sports', sportsRoutes)
 app.use('/api/wallet', walletRoutes)
 app.use('/api/dashboard', dashboardRoutes)
 app.use('/api/bets', require('./routes/betting'))
+app.use('/api/user', userRoutes)
+app.use('/api/analytics', analyticsRoutes)
+app.use('/api/admin', adminRoutes)
+app.use('/api/integration-test', require('./routes/integration-test'))
+
+// Serve uploaded files (avatars, etc.)
+app.use('/uploads', express.static('uploads'))
 
 // Health check endpoint
 app.get('/health', (req, res) => {

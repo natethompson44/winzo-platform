@@ -91,7 +91,8 @@ router.post(
             id: newUser.id,
             username: newUser.username,
             email: newUser.email,
-            wallet_balance: newUser.wallet_balance
+            wallet_balance: newUser.wallet_balance,
+            role: newUser.role || 'user'
           }
         }
       })
@@ -155,7 +156,8 @@ router.post(
             id: user.id,
             username: user.username,
             email: user.email,
-            wallet_balance: user.wallet_balance
+            wallet_balance: user.wallet_balance,
+            role: user.role || 'user'
           }
         }
       })
@@ -182,6 +184,7 @@ router.get('/me', auth, async (req, res) => {
         email: user.email,
         wallet_balance: user.wallet_balance,
         is_active: user.is_active,
+        role: user.role || 'user',
         created_at: user.created_at
       }
     })

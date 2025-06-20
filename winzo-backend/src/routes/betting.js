@@ -162,7 +162,7 @@ router.post('/place', auth, async (req, res) => {
 
 /**
  * GET /api/bets/history - Get user betting history
- * Supports filtering and pagination
+ * Supports advanced filtering, pagination, and export
  */
 router.get('/history', auth, async (req, res) => {
   try {
@@ -170,66 +170,148 @@ router.get('/history', auth, async (req, res) => {
     const {
       status = null,
       betType = null,
+      sport = null,
+      minStake = null,
+      maxStake = null,
+      minOdds = null,
+      maxOdds = null,
+      search = null,
       limit = 50,
       offset = 0,
       startDate = null,
-      endDate = null
+      endDate = null,
+      sortBy = 'placed_at',
+      sortOrder = 'DESC',
+      includeAnalytics = false
     } = req.query
-    console.log(` Fetching betting history for user ${userId}...`)
-    // Build where clause
+    
+    console.log(`🏈 Fetching betting history for user ${userId} with filters:`, {
+      status, betType, sport, minStake, maxStake, search
+    })
+    
+    // Build where clause with advanced filtering
     const whereClause = { user_id: userId }
+    
     if (status) {
       whereClause.status = status
     }
     if (betType) {
       whereClause.bet_type = betType
     }
-    if (startDate) {
-      whereClause.placed_at = {
-        ...whereClause.placed_at,
-        [Op.gte]: new Date(startDate)
-      }
+    if (minStake || maxStake) {
+      whereClause.stake = {}
+      if (minStake) whereClause.stake[Op.gte] = parseFloat(minStake)
+      if (maxStake) whereClause.stake[Op.lte] = parseFloat(maxStake)
     }
-    if (endDate) {
-      whereClause.placed_at = {
-        ...whereClause.placed_at,
-        [Op.lte]: new Date(endDate)
-      }
+    if (minOdds || maxOdds) {
+      whereClause.odds = {}
+      if (minOdds) whereClause.odds[Op.gte] = parseFloat(minOdds)
+      if (maxOdds) whereClause.odds[Op.lte] = parseFloat(maxOdds)
     }
+    if (startDate || endDate) {
+      whereClause.placed_at = {}
+      if (startDate) whereClause.placed_at[Op.gte] = new Date(startDate)
+      if (endDate) whereClause.placed_at[Op.lte] = new Date(endDate)
+    }
+    
+    // Build include clause for sports filtering and search
+    const includeClause = {
+      model: SportsEvent,
+      as: 'sportsEvent',
+      attributes: ['external_id', 'sport_key', 'home_team', 'away_team',
+        'commence_time', 'completed', 'home_score', 'away_score'],
+      required: false
+    }
+    
+    if (sport) {
+      includeClause.where = { sport_key: sport }
+      includeClause.required = true
+    }
+    
+    if (search) {
+      includeClause.where = {
+        ...includeClause.where,
+        [Op.or]: [
+          { home_team: { [Op.iLike]: `%${search}%` } },
+          { away_team: { [Op.iLike]: `%${search}%` } },
+          { sport_key: { [Op.iLike]: `%${search}%` } }
+        ]
+      }
+      includeClause.required = true
+    }
+    
+    // Validate sort parameters
+    const validSortFields = ['placed_at', 'stake', 'odds', 'potential_payout', 'status']
+    const validSortOrders = ['ASC', 'DESC']
+    const finalSortBy = validSortFields.includes(sortBy) ? sortBy : 'placed_at'
+    const finalSortOrder = validSortOrders.includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'DESC'
+    
     const bets = await Bet.findAndCountAll({
       where: whereClause,
-      include: [
-        {
-          model: SportsEvent,
-          as: 'sportsEvent',
-          attributes: ['external_id', 'sport_key', 'home_team', 'away_team',
-            'commence_time', 'completed', 'home_score', 'away_score']
-        }
-      ],
-      order: [['placed_at', 'DESC']],
+      include: [includeClause],
+      order: [[finalSortBy, finalSortOrder]],
       limit: parseInt(limit),
       offset: parseInt(offset)
     })
-    // Calculate summary statistics
-    const summary = await calculateBettingSummary(userId)
+    
+    // Calculate summary statistics if requested
+    let summary = null
+    if (includeAnalytics || bets.count > 0) {
+      summary = await calculateBettingSummary(userId, whereClause)
+    }
+    
+    // Format response data with enhanced information
+    const formattedBets = bets.rows.map(bet => ({
+      id: bet.id,
+      date: bet.placed_at,
+      sport: bet.sportsEvent?.sport_key || 'Unknown',
+      event: bet.sportsEvent ? `${bet.sportsEvent.home_team} vs ${bet.sportsEvent.away_team}` : 'Unknown Event',
+      betType: bet.bet_type || 'straight',
+      market: bet.market_type || 'h2h',
+      selection: bet.selected_team,
+      stake: parseFloat(bet.stake || 0),
+      odds: parseFloat(bet.odds || 0),
+      potentialPayout: parseFloat(bet.potential_payout || 0),
+      actualPayout: bet.status === 'won' ? parseFloat(bet.potential_payout || 0) : 0,
+      status: bet.status,
+      profit: bet.status === 'won' ? 
+        parseFloat(bet.potential_payout || 0) - parseFloat(bet.stake || 0) :
+        bet.status === 'lost' ? -parseFloat(bet.stake || 0) : 0,
+      teams: bet.sportsEvent ? {
+        home: bet.sportsEvent.home_team,
+        away: bet.sportsEvent.away_team
+      } : null,
+      eventTime: bet.sportsEvent?.commence_time,
+      bookmaker: bet.bookmakerName || 'winzo',
+      point: bet.point,
+      teaserPoints: bet.teaser_points
+    }))
+    
     res.json({
       success: true,
-      data: bets.rows,
+      message: `Found ${bets.count} betting records`,
+      data: formattedBets,
       pagination: {
         total: bets.count,
         limit: parseInt(limit),
         offset: parseInt(offset),
-        hasMore: bets.count > (parseInt(offset) + parseInt(limit))
+        hasMore: bets.count > (parseInt(offset) + parseInt(limit)),
+        page: Math.floor(parseInt(offset) / parseInt(limit)) + 1,
+        totalPages: Math.ceil(bets.count / parseInt(limit))
       },
       summary,
       filters: {
-        status,
-        betType,
-        startDate,
-        endDate
+        status, betType, sport, minStake, maxStake, minOdds, maxOdds,
+        search, startDate, endDate, sortBy: finalSortBy, sortOrder: finalSortOrder
+      },
+      availableFilters: {
+        sports: await getAvailableSports(userId),
+        betTypes: await getAvailableBetTypes(userId),
+        statuses: ['pending', 'won', 'lost', 'cancelled']
       }
     })
-    console.log(` Returned ${bets.rows.length} betting records for user ${userId}`)
+    
+    console.log(`🏈 Returned ${bets.rows.length} betting records for user ${userId}`)
   } catch (error) {
     console.error('Error fetching betting history:', error)
     res.status(500).json({
@@ -323,12 +405,14 @@ router.post('/:betId/cancel', auth, async (req, res) => {
 
 // Helper Functions
 /**
- * Calculate betting summary for a user
+ * Calculate betting summary for a user with optional filtering
  */
-async function calculateBettingSummary (userId) {
+async function calculateBettingSummary (userId, whereClause = null) {
   try {
+    const baseWhereClause = whereClause || { user_id: userId }
+    
     const summary = await Bet.findAll({
-      where: { user_id: userId },
+      where: baseWhereClause,
       attributes: [
         [sequelize.fn('COUNT', sequelize.col('id')), 'totalBets'],
         [sequelize.fn('SUM', sequelize.col('stake')), 'totalStaked'],
@@ -343,22 +427,34 @@ async function calculateBettingSummary (userId) {
         ), 'betsLost'],
         [sequelize.fn('COUNT',
           sequelize.literal("CASE WHEN status = 'pending' THEN 1 END")
-        ), 'betsPending']
+        ), 'betsPending'],
+        [sequelize.fn('AVG', sequelize.col('stake')), 'averageStake'],
+        [sequelize.fn('AVG', sequelize.col('odds')), 'averageOdds'],
+        [sequelize.fn('MAX', sequelize.col('stake')), 'biggestStake'],
+        [sequelize.fn('MIN', sequelize.col('stake')), 'smallestStake']
       ],
       raw: true
     })
+    
     const stats = summary[0]
     const winRate = stats.betsWon > 0 ? (stats.betsWon / (stats.betsWon + stats.betsLost)) * 100 : 0
     const profit = (stats.totalWinnings || 0) - (stats.totalStaked || 0)
+    const roi = stats.totalStaked > 0 ? (profit / stats.totalStaked) * 100 : 0
+    
     return {
       totalBets: parseInt(stats.totalBets) || 0,
       totalStaked: parseFloat(stats.totalStaked) || 0,
       totalWinnings: parseFloat(stats.totalWinnings) || 0,
       profit,
       winRate: Math.round(winRate * 100) / 100,
+      roi: Math.round(roi * 100) / 100,
       betsWon: parseInt(stats.betsWon) || 0,
       betsLost: parseInt(stats.betsLost) || 0,
-      betsPending: parseInt(stats.betsPending) || 0
+      betsPending: parseInt(stats.betsPending) || 0,
+      averageStake: parseFloat(stats.averageStake) || 0,
+      averageOdds: parseFloat(stats.averageOdds) || 0,
+      biggestStake: parseFloat(stats.biggestStake) || 0,
+      smallestStake: parseFloat(stats.smallestStake) || 0
     }
   } catch (error) {
     console.error('Error calculating betting summary:', error)
@@ -368,10 +464,55 @@ async function calculateBettingSummary (userId) {
       totalWinnings: 0,
       profit: 0,
       winRate: 0,
+      roi: 0,
       betsWon: 0,
       betsLost: 0,
-      betsPending: 0
+      betsPending: 0,
+      averageStake: 0,
+      averageOdds: 0,
+      biggestStake: 0,
+      smallestStake: 0
     }
+  }
+}
+
+/**
+ * Get available sports for a user's betting history
+ */
+async function getAvailableSports(userId) {
+  try {
+    const sports = await sequelize.query(
+      `SELECT DISTINCT se.sport_key 
+       FROM bets b 
+       JOIN sports_events se ON b.sports_event_id = se.external_id 
+       WHERE b.user_id = :userId 
+       ORDER BY se.sport_key`,
+      {
+        replacements: { userId },
+        type: sequelize.QueryTypes.SELECT
+      }
+    )
+    return sports.map(row => row.sport_key)
+  } catch (error) {
+    console.error('Error fetching available sports:', error)
+    return []
+  }
+}
+
+/**
+ * Get available bet types for a user's betting history
+ */
+async function getAvailableBetTypes(userId) {
+  try {
+    const betTypes = await Bet.findAll({
+      where: { user_id: userId },
+      attributes: [[sequelize.fn('DISTINCT', sequelize.col('bet_type')), 'bet_type']],
+      raw: true
+    })
+    return betTypes.map(row => row.bet_type || 'straight').filter(Boolean)
+  } catch (error) {
+    console.error('Error fetching available bet types:', error)
+    return ['straight']
   }
 }
 
