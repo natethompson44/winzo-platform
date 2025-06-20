@@ -323,36 +323,6 @@ const WinzoDashboard: React.FC = () => {
         {/* Right Side */}
         <div className="col-lg-4">
           
-          {/* Quick Actions */}
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Quick Actions</h5>
-              <div className="d-grid gap-2">
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => navigate('/sports')}
-                >
-                  <i className="bi bi-trophy me-2"></i>
-                  Place New Bet
-                </button>
-                <button 
-                  className="btn btn-success"
-                  onClick={() => navigate('/account?tab=deposit')}
-                >
-                  <i className="bi bi-plus-circle me-2"></i>
-                  Deposit Funds
-                </button>
-                <button 
-                  className="btn btn-outline-secondary"
-                  onClick={() => navigate('/account?tab=withdraw')}
-                >
-                  <i className="bi bi-dash-circle me-2"></i>
-                  Withdraw
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Live Events */}
           <div className="card">
             <div className="card-body">

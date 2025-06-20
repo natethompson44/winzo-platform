@@ -102,7 +102,6 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
         <div className="d-flex align-items-center justify-content-between">
           <Link to="/dashboard" className="logo d-flex align-items-center">
             <img src="/assets/img/winzo-logo.png" alt="WINZO" />
-            <span className="d-none d-lg-block">WINZO</span>
             <span className="d-none d-lg-block tagline">Sports</span>
           </Link>
           <i 
@@ -235,22 +234,6 @@ const WinzoLayout: React.FC<WinzoLayoutProps> = ({ children }) => {
               </Link>
             </li>
           ))}
-          
-          <li className="nav-heading">Quick Actions</li>
-          
-          <li className="nav-item">
-            <button className="nav-link collapsed btn btn-link" onClick={() => navigate('/account?tab=deposit')} type="button">
-              <i className="bi bi-plus-circle"></i>
-              <span>Deposit Funds</span>
-            </button>
-          </li>
-          
-          <li className="nav-item">  
-            <button className="nav-link collapsed btn btn-link" onClick={() => navigate('/account?tab=withdraw')} type="button">
-              <i className="bi bi-dash-circle"></i>
-              <span>Withdraw</span>
-            </button>
-          </li>
         </ul>
       </aside>
 
