@@ -54,10 +54,10 @@ describe('Authentication Integration Tests', () => {
     });
 
     test('login with invalid credentials shows error', async () => {
-      const mockPost = apiClient.post as jest.MockedFunction<typeof apiClient.post>;
+      const mockPost = mockApiClient.post as jest.MockedFunction<typeof mockApiClient.post>;
       mockPost.mockRejectedValueOnce({
         response: {
-          data: mockApiResponse(null, false, 'Invalid credentials')
+          data: mockApiResponse(null, false)
         }
       });
 
@@ -90,11 +90,11 @@ describe('Authentication Integration Tests', () => {
         expect(screen.getByText(/password is required/i)).toBeInTheDocument();
       });
 
-      expect(apiClient.post).not.toHaveBeenCalled();
+      expect(mockApiClient.post).not.toHaveBeenCalled();
     });
 
     test('handles network errors gracefully', async () => {
-      const mockPost = apiClient.post as jest.MockedFunction<typeof apiClient.post>;
+      const mockPost = mockApiClient.post as jest.MockedFunction<typeof mockApiClient.post>;
       mockPost.mockRejectedValueOnce(new Error('Network error'));
 
       render(<Login />);
@@ -116,7 +116,7 @@ describe('Authentication Integration Tests', () => {
 
   describe('Registration Flow', () => {
     test('successful registration creates account and logs in', async () => {
-      const mockPost = apiClient.post as jest.MockedFunction<typeof apiClient.post>;
+      const mockPost = mockApiClient.post as jest.MockedFunction<typeof mockApiClient.post>;
       mockPost.mockResolvedValueOnce({
         data: mockApiResponse({
           user: mockUser,
@@ -155,10 +155,10 @@ describe('Authentication Integration Tests', () => {
     });
 
     test('registration with existing username shows error', async () => {
-      const mockPost = apiClient.post as jest.MockedFunction<typeof apiClient.post>;
+      const mockPost = mockApiClient.post as jest.MockedFunction<typeof mockApiClient.post>;
       mockPost.mockRejectedValueOnce({
         response: {
-          data: mockApiResponse(null, false, 'Username already taken')
+          data: mockApiResponse(null, false)
         }
       });
 
@@ -198,7 +198,7 @@ describe('Authentication Integration Tests', () => {
         expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
       });
 
-      expect(apiClient.post).not.toHaveBeenCalled();
+      expect(mockApiClient.post).not.toHaveBeenCalled();
     });
 
     test('email validation works', async () => {
@@ -236,7 +236,7 @@ describe('Authentication Integration Tests', () => {
       localStorage.setItem('authToken', mockAuthToken);
       localStorage.setItem('user', JSON.stringify(mockUser));
 
-      const mockGet = apiClient.get as jest.MockedFunction<typeof apiClient.get>;
+      const mockGet = mockApiClient.get as jest.MockedFunction<typeof mockApiClient.get>;
       mockGet.mockResolvedValueOnce({
         data: mockApiResponse(mockUser)
       });
@@ -268,7 +268,7 @@ describe('Authentication Integration Tests', () => {
     test('handles expired tokens', async () => {
       localStorage.setItem('authToken', 'expired-token');
 
-      const mockGet = apiClient.get as jest.MockedFunction<typeof apiClient.get>;
+      const mockGet = mockApiClient.get as jest.MockedFunction<typeof mockApiClient.get>;
       mockGet.mockRejectedValueOnce({
         response: { status: 401 }
       });
@@ -320,7 +320,7 @@ describe('Authentication Integration Tests', () => {
 
   describe('Loading States', () => {
     test('shows loading state during login', async () => {
-      const mockPost = apiClient.post as jest.MockedFunction<typeof apiClient.post>;
+      const mockPost = mockApiClient.post as jest.MockedFunction<typeof mockApiClient.post>;
       mockPost.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
       render(<Login />);
@@ -339,7 +339,7 @@ describe('Authentication Integration Tests', () => {
     });
 
     test('shows loading state during registration', async () => {
-      const mockPost = apiClient.post as jest.MockedFunction<typeof apiClient.post>;
+      const mockPost = mockApiClient.post as jest.MockedFunction<typeof mockApiClient.post>;
       mockPost.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
       render(<Register />);
