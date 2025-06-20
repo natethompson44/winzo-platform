@@ -77,7 +77,6 @@ export const createLazyImage = (
 export const useLazyImage = (src: string, options: LazyImageOptions = {}) => {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
-  const [, setIsInView] = React.useState(false);
   const imgRef = React.useRef<HTMLImageElement>(null);
 
   React.useEffect(() => {
@@ -249,7 +248,7 @@ export const usePerformanceTracker = (name: string, dependencies: any[] = []) =>
         console.warn(`Slow operation: ${name} took ${metric.duration.toFixed(2)}ms`);
       }
     };
-  }, dependencies);
+  }, [name, dependencies]);
 };
 
 // ===== NETWORK OPTIMIZATION =====
@@ -449,7 +448,7 @@ export const useVirtualScroll = (
 
   const visibleData = React.useMemo(() => {
     return scroller.getVisibleItems();
-  }, [scroller, scrollTop, items]);
+  }, [scroller]);
 
   return {
     ...visibleData,
@@ -457,7 +456,7 @@ export const useVirtualScroll = (
   };
 };
 
-export default {
+const performanceUtils = {
   createLazyImage,
   useLazyImage,
   dynamicImport,
@@ -471,4 +470,6 @@ export default {
   VirtualScroller,
   useVirtualScroll,
   deviceOptimization
-}; 
+};
+
+export default performanceUtils; 

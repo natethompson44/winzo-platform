@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 
 interface SwipeHandlerProps {
   onSwipeLeft?: () => void;
@@ -45,7 +45,7 @@ const SwipeHandler: React.FC<SwipeHandlerProps> = ({
   const [touchInfo, setTouchInfo] = useState<TouchInfo | null>(null);
   const [isTracking, setIsTracking] = useState(false);
 
-  const handleTouchStart = (e: TouchEvent) => {
+  const handleTouchStart = useCallback((e: TouchEvent) => {
     const touch = e.touches[0];
     const newTouchInfo: TouchInfo = {
       startX: touch.clientX,
@@ -65,9 +65,9 @@ const SwipeHandler: React.FC<SwipeHandlerProps> = ({
     if (onSwipeStart) {
       onSwipeStart(touch.clientX, touch.clientY);
     }
-  };
+  }, [onSwipeStart]);
 
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!touchInfo || !isTracking) return;
 
     if (preventDefaultTouchmoveEvent) {
@@ -105,9 +105,9 @@ const SwipeHandler: React.FC<SwipeHandlerProps> = ({
       velocity,
       direction
     });
-  };
+  }, [touchInfo, isTracking, preventDefaultTouchmoveEvent, deltaThreshold]);
 
-  const handleTouchEnd = (e: TouchEvent) => {
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
     if (!touchInfo || !isTracking) return;
 
     const deltaX = touchInfo.deltaX;
@@ -145,7 +145,7 @@ const SwipeHandler: React.FC<SwipeHandlerProps> = ({
     if (onSwipeEnd) {
       onSwipeEnd();
     }
-  };
+  }, [touchInfo, isTracking, threshold, velocityThreshold, onSwipeRight, onSwipeLeft, onSwipeDown, onSwipeUp, onSwipeEnd]);
 
   useEffect(() => {
     const element = elementRef.current;
@@ -162,7 +162,7 @@ const SwipeHandler: React.FC<SwipeHandlerProps> = ({
       element.removeEventListener('touchmove', handleTouchMove);
       element.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [touchInfo, isTracking, preventDefaultTouchmoveEvent]);
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd, preventDefaultTouchmoveEvent]);
 
   return (
     <div 

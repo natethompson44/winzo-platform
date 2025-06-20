@@ -273,7 +273,6 @@ export class NotificationScheduler {
       icon: '/icons/icon-192x192.png',
       badge: '/icons/badge-72x72.png',
       data: notification.data,
-      actions: notification.actions,
       tag: notification.type,
       requireInteraction: true
     });
@@ -454,7 +453,7 @@ export const usePushNotifications = (vapidPublicKey?: string) => {
   };
 };
 
-export default {
+const notificationUtils = {
   notificationManager,
   notificationTemplates,
   notificationScheduler,
@@ -462,4 +461,6 @@ export default {
   useNotificationPermission,
   useInAppNotifications,
   usePushNotifications
-}; 
+};
+
+export default notificationUtils; 

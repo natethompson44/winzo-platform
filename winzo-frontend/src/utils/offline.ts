@@ -315,7 +315,7 @@ export class OfflineApi {
     init: RequestInit, 
     options: OfflineApiOptions
   ): Promise<Response> {
-    let lastError: Error;
+    let lastError: Error = new Error('Request failed');
     
     for (let i = 0; i < options.retryAttempts!; i++) {
       try {
@@ -335,7 +335,7 @@ export class OfflineApi {
       }
     }
     
-    throw lastError!;
+    throw lastError;
   }
 }
 
@@ -497,7 +497,7 @@ export const useOfflineApi = (baseUrl: string, options?: OfflineApiOptions) => {
   return api;
 };
 
-export default {
+const offlineUtils = {
   offlineManager,
   offlineStorage,
   OfflineApi,
@@ -506,4 +506,6 @@ export default {
   useOnlineStatus,
   useOfflineStorage,
   useOfflineApi
-}; 
+};
+
+export default offlineUtils; 

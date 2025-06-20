@@ -6,7 +6,6 @@ import '@testing-library/jest-dom';
 
 // Mock IntersectionObserver
 (global as any).IntersectionObserver = class IntersectionObserver {
-  constructor() {}
   observe() {
     return null;
   }

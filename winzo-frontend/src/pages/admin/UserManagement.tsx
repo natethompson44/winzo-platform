@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import UserTable from '../../components/admin/UserTable';
 import apiClient from '../../utils/apiClient';
@@ -42,11 +42,7 @@ const UserManagement: React.FC = () => {
     sortOrder: 'DESC'
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, [pagination.page, filters]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const params = {
@@ -73,7 +69,11 @@ const UserManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, filters]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleFilterChange = (newFilters: Partial<UserFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));

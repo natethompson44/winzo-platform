@@ -363,7 +363,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   );
 };
 
-export default {
+const loadingComponents = {
   LoadingSpinner,
   LoadingDots,
   Skeleton,
@@ -375,4 +375,6 @@ export default {
   ButtonLoading,
   ProgressiveLoading,
   LoadingOverlay
-}; 
+};
+
+export default loadingComponents; 
