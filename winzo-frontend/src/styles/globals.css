@@ -11,6 +11,10 @@
 /* Import page-specific styles */
 @import './dashboard.css';
 @import './sports.css';
+@import './mobile.css';
+@import './animations.css';
+@import './error.css';
+@import './notifications.css';
 
 /* Global styles and overrides */
 body {
