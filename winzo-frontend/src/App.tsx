@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AppLayout } from './components/layout';
 import Dashboard from './pages/Dashboard';
 import Sports from './pages/Sports';
+import Account from './pages/Account';
 import LayoutDemo from './pages/LayoutDemo';
 import './styles/globals.css';
 
@@ -19,6 +20,9 @@ const App: React.FC = () => {
           
           {/* Sports Betting - main money-making interface */}
           <Route path="/sports" element={<Sports />} />
+          
+          {/* Account Management - comprehensive account settings */}
+          <Route path="/account" element={<Account />} />
           
           {/* Layout demo page */}
           <Route path="/layout-demo" element={<LayoutDemo />} />
