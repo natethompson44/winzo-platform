@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 // SVG Icons
 const SearchIcon = () => (
@@ -64,13 +66,19 @@ const Header: React.FC<HeaderProps> = ({
   onMobileMenuToggle,
   isSidebarCollapsed = false,
   onSearch,
-  userBalance = 1250.75,
-  userName = 'John Doe',
+  userBalance,
+  userName,
   notifications = 3
 }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+  // Use auth data with fallbacks
+  const displayBalance = userBalance ?? user?.wallet_balance ?? 0;
+  const displayName = userName ?? user?.username ?? 'User';
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -87,11 +95,22 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const handleMenuItemClick = (itemId: string, href?: string) => {
+    setIsUserMenuOpen(false);
+    
+    if (itemId === 'logout') {
+      logout();
+      navigate('/');
+    } else if (href) {
+      navigate(href);
+    }
+  };
+
   const userMenuItems = [
-    { id: 'profile', label: 'My Profile', icon: UserIcon, href: '/profile' },
-    { id: 'wallet', label: 'Wallet', icon: WalletIcon, href: '/wallet' },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon, href: '/settings' },
-    { id: 'logout', label: 'Logout', icon: LogoutIcon, href: '/logout', isDestructive: true }
+    { id: 'profile', label: 'My Profile', icon: UserIcon, href: '/account' },
+    { id: 'wallet', label: 'Wallet', icon: WalletIcon, href: '/account' },
+    { id: 'settings', label: 'Settings', icon: SettingsIcon, href: '/account' },
+    { id: 'logout', label: 'Logout', icon: LogoutIcon, isDestructive: true }
   ];
 
   const mockNotifications = [
@@ -143,7 +162,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="balance-display hidden-mobile">
           <div className="balance-info">
             <span className="balance-label">Balance</span>
-            <span className="balance-amount">${userBalance.toFixed(2)}</span>
+            <span className="balance-amount">${displayBalance.toFixed(2)}</span>
           </div>
         </div>
 
@@ -198,8 +217,8 @@ const Header: React.FC<HeaderProps> = ({
               </div>
             </div>
             <div className="user-info hidden-mobile">
-              <div className="user-name">{userName}</div>
-              <div className="user-balance">${userBalance.toFixed(2)}</div>
+              <div className="user-name">{displayName}</div>
+              <div className="user-balance">${displayBalance.toFixed(2)}</div>
             </div>
             <ChevronDownIcon />
           </button>
@@ -212,8 +231,8 @@ const Header: React.FC<HeaderProps> = ({
                   <UserIcon />
                 </div>
                 <div className="user-details">
-                  <div className="user-name">{userName}</div>
-                  <div className="user-email">john.doe@example.com</div>
+                  <div className="user-name">{displayName}</div>
+                  <div className="user-email">{user?.email || 'No email'}</div>
                 </div>
               </div>
               
@@ -224,10 +243,7 @@ const Header: React.FC<HeaderProps> = ({
                     <button
                       key={item.id}
                       className={`dropdown-item ${item.isDestructive ? 'destructive' : ''}`}
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
-                        // Handle navigation
-                      }}
+                      onClick={() => handleMenuItemClick(item.id, item.href)}
                     >
                       <IconComponent />
                       <span>{item.label}</span>

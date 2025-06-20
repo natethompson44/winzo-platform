@@ -241,6 +241,175 @@ class ApiClient {
       return false;
     }
   }
+
+  // ===== USER MANAGEMENT METHODS =====
+
+  /**
+   * Get user profile
+   */
+  async getUserProfile(): Promise<ApiResponse<any>> {
+    return this.get('/user/profile');
+  }
+
+  /**
+   * Update user profile
+   */
+  async updateUserProfile(profileData: any): Promise<ApiResponse<any>> {
+    return this.put('/user/profile', profileData);
+  }
+
+  /**
+   * Upload user avatar
+   */
+  async uploadAvatar(file: File): Promise<ApiResponse<any>> {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    
+    return this.post('/user/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+
+  /**
+   * Get user preferences
+   */
+  async getUserPreferences(): Promise<ApiResponse<any>> {
+    return this.get('/user/preferences');
+  }
+
+  /**
+   * Update user preferences
+   */
+  async updateUserPreferences(preferences: any): Promise<ApiResponse<any>> {
+    return this.put('/user/preferences', preferences);
+  }
+
+  /**
+   * Change user password
+   */
+  async changePassword(passwordData: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }): Promise<ApiResponse<any>> {
+    return this.put('/user/password', passwordData);
+  }
+
+  /**
+   * Get security settings
+   */
+  async getSecuritySettings(): Promise<ApiResponse<any>> {
+    return this.get('/user/security');
+  }
+
+  /**
+   * Get active sessions
+   */
+  async getActiveSessions(): Promise<ApiResponse<any>> {
+    return this.get('/user/sessions');
+  }
+
+  // ===== ANALYTICS METHODS =====
+
+  /**
+   * Get chart data
+   */
+  async getChartData(params?: {
+    timeRange?: string;
+    chartType?: string;
+  }): Promise<ApiResponse<any>> {
+    return this.get('/analytics/charts', { params });
+  }
+
+  /**
+   * Get analytics summary
+   */
+  async getAnalyticsSummary(params?: {
+    period?: string;
+  }): Promise<ApiResponse<any>> {
+    return this.get('/analytics/summary', { params });
+  }
+
+  /**
+   * Export analytics data
+   */
+  async exportAnalytics(params?: {
+    format?: string;
+    includeCharts?: boolean;
+  }): Promise<ApiResponse<any>> {
+    return this.get('/analytics/export', { params });
+  }
+
+  // ===== ENHANCED BETTING HISTORY =====
+
+  /**
+   * Get enhanced betting history with filtering
+   */
+  async getBettingHistory(params?: {
+    status?: string;
+    betType?: string;
+    sport?: string;
+    minStake?: number;
+    maxStake?: number;
+    minOdds?: number;
+    maxOdds?: number;
+    search?: string;
+    limit?: number;
+    offset?: number;
+    startDate?: string;
+    endDate?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    includeAnalytics?: boolean;
+  }): Promise<ApiResponse<any>> {
+    return this.get('/bets/history', { params });
+  }
+
+  // ===== INTEGRATION TEST METHODS =====
+
+  /**
+   * Test backend connectivity
+   */
+  async testConnectivity(): Promise<ApiResponse<any>> {
+    return this.get('/integration-test/ping');
+  }
+
+  /**
+   * Test authentication
+   */
+  async testAuthentication(): Promise<ApiResponse<any>> {
+    return this.get('/integration-test/auth-test');
+  }
+
+  /**
+   * Test CORS configuration
+   */
+  async testCORS(): Promise<ApiResponse<any>> {
+    return this.get('/integration-test/cors-test');
+  }
+
+  /**
+   * Test data handling
+   */
+  async testDataHandling(testData: any): Promise<ApiResponse<any>> {
+    return this.post('/integration-test/data-test', testData);
+  }
+
+  /**
+   * Get endpoints status
+   */
+  async getEndpointsStatus(): Promise<ApiResponse<any>> {
+    return this.get('/integration-test/endpoints-status');
+  }
+
+  /**
+   * Get sample data for testing
+   */
+  async getSampleData(): Promise<ApiResponse<any>> {
+    return this.get('/integration-test/sample-data');
+  }
 }
 
 // Create and export a singleton instance

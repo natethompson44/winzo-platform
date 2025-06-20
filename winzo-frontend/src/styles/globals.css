@@ -9,12 +9,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 /* Import page-specific styles */
+@import './preserved-auth.css';
 @import './dashboard.css';
 @import './sports.css';
 @import './mobile.css';
 @import './animations.css';
 @import './error.css';
 @import './notifications.css';
+@import './admin.css';
 
 /* Global styles and overrides */
 body {

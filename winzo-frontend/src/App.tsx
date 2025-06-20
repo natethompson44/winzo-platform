@@ -7,15 +7,23 @@ import { FullPageLoading } from './components/ui/LoadingStates';
 import { useInAppNotifications } from './utils/notifications';
 import { useOnlineStatus } from './utils/offline';
 import { serviceWorkerManager } from './utils/offline';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './styles/globals.css';
 
 // Lazy load pages for better performance
+const HomePage = React.lazy(() => import('./pages/HomePage'));
+const Login = React.lazy(() => import('./pages/Login'));
+const Register = React.lazy(() => import('./pages/Register'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const Sports = React.lazy(() => import('./pages/Sports'));
 const Account = React.lazy(() => import('./pages/Account'));
 const History = React.lazy(() => import('./pages/History'));
 const LayoutDemo = React.lazy(() => import('./pages/LayoutDemo'));
 const Error404 = React.lazy(() => import('./pages/Error404'));
+
+// Admin pages
+const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
+const UserManagement = React.lazy(() => import('./pages/admin/UserManagement'));
 
 // Route wrapper with error boundary
 const RouteWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -28,31 +36,107 @@ const RouteWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   );
 };
 
+// Protected route wrapper
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <FullPageLoading message="Checking authentication..." />;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Public route wrapper (redirects to dashboard if already authenticated)
+const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <FullPageLoading message="Checking authentication..." />;
+  }
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 // App routes component
 const AppRoutes: React.FC = () => {
   const location = useLocation();
   const [currentRoute, setCurrentRoute] = useState(location.pathname);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     setCurrentRoute(location.pathname);
   }, [location.pathname]);
 
+  // Public routes don't need AppLayout
+  const isPublicRoute = ['/', '/login', '/register'].includes(location.pathname);
+
+  if (isPublicRoute) {
+    return (
+      <Routes>
+        {/* Public HomePage */}
+        <Route 
+          path="/" 
+          element={
+            <PublicRoute>
+              <RouteWrapper>
+                <HomePage />
+              </RouteWrapper>
+            </PublicRoute>
+          } 
+        />
+        
+        {/* Login Page */}
+        <Route 
+          path="/login" 
+          element={
+            <PublicRoute>
+              <RouteWrapper>
+                <Login />
+              </RouteWrapper>
+            </PublicRoute>
+          } 
+        />
+        
+        {/* Register Page */}
+        <Route 
+          path="/register" 
+          element={
+            <PublicRoute>
+              <RouteWrapper>
+                <Register />
+              </RouteWrapper>
+            </PublicRoute>
+          } 
+        />
+        
+        {/* Catch-all for public routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    );
+  }
+
+  // Protected routes use AppLayout
   return (
     <AppLayout currentRoute={currentRoute}>
       <Routes>
-        {/* Default route redirects to dashboard */}
-        <Route 
-          path="/" 
-          element={<Navigate to="/dashboard" replace />} 
-        />
-        
         {/* Dashboard - main landing page after login */}
         <Route 
           path="/dashboard" 
           element={
-            <RouteWrapper>
-              <Dashboard />
-            </RouteWrapper>
+            <ProtectedRoute>
+              <RouteWrapper>
+                <Dashboard />
+              </RouteWrapper>
+            </ProtectedRoute>
           } 
         />
         
@@ -60,9 +144,11 @@ const AppRoutes: React.FC = () => {
         <Route 
           path="/sports" 
           element={
-            <RouteWrapper>
-              <Sports />
-            </RouteWrapper>
+            <ProtectedRoute>
+              <RouteWrapper>
+                <Sports />
+              </RouteWrapper>
+            </ProtectedRoute>
           } 
         />
         
@@ -70,9 +156,11 @@ const AppRoutes: React.FC = () => {
         <Route 
           path="/account" 
           element={
-            <RouteWrapper>
-              <Account />
-            </RouteWrapper>
+            <ProtectedRoute>
+              <RouteWrapper>
+                <Account />
+              </RouteWrapper>
+            </ProtectedRoute>
           } 
         />
         
@@ -80,9 +168,11 @@ const AppRoutes: React.FC = () => {
         <Route 
           path="/history" 
           element={
-            <RouteWrapper>
-              <History />
-            </RouteWrapper>
+            <ProtectedRoute>
+              <RouteWrapper>
+                <History />
+              </RouteWrapper>
+            </ProtectedRoute>
           } 
         />
         
@@ -90,9 +180,34 @@ const AppRoutes: React.FC = () => {
         <Route 
           path="/layout-demo" 
           element={
-            <RouteWrapper>
-              <LayoutDemo />
-            </RouteWrapper>
+            <ProtectedRoute>
+              <RouteWrapper>
+                <LayoutDemo />
+              </RouteWrapper>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Admin Routes */}
+        <Route 
+          path="/admin/dashboard" 
+          element={
+            <ProtectedRoute>
+              <RouteWrapper>
+                <AdminDashboard />
+              </RouteWrapper>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/admin/users" 
+          element={
+            <ProtectedRoute>
+              <RouteWrapper>
+                <UserManagement />
+              </RouteWrapper>
+            </ProtectedRoute>
           } 
         />
         
@@ -106,13 +221,13 @@ const AppRoutes: React.FC = () => {
           } 
         />
         
-        {/* Catch-all route - show 404 */}
+        {/* Catch-all route - redirect to dashboard or login */}
         <Route 
           path="*" 
           element={
-            <RouteWrapper>
-              <Error404 />
-            </RouteWrapper>
+            isAuthenticated ? 
+              <Navigate to="/dashboard" replace /> : 
+              <Navigate to="/login" replace />
           } 
         />
       </Routes>
@@ -234,26 +349,28 @@ const App: React.FC = () => {
         // In production, send to error tracking service
       }}
     >
-      <Router>
-        <div className="app">
-          {/* Main app routes */}
-          <AppRoutes />
-          
-          {/* Notification system */}
-          <NotificationContainer />
-          
-          {/* Offline indicator */}
-          <OfflineIndicator />
-          
-          {/* PWA install prompt */}
-          {showPWAInstall && (
-            <PWAInstall 
-              onInstall={handlePWAInstall}
-              onDismiss={handlePWADismiss}
-            />
-          )}
-        </div>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <div className="app">
+            {/* Main app routes */}
+            <AppRoutes />
+            
+            {/* Notification system */}
+            <NotificationContainer />
+            
+            {/* Offline indicator */}
+            <OfflineIndicator />
+            
+            {/* PWA install prompt */}
+            {showPWAInstall && (
+              <PWAInstall 
+                onInstall={handlePWAInstall}
+                onDismiss={handlePWADismiss}
+              />
+            )}
+          </div>
+        </Router>
+      </AuthProvider>
     </ErrorBoundary>
   );
 };
