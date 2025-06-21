@@ -557,10 +557,10 @@ npm run test         # Run tests
 npm run lint         # Run ESLint
 
 # Database
-npm run db:setup     # Setup database
-npm run db:reset     # Reset database (dev only)
-npm run db:migrate   # Run migrations
-npm run db:seed      # Seed test data
+npm run migrate             # Run comprehensive migrations
+npm run migrate:prod        # Run migrations in production
+npm run db:check           # Check database tables and users
+npm run db:create-test-user # Create test user for development
 
 # Deployment
 npm run deploy       # Deploy to Railway
@@ -610,6 +610,153 @@ const config = {
 };
 
 export default config;
+```
+
+## Database Management
+
+### Migration System
+
+WINZO uses a comprehensive migration system that automatically handles database schema updates. The migration system is designed to be safe for both development and production environments.
+
+#### Migration Architecture
+```
+winzo-backend/src/database/
+├── complete-migration.js          # Comprehensive migration runner
+├── init.js                       # Database initialization
+├── schema.sql                    # Base database schema
+├── user_enhancement_migration.sql # User profile enhancements
+├── admin_role_migration.sql      # Admin role support
+├── create-test-user.js           # Development utility
+└── check-tables.js              # Database inspection tool
+```
+
+#### How Migrations Work
+
+1. **Automatic Execution**: Migrations run automatically when the server starts
+2. **Idempotent Operations**: Safe to run multiple times - checks existing state
+3. **Progressive Updates**: Applies only missing schema changes
+4. **Production Safe**: Includes proper error handling and rollback capabilities
+
+#### Migration Process
+
+The `complete-migration.js` script runs these steps in order:
+
+1. **Basic Schema**: Creates core tables (users, sports, events, odds, bets, transactions)
+2. **User Enhancements**: Adds profile fields (first_name, last_name, phone, preferences, etc.)
+3. **Admin Support**: Adds role-based access control
+4. **Validation**: Verifies all changes were applied successfully
+
+### Available Commands
+
+```bash
+# Run all necessary migrations
+npm run migrate
+
+# Run migrations in production environment
+npm run migrate:prod
+
+# Check current database state
+npm run db:check
+
+# Create test user for development
+npm run db:create-test-user
+```
+
+### Migration Details
+
+#### Schema Migration (schema.sql)
+- Creates base tables: users, sports, sports_events, odds, bets, transactions, bookmakers
+- Establishes relationships and foreign keys
+- Adds essential indexes for performance
+- Inserts default bookmaker data
+
+#### User Enhancement Migration
+- Adds personal information fields (name, phone, address, etc.)
+- Adds verification status fields (email_verified, phone_verified)
+- Adds security features (two_factor_enabled, account_locked, login_attempts)
+- Adds preferences JSON field for user settings
+- Adds invite_code for referral system
+
+#### Admin Role Migration
+- Adds role field to users table ('user' or 'admin')
+- Creates index for role-based queries
+- Enables admin dashboard functionality
+
+### Development Workflow
+
+#### Local Development
+```bash
+# Initial setup
+npm install
+npm run migrate
+npm run db:create-test-user
+
+# Check database state
+npm run db:check
+
+# Start development server
+npm run dev
+```
+
+#### Production Deployment
+- Migrations run automatically on Railway when the app starts
+- Production DATABASE_URL is used automatically
+- No manual intervention required
+
+### Troubleshooting Database Issues
+
+#### Common Issues
+```bash
+# Check if database connection is working
+npm run db:check
+
+# Verify migrations completed
+npm run migrate
+
+# Create fresh test user
+npm run db:create-test-user
+
+# Reset database (development only)
+# Note: This will delete all data!
+psql $DATABASE_URL -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+npm run migrate
+```
+
+#### Database Schema Verification
+```sql
+-- Check if user enhancement fields exist
+SELECT column_name, data_type, is_nullable, column_default 
+FROM information_schema.columns 
+WHERE table_name = 'users' 
+ORDER BY ordinal_position;
+
+-- Check user roles
+SELECT DISTINCT role FROM users;
+
+-- Verify indexes exist
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'users';
+```
+
+### Adding New Migrations
+
+When adding new database features:
+
+1. **Create Migration SQL File**: Add new `.sql` file in `src/database/`
+2. **Update complete-migration.js**: Add check and execution logic
+3. **Test Locally**: Verify migration works on fresh database
+4. **Update Documentation**: Document new fields/tables
+
+#### Example Migration Addition
+```javascript
+// In complete-migration.js
+const newFeatureExists = await checkIfColumnExists(sequelize, 'users', 'new_feature_field')
+
+if (!newFeatureExists) {
+  console.log('\n🆕 Running new feature migration...')
+  await runMigrationScript(sequelize, 'new_feature_migration.sql', 'New feature migration')
+} else {
+  console.log('\n🆕 New feature already exists')
+}
 ```
 
 ## Performance
@@ -696,13 +843,16 @@ REACT_APP_DEBUG_MODE=true npm start
 
 #### Database Issues
 ```bash
-# Reset database (development only)
-npm run db:reset
+# Check database state and connection
+npm run db:check
 
-# Check database connection
-node -e "require('./src/database/init').testConnection()"
+# Run migrations manually
+npm run migrate
 
-# View database logs
+# Create test user for login testing
+npm run db:create-test-user
+
+# View database logs (if available)
 tail -f /var/log/postgresql/postgresql.log
 ```
 
