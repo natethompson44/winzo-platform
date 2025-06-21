@@ -248,7 +248,7 @@ class ApiClient {
    * Get user profile
    */
   async getUserProfile(): Promise<ApiResponse<any>> {
-    return this.get('/user/profile');
+    return this.get('/auth/me');
   }
 
   /**

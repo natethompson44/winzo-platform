@@ -51,8 +51,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     try {
       const response = await apiClient.getUserProfile();
-      if (response.success && response.data) {
-        setUser(response.data);
+      if (response.success && response.data && response.data.success && response.data.data) {
+        setUser(response.data.data);
       } else {
         localStorage.removeItem('authToken');
       }
@@ -75,13 +75,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       console.log('✅ Login response:', response);
       
-      if (response.success && response.data) {
-        const { token, user: userData } = response.data;
+      if (response.success && response.data && response.data.success && response.data.data) {
+        const { token, user: userData } = response.data.data;
         localStorage.setItem('authToken', token);
         setUser(userData);
         return true;
       }
-      console.log('❌ Login failed - no success flag');
+      console.log('❌ Login failed - invalid response structure:', response);
       return false;
     } catch (error: any) {
       console.error('❌ Login failed:', error);
@@ -97,8 +97,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         invite_code: inviteCode
       });
       
-      if (response.success && response.data) {
-        const { token, user: userData } = response.data;
+      if (response.success && response.data && response.data.success && response.data.data) {
+        const { token, user: userData } = response.data.data;
         localStorage.setItem('authToken', token);
         setUser(userData);
         return true;
@@ -118,8 +118,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshUser = async () => {
     try {
       const response = await apiClient.getUserProfile();
-      if (response.success && response.data) {
-        setUser(response.data);
+      if (response.success && response.data && response.data.success && response.data.data) {
+        setUser(response.data.data);
       }
     } catch (error) {
       console.error('Failed to refresh user data:', error);
