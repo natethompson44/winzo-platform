@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Rule #3: Repository Cleanliness and Consistency (ALWAYS ACTIVE)
+
+MAINTAIN PRISTINE REPOSITORY STATE:
+
+1. FILE ORGANIZATION:
+   - Keep winzo-frontend/src/ organized by feature and component type
+   - Maintain clean winzo-backend/src/ structure (routes, models, services, middleware)
+   - Store all documentation in docs/ with proper categorization
+   - Archive old/temporary files in docs/archive/ rather than deleting
+
+2. CODE CONSISTENCY:
+   - Follow established patterns from existing codebase
+   - Use CSS variables from design system (never hardcode colors/spacing)
+   - Maintain TypeScript interfaces and type safety
+   - Follow established naming conventions and file structure
+   - Ensure all imports use consistent path patterns
+
+3. QUALITY STANDARDS:
+   - Fix ESLint warnings immediately (CI=true treats warnings as errors)
+   - Maintain TypeScript strict mode compliance
+   - Ensure responsive design works on all breakpoints
+   - Test API integrations and error handling
+   - Verify build process completes successfully
+
+4. DOCUMENTATION HYGIENE:
+   - Remove outdated or redundant documentation
+   - Consolidate duplicate information
+   - Maintain accurate cross-references and links
+   - Keep code examples current and functional
+   - Update version numbers and dates where applicable
+
+5. DEPLOYMENT READINESS:
+   - Ensure changes work in both development and production
+   - Verify environment variables are properly configured
+   - Test build process before committing
+   - Maintain compatibility with Netlify/Railway deployment
+   - Update deployment documentation for any infrastructure changes
+
+ALWAYS leave the repository in a better state than you found it.
+

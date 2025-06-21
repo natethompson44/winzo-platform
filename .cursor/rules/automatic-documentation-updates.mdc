@@ -1,0 +1,41 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Rule #2: Automatic Documentation Updates (ALWAYS ACTIVE)
+
+MANDATORY: After making ANY code changes, automatically update relevant documentation.
+
+DOCUMENTATION UPDATE REQUIREMENTS:
+
+1. CODE CHANGES → UPDATE DOCS:
+   - New components → Update DESIGN_SYSTEM_GUIDE.md component library
+   - API changes → Update API_DOCUMENTATION.md with new endpoints/examples
+   - New features → Update USER_GUIDE.md and ADMIN_GUIDE.md as applicable
+   - Configuration changes → Update DEVELOPMENT_GUIDE.md and DEPLOYMENT_GUIDE.md
+   - Database changes → Update API_DOCUMENTATION.md schema section
+
+2. SPECIFIC UPDATE TRIGGERS:
+   - New CSS variables → Add to DESIGN_SYSTEM_GUIDE.md variables section
+   - New React components → Document in DESIGN_SYSTEM_GUIDE.md with usage examples
+   - New API endpoints → Add to API_DOCUMENTATION.md with request/response examples
+   - New user features → Update USER_GUIDE.md with step-by-step instructions
+   - New admin features → Update ADMIN_GUIDE.md with management procedures
+   - Environment changes → Update DEPLOYMENT_GUIDE.md configuration sections
+
+3. DOCUMENTATION STANDARDS:
+   - Include code examples for all new components/APIs
+   - Add screenshots for UI changes (note where needed)
+   - Update table of contents and cross-references
+   - Maintain consistent formatting and structure
+   - Verify all links and references work correctly
+
+4. CROSS-REFERENCE UPDATES:
+   - Update docs/INDEX.md if new major sections added
+   - Update README.md if core features change
+   - Update PROJECT_OVERVIEW.md if architecture changes
+   - Ensure all documentation links remain functional
+
+NEVER make code changes without updating corresponding documentation.
+

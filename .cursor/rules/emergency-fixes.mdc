@@ -1,0 +1,32 @@
+---
+description: For urgent production issues, deployment failures, or critical bugs.
+globs: 
+alwaysApply: false
+---
+# Rule #5: Emergency Fixes and Hotfixes (USE AS NEEDED)
+
+For urgent production issues, deployment failures, or critical bugs.
+
+EMERGENCY RESPONSE PROTOCOL:
+1. Identify root cause quickly using error logs and documentation
+2. Implement minimal, targeted fix without breaking existing functionality
+3. Test fix thoroughly in development environment
+4. Update relevant documentation immediately
+5. Deploy with careful monitoring
+
+COMMON EMERGENCY SCENARIOS:
+- Netlify build failures (usually ESLint warnings treated as errors)
+- API integration issues (check API_DOCUMENTATION.md for correct endpoints)
+- Authentication problems (verify JWT configuration and user flow)
+- Mobile responsiveness issues (check design system breakpoints)
+- Database connection issues (verify environment variables)
+
+HOTFIX STANDARDS:
+- Make minimal changes to reduce risk
+- Maintain code quality and documentation standards
+- Include rollback plan and testing verification
+- Update DEPLOYMENT_GUIDE.md with lessons learned
+- Schedule proper fix for next development cycle if needed
+
+NEVER compromise long-term code quality for short-term fixes.
+

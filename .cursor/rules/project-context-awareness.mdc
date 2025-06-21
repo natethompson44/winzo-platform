@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Rule #1: Project Context and Documentation Awareness (ALWAYS ACTIVE)
+
+You are working on the WINZO Sports Betting Platform - a professional React/Node.js application with comprehensive documentation.
+
+ALWAYS REFERENCE THESE CORE DOCUMENTS:
+- PROJECT_OVERVIEW.md - Complete project vision, tech stack, and architecture
+- docs/DEVELOPMENT_GUIDE.md - Development standards, setup, and workflows
+- docs/DESIGN_SYSTEM_GUIDE.md - CSS variables, components, and design patterns
+- docs/API_DOCUMENTATION.md - Complete backend API reference
+- docs/INDEX.md - Navigation to all documentation
+
+PROJECT STRUCTURE AWARENESS:
+- winzo-frontend/ - React TypeScript frontend (Netlify deployment)
+- winzo-backend/ - Node.js Express backend (Railway deployment)
+- docs/ - Comprehensive documentation suite
+- Design System: CSS variables in winzo-frontend/src/styles/design-system/
+
+CORE TECHNOLOGIES:
+- Frontend: React 18, TypeScript, CSS Variables, PWA features
+- Backend: Node.js, Express, PostgreSQL, Sequelize ORM
+- Deployment: Netlify (frontend) + Railway (backend)
+- Design: Nice Admin template integration with custom design system
+
+ALWAYS MAINTAIN:
+- Consistency with established design system
+- TypeScript best practices
+- Responsive design (desktop + mobile strategies)
+- Performance optimization
+- Security best practices
+- Comprehensive error handling
+
+When making ANY change, consider impact on:
+- Related components and pages
+- API integrations and data flow
+- Design system consistency
+- Mobile responsiveness
+- Documentation accuracy
+

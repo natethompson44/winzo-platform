@@ -1,0 +1,39 @@
+---
+description: Use this rule when making significant changes or adding new features.
+globs: 
+alwaysApply: false
+---
+# Rule #4: Context-Aware Development (USE AS NEEDED)
+
+When working on specific features or making complex changes, provide comprehensive context awareness.
+
+FEATURE DEVELOPMENT CONTEXT:
+- Understand the complete user journey for the feature being modified
+- Consider impact on both desktop and mobile experiences
+- Ensure integration with existing authentication and state management
+- Maintain consistency with sports betting domain logic
+- Consider admin dashboard implications for user-facing changes
+
+INTEGRATION AWARENESS:
+- Frontend changes may require backend API updates
+- Design system changes affect all components using those variables
+- Database schema changes require API and frontend updates
+- Authentication changes affect all protected routes and components
+- Mobile optimizations may require separate component variants
+
+TESTING CONSIDERATIONS:
+- Unit tests for new components and utilities
+- Integration tests for API changes
+- Manual testing procedures for UI changes
+- Cross-browser compatibility verification
+- Mobile device testing requirements
+
+PERFORMANCE IMPACT:
+- Bundle size implications of new dependencies
+- Database query optimization for new features
+- Caching strategies for frequently accessed data
+- Image optimization and lazy loading
+- API response time considerations
+
+Use this rule when making significant changes or adding new features.
+
