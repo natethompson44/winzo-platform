@@ -11,10 +11,11 @@ const router = express.Router()
 /**
  * Generate a simple invite code for new users. In production you might want a
  * more robust solution to avoid collisions.
+ * Currently unused but kept for future implementation.
  */
-function generateInviteCode () {
-  return Math.random().toString(36).substring(2, 8).toUpperCase()
-}
+// function generateInviteCode () {
+//   return Math.random().toString(36).substring(2, 8).toUpperCase()
+// }
 
 // Register a new user using an existing invite code or a master code.
 router.post(

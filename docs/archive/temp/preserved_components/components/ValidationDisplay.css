@@ -1,0 +1,249 @@
+/* Validation Display Component */
+.validation-display {
+  margin: 6px 16px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  overflow: hidden;
+}
+
+/* Validation Sections */
+.validation-section {
+  padding: 8px;
+}
+
+.validation-section.errors {
+  background: rgba(239, 68, 68, 0.05);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.validation-section.warnings {
+  background: rgba(245, 158, 11, 0.05);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+/* Headers */
+.validation-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.validation-icon {
+  font-size: 0.75rem;
+}
+
+.validation-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--betslip-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Validation Lists */
+.validation-list {
+  margin-bottom: 4px;
+}
+
+.validation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 2px;
+  padding: 2px 0;
+}
+
+.validation-item:last-child {
+  margin-bottom: 0;
+}
+
+.validation-bullet {
+  font-size: 0.65rem;
+  color: var(--betslip-accent-error);
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.validation-item.warning .validation-bullet {
+  color: var(--betslip-accent-warning);
+}
+
+.validation-text {
+  font-size: 0.65rem;
+  line-height: 1.3;
+  color: var(--betslip-text-primary);
+  font-weight: 500;
+}
+
+/* Help Section */
+.validation-help {
+  padding: 4px 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.help-text {
+  font-size: 0.6rem;
+  color: var(--betslip-accent-error);
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* Bet Type Help */
+.bet-type-help {
+  padding: 6px;
+  background: rgba(79, 70, 229, 0.05);
+  border-top: 1px solid rgba(79, 70, 229, 0.1);
+}
+
+.help-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.help-icon {
+  font-size: 0.65rem;
+}
+
+.help-title {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--betslip-accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.help-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.help-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 1px 0;
+}
+
+.rule-bullet {
+  font-size: 0.6rem;
+  color: var(--betslip-accent-primary);
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.rule-text {
+  font-size: 0.6rem;
+  line-height: 1.2;
+  color: var(--betslip-text-secondary);
+  font-weight: 500;
+}
+
+/* Valid State - Success Display */
+.validation-display.valid {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.validation-section.success {
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.validation-section.success .validation-bullet {
+  color: var(--betslip-accent-success);
+}
+
+.validation-section.success .help-text {
+  color: var(--betslip-accent-success);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .validation-display {
+    margin: 8px 12px;
+  }
+
+  .validation-section {
+    padding: 10px;
+  }
+
+  .validation-text,
+  .rule-text {
+    font-size: 0.7rem;
+  }
+
+  .validation-title,
+  .help-title {
+    font-size: 0.7rem;
+  }
+}
+
+/* Animation for Dynamic Updates */
+.validation-display {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Compact Mode for Limited Space */
+.validation-display.compact {
+  margin: 6px 12px;
+}
+
+.validation-display.compact .validation-section {
+  padding: 8px;
+}
+
+.validation-display.compact .validation-text,
+.validation-display.compact .rule-text {
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+.validation-display.compact .validation-title,
+.validation-display.compact .help-title {
+  font-size: 0.65rem;
+}
+
+/* Tooltip Styles for Interactive Elements */
+.validation-item[data-tooltip] {
+  position: relative;
+  cursor: help;
+}
+
+.validation-item[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 8px;
+  background: var(--betslip-bg-primary);
+  color: var(--betslip-text-primary);
+  font-size: 0.65rem;
+  border-radius: 4px;
+  border: 1px solid var(--betslip-border-color);
+  white-space: nowrap;
+  z-index: 1000;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+} 

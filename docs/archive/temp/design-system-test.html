@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WINZO Design System - Component Test Page</title>
+  
+  <!-- Design System Styles -->
+  <link rel="stylesheet" href="winzo-frontend/src/styles/design-system/variables.css">
+  <link rel="stylesheet" href="winzo-frontend/src/styles/design-system/base.css">
+  <link rel="stylesheet" href="winzo-frontend/src/styles/design-system/components.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Additional test page styles */
+    .test-section {
+      margin-bottom: var(--space-16);
+      padding: var(--space-8);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      background-color: var(--bg-primary);
+    }
+    
+    .test-section h2 {
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-3);
+      border-bottom: 2px solid var(--color-primary-500);
+      color: var(--color-primary-700);
+    }
+    
+    .component-group {
+      margin-bottom: var(--space-8);
+    }
+    
+    .component-group h3 {
+      margin-bottom: var(--space-4);
+      color: var(--text-secondary);
+      font-size: var(--text-lg);
+    }
+    
+    .component-row {
+      display: flex;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    .demo-card {
+      background: var(--bg-secondary);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-4);
+    }
+    
+    .color-swatch {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-primary);
+      display: inline-block;
+      margin-right: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+    
+    .spacing-demo {
+      background: var(--color-primary-100);
+      border: 1px solid var(--color-primary-300);
+      margin-bottom: var(--space-2);
+    }
+    
+    /* Mock icons for demonstration */
+    .icon {
+      width: 20px;
+      height: 20px;
+      background: currentColor;
+      border-radius: var(--radius-sm);
+      display: inline-block;
+    }
+    
+    .team-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--color-neutral-300);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <div class="container">
+      <header class="mb-8">
+        <h1 class="text-4xl font-bold text-primary mb-4">WINZO Design System</h1>
+        <p class="text-lg text-secondary">Complete Component Library Test & Documentation</p>
+      </header>
+
+      <!-- Color System Test -->
+      <section class="test-section">
+        <h2>Color System</h2>
+        
+        <div class="component-group">
+          <h3>Primary Colors</h3>
+          <div class="flex flex-wrap gap-4">
+            <div class="color-swatch" style="background-color: var(--color-primary-500);" title="Primary 500"></div>
+            <div class="color-swatch" style="background-color: var(--color-primary-600);" title="Primary 600"></div>
+            <div class="color-swatch" style="background-color: var(--color-primary-700);" title="Primary 700"></div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Accent Colors</h3>
+          <div class="flex flex-wrap gap-4">
+            <div class="color-swatch" style="background-color: var(--color-accent-500);" title="Accent 500"></div>
+            <div class="color-swatch" style="background-color: var(--color-accent-600);" title="Accent 600"></div>
+            <div class="color-swatch" style="background-color: var(--color-accent-700);" title="Accent 700"></div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Status Colors</h3>
+          <div class="flex flex-wrap gap-4">
+            <div class="color-swatch" style="background-color: var(--color-success-500);" title="Success"></div>
+            <div class="color-swatch" style="background-color: var(--color-error-500);" title="Error"></div>
+            <div class="color-swatch" style="background-color: var(--color-warning-500);" title="Warning"></div>
+            <div class="color-swatch" style="background-color: var(--color-info-500);" title="Info"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Typography Test -->
+      <section class="test-section">
+        <h2>Typography System</h2>
+        
+        <div class="component-group">
+          <h3>Heading Hierarchy</h3>
+          <h1>H1 - Main Page Title (text-3xl)</h1>
+          <h2>H2 - Section Header (text-2xl)</h2>
+          <h3>H3 - Subsection Header (text-xl)</h3>
+          <h4>H4 - Component Header (text-lg)</h4>
+          <h5>H5 - Small Header (text-base)</h5>
+          <h6>H6 - Micro Header (text-sm)</h6>
+        </div>
+        
+        <div class="component-group">
+          <h3>Font Weights & Styles</h3>
+          <p class="font-light">Light Weight Text (300)</p>
+          <p class="font-normal">Normal Weight Text (400)</p>
+          <p class="font-medium">Medium Weight Text (500)</p>
+          <p class="font-semibold">Semibold Weight Text (600)</p>
+          <p class="font-bold">Bold Weight Text (700)</p>
+          <p style="font-family: var(--font-mono);">Monospace Font for Numbers: $1,234.56</p>
+        </div>
+      </section>
+
+      <!-- Button Components Test -->
+      <section class="test-section">
+        <h2>Button Components</h2>
+        
+        <div class="component-group">
+          <h3>Button Variants</h3>
+          <div class="component-row">
+            <button class="btn btn-primary btn-md">Primary</button>
+            <button class="btn btn-secondary btn-md">Secondary</button>
+            <button class="btn btn-accent btn-md">Accent</button>
+            <button class="btn btn-ghost btn-md">Ghost</button>
+            <button class="btn btn-danger btn-md">Danger</button>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Button Sizes</h3>
+          <div class="component-row">
+            <button class="btn btn-primary btn-xs">Extra Small</button>
+            <button class="btn btn-primary btn-sm">Small</button>
+            <button class="btn btn-primary btn-md">Medium</button>
+            <button class="btn btn-primary btn-lg">Large</button>
+            <button class="btn btn-primary btn-xl">Extra Large</button>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Button States</h3>
+          <div class="component-row">
+            <button class="btn btn-primary btn-md">Normal</button>
+            <button class="btn btn-primary btn-md" disabled>Disabled</button>
+            <button class="btn btn-primary btn-md btn-full">Full Width</button>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Button Group</h3>
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-md">Left</button>
+            <button class="btn btn-secondary btn-md">Center</button>
+            <button class="btn btn-secondary btn-md">Right</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Form Components Test -->
+      <section class="test-section">
+        <h2>Form Components</h2>
+        
+        <div class="component-group">
+          <h3>Input Fields</h3>
+          <div class="form-group">
+            <label class="form-label required">Email Address</label>
+            <input type="email" class="form-input" placeholder="Enter your email">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" placeholder="Enter your password">
+            <div class="form-help">Must be at least 8 characters long</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Error State</label>
+            <input type="text" class="form-input error" value="Invalid input">
+            <div class="form-error">Please enter a valid value</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Success State</label>
+            <input type="text" class="form-input success" value="Valid input">
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Input Sizes</h3>
+          <div class="form-group">
+            <input type="text" class="form-input form-input-sm" placeholder="Small input">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-input" placeholder="Normal input">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-input form-input-lg" placeholder="Large input">
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Select & Textarea</h3>
+          <div class="form-group">
+            <label class="form-label">Select Option</label>
+            <select class="form-select">
+              <option>Choose an option</option>
+              <option>Option 1</option>
+              <option>Option 2</option>
+              <option>Option 3</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" placeholder="Enter your message"></textarea>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Checkboxes & Radio Buttons</h3>
+          <div class="flex gap-6">
+            <div>
+              <input type="checkbox" class="form-checkbox" id="check1">
+              <label for="check1" class="ml-2">Checkbox Option</label>
+            </div>
+            <div>
+              <input type="radio" class="form-radio" name="radio" id="radio1">
+              <label for="radio1" class="ml-2">Radio Option 1</label>
+            </div>
+            <div>
+              <input type="radio" class="form-radio" name="radio" id="radio2">
+              <label for="radio2" class="ml-2">Radio Option 2</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Input Group</h3>
+          <div class="input-group">
+            <div class="input-addon">$</div>
+            <input type="number" class="form-input" placeholder="0.00">
+            <div class="input-addon">USD</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card Components Test -->
+      <section class="test-section">
+        <h2>Card Components</h2>
+        
+        <div class="grid grid-cols-3">
+          <div class="card">
+            <div class="card-header">
+              <h3>Standard Card</h3>
+            </div>
+            <div class="card-body">
+              <p>This is a standard card with header, body, and footer sections.</p>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm">Action</button>
+            </div>
+          </div>
+          
+          <div class="card card-hover">
+            <div class="card-body">
+              <h3>Hover Card</h3>
+              <p>This card has hover effects enabled.</p>
+            </div>
+          </div>
+          
+          <div class="card card-elevated">
+            <div class="card-body">
+              <h3>Elevated Card</h3>
+              <p>This card has enhanced shadow styling.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Metric Cards</h3>
+          <div class="grid grid-cols-4">
+            <div class="card metric-card">
+              <div class="metric-value">$12,456</div>
+              <div class="metric-label">Total Balance</div>
+              <div class="metric-change positive">+12.5%</div>
+            </div>
+            
+            <div class="card metric-card">
+              <div class="metric-value">247</div>
+              <div class="metric-label">Active Bets</div>
+              <div class="metric-change negative">-5.2%</div>
+            </div>
+            
+            <div class="card metric-card">
+              <div class="metric-value">89.3%</div>
+              <div class="metric-label">Win Rate</div>
+              <div class="metric-change positive">+2.1%</div>
+            </div>
+            
+            <div class="card metric-card">
+              <div class="metric-value">1,234</div>
+              <div class="metric-label">Total Bets</div>
+              <div class="metric-change positive">+45</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sports Betting Components Test -->
+      <section class="test-section">
+        <h2>Sports Betting Components</h2>
+        
+        <div class="component-group">
+          <h3>Odds Buttons</h3>
+          <div class="component-row">
+            <button class="odds-button">+150</button>
+            <button class="odds-button selected">-110</button>
+            <button class="odds-button odds-up">+175</button>
+            <button class="odds-button odds-down">+125</button>
+            <button class="odds-button" disabled>-</button>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Live Indicator</h3>
+          <div class="live-indicator">
+            <div class="pulse"></div>
+            LIVE
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Game Card</h3>
+          <div class="game-card">
+            <div class="game-header">
+              <div class="game-time">Today 7:30 PM EST</div>
+              <div class="game-status live">LIVE</div>
+            </div>
+            
+            <div class="game-teams">
+              <div class="team">
+                <div class="team-logo">LAL</div>
+                <div class="team-info">
+                  <div class="team-name">Los Angeles Lakers</div>
+                  <div class="team-record">45-37</div>
+                </div>
+              </div>
+              
+              <div class="vs">VS</div>
+              
+              <div class="team away">
+                <div class="team-logo">BOS</div>
+                <div class="team-info">
+                  <div class="team-name">Boston Celtics</div>
+                  <div class="team-record">51-31</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="game-markets">
+              <div class="market">
+                <div class="market-label">Moneyline</div>
+                <div class="market-options">
+                  <button class="odds-button">+150</button>
+                  <button class="odds-button">-180</button>
+                </div>
+              </div>
+              
+              <div class="market">
+                <div class="market-label">Spread</div>
+                <div class="market-options">
+                  <button class="odds-button">+4.5 (-110)</button>
+                  <button class="odds-button">-4.5 (-110)</button>
+                </div>
+              </div>
+              
+              <div class="market">
+                <div class="market-label">Total</div>
+                <div class="market-options">
+                  <button class="odds-button">O 215.5</button>
+                  <button class="odds-button">U 215.5</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Bet Slip Preview</h3>
+          <div class="demo-card" style="max-width: 320px;">
+            <div class="bet-slip-header">
+              <div class="title">Bet Slip</div>
+              <div class="count">2 selections</div>
+            </div>
+            
+            <div class="bet-slip-content">
+              <div class="bet-slip-item">
+                <div class="bet-header">
+                  <div class="bet-details">
+                    <div class="game">Lakers vs Celtics</div>
+                    <div class="selection">Lakers +4.5</div>
+                    <div class="odds">-110</div>
+                  </div>
+                  <button class="remove-btn">×</button>
+                </div>
+                <div class="bet-input">
+                  <input type="number" class="stake-input" placeholder="0.00" value="50.00">
+                  <div class="potential-win">
+                    To win: <span class="amount">$45.45</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bet-slip-footer">
+              <div class="total-stake">
+                <span>Total Stake:</span>
+                <span class="amount">$50.00</span>
+              </div>
+              <div class="potential-payout">
+                <span>Potential Payout:</span>
+                <span class="amount">$95.45</span>
+              </div>
+              <button class="place-bet-btn">Place Bet</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation Components Test -->
+      <section class="test-section">
+        <h2>Navigation Components</h2>
+        
+        <div class="component-group">
+          <h3>Sidebar Items</h3>
+          <div class="demo-card" style="background: var(--color-neutral-900); max-width: 280px;">
+            <div class="sidebar-header">
+              <div class="logo">WINZO</div>
+            </div>
+            <div class="sidebar-nav">
+              <div class="sidebar-section">
+                <div class="section-title">Main</div>
+                <a href="#" class="sidebar-item active">
+                  <span class="icon"></span>
+                  Dashboard
+                  <span class="badge">3</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                  <span class="icon"></span>
+                  Sports
+                </a>
+                <a href="#" class="sidebar-item">
+                  <span class="icon"></span>
+                  My Bets
+                  <span class="badge">12</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Bottom Navigation</h3>
+          <div class="demo-card">
+            <div class="bottom-nav" style="position: relative; bottom: auto;">
+              <a href="#" class="bottom-nav-item active">
+                <span class="icon"></span>
+                Home
+              </a>
+              <a href="#" class="bottom-nav-item">
+                <span class="icon"></span>
+                Sports
+              </a>
+              <a href="#" class="bottom-nav-item">
+                <span class="icon"></span>
+                Bets
+                <span class="badge">5</span>
+              </a>
+              <a href="#" class="bottom-nav-item">
+                <span class="icon"></span>
+                Account
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>User Menu</h3>
+          <div class="user-menu">
+            <div class="user-trigger">
+              <div class="user-avatar">JD</div>
+              <div class="user-info">
+                <div class="user-name">John Doe</div>
+                <div class="user-balance">$1,234.56</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Utility Classes Test -->
+      <section class="test-section">
+        <h2>Utility Classes</h2>
+        
+        <div class="component-group">
+          <h3>Spacing System</h3>
+          <div class="spacing-demo p-1">Padding 1 (4px)</div>
+          <div class="spacing-demo p-2">Padding 2 (8px)</div>
+          <div class="spacing-demo p-4">Padding 4 (16px)</div>
+          <div class="spacing-demo p-6">Padding 6 (24px)</div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Grid System</h3>
+          <div class="grid grid-cols-4">
+            <div class="demo-card">Col 1</div>
+            <div class="demo-card">Col 2</div>
+            <div class="demo-card">Col 3</div>
+            <div class="demo-card">Col 4</div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Flexbox Utilities</h3>
+          <div class="flex justify-between items-center p-4" style="background: var(--bg-secondary); border-radius: var(--radius-md);">
+            <div>Left Content</div>
+            <div>Center Content</div>
+            <div>Right Content</div>
+          </div>
+        </div>
+        
+        <div class="component-group">
+          <h3>Text Utilities</h3>
+          <p class="text-xs">Extra Small Text</p>
+          <p class="text-sm">Small Text</p>
+          <p class="text-base">Base Text</p>
+          <p class="text-lg">Large Text</p>
+          <p class="text-xl">Extra Large Text</p>
+        </div>
+        
+        <div class="component-group">
+          <h3>Animation Utilities</h3>
+          <div class="hover-lift p-4 bg-secondary rounded-lg inline-block cursor-pointer">
+            Hover to lift
+          </div>
+        </div>
+      </section>
+
+      <!-- Responsive Design Test -->
+      <section class="test-section">
+        <h2>Responsive Design</h2>
+        <p class="mb-4">Resize your browser window to test responsive behavior:</p>
+        
+        <div class="grid grid-cols-4 mb-6">
+          <div class="demo-card">Responsive Grid</div>
+          <div class="demo-card">Collapses on</div>
+          <div class="demo-card">Mobile Devices</div>
+          <div class="demo-card">To Single Column</div>
+        </div>
+        
+        <div class="flex justify-between">
+          <div class="hidden-mobile">Desktop Only</div>
+          <div class="hidden-desktop">Mobile Only</div>
+        </div>
+      </section>
+
+      <!-- Summary -->
+      <section class="test-section">
+        <h2>Design System Summary</h2>
+        <div class="grid grid-cols-2">
+          <div>
+            <h3 class="mb-4">✅ Implemented Components</h3>
+            <ul class="text-sm space-y-1">
+              <li>• Complete CSS Variables (200+ design tokens)</li>
+              <li>• Typography System (9 sizes, 5 weights)</li>
+              <li>• Color System (50+ color variations)</li>
+              <li>• Button Components (5 variants, 5 sizes)</li>
+              <li>• Form Components (inputs, selects, validation)</li>
+              <li>• Card Components (standard, metric, variants)</li>
+              <li>• Sports Betting Components (odds, bet slip, games)</li>
+              <li>• Navigation Components (sidebar, mobile nav)</li>
+              <li>• Layout System (grid, flexbox, containers)</li>
+              <li>• Utility Classes (spacing, text, animations)</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="mb-4">🎯 Design System Features</h3>
+            <ul class="text-sm space-y-1">
+              <li>• Consistent spacing scale (4px grid)</li>
+              <li>• Semantic color aliases</li>
+              <li>• Dark mode support</li>
+              <li>• Mobile-first responsive design</li>
+              <li>• Accessibility features (focus states)</li>
+              <li>• Performance optimized CSS</li>
+              <li>• Sports betting specialized components</li>
+              <li>• Professional design tokens</li>
+              <li>• Complete component library</li>
+              <li>• Comprehensive test coverage</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html> 
