@@ -103,85 +103,94 @@ export const GameCard: React.FC<GameCardProps> = ({
   };
 
   const TeamLogo: React.FC<{ team: Team; isAway?: boolean }> = ({ team, isAway = false }) => (
-    <div className={`team ${isAway ? 'away' : 'home'}`}>
-      <div className="team-logo">
+    <div className={`team flex items-center ${isAway ? 'justify-end' : 'justify-start'}`}>
+      <div className="team-logo w-8 h-8 mr-3 flex items-center justify-center">
         {team.logo ? (
-          <img src={team.logo} alt={`${team.name} logo`} />
+          <img src={team.logo} alt={`${team.name} logo`} className="w-full h-full object-contain" />
         ) : (
-          <div className="team-logo-placeholder">
+          <div className="team-logo-placeholder w-full h-full bg-secondary rounded-full flex items-center justify-center text-xs font-semibold text-tertiary">
             {team.shortName.substring(0, 3).toUpperCase()}
           </div>
         )}
       </div>
-      <div className="team-info">
-        <div className="team-name">{team.name}</div>
+      <div className="team-info flex-1">
+        <div className="team-name text-sm font-medium text-primary">{team.name}</div>
         {team.record && (
-          <div className="team-record">{team.record}</div>
+          <div className="team-record text-xs text-tertiary">{team.record}</div>
         )}
         {game.status === 'live' && typeof team.score === 'number' && (
-          <div className="team-score">{team.score}</div>
+          <div className="team-score text-lg font-bold text-primary">{team.score}</div>
         )}
       </div>
     </div>
   );
 
   return (
-    <div className={`game-card hover-lift ${className}`.trim()}>
+    <div className={`card game-card hover-lift ${className}`.trim()}>
       {/* Game Header */}
-      <div className="game-header">
-        <div className="game-meta">
-          <span className="game-time">{formatGameTime(game.startTime)}</span>
-          <span className="game-league">{game.league}</span>
+      <div className="card-header flex justify-between items-center">
+        <div className="game-meta flex items-center gap-4">
+          <span className="game-time text-sm text-secondary">{formatGameTime(game.startTime)}</span>
+          <span className="game-league text-sm text-tertiary">{game.league}</span>
         </div>
-        <div className="game-status-container">
+        <div className="game-status-container flex items-center gap-2">
           {game.isLive && <LiveIndicator isLive={true} />}
-          <span className={`game-status ${game.status}`}>
+          <span className={`game-status text-xs font-semibold px-2 py-1 rounded ${
+            game.status === 'live' ? 'bg-success text-neutral-0' : 
+            game.status === 'final' ? 'bg-secondary text-tertiary' : 
+            'bg-info text-neutral-0'
+          }`}>
             {getStatusDisplay(game.status)}
           </span>
         </div>
       </div>
 
       {/* Teams */}
-      <div className="game-teams">
-        <TeamLogo team={game.awayTeam} isAway={true} />
-        <div className="vs">VS</div>
-        <TeamLogo team={game.homeTeam} />
-      </div>
-
-      {/* Betting Markets */}
-      <div className="game-markets">
-        {game.markets.slice(0, 3).map((market) => (
-          <div key={market.id} className="market">
-            <div className="market-label">{market.name}</div>
-            <div className="market-options">
-              {market.options.map((option) => (
-                <OddsButton
-                  key={option.id}
-                  odds={option.odds}
-                  selection={option.selection}
-                  market={market.name}
-                  gameId={game.id}
-                  teamId={option.selection === game.homeTeam.name ? game.homeTeam.id : 
-                          option.selection === game.awayTeam.name ? game.awayTeam.id : undefined}
-                  isSelected={isBetSelected(game.id, market.name, option.selection)}
-                  isDisabled={game.status === 'final'}
-                  movement={option.movement}
-                  onClick={onBetSelect}
-                />
-              ))}
-            </div>
+      <div className="card-body">
+        <div className="game-teams mb-6">
+          <TeamLogo team={game.awayTeam} isAway={true} />
+          <div className="vs text-center py-2">
+            <span className="text-sm font-semibold text-tertiary">VS</span>
           </div>
-        ))}
-      </div>
-
-      {/* Additional Markets Indicator */}
-      {game.markets.length > 3 && (
-        <div className="more-markets">
-          <button className="btn btn-ghost btn-sm">
-            +{game.markets.length - 3} more markets
-          </button>
+          <TeamLogo team={game.homeTeam} />
         </div>
-      )}
+
+        {/* Betting Markets */}
+        <div className="game-markets">
+          {game.markets.slice(0, 3).map((market) => (
+            <div key={market.id} className="market mb-4">
+              <div className="market-label text-sm font-medium text-secondary mb-2">{market.name}</div>
+              <div className="market-options grid grid-cols-3 gap-2">
+                {market.options.map((option) => (
+                  <OddsButton
+                    key={option.id}
+                    odds={option.odds}
+                    selection={option.selection}
+                    market={market.name}
+                    gameId={game.id}
+                    teamId={option.selection === game.homeTeam.name ? game.homeTeam.id : 
+                            option.selection === game.awayTeam.name ? game.awayTeam.id : undefined}
+                    isSelected={isBetSelected(game.id, market.name, option.selection)}
+                    isDisabled={game.status === 'final'}
+                    movement={option.movement}
+                    size="sm"
+                    onClick={onBetSelect}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Additional Markets Indicator */}
+        {game.markets.length > 3 && (
+          <div className="more-markets text-center mt-4">
+            <button className="btn btn-ghost btn-sm">
+              +{game.markets.length - 3} more markets
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

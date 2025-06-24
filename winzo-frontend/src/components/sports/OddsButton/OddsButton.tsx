@@ -9,6 +9,7 @@ export interface OddsButtonProps {
   isSelected?: boolean;
   isDisabled?: boolean;
   movement?: 'up' | 'down' | null;
+  size?: 'sm' | 'md' | 'lg';
   onClick: (bet: {
     gameId: string;
     market: string;
@@ -27,6 +28,7 @@ export const OddsButton: React.FC<OddsButtonProps> = ({
   isSelected = false,
   isDisabled = false,
   movement = null,
+  size = 'md',
   onClick
 }) => {
   const formatOdds = (odds: number): string => {
@@ -48,28 +50,40 @@ export const OddsButton: React.FC<OddsButtonProps> = ({
     }
   };
 
+  // Build classes using design system button classes
+  const baseClasses = 'btn odds-button';
+  const variantClass = isSelected ? 'btn-accent' : 'btn-secondary';
+  const sizeClass = `btn-${size}`;
+  const movementClass = movement ? `odds-movement-${movement}` : '';
+  const stateClasses = isDisabled ? 'disabled' : '';
+
+  const buttonClasses = [
+    baseClasses,
+    variantClass,
+    sizeClass,
+    movementClass,
+    stateClasses
+  ].filter(Boolean).join(' ');
+
   return (
     <button
-      className={`
-        odds-button
-        ${isSelected ? 'selected' : ''}
-        ${movement === 'up' ? 'odds-up' : ''}
-        ${movement === 'down' ? 'odds-down' : ''}
-      `.trim()}
+      className={buttonClasses}
       onClick={handleClick}
       disabled={isDisabled}
       aria-label={`Bet on ${selection} at ${formatOdds(odds)} odds`}
     >
-      <div className="odds-selection">
-        {selection}
-      </div>
-      <div className="odds-value">
-        {formatOdds(odds)}
-        {movement && (
-          <span className={`odds-movement ${movement}`} aria-hidden="true">
-            {movement === 'up' ? '▲' : '▼'}
-          </span>
-        )}
+      <div className="odds-content">
+        <div className="odds-selection text-sm font-medium">
+          {selection}
+        </div>
+        <div className="odds-value font-mono font-semibold">
+          {formatOdds(odds)}
+          {movement && (
+            <span className={`odds-indicator ${movement}`} aria-hidden="true">
+              {movement === 'up' ? '▲' : '▼'}
+            </span>
+          )}
+        </div>
       </div>
     </button>
   );

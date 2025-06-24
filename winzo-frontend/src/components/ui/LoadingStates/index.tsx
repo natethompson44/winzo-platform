@@ -3,8 +3,8 @@ import React from 'react';
 // ===== BASIC LOADING SPINNER =====
 
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
-  color?: 'primary' | 'secondary' | 'white';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  color?: 'primary' | 'secondary' | 'tertiary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse';
   className?: string;
 }
 
@@ -13,10 +13,13 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   color = 'primary',
   className = ''
 }) => {
+  const sizeClass = `icon-${size}`;
+  const colorClass = `text-${color}`;
+
   return (
-    <div className={`loading-spinner ${size} ${color} ${className}`}>
+    <div className={`loading-spinner ${sizeClass} ${colorClass} ${className}`}>
       <svg 
-        className="animate-spin" 
+        className="loading-icon" 
         fill="none" 
         viewBox="0 0 24 24"
       >
@@ -42,11 +45,15 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
 interface LoadingDotsProps {
   className?: string;
+  color?: 'primary' | 'secondary' | 'tertiary';
 }
 
-export const LoadingDots: React.FC<LoadingDotsProps> = ({ className = '' }) => {
+export const LoadingDots: React.FC<LoadingDotsProps> = ({ 
+  className = '',
+  color = 'primary'
+}) => {
   return (
-    <div className={`loading-dots ${className}`}>
+    <div className={`loading-dots text-${color} ${className}`}>
       <span></span>
       <span></span>
       <span></span>
@@ -76,7 +83,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
   return (
     <div 
-      className={`skeleton ${variant} ${className}`}
+      className={`skeleton skeleton-${variant} ${className}`}
       style={styles}
     />
   );
@@ -86,46 +93,44 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
 export const GameCardSkeleton: React.FC = () => {
   return (
-    <div className="mobile-game-card skeleton-container">
-      <div className="game-header">
-        <Skeleton width="100px" height="16px" />
-      </div>
-      
-      <div className="teams-section">
-        <div className="team">
-          <div className="team-info">
-            <Skeleton variant="circular" width="32px" height="32px" />
+    <div className="card game-card-skeleton">
+      <div className="card-body">
+        <div className="game-header mb-4">
+          <Skeleton width="100px" height="16px" />
+        </div>
+        
+        <div className="teams-section mb-4">
+          <div className="team flex items-center mb-3">
+            <Skeleton variant="circular" width="32px" height="32px" className="mr-3" />
             <div>
-              <Skeleton width="80px" height="16px" />
+              <Skeleton width="80px" height="16px" className="mb-1" />
+              <Skeleton width="40px" height="12px" />
+            </div>
+          </div>
+          
+          <div className="vs-divider text-center mb-3">
+            <Skeleton width="24px" height="16px" className="mx-auto" />
+          </div>
+          
+          <div className="team flex items-center">
+            <Skeleton variant="circular" width="32px" height="32px" className="mr-3" />
+            <div>
+              <Skeleton width="80px" height="16px" className="mb-1" />
               <Skeleton width="40px" height="12px" />
             </div>
           </div>
         </div>
         
-        <div className="vs-divider">
-          <Skeleton width="24px" height="16px" />
-        </div>
-        
-        <div className="team">
-          <div className="team-info">
-            <Skeleton variant="circular" width="32px" height="32px" />
-            <div>
-              <Skeleton width="80px" height="16px" />
-              <Skeleton width="40px" height="12px" />
+        <div className="betting-section">
+          <div className="bet-type">
+            <div className="bet-type-header mb-2">
+              <Skeleton width="60px" height="14px" />
             </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="betting-section">
-        <div className="bet-type">
-          <div className="bet-type-header">
-            <Skeleton width="60px" height="14px" />
-          </div>
-          <div className="bet-options">
-            <Skeleton height="44px" />
-            <Skeleton height="44px" />
-            <Skeleton height="44px" />
+            <div className="bet-options grid grid-cols-3 gap-2">
+              <Skeleton height="44px" />
+              <Skeleton height="44px" />
+              <Skeleton height="44px" />
+            </div>
           </div>
         </div>
       </div>
@@ -137,38 +142,40 @@ export const GameCardSkeleton: React.FC = () => {
 
 export const BetSlipSkeleton: React.FC = () => {
   return (
-    <div className="bet-slip-content skeleton-container">
-      <div className="bet-items">
-        {[1, 2].map((item) => (
-          <div key={item} className="bet-item">
-            <div className="bet-info">
-              <Skeleton width="120px" height="14px" />
-              <div className="bet-selection">
-                <Skeleton width="80px" height="16px" />
-                <Skeleton width="40px" height="16px" />
+    <div className="card bet-slip-skeleton">
+      <div className="card-body">
+        <div className="bet-items mb-4">
+          {[1, 2].map((item) => (
+            <div key={item} className="bet-item p-4 border-b border-primary mb-3 last:mb-0 last:border-b-0">
+              <div className="bet-info mb-2">
+                <Skeleton width="120px" height="14px" className="mb-1" />
+                <div className="bet-selection flex justify-between">
+                  <Skeleton width="80px" height="16px" />
+                  <Skeleton width="40px" height="16px" />
+                </div>
+              </div>
+              <div className="bet-stake">
+                <Skeleton width="40px" height="12px" className="mb-1" />
+                <Skeleton height="40px" className="mb-1" />
+                <Skeleton width="80px" height="12px" />
               </div>
             </div>
-            <div className="bet-stake">
-              <Skeleton width="40px" height="12px" />
-              <Skeleton height="40px" />
-              <Skeleton width="80px" height="12px" />
-            </div>
+          ))}
+        </div>
+        
+        <div className="bet-summary mb-4">
+          <div className="summary-row flex justify-between mb-2">
+            <Skeleton width="80px" height="16px" />
+            <Skeleton width="60px" height="16px" />
           </div>
-        ))}
-      </div>
-      
-      <div className="bet-summary">
-        <div className="summary-row">
-          <Skeleton width="80px" height="16px" />
-          <Skeleton width="60px" height="16px" />
+          <div className="summary-row flex justify-between">
+            <Skeleton width="100px" height="18px" />
+            <Skeleton width="80px" height="18px" />
+          </div>
         </div>
-        <div className="summary-row">
-          <Skeleton width="100px" height="18px" />
-          <Skeleton width="80px" height="18px" />
-        </div>
+        
+        <Skeleton height="44px" className="place-bet-button" />
       </div>
-      
-      <Skeleton height="44px" className="place-bet-button" />
     </div>
   );
 };
@@ -177,41 +184,51 @@ export const BetSlipSkeleton: React.FC = () => {
 
 export const DashboardSkeleton: React.FC = () => {
   return (
-    <div className="dashboard-skeleton skeleton-container">
-      <div className="dashboard-header">
-        <Skeleton width="200px" height="32px" />
+    <div className="dashboard-skeleton">
+      <div className="dashboard-header mb-6">
+        <Skeleton width="200px" height="32px" className="mb-2" />
         <Skeleton width="120px" height="20px" />
       </div>
       
-      <div className="metrics-grid">
+      <div className="metrics-grid grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[1, 2, 3, 4].map((item) => (
-          <div key={item} className="metric-card">
-            <Skeleton width="60px" height="14px" />
-            <Skeleton width="80px" height="28px" />
-            <Skeleton width="40px" height="12px" />
+          <div key={item} className="card metric-card text-center">
+            <div className="card-body">
+              <Skeleton width="60px" height="14px" className="mb-2 mx-auto" />
+              <Skeleton width="80px" height="28px" className="mb-1 mx-auto" />
+              <Skeleton width="40px" height="12px" className="mx-auto" />
+            </div>
           </div>
         ))}
       </div>
       
-      <div className="dashboard-content">
+      <div className="dashboard-content grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="section">
-          <Skeleton width="140px" height="24px" />
-          <Skeleton height="200px" />
+          <Skeleton width="140px" height="24px" className="mb-4" />
+          <div className="card">
+            <div className="card-body">
+              <Skeleton height="200px" />
+            </div>
+          </div>
         </div>
         
         <div className="section">
-          <Skeleton width="120px" height="24px" />
-          <div className="list-items">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="list-item">
-                <Skeleton variant="circular" width="40px" height="40px" />
-                <div className="item-content">
-                  <Skeleton width="120px" height="16px" />
-                  <Skeleton width="80px" height="14px" />
-                </div>
-                <Skeleton width="60px" height="16px" />
+          <Skeleton width="120px" height="24px" className="mb-4" />
+          <div className="card">
+            <div className="card-body">
+              <div className="list-items space-y-3">
+                {[1, 2, 3].map((item) => (
+                  <div key={item} className="flex items-center">
+                    <Skeleton variant="circular" width="40px" height="40px" className="mr-3" />
+                    <div className="flex-1">
+                      <Skeleton width="120px" height="16px" className="mb-1" />
+                      <Skeleton width="80px" height="14px" />
+                    </div>
+                    <Skeleton width="60px" height="16px" />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>
@@ -232,16 +249,16 @@ export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
 }) => {
   return (
     <div className="full-page-loading">
-      <div className="loading-content">
+      <div className="loading-content text-center">
         {showLogo && (
-          <div className="loading-logo">
-            <img src="/icons/icon-192x192.png" alt="WINZO" className="logo-image" />
+          <div className="loading-logo mb-6">
+            <img src="/icons/icon-192x192.png" alt="WINZO" className="w-16 h-16 mx-auto" />
           </div>
         )}
         
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" color="primary" className="mb-4" />
         
-        <p className="loading-message">{message}</p>
+        <p className="text-secondary">{message}</p>
       </div>
     </div>
   );
@@ -252,16 +269,18 @@ export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
 interface InlineLoadingProps {
   text?: string;
   className?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export const InlineLoading: React.FC<InlineLoadingProps> = ({
   text = 'Loading...',
-  className = ''
+  className = '',
+  size = 'sm'
 }) => {
   return (
-    <div className={`inline-loading ${className}`}>
-      <LoadingSpinner size="sm" />
-      <span className="loading-text">{text}</span>
+    <div className={`inline-loading flex items-center gap-2 ${className}`}>
+      <LoadingSpinner size={size} color="secondary" />
+      <span className="text-secondary text-sm">{text}</span>
     </div>
   );
 };
@@ -274,6 +293,8 @@ interface ButtonLoadingProps {
   className?: string;
   disabled?: boolean;
   onClick?: () => void;
+  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'danger';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 export const ButtonLoading: React.FC<ButtonLoadingProps> = ({
@@ -281,16 +302,25 @@ export const ButtonLoading: React.FC<ButtonLoadingProps> = ({
   children,
   className = '',
   disabled,
-  onClick
+  onClick,
+  variant = 'primary',
+  size = 'md'
 }) => {
+  const buttonClasses = [
+    'btn',
+    `btn-${variant}`,
+    `btn-${size}`,
+    className
+  ].filter(Boolean).join(' ');
+
   return (
     <button 
-      className={`button-loading ${className}`}
+      className={buttonClasses}
       disabled={disabled || loading}
       onClick={onClick}
     >
-      {loading && <LoadingSpinner size="sm" color="white" />}
-      <span className={loading ? 'loading-text-hidden' : ''}>{children}</span>
+      {loading && <LoadingSpinner size="sm" color="inverse" className="mr-2" />}
+      <span className={loading ? 'opacity-70' : ''}>{children}</span>
     </button>
   );
 };
@@ -310,24 +340,26 @@ export const ProgressiveLoading: React.FC<ProgressiveLoadingProps> = ({
 }) => {
   return (
     <div className={`progressive-loading ${className}`}>
-      <div className="progress-steps">
+      <div className="progress-steps space-y-3">
         {steps.map((step, index) => (
           <div 
             key={index}
-            className={`progress-step ${index <= currentStep ? 'completed' : ''} ${index === currentStep ? 'active' : ''}`}
+            className={`progress-step flex items-center ${
+              index <= currentStep ? 'text-primary' : 'text-tertiary'
+            } ${index === currentStep ? 'font-medium' : ''}`}
           >
-            <div className="step-indicator">
+            <div className="step-indicator mr-3 flex items-center justify-center w-6 h-6 rounded-full border-2">
               {index < currentStep ? (
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               ) : index === currentStep ? (
-                <LoadingSpinner size="sm" />
+                <LoadingSpinner size="xs" color="primary" />
               ) : (
-                <span>{index + 1}</span>
+                <span className="text-xs">{index + 1}</span>
               )}
             </div>
-            <span className="step-label">{step}</span>
+            <span className="step-label text-sm">{step}</span>
           </div>
         ))}
       </div>
@@ -349,13 +381,13 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   children
 }) => {
   return (
-    <div className="loading-overlay-container">
+    <div className="loading-overlay-container relative">
       {children}
       {show && (
-        <div className="loading-overlay">
-          <div className="overlay-content">
-            <LoadingSpinner size="lg" color="white" />
-            <p className="overlay-message">{message}</p>
+        <div className="loading-overlay absolute inset-0 bg-neutral-900 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="overlay-content text-center">
+            <LoadingSpinner size="lg" color="inverse" className="mb-4" />
+            <p className="text-inverse text-sm">{message}</p>
           </div>
         </div>
       )}

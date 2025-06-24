@@ -1,12 +1,14 @@
 import React from 'react';
+import { LoadingIcon } from '../ui/Icons';
 
 interface MetricCardProps {
   title: string;
   value: string;
   change?: number;
-  icon?: string;
+  icon?: React.ReactNode;
   variant?: 'balance' | 'bets' | 'winrate' | 'profit' | 'loss';
   loading?: boolean;
+  className?: string;
 }
 
 export const MetricCard: React.FC<MetricCardProps> = ({
@@ -15,7 +17,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   change,
   icon,
   variant = 'balance',
-  loading = false
+  loading = false,
+  className = ''
 }) => {
   const formatChange = (change: number) => {
     const safeChange = Number(change || 0);
@@ -23,51 +26,53 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     return `${sign}${safeChange.toFixed(1)}%`;
   };
 
-  const getVariantStyles = (variant: string) => {
-    switch (variant) {
-      case 'profit':
-        return 'metric-card-profit';
-      case 'loss':
-        return 'metric-card-loss';
-      case 'winrate':
-        return 'metric-card-winrate';
-      case 'bets':
-        return 'metric-card-bets';
-      default:
-        return 'metric-card-balance';
-    }
+  const getVariantClass = (variant: string) => {
+    const variantMap = {
+      profit: 'metric-card-success',
+      loss: 'metric-card-danger', 
+      winrate: 'metric-card-info',
+      bets: 'metric-card-secondary',
+      balance: 'metric-card-primary'
+    };
+    return variantMap[variant as keyof typeof variantMap] || 'metric-card-primary';
   };
 
   if (loading) {
     return (
-      <div className="card metric-card metric-card-loading">
-        <div className="metric-card-skeleton">
-          <div className="skeleton-icon"></div>
-          <div className="skeleton-value"></div>
-          <div className="skeleton-label"></div>
-          <div className="skeleton-change"></div>
+      <div className={`card metric-card metric-card-loading ${className}`}>
+        <div className="card-body text-center">
+          <div className="metric-loading">
+            <LoadingIcon size="md" color="secondary" />
+            <div className="loading-text text-sm text-secondary mt-2">Loading...</div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`card metric-card card-hover ${getVariantStyles(variant)}`}>
-      <div className="metric-card-content">
+    <div className={`card metric-card card-hover ${getVariantClass(variant)} ${className}`}>
+      <div className="card-body text-center">
         {icon && (
-          <div className="metric-card-icon">
-            <span className="metric-icon">{icon}</span>
+          <div className="metric-icon mb-3">
+            {icon}
           </div>
         )}
         
-        <div className="metric-card-main">
-          <div className="metric-value">{value}</div>
-          <div className="metric-label">{title}</div>
+        <div className="metric-content">
+          <div className="metric-value text-3xl font-bold text-primary font-mono mb-2">
+            {value}
+          </div>
+          <div className="metric-label text-sm text-tertiary font-medium">
+            {title}
+          </div>
         </div>
 
         {change !== undefined && (
-          <div className={`metric-change ${change >= 0 ? 'positive' : 'negative'}`}>
-            <span className="change-indicator">
+          <div className={`metric-change mt-3 text-xs font-semibold ${
+            change >= 0 ? 'text-success' : 'text-danger'
+          }`}>
+            <span className="change-indicator mr-1">
               {change >= 0 ? '↗' : '↘'}
             </span>
             <span className="change-value">

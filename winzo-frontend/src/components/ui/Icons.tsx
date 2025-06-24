@@ -1,24 +1,28 @@
 import React from 'react';
 
 interface IconProps {
-  size?: 'sm' | 'md' | 'lg';
-  color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'inverse';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  color?: 'primary' | 'secondary' | 'tertiary' | 'success' | 'danger' | 'warning' | 'info' | 'inverse';
   className?: string;
 }
 
 const sizeClasses = {
-  sm: 'w-4 h-4',
-  md: 'w-5 h-5',
-  lg: 'w-6 h-6'
+  xs: 'icon-xs',
+  sm: 'icon-sm', 
+  md: 'icon-md',
+  lg: 'icon-lg',
+  xl: 'icon-xl'
 };
 
 const colorClasses = {
-  primary: 'text-yellow-500',
-  secondary: 'text-gray-600',
-  success: 'text-green-500',
-  danger: 'text-red-500',
-  warning: 'text-yellow-500',
-  inverse: 'text-white'
+  primary: 'text-primary',
+  secondary: 'text-secondary', 
+  tertiary: 'text-tertiary',
+  success: 'text-success',
+  danger: 'text-danger',
+  warning: 'text-warning',
+  info: 'text-info',
+  inverse: 'text-inverse'
 };
 
 export const LoadingIcon: React.FC<IconProps> = ({ 
@@ -27,7 +31,7 @@ export const LoadingIcon: React.FC<IconProps> = ({
   className = '' 
 }) => (
   <svg
-    className={`animate-spin ${sizeClasses[size]} ${colorClasses[color]} ${className}`}
+    className={`loading-icon ${sizeClasses[size]} ${colorClasses[color]} ${className}`}
     fill="none"
     viewBox="0 0 24 24"
   >
@@ -83,6 +87,46 @@ export const WarningIcon: React.FC<IconProps> = ({
       strokeLinejoin="round"
       strokeWidth={2}
       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
+    />
+  </svg>
+);
+
+export const ErrorIcon: React.FC<IconProps> = ({ 
+  size = 'md', 
+  color = 'danger', 
+  className = '' 
+}) => (
+  <svg
+    className={`${sizeClasses[size]} ${colorClasses[color]} ${className}`}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M6 18L18 6M6 6l12 12"
+    />
+  </svg>
+);
+
+export const InfoIcon: React.FC<IconProps> = ({ 
+  size = 'md', 
+  color = 'info', 
+  className = '' 
+}) => (
+  <svg
+    className={`${sizeClasses[size]} ${colorClasses[color]} ${className}`}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
     />
   </svg>
 ); 
