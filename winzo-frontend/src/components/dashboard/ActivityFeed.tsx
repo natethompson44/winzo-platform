@@ -50,8 +50,9 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   };
 
   const formatAmount = (amount: number) => {
-    const sign = amount >= 0 ? '+' : '';
-    return `${sign}$${Math.abs(amount).toFixed(2)}`;
+    const safeAmount = Number(amount || 0);
+    const sign = safeAmount >= 0 ? '+' : '';
+    return `${sign}$${Math.abs(safeAmount).toFixed(2)}`;
   };
 
   const formatTimestamp = (timestamp: string) => {

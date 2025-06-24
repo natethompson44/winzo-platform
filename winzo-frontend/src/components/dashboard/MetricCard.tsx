@@ -18,8 +18,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   loading = false
 }) => {
   const formatChange = (change: number) => {
-    const sign = change >= 0 ? '+' : '';
-    return `${sign}${change.toFixed(1)}%`;
+    const safeChange = Number(change || 0);
+    const sign = safeChange >= 0 ? '+' : '';
+    return `${sign}${safeChange.toFixed(1)}%`;
   };
 
   const getVariantStyles = (variant: string) => {

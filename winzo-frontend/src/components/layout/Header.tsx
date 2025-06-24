@@ -77,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   // Use auth data with fallbacks
-  const displayBalance = userBalance ?? user?.wallet_balance ?? 0;
+  const displayBalance = Number(userBalance ?? user?.wallet_balance ?? 0);
   const displayName = userName ?? user?.username ?? 'User';
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

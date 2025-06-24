@@ -67,6 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onNavigate
 }) => {
   const [userBalance] = useState(1250.75); // Mock user balance
+  const safeUserBalance = Number(userBalance || 0); // Ensure it's a number
 
   const navigationItems: NavigationItem[] = [
     {
@@ -156,7 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="user-balance-section">
           <div className="balance-card">
             <div className="balance-label">Available Balance</div>
-            <div className="balance-amount">${userBalance.toFixed(2)}</div>
+            <div className="balance-amount">${safeUserBalance.toFixed(2)}</div>
           </div>
         </div>
       )}

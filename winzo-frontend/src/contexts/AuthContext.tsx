@@ -52,7 +52,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await apiClient.getUserProfile();
       if (response.success && response.data && response.data.success && response.data.data) {
-        setUser(response.data.data);
+        const userData = response.data.data;
+        // Ensure wallet_balance is always a number
+        if (userData.wallet_balance !== undefined) {
+          userData.wallet_balance = Number(userData.wallet_balance || 0);
+        }
+        setUser(userData);
       } else {
         localStorage.removeItem('authToken');
       }
@@ -77,6 +82,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (response.success && response.data && response.data.success && response.data.data) {
         const { token, user: userData } = response.data.data;
+        // Ensure wallet_balance is always a number
+        if (userData.wallet_balance !== undefined) {
+          userData.wallet_balance = Number(userData.wallet_balance || 0);
+        }
         localStorage.setItem('authToken', token);
         setUser(userData);
         return true;
@@ -99,6 +108,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (response.success && response.data && response.data.success && response.data.data) {
         const { token, user: userData } = response.data.data;
+        // Ensure wallet_balance is always a number
+        if (userData.wallet_balance !== undefined) {
+          userData.wallet_balance = Number(userData.wallet_balance || 0);
+        }
         localStorage.setItem('authToken', token);
         setUser(userData);
         return true;
@@ -119,7 +132,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await apiClient.getUserProfile();
       if (response.success && response.data && response.data.success && response.data.data) {
-        setUser(response.data.data);
+        const userData = response.data.data;
+        // Ensure wallet_balance is always a number
+        if (userData.wallet_balance !== undefined) {
+          userData.wallet_balance = Number(userData.wallet_balance || 0);
+        }
+        setUser(userData);
       }
     } catch (error) {
       console.error('Failed to refresh user data:', error);
