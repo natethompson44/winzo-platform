@@ -121,8 +121,8 @@
 }
 
 .admin-error {
-  background-color: #fef2f2;
-  border: 1px solid var(--error-red);
+  background-color: var(--color-error-50);
+  border: 1px solid var(--color-error-500);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   text-align: center;
@@ -130,7 +130,7 @@
 }
 
 .admin-error h3 {
-  color: var(--error-red);
+  color: var(--color-error-600);
   margin: 0 0 var(--space-2);
 }
 
@@ -193,7 +193,7 @@
 }
 
 .metric-card.growth .metric-icon-container {
-  background-color: #3b82f6;
+  background-color: var(--color-primary-500);
 }
 
 .metric-icon {
@@ -310,12 +310,12 @@
 }
 
 .action-card.purple {
-  border-color: #8b5cf6;
+  border-color: var(--color-primary-600);
 }
 
 .action-card.purple:hover {
-  background-color: #8b5cf6;
-  color: var(--neutral-white);
+  background-color: var(--color-primary-600);
+  color: var(--color-neutral-0);
 }
 
 .action-icon {
@@ -610,7 +610,7 @@
 }
 
 .btn-save:hover {
-  background-color: #059669;
+  background-color: var(--color-success-600);
 }
 
 .btn-cancel {
