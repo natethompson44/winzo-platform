@@ -1,5 +1,4 @@
 import React from 'react';
-import { LoadingIcon } from '../ui/Icons';
 
 interface MetricCardProps {
   title: string;
@@ -28,22 +27,26 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
   const getVariantClass = (variant: string) => {
     const variantMap = {
-      profit: 'metric-card-success',
-      loss: 'metric-card-danger', 
-      winrate: 'metric-card-info',
-      bets: 'metric-card-secondary',
-      balance: 'metric-card-primary'
+      profit: 'metric-card-profit',
+      loss: 'metric-card-loss', 
+      winrate: 'metric-card-winrate',
+      bets: 'metric-card-bets',
+      balance: 'metric-card-balance'
     };
-    return variantMap[variant as keyof typeof variantMap] || 'metric-card-primary';
+    return variantMap[variant as keyof typeof variantMap] || 'metric-card-balance';
   };
 
   if (loading) {
     return (
-      <div className={`card metric-card metric-card-loading ${className}`}>
-        <div className="card-body text-center">
-          <div className="metric-loading">
-            <LoadingIcon size="md" color="secondary" />
-            <div className="loading-text text-sm text-secondary mt-2">Loading...</div>
+      <div className={`metric-card metric-card-loading metric-card-skeleton ${className}`}>
+        <div className="metric-card-content">
+          <div className="metric-loading-wrapper">
+            <div className="skeleton-icon pulse-animation"></div>
+            <div className="skeleton-content">
+              <div className="skeleton-value pulse-animation"></div>
+              <div className="skeleton-label pulse-animation"></div>
+              <div className="skeleton-change pulse-animation"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -51,36 +54,44 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   }
 
   return (
-    <div className={`card metric-card card-hover ${getVariantClass(variant)} ${className}`}>
-      <div className="card-body text-center">
+    <div className={`metric-card metric-card-enhanced card-hover-lift ${getVariantClass(variant)} ${className}`}>
+      <div className="metric-gradient-overlay"></div>
+      <div className="metric-card-content">
         {icon && (
-          <div className="metric-icon mb-3">
-            {icon}
+          <div className="metric-icon-wrapper">
+            <div className="metric-icon pulse-on-hover">
+              {icon}
+            </div>
           </div>
         )}
         
-        <div className="metric-content">
-          <div className="metric-value text-3xl font-bold text-primary font-mono mb-2">
+        <div className="metric-main-content">
+          <div className="metric-value text-3xl font-bold text-primary font-mono slide-up-animation">
             {value}
           </div>
-          <div className="metric-label text-sm text-tertiary font-medium">
+          <div className="metric-label text-sm text-tertiary font-medium fade-in-animation">
             {title}
           </div>
         </div>
 
         {change !== undefined && (
-          <div className={`metric-change mt-3 text-xs font-semibold ${
-            change >= 0 ? 'text-success' : 'text-danger'
-          }`}>
-            <span className="change-indicator mr-1">
+          <div className={`metric-change-indicator ${
+            change >= 0 ? 'metric-change-positive' : 'metric-change-negative'
+          } bounce-in-animation`}>
+            <div className="change-icon">
               {change >= 0 ? '↗' : '↘'}
-            </span>
-            <span className="change-value">
+            </div>
+            <div className="change-value">
               {formatChange(change)}
-            </span>
+            </div>
           </div>
         )}
       </div>
+      
+      {/* Decorative Elements */}
+      <div className="metric-decoration-dot metric-decoration-1"></div>
+      <div className="metric-decoration-dot metric-decoration-2"></div>
+      <div className="metric-decoration-dot metric-decoration-3"></div>
     </div>
   );
 }; 

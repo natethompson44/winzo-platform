@@ -6,27 +6,77 @@
 /* ===== DASHBOARD HERO SECTION ===== */
 
 .dashboard-hero {
-  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
-  border-radius: var(--radius-xl);
-  padding: var(--space-8);
+  background: linear-gradient(135deg, 
+    var(--color-primary-50) 0%, 
+    var(--color-primary-100) 50%, 
+    var(--color-accent-50) 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-10);
   margin-bottom: var(--space-8);
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--color-primary-200);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl), var(--shadow-primary);
+  transition: var(--transition-slow);
+}
+
+.dashboard-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    rgba(59, 130, 246, 0.05) 0%, 
+    transparent 50%, 
+    rgba(245, 158, 11, 0.05) 100%);
+  pointer-events: none;
+}
+
+.dashboard-hero:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2xl), var(--shadow-primary);
 }
 
 .hero-content {
   max-width: 800px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content h1 {
+  background: linear-gradient(135deg, var(--color-primary-700), var(--color-accent-600));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-content p {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
 }
 
 .quick-stats-bar {
   display: flex;
   gap: var(--space-8);
   margin-top: var(--space-6);
+  animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
 .quick-stat-item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  position: relative;
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-normal);
+}
+
+.quick-stat-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .quick-stat-value {
@@ -35,6 +85,11 @@
   font-family: var(--font-mono);
   color: var(--interactive-primary);
   line-height: var(--leading-tight);
+  transition: var(--transition-normal);
+}
+
+.quick-stat-item:hover .quick-stat-value {
+  transform: scale(1.05);
 }
 
 .quick-stat-label {
@@ -44,145 +99,476 @@
   font-weight: var(--font-medium);
 }
 
-/* ===== METRIC CARD ENHANCEMENTS ===== */
+/* ===== ENHANCED METRIC CARD STYLES ===== */
 
 .metric-card {
   position: relative;
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  border: 1px solid var(--border-primary);
+  transition: var(--transition-slow);
   overflow: hidden;
+  cursor: pointer;
 }
 
+.metric-card-enhanced {
+  box-shadow: var(--shadow-md);
+}
+
+.metric-card-enhanced:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-2xl);
+}
+
+.card-hover-lift {
+  transition: var(--transition-slow);
+}
+
+.card-hover-lift:hover {
+  transform: translateY(-6px);
+}
+
+/* Gradient Overlays for Different Variants */
+.metric-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  transition: var(--transition-normal);
+}
+
+.metric-card-balance .metric-gradient-overlay {
+  background: linear-gradient(90deg, 
+    var(--color-primary-500) 0%, 
+    var(--color-primary-600) 50%, 
+    var(--color-accent-500) 100%);
+}
+
+.metric-card-profit .metric-gradient-overlay {
+  background: linear-gradient(90deg, 
+    var(--color-success-500) 0%, 
+    var(--color-success-600) 50%, 
+    var(--color-accent-500) 100%);
+}
+
+.metric-card-loss .metric-gradient-overlay {
+  background: linear-gradient(90deg, 
+    var(--color-error-500) 0%, 
+    var(--color-error-600) 50%, 
+    var(--color-neutral-600) 100%);
+}
+
+.metric-card-winrate .metric-gradient-overlay {
+  background: linear-gradient(90deg, 
+    var(--color-info-500) 0%, 
+    var(--color-primary-600) 50%, 
+    var(--color-accent-500) 100%);
+}
+
+.metric-card-bets .metric-gradient-overlay {
+  background: linear-gradient(90deg, 
+    var(--color-accent-500) 0%, 
+    var(--color-accent-600) 50%, 
+    var(--color-primary-500) 100%);
+}
+
+.metric-card-enhanced:hover .metric-gradient-overlay {
+  height: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Metric Card Content */
 .metric-card-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--space-4);
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
-.metric-card-icon {
+.metric-icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--space-12);
-  height: var(--space-12);
+  width: var(--space-16);
+  height: var(--space-16);
   border-radius: var(--radius-full);
-  background-color: var(--bg-secondary);
-  margin-bottom: var(--space-4);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  border: 2px solid var(--border-primary);
+  transition: var(--transition-normal);
 }
 
 .metric-icon {
-  font-size: var(--text-2xl);
+  font-size: var(--text-3xl);
+  transition: var(--transition-normal);
 }
 
-.metric-card-main {
+.pulse-on-hover {
+  transition: var(--transition-normal);
+}
+
+.metric-card:hover .pulse-on-hover {
+  animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+.metric-main-content {
+  text-align: center;
   flex: 1;
 }
 
-.metric-change {
+.metric-value {
+  margin-bottom: var(--space-2);
+  position: relative;
+}
+
+.metric-label {
+  opacity: 0.8;
+  transition: var(--transition-normal);
+}
+
+.metric-card:hover .metric-label {
+  opacity: 1;
+}
+
+/* Change Indicators */
+.metric-change-indicator {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
   font-size: var(--text-xs);
   font-weight: var(--font-semibold);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-base);
+  transition: var(--transition-normal);
 }
 
-.metric-change.positive {
+.metric-change-positive {
+  background: linear-gradient(135deg, var(--color-success-50), var(--color-success-100));
   color: var(--color-success-700);
-  background-color: var(--color-success-50);
+  border: 1px solid var(--color-success-200);
 }
 
-.metric-change.negative {
+.metric-change-negative {
+  background: linear-gradient(135deg, var(--color-error-50), var(--color-error-100));
   color: var(--color-error-700);
-  background-color: var(--color-error-50);
+  border: 1px solid var(--color-error-200);
 }
 
-.change-indicator {
+.change-icon {
   font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
 }
 
-/* Metric Card Variants */
-.metric-card-profit::before {
-  content: '';
+.change-value {
+  font-family: var(--font-mono);
+}
+
+/* Decorative Elements */
+.metric-decoration-dot {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-success-500) 0%, var(--color-success-600) 100%);
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary-300), var(--color-accent-300));
+  opacity: 0.3;
+  transition: var(--transition-slow);
 }
 
-.metric-card-loss::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-error-500) 0%, var(--color-error-600) 100%);
+.metric-decoration-1 { top: 20%; right: 15%; animation-delay: 0s; }
+.metric-decoration-2 { top: 60%; right: 10%; animation-delay: 0.5s; }
+.metric-decoration-3 { top: 80%; right: 20%; animation-delay: 1s; }
+
+.metric-card:hover .metric-decoration-dot {
+  opacity: 0.6;
+  animation: floatDot 3s ease-in-out infinite;
 }
 
-.metric-card-winrate::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
-}
-
-.metric-card-bets::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-accent-500) 0%, var(--color-accent-600) 100%);
-}
-
-/* Loading State */
+/* Enhanced Loading States */
 .metric-card-loading {
-  background: var(--bg-secondary);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  border: 1px solid var(--border-secondary);
 }
 
-.metric-card-skeleton {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.skeleton-icon,
-.skeleton-value,
-.skeleton-label,
-.skeleton-change {
-  background-color: var(--color-neutral-300);
-  border-radius: var(--radius-base);
-  margin-bottom: var(--space-2);
+.metric-loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
 }
 
 .skeleton-icon {
-  width: var(--space-12);
-  height: var(--space-12);
+  width: var(--space-16);
+  height: var(--space-16);
   border-radius: var(--radius-full);
+  background: linear-gradient(90deg, 
+    var(--color-neutral-300) 0%, 
+    var(--color-neutral-200) 50%, 
+    var(--color-neutral-300) 100%);
+  background-size: 200% 100%;
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
 }
 
 .skeleton-value {
   height: var(--space-8);
-  width: 60%;
+  width: 80%;
+  border-radius: var(--radius-base);
+  background: linear-gradient(90deg, 
+    var(--color-neutral-300) 0%, 
+    var(--color-neutral-200) 50%, 
+    var(--color-neutral-300) 100%);
+  background-size: 200% 100%;
 }
 
 .skeleton-label {
   height: var(--space-4);
-  width: 80%;
+  width: 60%;
+  border-radius: var(--radius-base);
+  background: linear-gradient(90deg, 
+    var(--color-neutral-300) 0%, 
+    var(--color-neutral-200) 50%, 
+    var(--color-neutral-300) 100%);
+  background-size: 200% 100%;
 }
 
 .skeleton-change {
   height: var(--space-4);
   width: 40%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, 
+    var(--color-neutral-300) 0%, 
+    var(--color-neutral-200) 50%, 
+    var(--color-neutral-300) 100%);
+  background-size: 200% 100%;
 }
 
-/* ===== ACTIVITY FEED STYLES ===== */
+.pulse-animation {
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInAnimation {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounceInAnimation {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(245, 158, 11, 0.3);
+  }
+}
+
+@keyframes floatDot {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Apply staggered animations to metric cards */
+.slide-up-animation {
+  animation: slideUpAnimation 0.6s ease-out;
+}
+
+.fade-in-animation {
+  animation: fadeInAnimation 0.8s ease-out 0.2s both;
+}
+
+.bounce-in-animation {
+  animation: bounceInAnimation 0.8s ease-out 0.4s both;
+}
+
+/* ===== ENHANCED BUTTON INTERACTIONS ===== */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-normal);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: var(--transition-slow);
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--interactive-primary), var(--interactive-primary-hover));
+  box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--shadow-lg), var(--shadow-primary);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--interactive-accent), var(--interactive-accent-hover));
+  box-shadow: var(--shadow-accent);
+}
+
+.btn-accent:hover {
+  box-shadow: var(--shadow-lg), var(--shadow-accent);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn-secondary {
+  border-color: var(--interactive-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.btn-secondary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--interactive-primary), var(--interactive-primary-hover));
+  opacity: 0;
+  transition: var(--transition-normal);
+  z-index: -1;
+}
+
+.btn-secondary:hover::after {
+  opacity: 1;
+}
+
+.btn-ghost {
+  transition: var(--transition-normal);
+}
+
+.btn-ghost:hover {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  transform: translateY(-1px);
+}
+
+/* ===== ENHANCED ODDS BUTTONS ===== */
+
+.odds-button {
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+  border: 2px solid var(--border-primary);
+  transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.odds-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-primary-50), var(--color-accent-50));
+  opacity: 0;
+  transition: var(--transition-fast);
+}
+
+.odds-button:hover::before {
+  opacity: 1;
+}
+
+.odds-button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-300);
+}
+
+.popular-game-item .odds-button {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  transition: var(--transition-normal);
+}
+
+.popular-game-item .odds-button:hover {
+  background: linear-gradient(135deg, var(--color-primary-50), var(--color-accent-50));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== ENHANCED ACTIVITY FEED STYLES ===== */
 
 .activity-feed {
   padding: 0;
@@ -194,11 +580,30 @@
   gap: var(--space-4);
   padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--border-primary);
-  transition: var(--transition-fast);
+  transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.activity-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+  transition: var(--transition-slow);
+}
+
+.activity-item:hover::before {
+  left: 100%;
 }
 
 .activity-item:hover {
-  background-color: var(--bg-secondary);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
 }
 
 .activity-item.last {
@@ -209,11 +614,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--space-10);
-  height: var(--space-10);
+  width: var(--space-12);
+  height: var(--space-12);
   border-radius: var(--radius-full);
-  background-color: var(--bg-tertiary);
+  background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+  border: 2px solid var(--border-primary);
   flex-shrink: 0;
+  transition: var(--transition-normal);
+}
+
+.activity-item:hover .activity-icon {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
 }
 
 .activity-type-icon {
@@ -243,29 +655,41 @@
   font-weight: var(--font-semibold);
   font-family: var(--font-mono);
   flex-shrink: 0;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-base);
+  transition: var(--transition-normal);
 }
 
 .activity-amount.positive {
-  color: var(--color-success-600);
+  color: var(--color-success-700);
+  background: linear-gradient(135deg, var(--color-success-50), var(--color-success-100));
 }
 
 .activity-amount.negative {
-  color: var(--color-error-600);
+  color: var(--color-error-700);
+  background: linear-gradient(135deg, var(--color-error-50), var(--color-error-100));
+}
+
+.activity-item:hover .activity-amount {
+  transform: scale(1.05);
 }
 
 /* Activity Type Colors */
 .activity-item.success .activity-icon {
-  background-color: var(--color-success-50);
+  background: linear-gradient(135deg, var(--color-success-50), var(--color-success-100));
+  border-color: var(--color-success-200);
   color: var(--color-success-600);
 }
 
 .activity-item.error .activity-icon {
-  background-color: var(--color-error-50);
+  background: linear-gradient(135deg, var(--color-error-50), var(--color-error-100));
+  border-color: var(--color-error-200);
   color: var(--color-error-600);
 }
 
 .activity-item.info .activity-icon {
-  background-color: var(--color-info-50);
+  background: linear-gradient(135deg, var(--color-info-50), var(--color-info-100));
+  border-color: var(--color-info-200);
   color: var(--color-info-600);
 }
 
@@ -690,56 +1114,148 @@
   line-height: var(--leading-relaxed);
 }
 
-/* ===== POPULAR GAMES SECTION ===== */
+/* ===== ENHANCED POPULAR GAMES SECTION ===== */
 
 .popular-games {
   margin-top: var(--space-8);
 }
 
 .popular-game-item {
-  padding: var(--space-4);
+  padding: var(--space-6);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
-  background-color: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+  transition: var(--transition-slow);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-4);
+}
+
+.popular-game-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--color-primary-500), 
+    var(--color-accent-500), 
+    var(--color-primary-500));
+  opacity: 0;
   transition: var(--transition-normal);
 }
 
+.popular-game-item:hover::before {
+  opacity: 1;
+}
+
 .popular-game-item:hover {
-  border-color: var(--border-secondary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  border-color: var(--color-primary-200);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-xl);
 }
 
 .game-teams {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin-bottom: var(--space-3);
 }
 
 .team-name {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: var(--font-semibold);
   color: var(--text-primary);
+  transition: var(--transition-normal);
+}
+
+.popular-game-item:hover .team-name {
+  color: var(--interactive-primary);
+  transform: scale(1.05);
 }
 
 .vs {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--text-tertiary);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-bold);
+  padding: var(--space-1) var(--space-2);
+  background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-primary);
 }
 
 .game-time {
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
   text-align: center;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  font-weight: var(--font-medium);
+  padding: var(--space-2);
+  background: linear-gradient(135deg, var(--color-primary-50), var(--color-accent-50));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-primary-100);
 }
 
 .quick-odds {
   display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+/* ===== STAGGERED DASHBOARD ANIMATIONS ===== */
+
+.dashboard-metrics {
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.dashboard-content {
+  animation: fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.popular-games .popular-game-item:nth-child(1) {
+  animation: slideUpAnimation 0.6s ease-out 1.0s both;
+}
+
+.popular-games .popular-game-item:nth-child(2) {
+  animation: slideUpAnimation 0.6s ease-out 1.1s both;
+}
+
+.popular-games .popular-game-item:nth-child(3) {
+  animation: slideUpAnimation 0.6s ease-out 1.2s both;
+}
+
+/* ===== PREMIUM TRUST INDICATORS ===== */
+
+.trust-indicator {
+  display: flex;
+  align-items: center;
   gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: linear-gradient(135deg, var(--color-success-50), var(--color-success-100));
+  border: 1px solid var(--color-success-200);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--color-success-700);
+  font-weight: var(--font-semibold);
+}
+
+.trust-indicator-icon {
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--color-success-500);
+  animation: pulse 2s infinite;
+}
+
+.dashboard-hero .trust-indicators {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  animation: fadeInUp 0.8s ease-out 0.6s both;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -834,7 +1350,82 @@
   animation: fadeIn 0.6s ease-out;
 }
 
-.dashboard-metrics .metric-card:nth-child(1) { animation-delay: 0.1s; }
-.dashboard-metrics .metric-card:nth-child(2) { animation-delay: 0.2s; }
-.dashboard-metrics .metric-card:nth-child(3) { animation-delay: 0.3s; }
-.dashboard-metrics .metric-card:nth-child(4) { animation-delay: 0.4s; } 
+/* Override the old animation delays with new enhanced animations */
+.dashboard-metrics .metric-card:nth-child(1) { 
+  animation: slideUpAnimation 0.6s ease-out 0.1s both; 
+}
+.dashboard-metrics .metric-card:nth-child(2) { 
+  animation: slideUpAnimation 0.6s ease-out 0.2s both; 
+}
+.dashboard-metrics .metric-card:nth-child(3) { 
+  animation: slideUpAnimation 0.6s ease-out 0.3s both; 
+}
+.dashboard-metrics .metric-card:nth-child(4) { 
+  animation: slideUpAnimation 0.6s ease-out 0.4s both; 
+}
+
+/* Enhanced odds content layout */
+.odds-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.odds-selection {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  text-align: center;
+  line-height: var(--leading-tight);
+}
+
+.odds-value {
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  font-family: var(--font-mono);
+  color: var(--interactive-primary);
+  line-height: var(--leading-none);
+}
+
+/* Enhanced loading states */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.spinner {
+  width: var(--space-12);
+  height: var(--space-12);
+  border: 3px solid var(--color-primary-200);
+  border-top: 3px solid var(--color-primary-600);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
+  animation: pulseText 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulseText {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+} 

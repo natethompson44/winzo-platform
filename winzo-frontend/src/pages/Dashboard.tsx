@@ -110,7 +110,7 @@ const Dashboard: React.FC = () => {
             <div className="loading-spinner">
               <div className="spinner"></div>
             </div>
-            <p className="loading-text">Loading your dashboard...</p>
+            <p className="loading-text">Loading your premium dashboard...</p>
           </div>
         </div>
       </div>
@@ -143,15 +143,31 @@ const Dashboard: React.FC = () => {
   return (
     <div className="main-content">
       <div className="content">
-        {/* Hero Section */}
+        {/* Enhanced Hero Section */}
         <div className="dashboard-hero mb-8">
           <div className="hero-content">
             <h1 className="text-4xl font-bold text-primary mb-2">
-              Welcome back!
+              Welcome back to WINZO!
             </h1>
-            <p className="text-lg text-secondary mb-6">
-              Here's what's happening with your bets today.
+            <p className="text-lg text-secondary mb-4">
+              Your premium sports betting experience awaits. Here's what's happening with your account today.
             </p>
+            
+            {/* Trust Indicators */}
+            <div className="trust-indicators">
+              <div className="trust-indicator">
+                <div className="trust-indicator-icon"></div>
+                <span>🔒 SSL Secured</span>
+              </div>
+              <div className="trust-indicator">
+                <div className="trust-indicator-icon"></div>
+                <span>⚡ Instant Payouts</span>
+              </div>
+              <div className="trust-indicator">
+                <div className="trust-indicator-icon"></div>
+                <span>🛡️ Licensed & Regulated</span>
+              </div>
+            </div>
             
             {/* Quick Stats Bar */}
             <div className="quick-stats-bar">
@@ -173,11 +189,21 @@ const Dashboard: React.FC = () => {
                 </span>
                 <span className="quick-stat-label">Win Rate</span>
               </div>
+              <div className="quick-stat-item">
+                <span className="quick-stat-value" style={{ 
+                  color: dashboardData.profitLoss > 0 ? 'var(--color-success-600)' : 'var(--color-error-600)' 
+                }}>
+                  ${Math.abs(dashboardData.profitLoss).toFixed(2)}
+                </span>
+                <span className="quick-stat-label">
+                  {dashboardData.profitLoss > 0 ? 'Total Profit' : 'Total Loss'}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Metrics Grid */}
+        {/* Enhanced Metrics Grid */}
         <div className="dashboard-metrics mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <MetricCard
@@ -203,9 +229,9 @@ const Dashboard: React.FC = () => {
             />
             <MetricCard
               title="Profit/Loss"
-              value={`$${dashboardData.profitLoss.toFixed(2)}`}
+              value={`${dashboardData.profitLoss > 0 ? '+' : ''}$${dashboardData.profitLoss.toFixed(2)}`}
               change={dashboardData.profitLoss > 0 ? +15.8 : -8.4}
-              icon={dashboardData.profitLoss > 0 ? "📈" : "📉"}
+              icon={dashboardData.profitLoss > 0 ? "🚀" : "📉"}
               variant={dashboardData.profitLoss > 0 ? "profit" : "loss"}
             />
           </div>
@@ -242,30 +268,40 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Popular Games Section */}
+        {/* Enhanced Popular Games Section */}
         <div className="popular-games mt-8">
           <div className="card">
             <div className="card-header">
               <h3 className="text-xl font-semibold text-primary">
-                Popular Games Today
+                🔥 Popular Games Today
               </h3>
               <p className="text-sm text-secondary mt-1">
-                Quick bet on trending games
+                Quick bet on trending games with live odds
               </p>
             </div>
             <div className="card-body">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Placeholder for popular games - to be connected to real data */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Enhanced Game Items */}
                 <div className="popular-game-item">
                   <div className="game-teams">
                     <span className="team-name">Lakers</span>
                     <span className="vs">vs</span>
                     <span className="team-name">Warriors</span>
                   </div>
-                  <div className="game-time">Today 8:00 PM</div>
+                  <div className="game-time">🕐 Today 8:00 PM EST</div>
                   <div className="quick-odds">
-                    <button className="odds-button">Lakers +3.5</button>
-                    <button className="odds-button">Warriors -3.5</button>
+                    <button className="odds-button btn btn-sm">
+                      <div className="odds-content">
+                        <span className="odds-selection">Lakers +3.5</span>
+                        <span className="odds-value">-110</span>
+                      </div>
+                    </button>
+                    <button className="odds-button btn btn-sm">
+                      <div className="odds-content">
+                        <span className="odds-selection">Warriors -3.5</span>
+                        <span className="odds-value">-110</span>
+                      </div>
+                    </button>
                   </div>
                 </div>
                 
@@ -275,10 +311,20 @@ const Dashboard: React.FC = () => {
                     <span className="vs">vs</span>
                     <span className="team-name">Bills</span>
                   </div>
-                  <div className="game-time">Tomorrow 1:00 PM</div>
+                  <div className="game-time">📅 Tomorrow 1:00 PM EST</div>
                   <div className="quick-odds">
-                    <button className="odds-button">Over 47.5</button>
-                    <button className="odds-button">Under 47.5</button>
+                    <button className="odds-button btn btn-sm">
+                      <div className="odds-content">
+                        <span className="odds-selection">Over 47.5</span>
+                        <span className="odds-value">-105</span>
+                      </div>
+                    </button>
+                    <button className="odds-button btn btn-sm">
+                      <div className="odds-content">
+                        <span className="odds-selection">Under 47.5</span>
+                        <span className="odds-value">-115</span>
+                      </div>
+                    </button>
                   </div>
                 </div>
 
@@ -288,12 +334,30 @@ const Dashboard: React.FC = () => {
                     <span className="vs">vs</span>
                     <span className="team-name">Heat</span>
                   </div>
-                  <div className="game-time">Tomorrow 7:30 PM</div>
+                  <div className="game-time">🏀 Tomorrow 7:30 PM EST</div>
                   <div className="quick-odds">
-                    <button className="odds-button">Celtics ML</button>
-                    <button className="odds-button">Heat ML</button>
+                    <button className="odds-button btn btn-sm">
+                      <div className="odds-content">
+                        <span className="odds-selection">Celtics ML</span>
+                        <span className="odds-value">-140</span>
+                      </div>
+                    </button>
+                    <button className="odds-button btn btn-sm">
+                      <div className="odds-content">
+                        <span className="odds-selection">Heat ML</span>
+                        <span className="odds-value">+120</span>
+                      </div>
+                    </button>
                   </div>
                 </div>
+              </div>
+              
+              {/* View All Games Button */}
+              <div className="text-center mt-6">
+                <button className="btn btn-primary btn-lg">
+                  View All Games
+                  <span className="ml-2">→</span>
+                </button>
               </div>
             </div>
           </div>
