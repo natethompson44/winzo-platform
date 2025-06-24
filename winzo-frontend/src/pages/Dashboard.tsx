@@ -127,14 +127,12 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="main-content">
-        <div className="content">
-          <div className="loading-container">
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-            </div>
-            <p className="loading-text">Loading your premium dashboard...</p>
+      <div className="content">
+        <div className="loading-container">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
           </div>
+          <p className="loading-text">Loading your premium dashboard...</p>
         </div>
       </div>
     );
@@ -142,18 +140,16 @@ const Dashboard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="main-content">
-        <div className="content">
-          <div className="card card-bordered" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-            <h2 className="text-2xl font-semibold text-primary mb-4">Something went wrong</h2>
-            <p className="text-secondary mb-6">{error}</p>
-            <button 
-              className="btn btn-primary btn-md"
-              onClick={() => window.location.reload()}
-            >
-              Try Again
-            </button>
-          </div>
+      <div className="content">
+        <div className="card card-bordered" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
+          <h2 className="text-2xl font-semibold text-primary mb-4">Something went wrong</h2>
+          <p className="text-secondary mb-6">{error}</p>
+          <button 
+            className="btn btn-primary btn-md"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -164,250 +160,248 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="main-content">
-      <div className="content">
-        {/* Enhanced Hero Section */}
-        <div className="dashboard-hero mb-8">
-          <div className="hero-content">
-            <h1 className="text-4xl font-bold text-primary mb-2">
-              Welcome back to WINZO!
-            </h1>
-            <p className="text-lg text-secondary mb-4">
-              Your premium sports betting experience awaits. Here's what's happening with your account today.
+    <div className="content">
+      {/* Enhanced Hero Section */}
+      <div className="dashboard-hero mb-8">
+        <div className="hero-content">
+          <h1 className="text-4xl font-bold text-primary mb-2">
+            Welcome back to WINZO!
+          </h1>
+          <p className="text-lg text-secondary mb-4">
+            Your premium sports betting experience awaits. Here's what's happening with your account today.
+          </p>
+          
+          {/* Trust Indicators */}
+          <div className="trust-indicators">
+            <div className="trust-indicator">
+              <div className="trust-indicator-icon"></div>
+              <span>🔒 SSL Secured</span>
+            </div>
+            <div className="trust-indicator">
+              <div className="trust-indicator-icon"></div>
+              <span>⚡ Instant Payouts</span>
+            </div>
+            <div className="trust-indicator">
+              <div className="trust-indicator-icon"></div>
+              <span>🛡️ Licensed & Regulated</span>
+            </div>
+          </div>
+          
+          {/* Quick Stats Bar */}
+          <div className="quick-stats-bar">
+            <div className="quick-stat-item">
+              <span className="quick-stat-value">
+                ${dashboardData.balance.toFixed(2)}
+              </span>
+              <span className="quick-stat-label">Available Balance</span>
+            </div>
+            <div className="quick-stat-item">
+              <span className="quick-stat-value">
+                {dashboardData.totalBets}
+              </span>
+              <span className="quick-stat-label">Total Bets</span>
+            </div>
+            <div className="quick-stat-item">
+              <span className="quick-stat-value">
+                {dashboardData.winRate}%
+              </span>
+              <span className="quick-stat-label">Win Rate</span>
+            </div>
+            <div className="quick-stat-item">
+              <span className="quick-stat-value" style={{ 
+                color: dashboardData.profitLoss > 0 ? 'var(--color-success-600)' : 'var(--color-error-600)' 
+              }}>
+                ${Math.abs(dashboardData.profitLoss).toFixed(2)}
+              </span>
+              <span className="quick-stat-label">
+                {dashboardData.profitLoss > 0 ? 'Total Profit' : 'Total Loss'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Metrics Grid */}
+      <div className="dashboard-metrics mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <MetricCard
+            title="Current Balance"
+            value={`$${dashboardData.balance.toFixed(2)}`}
+            change={+5.2}
+            icon="💰"
+            variant="balance"
+          />
+          <MetricCard
+            title="Total Bets"
+            value={dashboardData.totalBets.toString()}
+            change={+12.5}
+            icon="🎯"
+            variant="bets"
+          />
+          <MetricCard
+            title="Win Rate"
+            value={`${dashboardData.winRate}%`}
+            change={+2.1}
+            icon="📈"
+            variant="winrate"
+          />
+          <MetricCard
+            title="Profit/Loss"
+            value={`${dashboardData.profitLoss > 0 ? '+' : ''}$${dashboardData.profitLoss.toFixed(2)}`}
+            change={dashboardData.profitLoss > 0 ? +15.8 : -8.4}
+            icon={dashboardData.profitLoss > 0 ? "🚀" : "📉"}
+            variant={dashboardData.profitLoss > 0 ? "profit" : "loss"}
+          />
+        </div>
+      </div>
+
+      {/* Main Dashboard Content */}
+      <div className="dashboard-content">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Column - Charts */}
+          <div className="lg:col-span-2">
+            <div className="card card-elevated mb-6">
+              <div className="card-header">
+                <h3 className="text-xl font-semibold text-primary">
+                  Performance Overview
+                </h3>
+                <p className="text-sm text-secondary mt-1">
+                  Your betting performance over the last 7 days
+                </p>
+              </div>
+              <div className="card-body">
+                <PerformanceChart data={dashboardData.performanceData} />
+              </div>
+            </div>
+
+            {/* Quick Actions with Navigation */}
+            <QuickActions 
+              onQuickBet={handleQuickBet}
+              onViewLiveGames={handleViewLiveGames}
+              onDeposit={handleDeposit}
+              onViewHistory={handleViewHistory}
+            />
+          </div>
+
+          {/* Right Column - Activity Feed */}
+          <div className="lg:col-span-1">
+            <ActivityFeed activities={dashboardData.recentActivity} />
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Popular Games Section */}
+      <div className="popular-games mt-8">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="text-xl font-semibold text-primary">
+              🔥 Popular Games Today
+            </h3>
+            <p className="text-sm text-secondary mt-1">
+              Quick bet on trending games with live odds
             </p>
-            
-            {/* Trust Indicators */}
-            <div className="trust-indicators">
-              <div className="trust-indicator">
-                <div className="trust-indicator-icon"></div>
-                <span>🔒 SSL Secured</span>
-              </div>
-              <div className="trust-indicator">
-                <div className="trust-indicator-icon"></div>
-                <span>⚡ Instant Payouts</span>
-              </div>
-              <div className="trust-indicator">
-                <div className="trust-indicator-icon"></div>
-                <span>🛡️ Licensed & Regulated</span>
-              </div>
-            </div>
-            
-            {/* Quick Stats Bar */}
-            <div className="quick-stats-bar">
-              <div className="quick-stat-item">
-                <span className="quick-stat-value">
-                  ${dashboardData.balance.toFixed(2)}
-                </span>
-                <span className="quick-stat-label">Available Balance</span>
-              </div>
-              <div className="quick-stat-item">
-                <span className="quick-stat-value">
-                  {dashboardData.totalBets}
-                </span>
-                <span className="quick-stat-label">Total Bets</span>
-              </div>
-              <div className="quick-stat-item">
-                <span className="quick-stat-value">
-                  {dashboardData.winRate}%
-                </span>
-                <span className="quick-stat-label">Win Rate</span>
-              </div>
-              <div className="quick-stat-item">
-                <span className="quick-stat-value" style={{ 
-                  color: dashboardData.profitLoss > 0 ? 'var(--color-success-600)' : 'var(--color-error-600)' 
-                }}>
-                  ${Math.abs(dashboardData.profitLoss).toFixed(2)}
-                </span>
-                <span className="quick-stat-label">
-                  {dashboardData.profitLoss > 0 ? 'Total Profit' : 'Total Loss'}
-                </span>
-              </div>
-            </div>
           </div>
-        </div>
-
-        {/* Enhanced Metrics Grid */}
-        <div className="dashboard-metrics mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard
-              title="Current Balance"
-              value={`$${dashboardData.balance.toFixed(2)}`}
-              change={+5.2}
-              icon="💰"
-              variant="balance"
-            />
-            <MetricCard
-              title="Total Bets"
-              value={dashboardData.totalBets.toString()}
-              change={+12.5}
-              icon="🎯"
-              variant="bets"
-            />
-            <MetricCard
-              title="Win Rate"
-              value={`${dashboardData.winRate}%`}
-              change={+2.1}
-              icon="📈"
-              variant="winrate"
-            />
-            <MetricCard
-              title="Profit/Loss"
-              value={`${dashboardData.profitLoss > 0 ? '+' : ''}$${dashboardData.profitLoss.toFixed(2)}`}
-              change={dashboardData.profitLoss > 0 ? +15.8 : -8.4}
-              icon={dashboardData.profitLoss > 0 ? "🚀" : "📉"}
-              variant={dashboardData.profitLoss > 0 ? "profit" : "loss"}
-            />
-          </div>
-        </div>
-
-        {/* Main Dashboard Content */}
-        <div className="dashboard-content">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* Left Column - Charts */}
-            <div className="lg:col-span-2">
-              <div className="card card-elevated mb-6">
-                <div className="card-header">
-                  <h3 className="text-xl font-semibold text-primary">
-                    Performance Overview
-                  </h3>
-                  <p className="text-sm text-secondary mt-1">
-                    Your betting performance over the last 7 days
-                  </p>
+          <div className="card-body">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Enhanced Game Items with Navigation */}
+              <div className="popular-game-item">
+                <div className="game-teams">
+                  <span className="team-name">Lakers</span>
+                  <span className="vs">vs</span>
+                  <span className="team-name">Warriors</span>
                 </div>
-                <div className="card-body">
-                  <PerformanceChart data={dashboardData.performanceData} />
-                </div>
-              </div>
-
-              {/* Quick Actions with Navigation */}
-              <QuickActions 
-                onQuickBet={handleQuickBet}
-                onViewLiveGames={handleViewLiveGames}
-                onDeposit={handleDeposit}
-                onViewHistory={handleViewHistory}
-              />
-            </div>
-
-            {/* Right Column - Activity Feed */}
-            <div className="lg:col-span-1">
-              <ActivityFeed activities={dashboardData.recentActivity} />
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Popular Games Section */}
-        <div className="popular-games mt-8">
-          <div className="card">
-            <div className="card-header">
-              <h3 className="text-xl font-semibold text-primary">
-                🔥 Popular Games Today
-              </h3>
-              <p className="text-sm text-secondary mt-1">
-                Quick bet on trending games with live odds
-              </p>
-            </div>
-            <div className="card-body">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Enhanced Game Items with Navigation */}
-                <div className="popular-game-item">
-                  <div className="game-teams">
-                    <span className="team-name">Lakers</span>
-                    <span className="vs">vs</span>
-                    <span className="team-name">Warriors</span>
-                  </div>
-                  <div className="game-time">🕐 Today 8:00 PM EST</div>
-                  <div className="quick-odds">
-                    <button 
-                      className="odds-button btn btn-sm"
-                      onClick={handleQuickBet}
-                    >
-                      <div className="odds-content">
-                        <span className="odds-selection">Lakers +3.5</span>
-                        <span className="odds-value">-110</span>
-                      </div>
-                    </button>
-                    <button 
-                      className="odds-button btn btn-sm"
-                      onClick={handleQuickBet}
-                    >
-                      <div className="odds-content">
-                        <span className="odds-selection">Warriors -3.5</span>
-                        <span className="odds-value">-110</span>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="popular-game-item">
-                  <div className="game-teams">
-                    <span className="team-name">Chiefs</span>
-                    <span className="vs">vs</span>
-                    <span className="team-name">Bills</span>
-                  </div>
-                  <div className="game-time">📅 Tomorrow 1:00 PM EST</div>
-                  <div className="quick-odds">
-                    <button 
-                      className="odds-button btn btn-sm"
-                      onClick={handleQuickBet}
-                    >
-                      <div className="odds-content">
-                        <span className="odds-selection">Over 47.5</span>
-                        <span className="odds-value">-105</span>
-                      </div>
-                    </button>
-                    <button 
-                      className="odds-button btn btn-sm"
-                      onClick={handleQuickBet}
-                    >
-                      <div className="odds-content">
-                        <span className="odds-selection">Under 47.5</span>
-                        <span className="odds-value">-115</span>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="popular-game-item">
-                  <div className="game-teams">
-                    <span className="team-name">Celtics</span>
-                    <span className="vs">vs</span>
-                    <span className="team-name">Heat</span>
-                  </div>
-                  <div className="game-time">🏀 Tomorrow 7:30 PM EST</div>
-                  <div className="quick-odds">
-                    <button 
-                      className="odds-button btn btn-sm"
-                      onClick={handleQuickBet}
-                    >
-                      <div className="odds-content">
-                        <span className="odds-selection">Celtics ML</span>
-                        <span className="odds-value">-140</span>
-                      </div>
-                    </button>
-                    <button 
-                      className="odds-button btn btn-sm"
-                      onClick={handleQuickBet}
-                    >
-                      <div className="odds-content">
-                        <span className="odds-selection">Heat ML</span>
-                        <span className="odds-value">+120</span>
-                      </div>
-                    </button>
-                  </div>
+                <div className="game-time">🕐 Today 8:00 PM EST</div>
+                <div className="quick-odds">
+                  <button 
+                    className="odds-button btn btn-sm"
+                    onClick={handleQuickBet}
+                  >
+                    <div className="odds-content">
+                      <span className="odds-selection">Lakers +3.5</span>
+                      <span className="odds-value">-110</span>
+                    </div>
+                  </button>
+                  <button 
+                    className="odds-button btn btn-sm"
+                    onClick={handleQuickBet}
+                  >
+                    <div className="odds-content">
+                      <span className="odds-selection">Warriors -3.5</span>
+                      <span className="odds-value">-110</span>
+                    </div>
+                  </button>
                 </div>
               </div>
               
-              {/* View All Games Button with Navigation */}
-              <div className="text-center mt-6">
-                <button 
-                  className="btn btn-primary btn-lg"
-                  onClick={handleViewAllGames}
-                >
-                  View All Games
-                  <span className="ml-2">→</span>
-                </button>
+              <div className="popular-game-item">
+                <div className="game-teams">
+                  <span className="team-name">Chiefs</span>
+                  <span className="vs">vs</span>
+                  <span className="team-name">Bills</span>
+                </div>
+                <div className="game-time">📅 Tomorrow 1:00 PM EST</div>
+                <div className="quick-odds">
+                  <button 
+                    className="odds-button btn btn-sm"
+                    onClick={handleQuickBet}
+                  >
+                    <div className="odds-content">
+                      <span className="odds-selection">Over 47.5</span>
+                      <span className="odds-value">-105</span>
+                    </div>
+                  </button>
+                  <button 
+                    className="odds-button btn btn-sm"
+                    onClick={handleQuickBet}
+                  >
+                    <div className="odds-content">
+                      <span className="odds-selection">Under 47.5</span>
+                      <span className="odds-value">-115</span>
+                    </div>
+                  </button>
+                </div>
               </div>
+
+              <div className="popular-game-item">
+                <div className="game-teams">
+                  <span className="team-name">Celtics</span>
+                  <span className="vs">vs</span>
+                  <span className="team-name">Heat</span>
+                </div>
+                <div className="game-time">🏀 Tomorrow 7:30 PM EST</div>
+                <div className="quick-odds">
+                  <button 
+                    className="odds-button btn btn-sm"
+                    onClick={handleQuickBet}
+                  >
+                    <div className="odds-content">
+                      <span className="odds-selection">Celtics ML</span>
+                      <span className="odds-value">-140</span>
+                    </div>
+                  </button>
+                  <button 
+                    className="odds-button btn btn-sm"
+                    onClick={handleQuickBet}
+                  >
+                    <div className="odds-content">
+                      <span className="odds-selection">Heat ML</span>
+                      <span className="odds-value">+120</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* View All Games Button with Navigation */}
+            <div className="text-center mt-6">
+              <button 
+                className="btn btn-primary btn-lg"
+                onClick={handleViewAllGames}
+              >
+                View All Games
+                <span className="ml-2">→</span>
+              </button>
             </div>
           </div>
         </div>
