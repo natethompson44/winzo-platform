@@ -76,6 +76,19 @@ const AppRoutes: React.FC = () => {
     setCurrentRoute(location.pathname);
   }, [location.pathname]);
 
+  // Handle navigation (this will be passed to AppLayout)
+  const handleNavigate = (route: string) => {
+    // React Router will handle the actual navigation
+    // This is just for any additional logic we might need
+    console.log('Navigating to:', route);
+  };
+
+  // Handle search
+  const handleSearch = (query: string) => {
+    console.log('Searching for:', query);
+    // Add search logic here when needed
+  };
+
   // Public routes don't need AppLayout
   const isPublicRoute = ['/', '/login', '/register'].includes(location.pathname);
 
@@ -124,9 +137,13 @@ const AppRoutes: React.FC = () => {
     );
   }
 
-  // Protected routes use AppLayout
+  // Protected routes use AppLayout with navigation handlers
   return (
-    <AppLayout currentRoute={currentRoute}>
+    <AppLayout 
+      currentRoute={currentRoute}
+      onNavigate={handleNavigate}
+      onSearch={handleSearch}
+    >
       <Routes>
         {/* Dashboard - main landing page after login */}
         <Route 

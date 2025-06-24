@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MetricCard, ActivityFeed, QuickActions, PerformanceChart } from '../components/dashboard';
 import '../styles/dashboard.css';
 
@@ -22,9 +23,31 @@ interface DashboardData {
 }
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Navigation handlers
+  const handleViewAllGames = () => {
+    navigate('/sports');
+  };
+
+  const handleQuickBet = () => {
+    navigate('/sports');
+  };
+
+  const handleViewLiveGames = () => {
+    navigate('/sports'); // Will add live route later
+  };
+
+  const handleDeposit = () => {
+    navigate('/account');
+  };
+
+  const handleViewHistory = () => {
+    navigate('/history');
+  };
 
   // Simulate data loading
   useEffect(() => {
@@ -257,8 +280,13 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Quick Actions */}
-              <QuickActions />
+              {/* Quick Actions with Navigation */}
+              <QuickActions 
+                onQuickBet={handleQuickBet}
+                onViewLiveGames={handleViewLiveGames}
+                onDeposit={handleDeposit}
+                onViewHistory={handleViewHistory}
+              />
             </div>
 
             {/* Right Column - Activity Feed */}
@@ -281,7 +309,7 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="card-body">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Enhanced Game Items */}
+                {/* Enhanced Game Items with Navigation */}
                 <div className="popular-game-item">
                   <div className="game-teams">
                     <span className="team-name">Lakers</span>
@@ -290,13 +318,19 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="game-time">🕐 Today 8:00 PM EST</div>
                   <div className="quick-odds">
-                    <button className="odds-button btn btn-sm">
+                    <button 
+                      className="odds-button btn btn-sm"
+                      onClick={handleQuickBet}
+                    >
                       <div className="odds-content">
                         <span className="odds-selection">Lakers +3.5</span>
                         <span className="odds-value">-110</span>
                       </div>
                     </button>
-                    <button className="odds-button btn btn-sm">
+                    <button 
+                      className="odds-button btn btn-sm"
+                      onClick={handleQuickBet}
+                    >
                       <div className="odds-content">
                         <span className="odds-selection">Warriors -3.5</span>
                         <span className="odds-value">-110</span>
@@ -313,13 +347,19 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="game-time">📅 Tomorrow 1:00 PM EST</div>
                   <div className="quick-odds">
-                    <button className="odds-button btn btn-sm">
+                    <button 
+                      className="odds-button btn btn-sm"
+                      onClick={handleQuickBet}
+                    >
                       <div className="odds-content">
                         <span className="odds-selection">Over 47.5</span>
                         <span className="odds-value">-105</span>
                       </div>
                     </button>
-                    <button className="odds-button btn btn-sm">
+                    <button 
+                      className="odds-button btn btn-sm"
+                      onClick={handleQuickBet}
+                    >
                       <div className="odds-content">
                         <span className="odds-selection">Under 47.5</span>
                         <span className="odds-value">-115</span>
@@ -336,13 +376,19 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="game-time">🏀 Tomorrow 7:30 PM EST</div>
                   <div className="quick-odds">
-                    <button className="odds-button btn btn-sm">
+                    <button 
+                      className="odds-button btn btn-sm"
+                      onClick={handleQuickBet}
+                    >
                       <div className="odds-content">
                         <span className="odds-selection">Celtics ML</span>
                         <span className="odds-value">-140</span>
                       </div>
                     </button>
-                    <button className="odds-button btn btn-sm">
+                    <button 
+                      className="odds-button btn btn-sm"
+                      onClick={handleQuickBet}
+                    >
                       <div className="odds-content">
                         <span className="odds-selection">Heat ML</span>
                         <span className="odds-value">+120</span>
@@ -352,9 +398,12 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
               
-              {/* View All Games Button */}
+              {/* View All Games Button with Navigation */}
               <div className="text-center mt-6">
-                <button className="btn btn-primary btn-lg">
+                <button 
+                  className="btn btn-primary btn-lg"
+                  onClick={handleViewAllGames}
+                >
                   View All Games
                   <span className="ml-2">→</span>
                 </button>

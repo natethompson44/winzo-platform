@@ -791,6 +791,81 @@ Professional skeleton loading with shimmer effects:
 
 All enhancements maintain accessibility and follow the established design system patterns while creating a truly premium sports betting experience.
 
+## Desktop Layout Optimization
+
+### Fixed Layout Issues
+The dashboard now properly handles desktop spacing with sidebar and betslip:
+
+#### Layout Classes
+```css
+/* Main content adapts to betslip presence */
+.main-content.with-betslip {
+  margin-right: var(--bet-slip-width); /* 320px */
+}
+
+.main-content.sidebar-collapsed.with-betslip {
+  margin-left: var(--sidebar-width-collapsed); /* 64px */
+  margin-right: var(--bet-slip-width); /* 320px */
+}
+
+/* Fixed betslip positioning */
+.bet-slip-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: var(--bet-slip-width);
+  z-index: var(--z-fixed);
+}
+```
+
+#### Usage in Components
+```tsx
+// AppLayout automatically applies classes based on state
+<div className={`main-content ${
+  !isMobile ? (isSidebarCollapsed ? 'sidebar-collapsed' : '') : 'mobile'
+} ${!isMobile && betSlipCount > 0 ? 'with-betslip' : ''}`}>
+```
+
+### Navigation Integration
+All dashboard buttons now properly navigate using React Router:
+
+#### Dashboard Navigation Handlers
+```tsx
+const navigate = useNavigate();
+
+const handleViewAllGames = () => navigate('/sports');
+const handleQuickBet = () => navigate('/sports');
+const handleViewLiveGames = () => navigate('/sports');
+const handleDeposit = () => navigate('/account');
+const handleViewHistory = () => navigate('/history');
+```
+
+#### Button Implementation
+```tsx
+<button 
+  className="btn btn-primary btn-lg"
+  onClick={handleViewAllGames}
+>
+  View All Games
+  <span className="ml-2">→</span>
+</button>
+```
+
+### Layout Specifications
+- **Sidebar Width**: 280px (collapsed: 64px)
+- **Betslip Width**: 320px
+- **Content Area**: Dynamically centered between sidebar and betslip
+- **Mobile**: Full width with overlay betslip
+- **Transitions**: Smooth 300ms transitions for all layout changes
+
+### Responsive Behavior
+- **Desktop (≥768px)**: Three-column layout (sidebar + content + betslip)
+- **Tablet/Mobile (<768px)**: Single column with overlay sidebar and betslip
+- **Content Centering**: Automatic adjustment based on available space
+
+This ensures optimal viewing experience across all screen sizes while preventing content overlap and maintaining professional aesthetics.
+
 ---
 
 **Design System Version**: 2.0  

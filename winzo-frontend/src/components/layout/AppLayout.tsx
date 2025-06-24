@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import MobileBottomNav from './MobileBottomNav';
@@ -18,6 +19,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   onSearch,
   isLoading = false
 }) => {
+  const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -57,8 +59,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     }
   };
 
-  // Handle navigation
+  // Handle navigation with React Router
   const handleNavigate = (route: string) => {
+    navigate(route);
     if (onNavigate) {
       onNavigate(route);
     }
@@ -104,10 +107,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         </>
       )}
 
-      {/* Main Content Area */}
+      {/* Main Content Area - Updated with betslip class */}
       <div className={`main-content ${
         !isMobile ? (isSidebarCollapsed ? 'sidebar-collapsed' : '') : 'mobile'
-      }`}>
+      } ${!isMobile && betSlipCount > 0 ? 'with-betslip' : ''}`}>
         {/* Header */}
         <Header
           onMobileMenuToggle={handleSidebarToggle}
@@ -142,7 +145,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         )}
       </div>
 
-      {/* Bet Slip (Desktop) */}
+      {/* Bet Slip (Desktop) - Updated container class */}
       {!isMobile && betSlipCount > 0 && (
         <div className="bet-slip-container">
           <div className="bet-slip">

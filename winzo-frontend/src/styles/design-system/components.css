@@ -1327,14 +1327,42 @@
   padding: 0 var(--space-4);
 }
 
+/* ===== FIXED DESKTOP LAYOUT ===== */
 .main-content {
   margin-left: var(--sidebar-width);
+  margin-right: 0;
   padding: var(--space-6);
   min-height: 100vh;
+  transition: var(--transition-normal);
 }
 
 .main-content.sidebar-collapsed {
   margin-left: var(--sidebar-width-collapsed);
+}
+
+/* Desktop layout with bet slip */
+@media (min-width: 768px) {
+  .main-content.with-betslip {
+    margin-right: var(--bet-slip-width);
+  }
+  
+  .main-content.sidebar-collapsed.with-betslip {
+    margin-left: var(--sidebar-width-collapsed);
+    margin-right: var(--bet-slip-width);
+  }
+}
+
+/* Bet slip positioning */
+.bet-slip-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: var(--bet-slip-width);
+  z-index: var(--z-fixed);
+  background-color: var(--bg-primary);
+  border-left: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-lg);
 }
 
 .layout {
