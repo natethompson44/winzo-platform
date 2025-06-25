@@ -1,0 +1,101 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Rule #6: OddsX Template Migration Context (USE DURING MIGRATION)
+
+Plain Text
+
+
+You are currently working on migrating the WINZO Sports Betting Platform from a React/Nice Admin frontend to the professional OddsX sports betting template while preserving the excellent WINZO backend.
+
+MIGRATION CONTEXT:
+- SOURCE: Current WINZO platform (React + Nice Admin template)
+- TARGET: OddsX sports betting template (Next.js 14 + purpose-built components)
+- BACKEND: Preserve 100% of existing WINZO Node.js/PostgreSQL backend
+- GOAL: Professional sports betting interface with existing functionality
+
+DUAL CODEBASE AWARENESS:
+- /oddsx/oddsx-react/ - OddsX template (Next.js 14, TypeScript, Bootstrap 5)
+- /winzo-platform-main/ - Current WINZO platform (React, CSS variables, admin template)
+- /winzo-backend/ - WINZO backend (Node.js, Express, PostgreSQL) - PRESERVE COMPLETELY
+
+MIGRATION PRIORITIES:
+1. **Preserve Backend**: Never modify existing WINZO backend APIs or database
+2. **Integrate Authentication**: Connect OddsX to existing JWT authentication system
+3. **Maintain Functionality**: Ensure all WINZO features work in OddsX interface
+4. **Enhance UX**: Leverage OddsX sports betting components for better user experience
+5. **Mobile Optimization**: Utilize OddsX mobile-first design for betting workflows
+
+ODDSX TEMPLATE ADVANTAGES TO LEVERAGE:
+- Purpose-built sports betting components (bet slip, odds display, live betting)
+- 20+ sport-specific pages and comprehensive sports coverage
+- Professional dark theme optimized for sports betting
+- Advanced dashboard with deposit/withdrawal/transaction management
+- Mobile-first responsive design for mobile betting experience
+- Next.js 14 performance optimizations and modern architecture
+
+WINZO ASSETS TO PRESERVE:
+- Complete backend API system and business logic
+- User authentication and authorization system
+- Database schema and data relationships
+- Admin functionality and management tools
+- Payment processing and wallet system
+- Comprehensive documentation and deployment setup
+
+INTEGRATION STRATEGY:
+- Replace WINZO frontend components with equivalent OddsX components
+- Connect OddsX forms and interfaces to existing WINZO API endpoints
+- Migrate WINZO admin functionality using OddsX component patterns
+- Preserve all WINZO branding, colors, and business rules
+- Maintain existing user accounts and data continuity
+
+TECHNICAL APPROACH:
+- Use OddsX component structure and styling patterns
+- Integrate with WINZO backend APIs without modification
+- Implement WINZO authentication flow in Next.js architecture
+- Migrate custom features using OddsX design system
+- Optimize for both desktop and mobile sports betting workflows
+
+QUALITY STANDARDS:
+- Maintain all existing WINZO functionality
+- Enhance user experience with professional sports betting interface
+- Preserve data integrity and user account continuity
+- Ensure mobile optimization for sports betting workflows
+- Maintain security and performance standards
+
+When working on migration tasks, always consider:
+- How does this integrate with existing WINZO backend?
+- Does this preserve all current functionality?
+- How can OddsX components enhance this feature?
+- Is this optimized for mobile sports betting?
+- Does this maintain WINZO branding and business rules?
+
+This migration will transform WINZO from an adapted admin template to a professional, purpose-built sports betting platform while preserving all backend excellence.
+
+
+When to Use This Rule:
+
+ACTIVATE during migration (Prompts 1-8):
+
+•
+Set as "Use as Needed" in Cursor
+
+•
+Reference during all migration-related work
+
+•
+Use alongside Rules #1-3 for comprehensive context
+
+RETIRE after migration:
+
+•
+Once migration is complete, this rule can be retired
+
+•
+Update Rule #1 to reflect the new OddsX-based architecture
+
+•
+Maintain Rules #2-3 for ongoing development
+
