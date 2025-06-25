@@ -1,140 +1,63 @@
 [build]
-  base = "winzo-frontend"
+  base = "oddsx/oddsx-react"
   command = "npm install && npm run build"
-  publish = "build"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_FLAGS = "--legacy-peer-deps"
-  NPM_CONFIG_PRODUCTION = "false"
+  NEXT_PUBLIC_API_URL = "https://winzo-platform-production.up.railway.app/api"
+  NEXT_PUBLIC_FRONTEND_URL = "https://winzo-platform.netlify.app"
+  NEXT_PUBLIC_APP_NAME = "WINZO"
+  NEXT_PUBLIC_APP_DESCRIPTION = "Professional Sports Betting Platform"
 
-# Serve static assets with proper MIME types
-[[redirects]]
-  from = "/static/*"
-  to = "/static/:splat"
-  status = 200
-  force = true
-
-# Serve asset manifest
-[[redirects]]
-  from = "/asset-manifest.json"
-  to = "/asset-manifest.json"
-  status = 200
-  force = true
-
-# Serve manifest.json
-[[redirects]]
-  from = "/manifest.json"
-  to = "/manifest.json"
-  status = 200
-  force = true
-
-# Serve service worker
-[[redirects]]
-  from = "/sw.js"
-  to = "/sw.js"
-  status = 200
-  force = true
-
-# Serve cache buster
-[[redirects]]
-  from = "/cache-buster.js"
-  to = "/cache-buster.js"
-  status = 200
-  force = true
-
-# Serve offline page
-[[redirects]]
-  from = "/offline.html"
-  to = "/offline.html"
-  status = 200
-  force = true
-
-# API redirects (if needed)
+# Redirect all API calls to the WINZO backend
 [[redirects]]
   from = "/api/*"
   to = "https://winzo-platform-production.up.railway.app/api/:splat"
   status = 200
+  force = true
 
-# Catch-all for SPA routing (must be last)
+# SPA fallback for client-side routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Cache busting headers for static assets
+# Security headers
 [[headers]]
-  for = "/static/css/*"
+  for = "/*"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
-    Pragma = "no-cache"
-    Expires = "0"
+    X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    Content-Type = "text/css"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
+# Cache static assets
 [[headers]]
-  for = "/static/js/*"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
-    Pragma = "no-cache"
-    Expires = "0"
-    X-Content-Type-Options = "nosniff"
-    Content-Type = "application/javascript"
-
-[[headers]]
-  for = "/static/media/*"
+  for = "/static/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/asset-manifest.json"
+  for = "*.js"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
-    Pragma = "no-cache"
-    Expires = "0"
-    Content-Type = "application/json"
+    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/manifest.json"
+  for = "*.css"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
-    Pragma = "no-cache"
-    Expires = "0"
-    Content-Type = "application/json"
+    Cache-Control = "public, max-age=31536000, immutable"
 
-[[headers]]
-  for = "/sw.js"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
-    Pragma = "no-cache"
-    Expires = "0"
-    Content-Type = "application/javascript"
-
-[[headers]]
-  for = "/cache-buster.js"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
-    Pragma = "no-cache"
-    Expires = "0"
-    Content-Type = "application/javascript"
-
-# Additional cache-busting headers for HTML
-[[headers]]
-  for = "/index.html"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
-    Pragma = "no-cache"
-    Expires = "0"
-    Content-Type = "text/html"
-
+# Context-specific environment variables
 [context.production.environment]
-  REACT_APP_API_URL = "https://winzo-platform-production.up.railway.app/api"
+  NEXT_PUBLIC_API_URL = "https://winzo-platform-production.up.railway.app/api"
   NODE_ENV = "production"
 
 [context.deploy-preview.environment]
-  REACT_APP_API_URL = "https://winzo-platform-production.up.railway.app/api"
+  NEXT_PUBLIC_API_URL = "https://winzo-platform-production.up.railway.app/api"
   NODE_ENV = "production"
 
 [context.branch-deploy.environment]
-  REACT_APP_API_URL = "https://winzo-platform-production.up.railway.app/api"
+  NEXT_PUBLIC_API_URL = "https://winzo-platform-production.up.railway.app/api"
   NODE_ENV = "production" 

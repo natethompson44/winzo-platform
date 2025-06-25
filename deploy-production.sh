@@ -31,9 +31,9 @@ print_error() {
 
 # Function to check if we're in the right directory
 check_directory() {
-    if [[ ! -d "winzo-frontend" ]] || [[ ! -d "winzo-backend" ]] || [[ ! -f "netlify.toml" ]]; then
+    if [[ ! -d "oddsx/oddsx-react" ]] || [[ ! -d "winzo-backend" ]] || [[ ! -f "netlify.toml" ]]; then
         print_error "Please run this script from the winzo-platform root directory"
-        print_error "Expected: winzo-frontend/, winzo-backend/, and netlify.toml"
+        print_error "Expected: oddsx/oddsx-react/, winzo-backend/, and netlify.toml"
         exit 1
     fi
 }
@@ -59,16 +59,16 @@ check_git_status() {
 
 # Function to run tests
 run_tests() {
-    print_status "Running frontend build test..."
+    print_status "Running WINZO platform build test..."
     
-    cd winzo-frontend
+    cd oddsx/oddsx-react
     if npm run build > /dev/null 2>&1; then
-        print_success "Frontend build successful"
+        print_success "WINZO platform build successful"
     else
-        print_error "Frontend build failed"
+        print_error "WINZO platform build failed"
         exit 1
     fi
-    cd ..
+    cd ../..
     
     print_status "Running backend tests..."
     cd winzo-backend
@@ -104,14 +104,16 @@ deploy() {
         git add .
         
         print_status "Committing changes..."
-        git commit -m "feat: Complete WINZO platform overhaul - Production ready deployment
+        git commit -m "feat: Complete OddsX to WINZO transformation - Production ready
 
-- Implemented Nice Admin design system integration
-- Added comprehensive sports betting functionality  
-- Enhanced mobile responsiveness and PWA features
-- Completed admin dashboard and user management
-- Added analytics and performance monitoring
-- Fixed all build issues and optimized for production
+- Successfully transformed OddsX template into WINZO platform
+- Implemented full backend integration with existing WINZO APIs
+- Added functional authentication system with JWT support
+- Integrated comprehensive sports betting functionality
+- Enhanced with real-time data fetching and error handling
+- Configured for Netlify deployment with API proxying
+- Maintained professional sports betting UI design
+- Added TypeScript support and comprehensive error handling
 
 Deployed: $(date)"
     fi
@@ -132,28 +134,42 @@ Deployed: $(date)"
 
 # Function to show post-deployment instructions
 show_post_deployment() {
-    print_success "🚀 Deployment Complete!"
+    print_success "🚀 WINZO Platform Deployment Complete!"
+    echo
+    print_status "🎉 OddsX → WINZO Transformation Successfully Deployed!"
     echo
     print_status "Post-deployment checklist:"
     echo "1. Monitor Netlify build logs: https://app.netlify.com"
     echo "2. Monitor Railway deployment: https://railway.app"
-    echo "3. Test frontend: Check your Netlify domain"
+    echo "3. Test WINZO frontend: Check your Netlify domain"
     echo "4. Test backend API: Check Railway domain/api/health"
     echo "5. Verify database connection and migrations"
-    echo "6. Test authentication flow"
+    echo "6. Test authentication flow (login/register)"
     echo "7. Verify sports data fetching"
-    echo "8. Check admin dashboard functionality"
+    echo "8. Check betting functionality"
+    echo "9. Test mobile responsiveness"
     echo
     print_warning "Remember to:"
-    echo "- Set up environment variables in Netlify and Railway dashboards"
-    echo "- Configure custom domains if needed"
-    echo "- Set up monitoring and alerts"
-    echo "- Create first admin user"
+    echo "- Verify environment variables in Netlify dashboard"
+    echo "- Test all WINZO backend API endpoints"
+    echo "- Create test user accounts with invite codes"
+    echo "- Verify JWT authentication is working"
+    echo "- Test bet placement and transaction flows"
+    echo "- Monitor error logs for any issues"
+    echo
+    print_status "🎯 WINZO Platform Features Now Live:"
+    echo "✅ Professional sports betting interface"
+    echo "✅ Real-time odds and live betting capability"  
+    echo "✅ Complete user authentication system"
+    echo "✅ Wallet and transaction management"
+    echo "✅ Mobile-optimized betting experience"
+    echo "✅ Admin dashboard and user management"
 }
 
 # Main deployment function
 main() {
     print_status "🚀 WINZO Platform - Production Deployment"
+    print_status "📋 Deploying OddsX → WINZO Transformation"
     echo "========================================"
     echo
     
@@ -163,8 +179,10 @@ main() {
     
     # Confirm deployment
     echo
-    print_warning "⚠️  This will deploy to PRODUCTION!"
+    print_warning "⚠️  This will deploy the NEW WINZO PLATFORM to PRODUCTION!"
     echo "This will:"
+    echo "- Deploy the transformed OddsX → WINZO platform"
+    echo "- Use oddsx/oddsx-react as the new frontend"
     echo "- Run build and test checks"
     echo "- Create a backup branch"
     echo "- Merge current branch to main"
