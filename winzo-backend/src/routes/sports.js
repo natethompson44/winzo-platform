@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const oddsApiService = require('../services/oddsApiService')
+const OddsDataTransformer = require('../services/OddsDataTransformer')
 const { SportsEvent, Odds, Bookmaker } = require('../models')
 const {
   validateApiResponse,
@@ -20,6 +21,271 @@ router.use(logApiRequest)
 router.use('/:sport/odds', checkQuota)
 router.use('/:sport/scores', checkQuota)
 router.use('/:sport/*', validateSportParam)
+
+// ===== SPORT-SPECIFIC ENDPOINTS (PHASE 1) =====
+
+/**
+ * GET /api/sports/nfl/games - Get NFL games for American Football page
+ * Returns transformed NFL data optimized for OddsX components
+ */
+router.get('/nfl/games', async (req, res) => {
+  try {
+    const { week, season = 2025, limit = 20 } = req.query;
+    console.log(`Fetching NFL games for week ${week}, season ${season}...`);
+
+    const nflData = await oddsApiService.getOdds('americanfootball_nfl', {
+      regions: 'us',
+      markets: 'h2h,spreads,totals',
+      oddsFormat: 'american'
+    });
+
+    if (!validateApiResponse(nflData, 'odds')) {
+      throw new Error('Invalid NFL data received from API');
+    }
+
+    // Transform data using OddsDataTransformer
+    const transformedData = nflData
+      .slice(0, parseInt(limit))
+      .map(game => OddsDataTransformer.transformNFLGame(game));
+
+    res.json({
+      success: true,
+      data: transformedData,
+      metadata: {
+        sport: 'nfl',
+        week,
+        season,
+        games_count: transformedData.length,
+        last_updated: new Date().toISOString(),
+        data_source: 'live_api'
+      },
+      quota: oddsApiService.getQuotaStatus()
+    });
+
+    console.log(`Returned ${transformedData.length} transformed NFL games`);
+  } catch (error) {
+    console.error('Error in GET /api/sports/nfl/games:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch NFL games',
+      message: error.message,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
+
+/**
+ * GET /api/sports/soccer/games - Get Soccer games for Soccer page
+ * Returns transformed soccer data with 3-way betting markets
+ */
+router.get('/soccer/games', async (req, res) => {
+  try {
+    const { league = 'epl', limit = 20 } = req.query;
+    const sportKey = league === 'epl' ? 'soccer_epl' : `soccer_${league}`;
+    console.log(`Fetching Soccer games for ${league}...`);
+
+    const soccerData = await oddsApiService.getOdds(sportKey, {
+      regions: 'uk,eu',
+      markets: 'h2h,asian_handicaps,over_under',
+      oddsFormat: 'decimal'
+    });
+
+    if (!validateApiResponse(soccerData, 'odds')) {
+      throw new Error('Invalid Soccer data received from API');
+    }
+
+    // Transform data using OddsDataTransformer
+    const transformedData = soccerData
+      .slice(0, parseInt(limit))
+      .map(game => OddsDataTransformer.transformSoccerGame(game));
+
+    res.json({
+      success: true,
+      data: transformedData,
+      metadata: {
+        sport: 'soccer',
+        league,
+        games_count: transformedData.length,
+        last_updated: new Date().toISOString(),
+        data_source: 'live_api'
+      },
+      quota: oddsApiService.getQuotaStatus()
+    });
+
+    console.log(`Returned ${transformedData.length} transformed Soccer games`);
+  } catch (error) {
+    console.error('Error in GET /api/sports/soccer/games:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch Soccer games',
+      message: error.message,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
+
+/**
+ * GET /api/sports/basketball/games - Get Basketball games for Basketball page  
+ * Returns transformed NBA data optimized for OddsX components
+ */
+router.get('/basketball/games', async (req, res) => {
+  try {
+    const { league = 'nba', limit = 20 } = req.query;
+    const sportKey = league === 'nba' ? 'basketball_nba' : `basketball_${league}`;
+    console.log(`Fetching Basketball games for ${league}...`);
+
+    const basketballData = await oddsApiService.getOdds(sportKey, {
+      regions: 'us',
+      markets: 'h2h,spreads,totals',
+      oddsFormat: 'american'
+    });
+
+    if (!validateApiResponse(basketballData, 'odds')) {
+      throw new Error('Invalid Basketball data received from API');
+    }
+
+    // Transform data using OddsDataTransformer
+    const transformedData = basketballData
+      .slice(0, parseInt(limit))
+      .map(game => OddsDataTransformer.transformBasketballGame(game));
+
+    res.json({
+      success: true,
+      data: transformedData,
+      metadata: {
+        sport: 'basketball',
+        league,
+        games_count: transformedData.length,
+        last_updated: new Date().toISOString(),
+        data_source: 'live_api'
+      },
+      quota: oddsApiService.getQuotaStatus()
+    });
+
+    console.log(`Returned ${transformedData.length} transformed Basketball games`);
+  } catch (error) {
+    console.error('Error in GET /api/sports/basketball/games:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch Basketball games',
+      message: error.message,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
+
+/**
+ * GET /api/sports/icehockey/games - Get Ice Hockey games for Ice Hockey page
+ * Returns transformed NHL data optimized for OddsX components
+ */
+router.get('/icehockey/games', async (req, res) => {
+  try {
+    const { league = 'nhl', limit = 20 } = req.query;
+    const sportKey = league === 'nhl' ? 'icehockey_nhl' : `icehockey_${league}`;
+    console.log(`Fetching Ice Hockey games for ${league}...`);
+
+    const hockeyData = await oddsApiService.getOdds(sportKey, {
+      regions: 'us',
+      markets: 'h2h,spreads,totals',
+      oddsFormat: 'american'
+    });
+
+    if (!validateApiResponse(hockeyData, 'odds')) {
+      throw new Error('Invalid Ice Hockey data received from API');
+    }
+
+    // Transform data using OddsDataTransformer
+    const transformedData = hockeyData
+      .slice(0, parseInt(limit))
+      .map(game => OddsDataTransformer.transformIceHockeyGame(game));
+
+    res.json({
+      success: true,
+      data: transformedData,
+      metadata: {
+        sport: 'icehockey',
+        league,
+        games_count: transformedData.length,
+        last_updated: new Date().toISOString(),
+        data_source: 'live_api'
+      },
+      quota: oddsApiService.getQuotaStatus()
+    });
+
+    console.log(`Returned ${transformedData.length} transformed Ice Hockey games`);
+  } catch (error) {
+    console.error('Error in GET /api/sports/icehockey/games:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch Ice Hockey games',
+      message: error.message,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
+
+/**
+ * GET /api/sports/{sport}/best-odds/{gameId} - Get best odds for specific game
+ * Returns optimized best odds comparison across bookmakers
+ */
+router.get('/:sport/best-odds/:gameId', async (req, res) => {
+  try {
+    const { sport, gameId } = req.params;
+    console.log(`Fetching best odds for game ${gameId} in ${sport}...`);
+
+    // Get odds for the specific event
+    const oddsData = await oddsApiService.getOdds(sport, {
+      eventIds: gameId,
+      regions: 'us,uk,eu',
+      markets: 'h2h,spreads,totals'
+    });
+
+    if (!oddsData || oddsData.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Game not found',
+        gameId,
+        sport
+      });
+    }
+
+    const game = oddsData[0];
+    const bestOdds = OddsDataTransformer.calculateBestOdds(game.bookmakers);
+    const prioritizedBookmakers = OddsDataTransformer.prioritizeBookmakers(
+      game.bookmakers, 
+      game.sport_key
+    );
+
+    res.json({
+      success: true,
+      data: {
+        game_id: gameId,
+        sport_key: game.sport_key,
+        home_team: game.home_team,
+        away_team: game.away_team,
+        best_odds: bestOdds,
+        prioritized_bookmakers: prioritizedBookmakers,
+        total_bookmakers: game.bookmakers?.length || 0
+      },
+      quota: oddsApiService.getQuotaStatus(),
+      timestamp: new Date().toISOString()
+    });
+
+    console.log(`Returned best odds for ${gameId} with ${game.bookmakers?.length || 0} bookmakers`);
+  } catch (error) {
+    console.error(`Error in GET /api/sports/${req.params.sport}/best-odds/${req.params.gameId}:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch best odds',
+      message: error.message,
+      gameId: req.params.gameId,
+      sport: req.params.sport,
+      quota: oddsApiService.getQuotaStatus()
+    });
+  }
+});
+
+// ===== EXISTING GENERAL ENDPOINTS =====
 
 /**
  * GET /api/sports - Get all available sports

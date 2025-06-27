@@ -289,6 +289,245 @@ Get detailed information for a specific event.
 - `sport` (string): Sport key
 - `eventId` (string): Event ID from odds/scores data
 
+## Sports API Endpoints
+
+### Enhanced Sport-Specific Endpoints (Phase 1 - Live Data Integration)
+
+#### NFL Games Endpoint
+```
+GET /api/sports/nfl/games
+```
+
+**Description**: Get NFL games optimized for American Football page with live data transformation.
+
+**Query Parameters**:
+- `week` (optional): NFL week number
+- `season` (optional): NFL season year (default: 2025)
+- `limit` (optional): Number of games to return (default: 20)
+
+**Response Format**:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "game_id",
+      "sport_key": "americanfootball_nfl",
+      "sport_icon": "/images/icon/america-football.png",
+      "league_name": "NFL",
+      "game_time": "Today, 20:20",
+      "home_team": "Philadelphia Eagles",
+      "away_team": "Dallas Cowboys",
+      "home_team_logo": "/images/clubs/philadelphia-eagles.png",
+      "away_team_logo": "/images/clubs/dallas-cowboys.png",
+      "markets": {
+        "h2h": { "outcomes": {}, "bookmakers": [] },
+        "spreads": { "outcomes": {}, "bookmakers": [] },
+        "totals": { "outcomes": {}, "bookmakers": [] }
+      },
+      "best_odds": {
+        "h2h": {
+          "home": { "price": -140, "bookmaker": "draftkings" },
+          "away": { "price": 120, "bookmaker": "fanduel" }
+        }
+      },
+      "bookmaker_count": 7,
+      "last_updated": "2025-06-27T01:20:45Z",
+      "featured": true
+    }
+  ],
+  "metadata": {
+    "sport": "nfl",
+    "week": 1,
+    "season": 2025,
+    "games_count": 12,
+    "last_updated": "2025-06-27T01:20:45Z",
+    "data_source": "live_api"
+  },
+  "quota": {
+    "used": 125,
+    "remaining": 375,
+    "total": 500,
+    "percentUsed": 25
+  }
+}
+```
+
+#### Soccer Games Endpoint
+```
+GET /api/sports/soccer/games
+```
+
+**Description**: Get Soccer games with 3-way betting markets optimized for Soccer page.
+
+**Query Parameters**:
+- `league` (optional): Soccer league (default: "epl"). Options: epl, la_liga, bundesliga, serie_a, ligue_one
+- `limit` (optional): Number of games to return (default: 20)
+
+**Response Format**:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "game_id",
+      "sport_key": "soccer_epl",
+      "sport_icon": "/images/icon/soccer-icon.png",
+      "league_name": "Premier League",
+      "game_time": "Tomorrow, 15:00",
+      "home_team": "Manchester United",
+      "away_team": "Liverpool",
+      "home_team_logo": "/images/icon/man-utd.png",
+      "away_team_logo": "/images/icon/liverpool.png",
+      "markets": {
+        "h2h": {
+          "outcomes": {},
+          "bookmakers": [],
+          "three_way": {
+            "home": [],
+            "draw": [],
+            "away": []
+          }
+        }
+      },
+      "best_odds": {
+        "h2h": {
+          "summary": {
+            "home": { "price": 2.5, "bookmaker": "bet365" },
+            "draw": { "price": 3.2, "bookmaker": "williamhill" },
+            "away": { "price": 2.8, "bookmaker": "ladbrokes" }
+          }
+        }
+      },
+      "bookmaker_count": 8,
+      "featured": true
+    }
+  ],
+  "metadata": {
+    "sport": "soccer",
+    "league": "epl",
+    "games_count": 10,
+    "data_source": "live_api"
+  }
+}
+```
+
+#### Basketball Games Endpoint
+```
+GET /api/sports/basketball/games
+```
+
+**Description**: Get Basketball games optimized for Basketball page.
+
+**Query Parameters**:
+- `league` (optional): Basketball league (default: "nba"). Options: nba, ncaab
+- `limit` (optional): Number of games to return (default: 20)
+
+#### Ice Hockey Games Endpoint
+```
+GET /api/sports/icehockey/games
+```
+
+**Description**: Get Ice Hockey games optimized for Ice Hockey page.
+
+**Query Parameters**:
+- `league` (optional): Hockey league (default: "nhl")
+- `limit` (optional): Number of games to return (default: 20)
+
+#### Best Odds Comparison Endpoint
+```
+GET /api/sports/{sport}/best-odds/{gameId}
+```
+
+**Description**: Get optimized best odds comparison across bookmakers for a specific game.
+
+**Path Parameters**:
+- `sport`: Sport key (e.g., "americanfootball_nfl", "soccer_epl")
+- `gameId`: Unique game identifier
+
+**Response Format**:
+```json
+{
+  "success": true,
+  "data": {
+    "game_id": "game_id",
+    "sport_key": "americanfootball_nfl",
+    "home_team": "Philadelphia Eagles",
+    "away_team": "Dallas Cowboys",
+    "best_odds": {
+      "h2h": {
+        "home": { "price": -140, "bookmaker": "draftkings", "bookmaker_title": "DraftKings" },
+        "away": { "price": 120, "bookmaker": "fanduel", "bookmaker_title": "FanDuel" }
+      }
+    },
+    "prioritized_bookmakers": [
+      {
+        "key": "draftkings",
+        "title": "DraftKings",
+        "markets": [...],
+        "priority_rank": 1
+      }
+    ],
+    "total_bookmakers": 7
+  }
+}
+```
+
+### Data Transformation Features
+
+The Phase 1 implementation includes a comprehensive `OddsDataTransformer` service that:
+
+#### Team Logo Mapping
+- **NFL**: 32 team logos mapped to `/images/clubs/{team-name}.png`
+- **Soccer**: 20+ EPL team logos mapped to existing icons
+- **Basketball**: 10+ NBA team logos mapped
+- **Hockey**: 8+ NHL team logos mapped
+- **Fallback**: Default team logo for unmapped teams
+
+#### Bookmaker Prioritization
+- **NFL/NBA/NHL**: DraftKings, FanDuel, BetMGM, Caesars (US focus)
+- **Soccer**: Bet365, William Hill, Ladbrokes, Betfair (EU focus)
+- **Auto-sorting**: Bookmakers sorted by priority and odds quality
+
+#### Time Formatting
+- **Live games**: "Live" status
+- **Today**: "Today, HH:MM" format
+- **Tomorrow**: "Tomorrow, HH:MM" format
+- **Future**: "MMM DD, HH:MM" format
+
+#### Market Processing
+- **2-way betting**: NFL, NBA, NHL (home/away)
+- **3-way betting**: Soccer (home/draw/away)
+- **Multiple markets**: h2h, spreads, totals, props
+- **Best odds calculation**: Automatic best price detection
+
+### Error Handling & Fallbacks
+
+All endpoints implement comprehensive error handling:
+
+1. **API Failures**: Automatic fallback to mock data
+2. **Invalid Data**: Data validation and sanitization  
+3. **Quota Limits**: Smart quota monitoring and management
+4. **Network Issues**: Graceful degradation with cached data
+
+### Caching Strategy
+
+- **In-memory caching**: 30 seconds for live odds
+- **Sports list caching**: 24 hours
+- **Team logos**: Persistent caching
+- **Cache invalidation**: Automatic cleanup for expired entries
+
+### Integration Notes
+
+- **Backward compatibility**: All existing endpoints remain functional
+- **Progressive enhancement**: New endpoints enhance existing functionality
+- **Mock data fallback**: Ensures platform reliability during API issues
+- **Type safety**: Full TypeScript support in frontend integration
+
+---
+
+## General Sports Endpoints
+
 ## Betting API
 
 Handles all betting operations including bet placement, history, and management.
