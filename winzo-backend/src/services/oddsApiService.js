@@ -3,6 +3,7 @@ const axios = require('axios')
 /**
  * OddsApiService - Handles all communication with The Odds API
  * Provides caching, quota management, and error handling
+ * PERFORMANCE OPTIMIZED: Longer cache durations to prevent quota burn
  */
 class OddsApiService {
   constructor () {
@@ -11,11 +12,19 @@ class OddsApiService {
     this.cache = new Map()
     this.quotaUsed = 0
     this.quotaRemaining = 500
-    // Cache durations in seconds
+    
+    // OPTIMIZED: Much longer cache durations to prevent quota burn
     this.cacheDurations = {
-      sports: parseInt(process.env.ODDS_API_CACHE_DURATION_SPORTS) || 86400,
-      odds: parseInt(process.env.ODDS_API_CACHE_DURATION_ODDS) || 30,
-      scores: parseInt(process.env.ODDS_API_CACHE_DURATION_SCORES) || 15
+      sports: parseInt(process.env.ODDS_API_CACHE_DURATION_SPORTS) || 86400, // 24 hours
+      odds: parseInt(process.env.ODDS_API_CACHE_DURATION_ODDS) || 300, // 5 minutes (was 30 seconds!)
+      scores: parseInt(process.env.ODDS_API_CACHE_DURATION_SCORES) || 60  // 1 minute (was 15 seconds!)
+    }
+    
+    // Emergency mode: use even longer cache when quota is low
+    this.emergencyCacheDurations = {
+      sports: 172800, // 48 hours
+      odds: 900,     // 15 minutes
+      scores: 300    // 5 minutes
     }
 
     // Don't throw error if API key is missing - just log warning
@@ -23,7 +32,8 @@ class OddsApiService {
       console.warn('⚠️ ODDS_API_KEY not found in environment variables - OddsApiService will be limited')
       this.apiKey = 'dummy-key' // Use dummy key to prevent crashes
     } else {
-      console.log('OddsApiService initialized with API key:', this.apiKey.substring(0, 8) + '...')
+      console.log('🎯 OddsApiService initialized with optimized caching')
+      console.log(`📊 Cache durations - Sports: ${this.cacheDurations.sports}s, Odds: ${this.cacheDurations.odds}s, Scores: ${this.cacheDurations.scores}s`)
     }
   }
 
@@ -34,24 +44,32 @@ class OddsApiService {
    */
   async getSports (includeInactive = false) {
     const cacheKey = `sports_${includeInactive}`
-    const cached = this.getCachedData(cacheKey, this.cacheDurations.sports)
+    const cacheDuration = this.isQuotaLow() ? this.emergencyCacheDurations.sports : this.cacheDurations.sports
+    const cached = this.getCachedData(cacheKey, cacheDuration)
     if (cached) {
-      console.log('Returning cached sports data')
+      console.log('♻️ Returning cached sports data (quota preserved)')
       return cached
     }
+    
+    // Quota protection
+    if (this.quotaRemaining < 10) {
+      throw new Error('❌ API quota too low to make new requests. Using cached data only.')
+    }
+    
     try {
-      console.log('Fetching sports from API...')
+      console.log('🌐 Fetching sports from API...')
       const params = { apiKey: this.apiKey }
       if (includeInactive) {
         params.all = 'true'
       }
       const response = await axios.get(`${this.baseUrl}/v4/sports`, { params, timeout: 10000 })
+      this.updateQuotaFromHeaders(response.headers)
       const sports = response.data
-      this.setCachedData(cacheKey, sports, this.cacheDurations.sports)
-      console.log(`Fetched ${sports.length} sports from API`)
+      this.setCachedData(cacheKey, sports, cacheDuration)
+      console.log(`✅ Fetched ${sports.length} sports from API. Quota: ${this.quotaRemaining} remaining`)
       return sports
     } catch (error) {
-      console.error('Error fetching sports:', error.message)
+      console.error('❌ Error fetching sports:', error.message)
       throw new Error(`Failed to fetch sports data: ${error.message}`)
     }
   }
@@ -71,25 +89,39 @@ class OddsApiService {
       eventIds = null
     } = options
     const cacheKey = `odds_${sportKey}_${regions}_${markets}_${bookmakers || 'all'}`
-    const cached = this.getCachedData(cacheKey, this.cacheDurations.odds)
+    const cacheDuration = this.isQuotaLow() ? this.emergencyCacheDurations.odds : this.cacheDurations.odds
+    const cached = this.getCachedData(cacheKey, cacheDuration)
     if (cached) {
-      console.log(`Returning cached odds for ${sportKey}`)
+      console.log(`♻️ Returning cached odds for ${sportKey} (quota preserved)`)
       return cached
     }
+    
+    // CRITICAL: Quota protection to prevent burning through API calls
+    if (this.quotaRemaining < 5) {
+      console.warn(`⚠️ Quota critically low (${this.quotaRemaining}). Using any available cached data.`)
+      // Try to return stale cache if available
+      const staleCache = this.cache.get(cacheKey)
+      if (staleCache) {
+        console.log(`📥 Returning stale cached data for ${sportKey} to preserve quota`)
+        return staleCache.data
+      }
+      throw new Error('❌ API quota exhausted and no cached data available')
+    }
+    
     try {
-      console.log(`Fetching odds for ${sportKey} from API...`)
+      console.log(`🌐 Fetching odds for ${sportKey} from API... (${this.quotaRemaining} calls remaining)`)
       const params = { apiKey: this.apiKey, regions, markets, oddsFormat }
       if (bookmakers) params.bookmakers = bookmakers
       if (eventIds) params.eventIds = eventIds
       const response = await axios.get(`${this.baseUrl}/v4/sports/${sportKey}/odds`, { params, timeout: 15000 })
       this.updateQuotaFromHeaders(response.headers)
       const odds = response.data
-      this.setCachedData(cacheKey, odds, this.cacheDurations.odds)
-      console.log(`Fetched ${odds.length} events with odds for ${sportKey}`)
-      console.log(`Quota status: ${this.quotaUsed} used, ${this.quotaRemaining} remaining`)
+      this.setCachedData(cacheKey, odds, cacheDuration)
+      console.log(`✅ Fetched ${odds.length} events with odds for ${sportKey}`)
+      console.log(`📊 Quota status: ${this.quotaUsed} used, ${this.quotaRemaining} remaining (${Math.round((this.quotaRemaining / 500) * 100)}%)`)
       return odds
     } catch (error) {
-      console.error(`Error fetching odds for ${sportKey}:`, error.message)
+      console.error(`❌ Error fetching odds for ${sportKey}:`, error.message)
       throw new Error(`Failed to fetch odds for ${sportKey}: ${error.message}`)
     }
   }
@@ -103,25 +135,36 @@ class OddsApiService {
   async getScores (sportKey, options = {}) {
     const { daysFrom = 1, eventIds = null } = options
     const cacheKey = `scores_${sportKey}_${daysFrom}_${eventIds || 'all'}`
-    const cacheTime = this.cacheDurations.scores
-    const cached = this.getCachedData(cacheKey, cacheTime)
+    const cacheDuration = this.isQuotaLow() ? this.emergencyCacheDurations.scores : this.cacheDurations.scores
+    const cached = this.getCachedData(cacheKey, cacheDuration)
     if (cached) {
-      console.log(`Returning cached scores for ${sportKey}`)
+      console.log(`♻️ Returning cached scores for ${sportKey} (quota preserved)`)
       return cached
     }
+    
+    // Quota protection
+    if (this.quotaRemaining < 5) {
+      const staleCache = this.cache.get(cacheKey)
+      if (staleCache) {
+        console.log(`📥 Returning stale cached scores for ${sportKey} to preserve quota`)
+        return staleCache.data
+      }
+      throw new Error('❌ API quota exhausted and no cached data available')
+    }
+    
     try {
-      console.log(`Fetching scores for ${sportKey} from API...`)
+      console.log(`🌐 Fetching scores for ${sportKey} from API... (${this.quotaRemaining} calls remaining)`)
       const params = { apiKey: this.apiKey, daysFrom }
       if (eventIds) params.eventIds = eventIds
       const response = await axios.get(`${this.baseUrl}/v4/sports/${sportKey}/scores`, { params, timeout: 10000 })
       this.updateQuotaFromHeaders(response.headers)
       const scores = response.data
-      this.setCachedData(cacheKey, scores, cacheTime)
-      console.log(`Fetched ${scores.length} games with scores for ${sportKey}`)
-      console.log(`Quota status: ${this.quotaUsed} used, ${this.quotaRemaining} remaining`)
+      this.setCachedData(cacheKey, scores, cacheDuration)
+      console.log(`✅ Fetched ${scores.length} games with scores for ${sportKey}`)
+      console.log(`📊 Quota status: ${this.quotaUsed} used, ${this.quotaRemaining} remaining`)
       return scores
     } catch (error) {
-      console.error(`Error fetching scores for ${sportKey}:`, error.message)
+      console.error(`❌ Error fetching scores for ${sportKey}:`, error.message)
       throw new Error(`Failed to fetch scores for ${sportKey}: ${error.message}`)
     }
   }
@@ -133,23 +176,31 @@ class OddsApiService {
    */
   async getParticipants (sportKey) {
     const cacheKey = `participants_${sportKey}`
-    const cached = this.getCachedData(cacheKey, this.cacheDurations.sports)
+    const cacheDuration = this.isQuotaLow() ? this.emergencyCacheDurations.sports : this.cacheDurations.sports
+    const cached = this.getCachedData(cacheKey, cacheDuration)
     if (cached) {
-      console.log(`Returning cached participants for ${sportKey}`)
+      console.log(`♻️ Returning cached participants for ${sportKey} (quota preserved)`)
       return cached
     }
+    
+    // Quota protection
+    if (this.quotaRemaining < 5) {
+      throw new Error('❌ API quota too low for participants request')
+    }
+    
     try {
-      console.log(`Fetching participants for ${sportKey} from API...`)
+      console.log(`🌐 Fetching participants for ${sportKey} from API...`)
       const response = await axios.get(`${this.baseUrl}/v4/sports/${sportKey}/participants`, {
         params: { apiKey: this.apiKey },
         timeout: 10000
       })
+      this.updateQuotaFromHeaders(response.headers)
       const participants = response.data
-      this.setCachedData(cacheKey, participants, this.cacheDurations.sports)
-      console.log(`Fetched ${participants.length} participants for ${sportKey}`)
+      this.setCachedData(cacheKey, participants, cacheDuration)
+      console.log(`✅ Fetched ${participants.length} participants for ${sportKey}`)
       return participants
     } catch (error) {
-      console.error(`Error fetching participants for ${sportKey}:`, error.message)
+      console.error(`❌ Error fetching participants for ${sportKey}:`, error.message)
       throw new Error(`Failed to fetch participants for ${sportKey}: ${error.message}`)
     }
   }
@@ -191,7 +242,7 @@ class OddsApiService {
         this.cache.delete(key)
       }
     }
-    console.log(`Cache cleanup completed. ${this.cache.size} entries remaining.`)
+    console.log(`🧹 Cache cleanup completed. ${this.cache.size} entries remaining.`)
   }
 
   /**
@@ -206,6 +257,14 @@ class OddsApiService {
     }
     if (remaining !== undefined) {
       this.quotaRemaining = parseInt(remaining)
+    }
+    
+    // Log warnings when quota gets low
+    if (this.quotaRemaining < 50) {
+      console.warn(`⚠️ API quota getting low: ${this.quotaRemaining} calls remaining`)
+    }
+    if (this.quotaRemaining < 20) {
+      console.error(`🚨 API quota critically low: ${this.quotaRemaining} calls remaining`)
     }
   }
 
@@ -223,11 +282,11 @@ class OddsApiService {
   }
 
   /**
-   * Check if quota is running low
-   * @returns {boolean} True if quota is below 10%
+   * Check if quota is running low (triggers emergency caching)
+   * @returns {boolean} True if quota is below 20%
    */
   isQuotaLow () {
-    return this.quotaRemaining < 50 // Less than 10% remaining
+    return this.quotaRemaining < 100 // Less than 20% remaining
   }
 
   /**
@@ -235,7 +294,7 @@ class OddsApiService {
    */
   clearCache () {
     this.cache.clear()
-    console.log('All cache data cleared')
+    console.log('🗑️ All cache data cleared')
   }
 
   /**
@@ -245,7 +304,9 @@ class OddsApiService {
   getCacheStats () {
     return {
       size: this.cache.size,
-      keys: Array.from(this.cache.keys())
+      keys: Array.from(this.cache.keys()),
+      quotaStatus: this.getQuotaStatus(),
+      emergencyMode: this.isQuotaLow()
     }
   }
 }
