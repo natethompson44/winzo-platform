@@ -59,12 +59,18 @@ class ApiClient {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          // Handle unauthorized - just clear token, let components handle the error
-          if (typeof window !== 'undefined') {
+          // Only remove auth token for authentication-related endpoints
+          const isAuthEndpoint = error.config?.url?.includes('/auth/') || 
+                                 error.config?.url?.includes('/user/') ||
+                                 error.config?.url?.includes('/admin/');
+          
+          if (isAuthEndpoint && typeof window !== 'undefined') {
             localStorage.removeItem('authToken');
+            console.warn('Authentication failed - token removed');
+          } else {
+            // For other endpoints, just log the warning without removing token
+            console.warn('Authentication required for this request, but preserving session');
           }
-          // Don't auto-redirect - let components handle gracefully
-          console.warn('Authentication required for this request');
         }
         return Promise.reject(error);
       }

@@ -61,11 +61,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         setUser(userData);
       } else {
+        // Only remove token if this is an auth-related failure
+        console.warn('Failed to get user profile - invalid response structure');
         localStorage.removeItem('authToken');
       }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('authToken');
+    } catch (error: any) {
+      // Only remove token if it's a clear authentication failure (401 from auth endpoint)
+      if (error.response?.status === 401) {
+        console.error('Authentication failed - removing invalid token');
+        localStorage.removeItem('authToken');
+      } else {
+        console.error('Auth check failed due to network/server error:', error);
+        // Keep the token for network errors - user might still be authenticated
+      }
     } finally {
       setIsLoading(false);
     }
