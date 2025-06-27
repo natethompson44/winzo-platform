@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import sportsService from '@/services/sportsService';
 
 interface NFLGame {
@@ -24,6 +24,30 @@ interface NFLGame {
 interface LoadingSkeletonProps {
   count?: number;
 }
+
+// 🚨 EMERGENCY FIX: Global request cache to prevent duplicate API calls
+const globalNFLCache = {
+  data: null as NFLGame[] | null,
+  timestamp: 0,
+  isLoading: false,
+  CACHE_DURATION: 300000, // 5 minutes in milliseconds
+  
+  isValid(): boolean {
+    return this.data !== null && (Date.now() - this.timestamp) < this.CACHE_DURATION;
+  },
+  
+  set(data: NFLGame[]): void {
+    this.data = data;
+    this.timestamp = Date.now();
+    this.isLoading = false;
+  },
+  
+  clear(): void {
+    this.data = null;
+    this.timestamp = 0;
+    this.isLoading = false;
+  }
+};
 
 function LoadingSkeleton({ count = 3 }: LoadingSkeletonProps) {
   return (
@@ -348,13 +372,41 @@ export default function UpCmingAmericanFootball() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  
+  // 🚨 EMERGENCY FIX: Prevent multiple intervals and API calls
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const requestInProgressRef = useRef<boolean>(false);
 
-  const fetchNFLGames = async () => {
+  // 🚨 EMERGENCY FIX: Cached and debounced fetch function
+  const fetchNFLGames = useCallback(async (forceRefresh: boolean = false) => {
+    // Prevent multiple simultaneous requests
+    if (requestInProgressRef.current && !forceRefresh) {
+      console.log('🏈 Request already in progress, skipping...');
+      return;
+    }
+
+    // Use cached data if still valid and not forcing refresh
+    if (globalNFLCache.isValid() && !forceRefresh) {
+      console.log('🏈 Using cached NFL data');
+      setNflGames(globalNFLCache.data!);
+      setLastUpdate(new Date(globalNFLCache.timestamp));
+      setLoading(false);
+      return;
+    }
+
+    // Prevent duplicate requests
+    if (globalNFLCache.isLoading && !forceRefresh) {
+      console.log('🏈 Another component is already loading, waiting...');
+      return;
+    }
+
     try {
+      requestInProgressRef.current = true;
+      globalNFLCache.isLoading = true;
       setLoading(true);
       setError(null);
       
-      console.log('🏈 Fetching NFL games...');
+      console.log('🏈 Fetching NFL games... (with caching)');
       const games = await sportsService.getNFLGames({
         limit: 10
       });
@@ -362,10 +414,16 @@ export default function UpCmingAmericanFootball() {
       console.log('🏈 NFL games fetched:', games);
       
       if (games && Array.isArray(games)) {
-        setNflGames(games as NFLGame[]);
+        const typedGames = games as NFLGame[];
+        
+        // Update global cache
+        globalNFLCache.set(typedGames);
+        
+        // Update component state
+        setNflGames(typedGames);
         setLastUpdate(new Date());
         
-        if (games.length === 0) {
+        if (typedGames.length === 0) {
           setError('No NFL games available at the moment. Please check back later.');
         }
       } else {
@@ -384,6 +442,10 @@ export default function UpCmingAmericanFootball() {
         console.warn('🏈 Authentication required for NFL data - but this should not cause logout');
       } else if (err?.response?.status === 404) {
         errorMessage = 'NFL data service not available. Showing sample games.';
+      } else if (err?.response?.status === 429) {
+        errorMessage = '⚠️ Too many requests. Using cached data. Please wait before refreshing.';
+        console.error('🚨 RATE LIMIT HIT - This is the infinite loop problem!');
+        shouldUseFallback = false; // Don't show fallback for rate limit
       } else if (err?.code === 'NETWORK_ERROR' || !err?.response) {
         errorMessage = 'Network error. Showing sample data while offline.';
       } else if (err?.message?.includes('Invalid data format')) {
@@ -402,8 +464,8 @@ export default function UpCmingAmericanFootball() {
           game_time: 'Today, 20:20',
           home_team: 'Philadelphia Eagles',
           away_team: 'Dallas Cowboys',
-          home_team_logo: '/images/clubs/nfl/philadelphia-eagles.png',
-          away_team_logo: '/images/clubs/nfl/dallas-cowboys.png',
+          home_team_logo: '/images/clubs/philadelphia-eagles.png',
+          away_team_logo: '/images/clubs/dallas-cowboys.png',
           markets: {
             h2h: {
               outcomes: {
@@ -437,8 +499,8 @@ export default function UpCmingAmericanFootball() {
           game_time: 'Tomorrow, 13:00',
           home_team: 'Green Bay Packers',
           away_team: 'Chicago Bears',
-          home_team_logo: '/images/clubs/nfl/green-bay-packers.png',
-          away_team_logo: '/images/clubs/nfl/chicago-bears.png',
+          home_team_logo: '/images/clubs/green-bay-packers.png',
+          away_team_logo: '/images/clubs/chicago-bears.png',
           markets: {
             h2h: {
               outcomes: {
@@ -455,20 +517,60 @@ export default function UpCmingAmericanFootball() {
       ];
       
       if (shouldUseFallback) {
+        // Update cache with fallback data to prevent repeated failures
+        globalNFLCache.set(sampleGames);
         setNflGames(sampleGames);
         setLastUpdate(new Date());
       }
     } finally {
       setLoading(false);
+      requestInProgressRef.current = false;
+      globalNFLCache.isLoading = false;
     }
-  };
+  }, []);
 
+  // 🚨 EMERGENCY FIX: Debounced refresh function for button clicks
+  const handleRefresh = useCallback(() => {
+    if (requestInProgressRef.current) {
+      console.log('🏈 Request already in progress, ignoring refresh click');
+      return;
+    }
+    fetchNFLGames(true); // Force refresh
+  }, [fetchNFLGames]);
+
+  // 🚨 EMERGENCY FIX: Proper interval management with 5-minute refresh
   useEffect(() => {
+    // Load initial data
     fetchNFLGames();
 
-    // Set up real-time updates every 30 seconds
-    const interval = setInterval(fetchNFLGames, 30000);
-    return () => clearInterval(interval);
+    // Clear any existing interval to prevent duplicates
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    // Set up 5-minute refresh interval (increased from 30 seconds)
+    intervalRef.current = setInterval(() => {
+      console.log('🏈 5-minute interval refresh...');
+      fetchNFLGames();
+    }, 300000); // 5 minutes = 300,000ms
+
+    // Cleanup function
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [fetchNFLGames]);
+
+  // 🚨 EMERGENCY FIX: Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      requestInProgressRef.current = false;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
 
   return (
@@ -492,7 +594,7 @@ export default function UpCmingAmericanFootball() {
                       </small>
                       <button 
                         className="btn btn-outline-primary btn-sm"
-                        onClick={fetchNFLGames}
+                        onClick={handleRefresh}
                         disabled={loading}
                       >
                         <i className={`fas fa-sync ${loading ? 'fa-spin' : ''} me-1`}></i>
@@ -518,7 +620,7 @@ export default function UpCmingAmericanFootball() {
                     ) : (
                       <ErrorMessage 
                         message="No NFL games available at the moment."
-                        onRetry={fetchNFLGames}
+                        onRetry={handleRefresh}
                       />
                     )}
                   </div>

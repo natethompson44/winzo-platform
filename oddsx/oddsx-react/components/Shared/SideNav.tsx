@@ -11,16 +11,16 @@ export default function SideNav() {
         <>
             <ul className="secend-actives bg1-color rounded-5 d-flex flex-column gap-5 mb-5">
                 <li className="active">
-                    <Link href="/" className="d-flex align-items-center gap-2"><i
+                    <Link href="/" prefetch={false} className="d-flex align-items-center gap-2"><i
                         className="ti ti-brand-google-home n5-color fs-five"></i> Home</Link>
                 </li>
                 <li className="active">
-                    <Link href="#" className="d-flex align-items-center gap-2"><i
+                    <Link href="#" prefetch={false} className="d-flex align-items-center gap-2"><i
                         className="ti ti-garden-cart n5-color fs-five"></i>
                         Marketplace</Link>
                 </li>
                 <li className="active">
-                    <Link href="/efighting" className="d-flex align-items-center gap-2"><svg
+                    <Link href="/efighting" prefetch={false} className="d-flex align-items-center gap-2"><svg
                         xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 22"
                         fill="none">
                         <path
@@ -35,7 +35,7 @@ export default function SideNav() {
                 {popularData.map((popularSingle) => (
                     <li
                         className={`d-flex align-items-center justify-content-between px-3 py-2 rounded-3 gap-5  ${path == popularSingle.href && 'n11-bg'}`} key={popularSingle.id}>
-                        <Link href={popularSingle.href} className="d-flex align-items-center gap-2"><Image
+                        <Link href={popularSingle.href} prefetch={false} className="d-flex align-items-center gap-2"><Image
                             width={16} height={16} src={popularSingle.image} alt="icon" />{popularSingle.linkText}</Link>
                         {path == popularSingle.href &&
                             <button type="button" className="g1-color">
@@ -51,7 +51,7 @@ export default function SideNav() {
                 {otherSportsData.map((otherSingle) => (
                     <li
                         className={`d-flex align-items-center justify-content-between px-3 py-2 rounded-3 gap-5  ${path == otherSingle.href && 'n11-bg'}`} key={otherSingle.id}>
-                        <Link href={otherSingle.href} className="d-flex align-items-center gap-2"><Image
+                        <Link href={otherSingle.href} prefetch={false} className="d-flex align-items-center gap-2"><Image
                             width={16} height={16} src={otherSingle.image} alt="icon" />{otherSingle.linkText}</Link>
                         {path == otherSingle.href &&
                             <button type="button" className="g1-color">

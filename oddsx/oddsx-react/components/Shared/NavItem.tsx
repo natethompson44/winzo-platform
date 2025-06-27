@@ -10,7 +10,7 @@ export default function NavItem() {
             {
                 naviTemData.map((navItemSingle) => (
                     <li className="dropdown show-dropdown" key={navItemSingle.id}>
-                        <Link className={`navunik ${path == navItemSingle.href && 'active'}`} href={navItemSingle.href}>{navItemSingle.linkText}</Link>
+                        <Link className={`navunik ${path == navItemSingle.href && 'active'}`} href={navItemSingle.href} prefetch={false}>{navItemSingle.linkText}</Link>
                     </li>
                 ))
             }

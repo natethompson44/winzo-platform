@@ -13,6 +13,19 @@ const nextConfig = {
     unoptimized: true,
   },
   
+  // 🚨 EMERGENCY FIX: Disable aggressive prefetching to stop 180+ request crisis
+  experimental: {
+    // Disable optimistic client cache that causes over-fetching
+    optimisticClientCache: false,
+    // Disable server actions that trigger excessive RSC requests
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'winzo-platform.netlify.app']
+    },
+  },
+  
+  // 🚨 EMERGENCY FIX: Prefetching disabled on individual Link components
+  // This prevents all sports sections from being loaded simultaneously
+  
   // Environment variables
   env: {
     CUSTOM_KEY: 'winzo-platform',
