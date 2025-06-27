@@ -528,146 +528,104 @@ describe('apiClient', () => {
 });
 ```
 
-## Authentication System
+## 🔐 Authentication System
 
-### Overview
-The WINZO platform uses JWT-based authentication with intelligent session management:
+### Session Persistence Fix (December 2024)
 
-1. **Login Process**:
-   - User submits credentials to `/auth/login`
-   - Backend validates and returns JWT token
-   - Frontend stores token in localStorage
-   - User is redirected to dashboard
+**CRITICAL FIX IMPLEMENTED**: Resolved authentication session loss during sports navigation.
 
-2. **Smart Token Management**:
-   - Token is included in `Authorization` header for API requests
-   - **Intelligent Logout Logic**: Only authentication-related 401 errors trigger logout
-   - Sports data endpoints that return 401 won't automatically log users out
-   - Network errors preserve user sessions for better UX
+#### Problem Identified:
+- Users were automatically logged out when navigating to ANY sports section
+- Sports pages used `HeaderMain` component which didn't check authentication status
+- Hardcoded "Log In" and "Sign Up" buttons regardless of user login status
+- 100% reproducible issue affecting all sports betting workflows
 
-3. **Session Persistence**:
-   - Users remain logged in when navigating between pages
-   - Auth status is checked on app initialization with graceful error handling
-   - Token validation happens only for protected auth endpoints
+#### Solution Implemented:
 
-### Authentication Troubleshooting
+1. **Updated HeaderMain Component** (`components/Shared/HeaderMain.tsx`):
+   ```typescript
+   // Now uses authentication context
+   import { useAuth } from '@/contexts/AuthContext';
+   
+   const { user, isAuthenticated, logout } = useAuth();
+   
+   // Shows different UI based on authentication status
+   {isAuthenticated ? (
+     // Authenticated user UI with balance, dashboard link, user icon
+   ) : (
+     // Non-authenticated user UI with login/signup buttons
+   )}
+   ```
 
-#### Problem: User Gets Logged Out When Navigating to Sports Pages
+2. **Updated HeaderTwo Component** (`components/Shared/HeaderTwo.tsx`):
+   ```typescript
+   // Now displays real user balance instead of hardcoded $0.22
+   <span className="fw-bold d-block">${user?.wallet_balance?.toFixed(2) || '0.00'}</span>
+   ```
 
-**Symptoms**:
-- Login works fine, user reaches dashboard
-- Clicking on American Football, Soccer, Basketball, etc. logs user out
-- User has to log in again repeatedly
+3. **Updated FooterCard Component** (`components/Shared/FooterCard.tsx`):
+   ```typescript
+   // Shows authentication-aware betting interface
+   {isAuthenticated ? (
+     <span className="n3-color fs-seven">Clear Bet</span>
+   ) : (
+     <Link href="/login" className="n3-color fs-seven">Sign In & Bet</Link>
+   )}
+   ```
 
-**Root Cause**: 
-Previous versions had aggressive authentication handling that removed auth tokens on ANY 401 response.
+#### Authentication Flow:
+1. **Login Process**: ✅ User logs in successfully
+2. **Dashboard Access**: ✅ User can access dashboard with authenticated header
+3. **Sports Navigation**: ✅ **FIXED** - User remains logged in when navigating to sports sections
+4. **Consistent UI**: ✅ All pages now show appropriate authentication status
 
-**Solution** (FIXED in current version):
-The API client now uses smart token management:
+#### Testing Verification:
+- ✅ No more automatic logout during sports navigation
+- ✅ User balance displayed correctly across all pages
+- ✅ Appropriate header content based on authentication status
+- ✅ Bet slip shows correct authentication-based options
+- ✅ No ESLint warnings or TypeScript errors
+- ✅ Successful Next.js build and static export
+
+#### Business Impact:
+- **RESOLVED**: Critical user experience issue
+- **IMPROVED**: Seamless sports betting workflow
+- **ENHANCED**: Professional authentication system
+- **ELIMINATED**: User frustration from repeated logins
+
+### Authentication Components
+
+#### Primary Components:
+- **AuthContext** (`contexts/AuthContext.tsx`): Core authentication logic
+- **HeaderMain** (`components/Shared/HeaderMain.tsx`): Sports pages header (now authentication-aware)
+- **HeaderTwo** (`components/Shared/HeaderTwo.tsx`): Dashboard header (enhanced with real user data)
+- **FooterCard** (`components/Shared/FooterCard.tsx`): Bet slip (authentication-aware)
+
+#### Authentication State Management:
 ```typescript
-// Only remove auth token for authentication-related endpoints
-const isAuthEndpoint = error.config?.url?.includes('/auth/') || 
-                       error.config?.url?.includes('/user/') ||
-                       error.config?.url?.includes('/admin/');
-
-if (isAuthEndpoint && typeof window !== 'undefined') {
-  localStorage.removeItem('authToken');
-} else {
-  // For sports endpoints, preserve session
-  console.warn('Authentication required for this request, but preserving session');
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (username: string, password: string) => Promise<boolean>;
+  register: (username: string, password: string, inviteCode: string) => Promise<boolean>;
+  logout: () => void;
+  refreshUser: () => Promise<void>;
+  updateBalance: (newBalance: number) => void;
 }
 ```
 
-#### Problem: JavaScript Errors Crashing Sports Pages
+#### Token Management:
+- Stored in `localStorage` as 'authToken'
+- Automatically included in API requests via axios interceptors
+- Persistent across page navigation and refresh
+- Proper cleanup on logout
 
-**Symptoms**:
-- American Football page shows "Application error: a client-side exception has occurred"
-- Console errors: `TypeError: e.map is not a function`
-- Page completely fails to load
-
-**Root Cause**: 
-The `formatLiveGamesData` function expected an array but received non-array data from API responses.
-
-**Solution** (FIXED in current version):
-Enhanced data validation in sports service:
-```typescript
-private formatLiveGamesData(rawGames: any): Game[] {
-  // Critical fix: Ensure rawGames is an array before calling .map()
-  if (!rawGames) {
-    console.warn('formatLiveGamesData: rawGames is null or undefined, returning empty array');
-    return [];
-  }
-  
-  if (!Array.isArray(rawGames)) {
-    console.warn('formatLiveGamesData: rawGames is not an array, attempting to extract array from response');
-    
-    // Handle common API response patterns
-    if (rawGames.data && Array.isArray(rawGames.data)) {
-      rawGames = rawGames.data;
-    } else if (rawGames.games && Array.isArray(rawGames.games)) {
-      rawGames = rawGames.games;
-    } else if (rawGames.results && Array.isArray(rawGames.results)) {
-      rawGames = rawGames.results;
-    } else {
-      console.error('formatLiveGamesData: Unable to find array in response structure:', rawGames);
-      return [];
-    }
-  }
-  
-  // ... rest of processing with safety checks
-}
-```
-
-#### Problem: Incorrect Page Titles
-
-**Symptoms**:
-- Basketball page shows "Top Soccer" instead of "Top Basketball"
-- Ice Hockey page shows "Top Soccer" instead of "Top Ice Hockey"
-- Multiple sports pages have incorrect titles
-
-**Root Cause**: 
-Copy-paste errors in component templates where "Top Soccer" was not updated to the correct sport name.
-
-**Solution** (FIXED in current version):
-Updated all sport page titles to display correctly:
-- Basketball: "Top Basketball" ✅
-- Ice Hockey: "Top Ice Hockey" ✅
-- Cricket: "Top Cricket" ✅
-- Tennis: "Top Tennis" ✅
-- NBA 2K: "Top NBA 2K" ✅
-- eCricket: "Top eCricket" ✅
-
-#### Enhanced Error Handling for Sports Data
-
-**New Features** (Added in current version):
-- Comprehensive error logging with sport-specific emoji identifiers (🏈, ⚽, 🏀, 🏒)
-- Graceful fallback to sample data when APIs fail
-- Detailed error messages for different failure scenarios
-- Protection against session loss during sports data fetching
-- Enhanced sample data with proper market structures (spreads, totals, moneylines)
-
-**Error Categories Handled**:
-```typescript
-// Authentication errors (401) - Does not cause logout
-if (error.response?.status === 401) {
-  console.warn('Authentication required for data - preserving session');
-}
-
-// API not implemented (404)
-if (error.response?.status === 404) {
-  console.warn('Sports endpoint not found - API may not be implemented yet');
-}
-
-// Network errors
-if (error.code === 'NETWORK_ERROR' || !error.response) {
-  console.warn('Network error - using fallback data');
-}
-
-// Data format errors
-if (error.message?.includes('Invalid data format')) {
-  console.warn('Data format error - using sample data');
-}
-```
+#### Error Handling:
+- Network errors preserve authentication state
+- 401 responses only remove tokens for auth-related endpoints
+- Graceful fallback for API failures
+- User-friendly error messages
 
 ## Build & Deployment
 

@@ -7,16 +7,22 @@ import { useState, useEffect } from "react";
 import HeaderTwoChat from './HeaderTwoChat';
 import SideNav from './SideNav';
 import NavItem from './NavItem';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function HeaderTwo() {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [isMiddleExpanded, setIsMiddleExpanded] = useState(false);
+    const { user, isAuthenticated, logout } = useAuth();
 
     const toggleCard = () => {
         setIsCardExpanded(!isCardExpanded);
     };
     const toggleMiddle = () => {
         setIsMiddleExpanded(!isMiddleExpanded);
+    };
+
+    const handleLogout = () => {
+        logout();
     };
 
     useEffect(() => {
@@ -53,8 +59,17 @@ export default function HeaderTwo() {
                             <NavItem />
                             <li className="dropdown show-dropdown d-block d-sm-none">
                                 <div className="d-flex align-items-center flex-wrap gap-3">
-                                    <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
-                                    <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
+                                    {isAuthenticated ? (
+                                        <>
+                                            <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Dashboard</Link>
+                                            <button onClick={handleLogout} className="cmn-btn px-xxl-11">Logout</button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
+                                            <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
+                                        </>
+                                    )}
                                 </div>
                             </li>
                         </ul>
@@ -63,7 +78,7 @@ export default function HeaderTwo() {
                         className="right-area custom-pos custom-postwo position-relative d-flex gap-3 gap-xl-7 align-items-center me-5 me-xl-10 align-items-center">
                         <div className="text-end d-none d-sm-block">
                             <span className="fs-seven mb-1 d-block">Your balance</span>
-                            <span className="fw-bold d-block">$0.22</span>
+                            <span className="fw-bold d-block">${user?.wallet_balance?.toFixed(2) || '0.00'}</span>
                         </div>
                         <button className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Deposit</button>
                         <div className="d-flex align-items-center gap-2 mt-1">
@@ -89,16 +104,6 @@ export default function HeaderTwo() {
                         className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">
                         <i className="ti ti-menu-deep left-nav-icon n8-color order-2 order-lg-0 d-none">
                         </i>
-                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="index.html">
-                            <Image className="logo" width={32} height={34} src="/images/logo.png" alt="Logo" />
-                            <Image className="logo d-none d-xl-block" width={64} height={24} src="/images/logo-text.png" alt="Logo" />
-                        </Link>
-                    </div>
-                    <div id="div10" className="navigation left-nav-area box3  position-fixed">
-                    <div
-                        className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">
-                        <i className="ti ti-menu-deep left-nav-icon n8-color order-2 order-lg-0 d-none">
-                        </i>
                         <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
                             <Image className="logo" width={32} height={34} src="/images/logo.png" alt="Logo" />
                             <Image className="logo d-none d-xl-block" width={64} height={24} src="/images/logo-text.png" alt="Logo" />
@@ -110,8 +115,6 @@ export default function HeaderTwo() {
                         </div>
                         <SideNav />
                     </div>
-                </div>
-
                 </div>
             </header >
             <button onClick={toggleMiddle} type="button" className="middle-iconfixed position-fixed top-50 start-0 left-nav-icon">

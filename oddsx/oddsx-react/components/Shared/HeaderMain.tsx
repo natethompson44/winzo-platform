@@ -2,20 +2,27 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { IconAdjustmentsHorizontal, IconX } from "@tabler/icons-react";
+import { IconAdjustmentsHorizontal, IconX, IconGift, IconUserCircle } from "@tabler/icons-react";
 import Language from './Language';
 import SideNav from './SideNav';
 import NavItem from './NavItem';
+import { useAuth } from '@/contexts/AuthContext';
+import HeaderTwoChat from './HeaderTwoChat';
 
 export default function HeaderMain() {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [isMiddleExpanded, setIsMiddleExpanded] = useState(false);
+    const { user, isAuthenticated, logout } = useAuth();
 
     const toggleCard = () => {
         setIsCardExpanded(!isCardExpanded);
     };
     const toggleMiddle = () => {
         setIsMiddleExpanded(!isMiddleExpanded);
+    };
+
+    const handleLogout = () => {
+        logout();
     };
 
     useEffect(() => {
@@ -42,8 +49,6 @@ export default function HeaderMain() {
         };
     }, [isMiddleExpanded]);
 
-
-
     return (
         <>
             <header className="header-section2 header-section">
@@ -54,17 +59,55 @@ export default function HeaderMain() {
                             <NavItem />
                             <li className="dropdown show-dropdown d-block d-sm-none">
                                 <div className="d-flex align-items-center flex-wrap gap-3">
-                                    <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
-                                    <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
+                                    {isAuthenticated ? (
+                                        <>
+                                            <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Dashboard</Link>
+                                            <button onClick={handleLogout} className="cmn-btn px-xxl-11">Logout</button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
+                                            <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
+                                        </>
+                                    )}
                                 </div>
                             </li>
                         </ul>
                     </div>
+                    
+                    {/* Right area - show different content based on authentication */}
                     <div className="right-area custom-pos position-relative d-flex gap-0 gap-lg-7 align-items-center me-5 me-xl-10">
                         <Language />
-                        <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</Link>
-                        <Link href="/create-acount" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</Link>
+                        {isAuthenticated ? (
+                            // Authenticated user UI
+                            <div className="d-flex gap-3 gap-xl-7 align-items-center">
+                                <div className="text-end d-none d-sm-block">
+                                    <span className="fs-seven mb-1 d-block">Your balance</span>
+                                    <span className="fw-bold d-block">${user?.wallet_balance?.toFixed(2) || '0.00'}</span>
+                                </div>
+                                <Link href="/dashboard" className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Dashboard</Link>
+                                <div className="d-flex align-items-center gap-2 mt-1">
+                                    <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative">
+                                        <IconGift height={24} width={24} className="ti ti-gift fs-four" />
+                                        <span className="fs-eight g1-bg px-1 rounded-5 position-absolute end-0 top-0">2</span>
+                                    </button>
+                                    <div className="cart-area search-area d-flex">
+                                        <HeaderTwoChat />
+                                        <Link href="/dashboard" className="py-1 px-2 n11-bg rounded-5 d-inline-flex align-items-center">
+                                            <IconUserCircle height={24} width={24} className="ti ti-user-circle fs-four" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            // Non-authenticated user UI
+                            <>
+                                <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</Link>
+                                <Link href="/create-acount" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</Link>
+                            </>
+                        )}
                     </div>
+                    
                     <button onClick={toggleCard} className="navbar-toggler mt-1 mt-sm-2 mt-lg-0" type="button" data-bs-toggle="collapse" aria-label="Navbar Toggler"
                         data-bs-target="#navbar-content" aria-expanded="true" id="nav-icon3">
                         <span></span><span></span><span></span><span></span>

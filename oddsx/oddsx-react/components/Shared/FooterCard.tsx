@@ -5,8 +5,10 @@ import Link from 'next/link';
 import Image from 'next/image'
 import { IconX, IconArrowBadgeUpFilled, IconTrash, IconSettings } from "@tabler/icons-react";
 import { Tab } from '@headlessui/react'
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function FooterCard() {
+    const { isAuthenticated } = useAuth();
 
     // const [isCardExpanded, setIsCardExpanded] = useState(false);
     // const toggleCard = () => {
@@ -126,11 +128,15 @@ export default function FooterCard() {
                                 <div className="fixed_footer__content-bottom d-flex align-items-center justify-content-between">
                                     <div className="right-border d-flex align-items-center gap-2">
                                         <IconTrash height={20} width={20} className="ti ti-trash n3-color fs-five cpoint" />
-                                        <Link href="#" className="n3-color fs-seven">Sign In & Bet</Link>
+                                        {isAuthenticated ? (
+                                            <span className="n3-color fs-seven">Clear Bet</span>
+                                        ) : (
+                                            <Link href="/login" className="n3-color fs-seven">Sign In & Bet</Link>
+                                        )}
                                     </div>
                                     <div className="right-border2 d-flex align-items-center justify-content-end gap-2">
                                         <IconSettings height={20} width={20} className="ti ti-settings n3-color fs-five cpoint" />
-                                        <Link href="#" className="n3-color fs-seven">Settings</Link>
+                                        <Link href="/dashboard" className="n3-color fs-seven">Settings</Link>
                                     </div>
                                 </div>
                             </Tab.Panel>
@@ -184,11 +190,15 @@ export default function FooterCard() {
                                 <div className="fixed_footer__content-bottom d-flex align-items-center justify-content-between">
                                     <div className="right-border d-flex align-items-center gap-2">
                                         <IconTrash height={20} width={20} className="ti ti-trash n3-color fs-five cpoint" />
-                                        <Link href="#" className="n3-color fs-seven">Sign In & Bet</Link>
+                                        {isAuthenticated ? (
+                                            <span className="n3-color fs-seven">Clear Bet</span>
+                                        ) : (
+                                            <Link href="/login" className="n3-color fs-seven">Sign In & Bet</Link>
+                                        )}
                                     </div>
                                     <div className="right-border2 d-flex align-items-center justify-content-end gap-2">
                                         <IconSettings height={20} width={20} className="ti ti-settings n3-color fs-five cpoint" />
-                                        <Link href="#" className="n3-color fs-seven">Settings</Link>
+                                        <Link href="/dashboard" className="n3-color fs-seven">Settings</Link>
                                     </div>
                                 </div>
                             </Tab.Panel>
@@ -242,11 +252,15 @@ export default function FooterCard() {
                                 <div className="fixed_footer__content-bottom d-flex align-items-center justify-content-between">
                                     <div className="right-border d-flex align-items-center gap-2">
                                         <IconTrash height={20} width={20} className="ti ti-trash n3-color fs-five cpoint" />
-                                        <Link href="#" className="n3-color fs-seven">Sign In & Bet</Link>
+                                        {isAuthenticated ? (
+                                            <span className="n3-color fs-seven">Clear Bet</span>
+                                        ) : (
+                                            <Link href="/login" className="n3-color fs-seven">Sign In & Bet</Link>
+                                        )}
                                     </div>
                                     <div className="right-border2 d-flex align-items-center justify-content-end gap-2">
                                         <IconSettings height={20} width={20} className="ti ti-settings n3-color fs-five cpoint" />
-                                        <Link href="#" className="n3-color fs-seven">Settings</Link>
+                                        <Link href="/dashboard" className="n3-color fs-seven">Settings</Link>
                                     </div>
                                 </div>
                             </Tab.Panel>
