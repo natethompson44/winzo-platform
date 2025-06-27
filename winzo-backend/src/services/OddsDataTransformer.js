@@ -93,91 +93,103 @@ class OddsDataTransformer {
   }
 
   /**
-   * Get team logo based on team name and sport
+   * Get team logo based on team name and sport using new organized structure
    */
   static getTeamLogo(teamName, sport) {
-    const logoMappings = {
+    // Team name mappings for each sport using new directory structure
+    const teamMappings = {
       nfl: {
-        'Philadelphia Eagles': '/images/clubs/philadelphia-eagles.png',
-        'Dallas Cowboys': '/images/clubs/dallas-cowboys.png',
-        'New England Patriots': '/images/clubs/new-england-patriots.png',
-        'Pittsburgh Steelers': '/images/clubs/pittsburgh-steelers.png',
-        'Green Bay Packers': '/images/clubs/green-bay-packers.png',
-        'Kansas City Chiefs': '/images/clubs/kansas-city-chiefs.png',
-        'Buffalo Bills': '/images/clubs/buffalo-bills.png',
-        'San Francisco 49ers': '/images/clubs/san-francisco-49ers.png',
-        'Seattle Seahawks': '/images/clubs/seattle-seahawks.png',
-        'Los Angeles Rams': '/images/clubs/los-angeles-rams.png',
-        'Tampa Bay Buccaneers': '/images/clubs/tampa-bay-buccaneers.png',
-        'Baltimore Ravens': '/images/clubs/baltimore-ravens.png',
-        'Cincinnati Bengals': '/images/clubs/cincinnati-bengals.png',
-        'Cleveland Browns': '/images/clubs/cleveland-browns.png',
-        'Denver Broncos': '/images/clubs/denver-broncos.png',
-        'Indianapolis Colts': '/images/clubs/indianapolis-colts.png',
-        'Jacksonville Jaguars': '/images/clubs/jacksonville-jaguars.png',
-        'Tennessee Titans': '/images/clubs/tennessee-titans.png',
-        'Houston Texans': '/images/clubs/houston-texans.png',
-        'Las Vegas Raiders': '/images/clubs/las-vegas-raiders.png',
-        'Los Angeles Chargers': '/images/clubs/los-angeles-chargers.png',
-        'Miami Dolphins': '/images/clubs/miami-dolphins.png',
-        'New York Jets': '/images/clubs/new-york-jets.png',
-        'New York Giants': '/images/clubs/new-york-giants.png',
-        'Washington Commanders': '/images/clubs/washington-commanders.png',
-        'Chicago Bears': '/images/clubs/chicago-bears.png',
-        'Detroit Lions': '/images/clubs/detroit-lions.png',
-        'Minnesota Vikings': '/images/clubs/minnesota-vikings.png',
-        'Atlanta Falcons': '/images/clubs/atlanta-falcons.png',
-        'Carolina Panthers': '/images/clubs/carolina-panthers.png',
-        'New Orleans Saints': '/images/clubs/new-orleans-saints.png',
-        'Arizona Cardinals': '/images/clubs/arizona-cardinals.png'
+        'Philadelphia Eagles': '/images/clubs/nfl/philadelphia-eagles.png',
+        'Dallas Cowboys': '/images/clubs/nfl/dallas-cowboys.png',
+        'New England Patriots': '/images/clubs/nfl/new-england-patriots.png',
+        'Pittsburgh Steelers': '/images/clubs/nfl/pittsburgh-steelers.png',
+        'Green Bay Packers': '/images/clubs/nfl/green-bay-packers.png',
+        'Kansas City Chiefs': '/images/clubs/nfl/kansas-city-chiefs.png',
+        'Buffalo Bills': '/images/clubs/nfl/buffalo-bills.png',
+        'San Francisco 49ers': '/images/clubs/nfl/san-francisco-49ers.png',
+        'Seattle Seahawks': '/images/clubs/nfl/seattle-seahawks.png',
+        'Los Angeles Rams': '/images/clubs/nfl/los-angeles-rams.png',
+        'Tampa Bay Buccaneers': '/images/clubs/nfl/tampa-bay-buccaneers.png',
+        'Baltimore Ravens': '/images/clubs/nfl/baltimore-ravens.png',
+        'Cincinnati Bengals': '/images/clubs/nfl/cincinnati-bengals.png',
+        'Cleveland Browns': '/images/clubs/nfl/cleveland-browns.png',
+        'Denver Broncos': '/images/clubs/nfl/denver-broncos.png',
+        'Indianapolis Colts': '/images/clubs/nfl/indianapolis-colts.png',
+        'Jacksonville Jaguars': '/images/clubs/nfl/jacksonville-jaguars.png',
+        'Tennessee Titans': '/images/clubs/nfl/tennessee-titans.png',
+        'Houston Texans': '/images/clubs/nfl/houston-texans.png',
+        'Las Vegas Raiders': '/images/clubs/nfl/las-vegas-raiders.png',
+        'Los Angeles Chargers': '/images/clubs/nfl/los-angeles-chargers.png',
+        'Miami Dolphins': '/images/clubs/nfl/miami-dolphins.png',
+        'New York Jets': '/images/clubs/nfl/new-york-jets.png',
+        'New York Giants': '/images/clubs/nfl/new-york-giants.png',
+        'Washington Commanders': '/images/clubs/nfl/washington-commanders.png',
+        'Chicago Bears': '/images/clubs/nfl/chicago-bears.png',
+        'Detroit Lions': '/images/clubs/nfl/detroit-lions.png',
+        'Minnesota Vikings': '/images/clubs/nfl/minnesota-vikings.png',
+        'Atlanta Falcons': '/images/clubs/nfl/atlanta-falcons.png',
+        'Carolina Panthers': '/images/clubs/nfl/carolina-panthers.png',
+        'New Orleans Saints': '/images/clubs/nfl/new-orleans-saints.png',
+        'Arizona Cardinals': '/images/clubs/nfl/arizona-cardinals.png'
       },
       soccer: {
-        'Manchester United': '/images/icon/man-utd.png',
-        'Liverpool': '/images/icon/liverpool.png',
-        'Chelsea': '/images/icon/chelsea.png',
-        'Manchester City': '/images/icon/manchester-city.png',
-        'Arsenal': '/images/clubs/arsenal.png',
-        'Tottenham Hotspur': '/images/clubs/tottenham.png',
-        'Newcastle United': '/images/clubs/newcastle.png',
-        'Brighton': '/images/clubs/brighton.png',
-        'Aston Villa': '/images/clubs/aston-villa.png',
-        'West Ham United': '/images/clubs/west-ham.png',
-        'Crystal Palace': '/images/clubs/crystal-palace.png',
-        'Fulham': '/images/clubs/fulham.png',
-        'Wolverhampton Wanderers': '/images/icon/wolverhampton.png',
-        'Everton': '/images/clubs/everton.png',
-        'Brentford': '/images/clubs/brentford.png',
-        'Nottingham Forest': '/images/clubs/nottingham-forest.png',
-        'Luton Town': '/images/clubs/luton-town.png',
-        'Burnley': '/images/clubs/burnley.png',
-        'Sheffield United': '/images/clubs/sheffield-united.png',
-        'Bournemouth': '/images/clubs/bournemouth.png'
+        'Manchester United': '/images/clubs/epl/manchester-united.png',
+        'Liverpool': '/images/clubs/epl/liverpool.png',
+        'Chelsea': '/images/clubs/epl/chelsea.png',
+        'Manchester City': '/images/clubs/epl/manchester-city.png',
+        'Arsenal': '/images/clubs/epl/arsenal.png',
+        'Tottenham Hotspur': '/images/clubs/epl/tottenham-hotspur.png',
+        'Newcastle United': '/images/clubs/epl/newcastle-united.png',
+        'Brighton & Hove Albion': '/images/clubs/epl/brighton-hove-albion.png',
+        'Brighton': '/images/clubs/epl/brighton-hove-albion.png',
+        'Aston Villa': '/images/clubs/epl/aston-villa.png',
+        'West Ham United': '/images/clubs/epl/west-ham-united.png',
+        'Crystal Palace': '/images/clubs/epl/crystal-palace.png',
+        'Fulham': '/images/clubs/epl/fulham.png',
+        'Wolverhampton Wanderers': '/images/clubs/epl/wolverhampton-wanderers.png',
+        'Everton': '/images/clubs/epl/everton.png',
+        'Brentford': '/images/clubs/epl/brentford.png',
+        'Nottingham Forest': '/images/clubs/epl/nottingham-forest.png',
+        'Leicester City': '/images/clubs/epl/leicester-city.png',
+        'Ipswich Town': '/images/clubs/epl/ipswich-town.png',
+        'Southampton': '/images/clubs/epl/southampton.png',
+        'Bournemouth': '/images/clubs/epl/bournemouth.png'
       },
       basketball: {
-        'Los Angeles Lakers': '/images/clubs/los-angeles-lakers.png',
-        'Boston Celtics': '/images/clubs/boston-celtics.png',
-        'Golden State Warriors': '/images/clubs/golden-state-warriors.png',
-        'Chicago Bulls': '/images/clubs/chicago-bulls.png',
-        'Miami Heat': '/images/clubs/miami-heat.png',
-        'Brooklyn Nets': '/images/clubs/brooklyn-nets.png',
-        'New York Knicks': '/images/clubs/new-york-knicks.png',
-        'Philadelphia 76ers': '/images/clubs/philadelphia-76ers.png',
-        'Milwaukee Bucks': '/images/clubs/milwaukee-bucks.png',
-        'Toronto Raptors': '/images/clubs/toronto-raptors.png'
-      },
-      hockey: {
-        'Boston Bruins': '/images/clubs/boston-bruins.png',
-        'Toronto Maple Leafs': '/images/clubs/toronto-maple-leafs.png',
-        'Montreal Canadiens': '/images/clubs/montreal-canadiens.png',
-        'New York Rangers': '/images/clubs/new-york-rangers.png',
-        'Pittsburgh Penguins': '/images/clubs/pittsburgh-penguins.png',
-        'Chicago Blackhawks': '/images/clubs/chicago-blackhawks.png',
-        'Detroit Red Wings': '/images/clubs/detroit-red-wings.png',
-        'Philadelphia Flyers': '/images/clubs/philadelphia-flyers.png'
+        'Los Angeles Lakers': '/images/clubs/nba/los-angeles-lakers.png',
+        'Boston Celtics': '/images/clubs/nba/boston-celtics.png',
+        'Golden State Warriors': '/images/clubs/nba/golden-state-warriors.png',
+        'Chicago Bulls': '/images/clubs/nba/chicago-bulls.png',
+        'Miami Heat': '/images/clubs/nba/miami-heat.png',
+        'Brooklyn Nets': '/images/clubs/nba/brooklyn-nets.png',
+        'New York Knicks': '/images/clubs/nba/new-york-knicks.png',
+        'Philadelphia 76ers': '/images/clubs/nba/philadelphia-76ers.png',
+        'Milwaukee Bucks': '/images/clubs/nba/milwaukee-bucks.png',
+        'Toronto Raptors': '/images/clubs/nba/toronto-raptors.png',
+        'Los Angeles Clippers': '/images/clubs/nba/los-angeles-clippers.png',
+        'Denver Nuggets': '/images/clubs/nba/denver-nuggets.png',
+        'Phoenix Suns': '/images/clubs/nba/phoenix-suns.png',
+        'Sacramento Kings': '/images/clubs/nba/sacramento-kings.png',
+        'Dallas Mavericks': '/images/clubs/nba/dallas-mavericks.png',
+        'Houston Rockets': '/images/clubs/nba/houston-rockets.png',
+        'Memphis Grizzlies': '/images/clubs/nba/memphis-grizzlies.png',
+        'New Orleans Pelicans': '/images/clubs/nba/new-orleans-pelicans.png',
+        'San Antonio Spurs': '/images/clubs/nba/san-antonio-spurs.png',
+        'Utah Jazz': '/images/clubs/nba/utah-jazz.png',
+        'Oklahoma City Thunder': '/images/clubs/nba/oklahoma-city-thunder.png',
+        'Portland Trail Blazers': '/images/clubs/nba/portland-trail-blazers.png',
+        'Minnesota Timberwolves': '/images/clubs/nba/minnesota-timberwolves.png',
+        'Indiana Pacers': '/images/clubs/nba/indiana-pacers.png',
+        'Detroit Pistons': '/images/clubs/nba/detroit-pistons.png',
+        'Cleveland Cavaliers': '/images/clubs/nba/cleveland-cavaliers.png',
+        'Atlanta Hawks': '/images/clubs/nba/atlanta-hawks.png',
+        'Charlotte Hornets': '/images/clubs/nba/charlotte-hornets.png',
+        'Orlando Magic': '/images/clubs/nba/orlando-magic.png',
+        'Washington Wizards': '/images/clubs/nba/washington-wizards.png'
       }
     };
 
-    return logoMappings[sport]?.[teamName] || this.getDefaultTeamLogo(teamName);
+    return teamMappings[sport]?.[teamName] || this.getDefaultTeamLogo(teamName);
   }
 
   /**
@@ -247,6 +259,7 @@ class OddsDataTransformer {
 
   /**
    * Transform markets for regular 2-way betting (NFL, NBA, NHL)
+   * Enhanced with spread and totals processing
    */
   static transformMarkets(bookmakers) {
     if (!bookmakers || bookmakers.length === 0) return {};
@@ -258,28 +271,52 @@ class OddsDataTransformer {
         if (!markets[market.key]) {
           markets[market.key] = {
             outcomes: {},
-            bookmakers: []
+            bookmakers: [],
+            market_type: this.getMarketType(market.key)
           };
         }
 
-        // Store outcomes
+        // Store outcomes with enhanced data
         for (const outcome of market.outcomes || []) {
           if (!markets[market.key].outcomes[outcome.name]) {
             markets[market.key].outcomes[outcome.name] = [];
           }
-          markets[market.key].outcomes[outcome.name].push({
+          
+          // Enhanced outcome data with point/line information
+          const enhancedOutcome = {
             bookmaker: bookmaker.key,
             bookmaker_title: bookmaker.title,
             price: outcome.price,
+            point: outcome.point, // For spreads and totals
             last_update: bookmaker.last_update
-          });
+          };
+          
+          markets[market.key].outcomes[outcome.name].push(enhancedOutcome);
         }
 
-        markets[market.key].bookmakers.push(bookmaker.key);
+        // Store unique bookmakers
+        if (!markets[market.key].bookmakers.includes(bookmaker.key)) {
+          markets[market.key].bookmakers.push(bookmaker.key);
+        }
       }
     }
 
     return markets;
+  }
+
+  /**
+   * Get market type for better display formatting
+   */
+  static getMarketType(marketKey) {
+    const marketTypes = {
+      'h2h': 'moneyline',
+      'spreads': 'spread',
+      'totals': 'total',
+      'over_under': 'total',
+      'asian_handicaps': 'handicap'
+    };
+    
+    return marketTypes[marketKey] || marketKey;
   }
 
   /**

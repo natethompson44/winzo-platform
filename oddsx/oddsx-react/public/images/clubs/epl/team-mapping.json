@@ -1,0 +1,102 @@
+{
+  "ARS": {
+    "name": "arsenal",
+    "filename": "arsenal.png",
+    "espnId": "359"
+  },
+  "AVL": {
+    "name": "aston-villa",
+    "filename": "aston-villa.png",
+    "espnId": "362"
+  },
+  "BOU": {
+    "name": "bournemouth",
+    "filename": "bournemouth.png",
+    "espnId": "349"
+  },
+  "BRE": {
+    "name": "brentford",
+    "filename": "brentford.png",
+    "espnId": "337"
+  },
+  "BRI": {
+    "name": "brighton-hove-albion",
+    "filename": "brighton-hove-albion.png",
+    "espnId": "331"
+  },
+  "CHE": {
+    "name": "chelsea",
+    "filename": "chelsea.png",
+    "espnId": "363"
+  },
+  "CRY": {
+    "name": "crystal-palace",
+    "filename": "crystal-palace.png",
+    "espnId": "384"
+  },
+  "EVE": {
+    "name": "everton",
+    "filename": "everton.png",
+    "espnId": "368"
+  },
+  "FUL": {
+    "name": "fulham",
+    "filename": "fulham.png",
+    "espnId": "370"
+  },
+  "IPS": {
+    "name": "ipswich-town",
+    "filename": "ipswich-town.png",
+    "espnId": "373"
+  },
+  "LEI": {
+    "name": "leicester-city",
+    "filename": "leicester-city.png",
+    "espnId": "375"
+  },
+  "LIV": {
+    "name": "liverpool",
+    "filename": "liverpool.png",
+    "espnId": "364"
+  },
+  "MCI": {
+    "name": "manchester-city",
+    "filename": "manchester-city.png",
+    "espnId": "382"
+  },
+  "MUN": {
+    "name": "manchester-united",
+    "filename": "manchester-united.png",
+    "espnId": "360"
+  },
+  "NEW": {
+    "name": "newcastle-united",
+    "filename": "newcastle-united.png",
+    "espnId": "361"
+  },
+  "NFO": {
+    "name": "nottingham-forest",
+    "filename": "nottingham-forest.png",
+    "espnId": "381"
+  },
+  "SOU": {
+    "name": "southampton",
+    "filename": "southampton.png",
+    "espnId": "376"
+  },
+  "TOT": {
+    "name": "tottenham-hotspur",
+    "filename": "tottenham-hotspur.png",
+    "espnId": "367"
+  },
+  "WHU": {
+    "name": "west-ham-united",
+    "filename": "west-ham-united.png",
+    "espnId": "371"
+  },
+  "WOL": {
+    "name": "wolverhampton-wanderers",
+    "filename": "wolverhampton-wanderers.png",
+    "espnId": "380"
+  }
+}

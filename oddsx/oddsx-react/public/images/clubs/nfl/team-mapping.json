@@ -1,0 +1,162 @@
+{
+  "BUF": {
+    "name": "buffalo-bills",
+    "filename": "buffalo-bills.png",
+    "espnId": "2"
+  },
+  "MIA": {
+    "name": "miami-dolphins",
+    "filename": "miami-dolphins.png",
+    "espnId": "15"
+  },
+  "NE": {
+    "name": "new-england-patriots",
+    "filename": "new-england-patriots.png",
+    "espnId": "17"
+  },
+  "NYJ": {
+    "name": "new-york-jets",
+    "filename": "new-york-jets.png",
+    "espnId": "20"
+  },
+  "BAL": {
+    "name": "baltimore-ravens",
+    "filename": "baltimore-ravens.png",
+    "espnId": "33"
+  },
+  "CIN": {
+    "name": "cincinnati-bengals",
+    "filename": "cincinnati-bengals.png",
+    "espnId": "4"
+  },
+  "CLE": {
+    "name": "cleveland-browns",
+    "filename": "cleveland-browns.png",
+    "espnId": "5"
+  },
+  "PIT": {
+    "name": "pittsburgh-steelers",
+    "filename": "pittsburgh-steelers.png",
+    "espnId": "23"
+  },
+  "HOU": {
+    "name": "houston-texans",
+    "filename": "houston-texans.png",
+    "espnId": "34"
+  },
+  "IND": {
+    "name": "indianapolis-colts",
+    "filename": "indianapolis-colts.png",
+    "espnId": "11"
+  },
+  "JAX": {
+    "name": "jacksonville-jaguars",
+    "filename": "jacksonville-jaguars.png",
+    "espnId": "30"
+  },
+  "TEN": {
+    "name": "tennessee-titans",
+    "filename": "tennessee-titans.png",
+    "espnId": "10"
+  },
+  "DEN": {
+    "name": "denver-broncos",
+    "filename": "denver-broncos.png",
+    "espnId": "7"
+  },
+  "KC": {
+    "name": "kansas-city-chiefs",
+    "filename": "kansas-city-chiefs.png",
+    "espnId": "12"
+  },
+  "LV": {
+    "name": "las-vegas-raiders",
+    "filename": "las-vegas-raiders.png",
+    "espnId": "13"
+  },
+  "LAC": {
+    "name": "los-angeles-chargers",
+    "filename": "los-angeles-chargers.png",
+    "espnId": "24"
+  },
+  "DAL": {
+    "name": "dallas-cowboys",
+    "filename": "dallas-cowboys.png",
+    "espnId": "6"
+  },
+  "NYG": {
+    "name": "new-york-giants",
+    "filename": "new-york-giants.png",
+    "espnId": "19"
+  },
+  "PHI": {
+    "name": "philadelphia-eagles",
+    "filename": "philadelphia-eagles.png",
+    "espnId": "21"
+  },
+  "WAS": {
+    "name": "washington-commanders",
+    "filename": "washington-commanders.png",
+    "espnId": "28"
+  },
+  "CHI": {
+    "name": "chicago-bears",
+    "filename": "chicago-bears.png",
+    "espnId": "3"
+  },
+  "DET": {
+    "name": "detroit-lions",
+    "filename": "detroit-lions.png",
+    "espnId": "8"
+  },
+  "GB": {
+    "name": "green-bay-packers",
+    "filename": "green-bay-packers.png",
+    "espnId": "9"
+  },
+  "MIN": {
+    "name": "minnesota-vikings",
+    "filename": "minnesota-vikings.png",
+    "espnId": "16"
+  },
+  "ATL": {
+    "name": "atlanta-falcons",
+    "filename": "atlanta-falcons.png",
+    "espnId": "1"
+  },
+  "CAR": {
+    "name": "carolina-panthers",
+    "filename": "carolina-panthers.png",
+    "espnId": "29"
+  },
+  "NO": {
+    "name": "new-orleans-saints",
+    "filename": "new-orleans-saints.png",
+    "espnId": "18"
+  },
+  "TB": {
+    "name": "tampa-bay-buccaneers",
+    "filename": "tampa-bay-buccaneers.png",
+    "espnId": "27"
+  },
+  "ARI": {
+    "name": "arizona-cardinals",
+    "filename": "arizona-cardinals.png",
+    "espnId": "22"
+  },
+  "LAR": {
+    "name": "los-angeles-rams",
+    "filename": "los-angeles-rams.png",
+    "espnId": "14"
+  },
+  "SF": {
+    "name": "san-francisco-49ers",
+    "filename": "san-francisco-49ers.png",
+    "espnId": "25"
+  },
+  "SEA": {
+    "name": "seattle-seahawks",
+    "filename": "seattle-seahawks.png",
+    "espnId": "26"
+  }
+}

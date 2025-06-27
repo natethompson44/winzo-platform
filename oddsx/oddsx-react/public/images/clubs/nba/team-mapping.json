@@ -1,0 +1,152 @@
+{
+  "BOS": {
+    "name": "boston-celtics",
+    "filename": "boston-celtics.png",
+    "espnId": "2"
+  },
+  "BKN": {
+    "name": "brooklyn-nets",
+    "filename": "brooklyn-nets.png",
+    "espnId": "17"
+  },
+  "NYK": {
+    "name": "new-york-knicks",
+    "filename": "new-york-knicks.png",
+    "espnId": "18"
+  },
+  "PHI": {
+    "name": "philadelphia-76ers",
+    "filename": "philadelphia-76ers.png",
+    "espnId": "20"
+  },
+  "TOR": {
+    "name": "toronto-raptors",
+    "filename": "toronto-raptors.png",
+    "espnId": "28"
+  },
+  "CHI": {
+    "name": "chicago-bulls",
+    "filename": "chicago-bulls.png",
+    "espnId": "4"
+  },
+  "CLE": {
+    "name": "cleveland-cavaliers",
+    "filename": "cleveland-cavaliers.png",
+    "espnId": "5"
+  },
+  "DET": {
+    "name": "detroit-pistons",
+    "filename": "detroit-pistons.png",
+    "espnId": "8"
+  },
+  "IND": {
+    "name": "indiana-pacers",
+    "filename": "indiana-pacers.png",
+    "espnId": "11"
+  },
+  "MIL": {
+    "name": "milwaukee-bucks",
+    "filename": "milwaukee-bucks.png",
+    "espnId": "15"
+  },
+  "ATL": {
+    "name": "atlanta-hawks",
+    "filename": "atlanta-hawks.png",
+    "espnId": "1"
+  },
+  "CHA": {
+    "name": "charlotte-hornets",
+    "filename": "charlotte-hornets.png",
+    "espnId": "30"
+  },
+  "MIA": {
+    "name": "miami-heat",
+    "filename": "miami-heat.png",
+    "espnId": "14"
+  },
+  "ORL": {
+    "name": "orlando-magic",
+    "filename": "orlando-magic.png",
+    "espnId": "19"
+  },
+  "WAS": {
+    "name": "washington-wizards",
+    "filename": "washington-wizards.png",
+    "espnId": "27"
+  },
+  "DEN": {
+    "name": "denver-nuggets",
+    "filename": "denver-nuggets.png",
+    "espnId": "7"
+  },
+  "MIN": {
+    "name": "minnesota-timberwolves",
+    "filename": "minnesota-timberwolves.png",
+    "espnId": "16"
+  },
+  "OKC": {
+    "name": "oklahoma-city-thunder",
+    "filename": "oklahoma-city-thunder.png",
+    "espnId": "25"
+  },
+  "POR": {
+    "name": "portland-trail-blazers",
+    "filename": "portland-trail-blazers.png",
+    "espnId": "22"
+  },
+  "UTA": {
+    "name": "utah-jazz",
+    "filename": "utah-jazz.png",
+    "espnId": "26"
+  },
+  "GSW": {
+    "name": "golden-state-warriors",
+    "filename": "golden-state-warriors.png",
+    "espnId": "9"
+  },
+  "LAC": {
+    "name": "los-angeles-clippers",
+    "filename": "los-angeles-clippers.png",
+    "espnId": "12"
+  },
+  "LAL": {
+    "name": "los-angeles-lakers",
+    "filename": "los-angeles-lakers.png",
+    "espnId": "13"
+  },
+  "PHX": {
+    "name": "phoenix-suns",
+    "filename": "phoenix-suns.png",
+    "espnId": "21"
+  },
+  "SAC": {
+    "name": "sacramento-kings",
+    "filename": "sacramento-kings.png",
+    "espnId": "23"
+  },
+  "DAL": {
+    "name": "dallas-mavericks",
+    "filename": "dallas-mavericks.png",
+    "espnId": "6"
+  },
+  "HOU": {
+    "name": "houston-rockets",
+    "filename": "houston-rockets.png",
+    "espnId": "10"
+  },
+  "MEM": {
+    "name": "memphis-grizzlies",
+    "filename": "memphis-grizzlies.png",
+    "espnId": "29"
+  },
+  "NO": {
+    "name": "new-orleans-pelicans",
+    "filename": "new-orleans-pelicans.png",
+    "espnId": "3"
+  },
+  "SA": {
+    "name": "san-antonio-spurs",
+    "filename": "san-antonio-spurs.png",
+    "espnId": "24"
+  }
+}
