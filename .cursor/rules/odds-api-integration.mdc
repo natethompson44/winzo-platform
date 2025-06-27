@@ -1,0 +1,153 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## Rule #7: Odds API Integration Project (ACTIVE)
+
+**CRITICAL**: This rule is active during the Odds API integration project. Follow the comprehensive implementation plan in `docs/ODDS_API_INTEGRATION_PLAN.md` for all development work.
+
+### **Project Overview**
+- **Status**: Active Implementation (Weeks 1-12)
+- **Goal**: Replace static mock data with live sports betting odds from The Odds API
+- **Target Sports**: 20+ sports across NFL, NBA, EPL, NHL, MLB, Tennis, and more
+- **Architecture**: Next.js frontend → Backend API → The Odds API integration
+
+### **ALWAYS Reference the Master Plan**
+Before making ANY changes related to sports data, odds, or betting components:
+1. **READ**: `docs/ODDS_API_INTEGRATION_PLAN.md` 
+2. **FOLLOW**: The phased implementation approach
+3. **VERIFY**: Your changes align with the technical architecture
+4. **TEST**: All integrations with real API data
+
+### **Current Implementation Phase**
+Check the plan document for current phase status and active tasks.
+
+### **Key Development Guidelines**
+
+#### **Backend Development (`winzo-backend/`)**
+- **Follow**: Data transformation patterns defined in the plan
+- **Use**: Sport-specific endpoint structure (`/api/sports/{sport}/games`)
+- **Implement**: Proper caching and quota management
+- **Maintain**: Fallback to mock data for error scenarios
+
+#### **Frontend Development (`oddsx/oddsx-react/`)**
+- **Transform**: API data to match OddsX component expectations
+- **Preserve**: Existing OddsX UI/UX patterns and styling
+- **Implement**: Loading states and error handling
+- **Test**: Real-time odds updates and mobile responsiveness
+
+#### **Component Updates**
+- **Priority Order**: NFL → Soccer → Basketball → Ice Hockey → Others
+- **Maintain**: Bootstrap 5 styling and OddsX design patterns
+- **Integrate**: Team logos and sport icons per the asset management plan
+- **Preserve**: Existing component interfaces where possible
+
+#### **Sports Data Mapping**
+- **Use**: The sports coverage analysis in the plan document
+- **Implement**: Only sports with confirmed API support
+- **Maintain**: Mock data for eSports and specialty sports without API coverage
+- **Follow**: The icon and asset management strategy
+
+#### **Quality Standards**
+- **Performance**: <500ms API response times, >80% cache hit rate
+- **Reliability**: Graceful fallbacks, comprehensive error handling
+- **Accuracy**: >99.9% odds accuracy vs. bookmaker sources
+- **UX**: Seamless transition from mock to live data
+
+### **Critical Technical Requirements**
+
+#### **Data Transformation**
+```javascript
+// ALWAYS follow this pattern for odds data transformation
+const transformedGame = {
+  id: apiGame.id,
+  sport_icon: getSportIcon(apiGame.sport_key),
+  league_name: getLeagueName(apiGame.sport_key), 
+  game_time: formatGameTime(apiGame.commence_time),
+  home_team: apiGame.home_team,
+  away_team: apiGame.away_team,
+  home_team_logo: getTeamLogo(apiGame.home_team),
+  away_team_logo: getTeamLogo(apiGame.away_team),
+  markets: transformMarkets(apiGame.bookmakers),
+  best_odds: calculateBestOdds(apiGame.bookmakers)
+};
+```
+
+#### **API Integration Standards**
+- **Endpoints**: Use RESTful patterns defined in the plan
+- **Caching**: Implement Redis caching with appropriate TTLs
+- **Error Handling**: Always provide fallback to mock data
+- **Rate Limiting**: Follow quota management strategy
+
+#### **Component Integration**
+- **Real-time Updates**: Implement 30-second refresh for live games
+- **Loading States**: Show skeleton loaders during API calls
+- **Error States**: Graceful degradation with user-friendly messages
+- **Mobile First**: Ensure betting workflows work on mobile devices
+
+### **Phase-Specific Guidelines**
+
+#### **Phase 1 (Weeks 1-2): Foundation**
+- Focus on backend infrastructure and data transformation
+- Establish caching and API quota management
+- Create team logo and icon mapping systems
+- Set up enhanced frontend service layer
+
+#### **Phase 2 (Weeks 3-4): NFL Integration** 
+- Prioritize American Football pages and components
+- Implement NFL-specific features (spreads, totals, props)
+- Source and integrate all 32 NFL team logos
+- Comprehensive testing of NFL data flow
+
+#### **Phase 3 (Weeks 5-6): Soccer Integration**
+- Implement 3-way betting for soccer (home/draw/away)
+- Handle multiple leagues (EPL, La Liga, Bundesliga, etc.)
+- Integrate European bookmakers
+- Source major soccer team logos
+
+#### **Phase 4+ (Weeks 7-12): Remaining Sports**
+- Follow prioritization in the master plan
+- Maintain consistency with established patterns
+- Focus on sports with confirmed API support
+- Optimize performance and user experience
+
+### **Testing Requirements**
+- **Unit Tests**: All data transformation functions
+- **Integration Tests**: End-to-end API data flow  
+- **Performance Tests**: API response times and caching
+- **User Tests**: Betting workflows and mobile experience
+
+### **Documentation Requirements**
+- **Update**: `docs/API_DOCUMENTATION.md` with new endpoints
+- **Maintain**: `docs/DEVELOPMENT_GUIDE.md` with integration patterns
+- **Document**: All custom transformations and mappings
+- **Create**: Troubleshooting guides for common API issues
+
+### **Emergency Procedures**
+- **API Downtime**: Automatic fallback to mock data
+- **Quota Exceeded**: Reduce update frequency, prioritize live games
+- **Data Inconsistency**: Log errors, use last known good data
+- **Performance Issues**: Enable aggressive caching, reduce real-time updates
+
+### **Success Criteria**
+Before considering any phase complete:
+- [ ] All target sports integrated with live data
+- [ ] Real-time odds updates functional
+- [ ] Mobile betting experience optimized
+- [ ] Performance benchmarks achieved
+- [ ] User acceptance testing passed
+- [ ] Documentation updated and accurate
+
+### **Project Completion**
+When the integration project is complete:
+1. **Archive** this rule to `docs/archive/`
+2. **Delete** this rule from active Cursor rules
+3. **Update** remaining rules to reflect live data architecture
+4. **Create** ongoing maintenance documentation
+
+### **CRITICAL REMINDER**
+This rule is temporary and project-specific. It MUST be deleted upon project completion to maintain a clean development environment. The comprehensive implementation plan in `docs/ODDS_API_INTEGRATION_PLAN.md` contains all necessary technical details and should be the primary reference for all development work.
+
+**Always prioritize user experience, data accuracy, and system reliability in all implementation decisions.**
+
