@@ -528,6 +528,125 @@ describe('apiClient', () => {
 });
 ```
 
+## Authentication System
+
+### Overview
+The WINZO platform uses JWT-based authentication with intelligent session management:
+
+1. **Login Process**:
+   - User submits credentials to `/auth/login`
+   - Backend validates and returns JWT token
+   - Frontend stores token in localStorage
+   - User is redirected to dashboard
+
+2. **Smart Token Management**:
+   - Token is included in `Authorization` header for API requests
+   - **Intelligent Logout Logic**: Only authentication-related 401 errors trigger logout
+   - Sports data endpoints that return 401 won't automatically log users out
+   - Network errors preserve user sessions for better UX
+
+3. **Session Persistence**:
+   - Users remain logged in when navigating between pages
+   - Auth status is checked on app initialization with graceful error handling
+   - Token validation happens only for protected auth endpoints
+
+### Authentication Troubleshooting
+
+#### Problem: User Gets Logged Out When Navigating to Sports Pages
+
+**Symptoms**:
+- Login works fine, user reaches dashboard
+- Clicking on American Football, Soccer, Basketball, etc. logs user out
+- User has to log in again repeatedly
+
+**Root Cause**: 
+Previous versions had aggressive authentication handling that removed auth tokens on ANY 401 response.
+
+**Solution** (FIXED in current version):
+The API client now uses smart token management:
+```typescript
+// Only remove auth token for authentication-related endpoints
+const isAuthEndpoint = error.config?.url?.includes('/auth/') || 
+                       error.config?.url?.includes('/user/') ||
+                       error.config?.url?.includes('/admin/');
+
+if (isAuthEndpoint && typeof window !== 'undefined') {
+  localStorage.removeItem('authToken');
+} else {
+  // For sports endpoints, preserve session
+  console.warn('Authentication required for this request, but preserving session');
+}
+```
+
+#### Problem: Network Errors Causing Logout
+
+**Symptoms**:
+- User gets logged out during network issues
+- Temporary server downtime logs users out
+
+**Solution**:
+The AuthContext now handles network errors gracefully:
+```typescript
+// Only remove token for actual auth failures (401), not network errors
+if (error.response?.status === 401) {
+  localStorage.removeItem('authToken');
+} else {
+  // Keep token for network errors - user might still be authenticated
+  console.error('Auth check failed due to network/server error:', error);
+}
+```
+
+#### Debugging Authentication Issues
+
+1. **Check Browser Console**:
+   ```javascript
+   // Check if token exists
+   localStorage.getItem('authToken')
+   
+   // Check API client base URL
+   console.log('API Base URL:', process.env.NEXT_PUBLIC_API_URL)
+   ```
+
+2. **Monitor Network Tab**:
+   - Look for 401 responses from `/auth/` endpoints
+   - Check if `Authorization` header is present in requests
+   - Verify API endpoints are returning expected responses
+
+3. **Backend Token Validation**:
+   ```bash
+   # Test token validity directly
+   curl -H "Authorization: Bearer YOUR_TOKEN" \
+        https://winzo-platform-production.up.railway.app/api/auth/me
+   ```
+
+#### Common Authentication Patterns
+
+**Protected Route Component**:
+```tsx
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) return <LoadingSpinner />;
+  if (!isAuthenticated) return <LoginPage />;
+  
+  return <>{children}</>;
+};
+```
+
+**API Request with Auth**:
+```typescript
+// API client automatically adds auth header
+const response = await apiClient.get('/user/profile');
+
+// Manual auth header (if needed)
+const response = await fetch('/api/protected', {
+  headers: {
+    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+    'Content-Type': 'application/json'
+  }
+});
+```
+
 ## Build & Deployment
 
 ### Available Scripts
