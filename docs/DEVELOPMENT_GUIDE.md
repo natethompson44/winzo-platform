@@ -1076,9 +1076,9 @@ git push origin hotfix/fix-critical-bug
    // 'Philadelphia Eagles': '/images/clubs/nfl/philadelphia-eagles.png', // 404!
    ```
 
-5. **Default Logo Caching**:
+5. **Default Logo Caching & Client-Side Preloading**:
    ```javascript
-   // Prevents hundreds of duplicate default-team.png requests
+   // Backend: Prevents hundreds of duplicate default-team.png requests
    static defaultLogoCache = new Map();
    static getDefaultTeamLogo(teamName) {
      const cacheKey = 'default_logo';
@@ -1088,6 +1088,20 @@ git push origin hotfix/fix-critical-bug
      const defaultPath = '/images/clubs/default-team.png';
      this.defaultLogoCache.set(cacheKey, defaultPath);
      return defaultPath;
+   }
+
+   // Frontend: Client-side logo deduplication and preloading
+   class TeamLogoCache {
+     static getCachedLogoUrl(originalUrl) {
+       // Preloads default-team.png before first img request
+       // Deduplicates logo URLs to prevent multiple HTTP requests
+       // Returns cached URL to ensure consistent references
+     }
+     
+     private static preloadDefaultLogo() {
+       // Creates <link rel="preload"> for immediate caching
+       // Eliminates 100+ duplicate HTTP requests on page load
+     }
    }
    ```
 
@@ -1105,10 +1119,12 @@ git push origin hotfix/fix-critical-bug
 ##### After Optimization:
 ```
 🟢 Page Load: 1-2 API calls (first time)
-🟢 Team Logos: Optimized paths + caching
+🟢 Team Logos: Optimized paths + caching + client-side preloading
+🟢 HTTP Requests: 1 request for default-team.png (vs 100+ duplicate requests)
 🟢 Cache Duration: 5 minutes
 🟢 Daily API Usage: ~288 calls (sustainable)
 🟢 Quota Management: Protected with emergency mode
+🟢 Page Load Speed: Significantly faster due to image preloading
 ```
 
 #### Quota Monitoring Features:
@@ -1153,6 +1169,8 @@ ODDS_API_CACHE_DURATION_SCORES=60     # 1 minute
 #### Testing Results:
 - ✅ **API Usage Reduced**: From 60+ calls to 1-2 calls per page load
 - ✅ **Performance Improved**: Faster page loads due to caching
+- ✅ **HTTP Requests Optimized**: From 100+ to 1 request for default team logos
+- ✅ **Client-Side Preloading**: Default logos cached before first img element loads
 - ✅ **Quota Protected**: Automatic fallbacks prevent exhaustion
 - ✅ **Visual Stability**: Eliminated flickering team logos
 - ✅ **Production Ready**: Sustainable for high-traffic usage

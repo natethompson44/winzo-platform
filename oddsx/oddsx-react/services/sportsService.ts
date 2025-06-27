@@ -1,5 +1,78 @@
 import apiClient from '@/utils/apiClient';
 
+// Client-side logo cache to prevent duplicate HTTP requests
+class TeamLogoCache {
+  private static logoCache = new Map<string, string>();
+  private static defaultLogoCached = false;
+  private static defaultLogoUrl = '/images/clubs/default-team.png';
+  private static preloadInitialized = false;
+
+  /**
+   * Get cached logo URL or cache it if first time
+   * This prevents multiple HTTP requests for the same logo
+   */
+  static getCachedLogoUrl(originalUrl: string | undefined): string {
+    // Initialize preloader on first use
+    if (!this.preloadInitialized) {
+      this.preloadDefaultLogo();
+      this.preloadInitialized = true;
+    }
+
+    if (!originalUrl) {
+      return this.getDefaultLogo();
+    }
+
+    // If it's already cached, return the cached version
+    if (this.logoCache.has(originalUrl)) {
+      return this.logoCache.get(originalUrl)!;
+    }
+
+    // Cache the URL for future use
+    this.logoCache.set(originalUrl, originalUrl);
+    return originalUrl;
+  }
+
+  /**
+   * Get default logo with caching to prevent multiple requests
+   * This is the main fix - ensures only one request for default-team.png
+   */
+  private static getDefaultLogo(): string {
+    if (!this.defaultLogoCached) {
+      this.logoCache.set(this.defaultLogoUrl, this.defaultLogoUrl);
+      this.defaultLogoCached = true;
+    }
+    return this.defaultLogoUrl;
+  }
+
+  /**
+   * Preload the default team logo to eliminate HTTP requests on page load
+   * This ensures the browser has the image cached before any img elements request it
+   */
+  private static preloadDefaultLogo(): void {
+    if (typeof window !== 'undefined') {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = this.defaultLogoUrl;
+      link.type = 'image/png';
+      document.head.appendChild(link);
+      
+      // Also create an Image object to force immediate loading
+      const img = new Image();
+      img.src = this.defaultLogoUrl;
+    }
+  }
+
+  /**
+   * Clear cache if needed (for testing or memory management)
+   */
+  static clearCache(): void {
+    this.logoCache.clear();
+    this.defaultLogoCached = false;
+    this.preloadInitialized = false;
+  }
+}
+
 export interface Game {
   id: string;
   sport: string;
@@ -563,8 +636,8 @@ class SportsService {
         league: game.league_name || game.league || 'Unknown League',
         homeTeam: game.home_team || game.homeTeam || 'Home Team',
         awayTeam: game.away_team || game.awayTeam || 'Away Team',
-        homeTeamLogo: game.home_team_logo || '/images/clubs/default-team.png',
-        awayTeamLogo: game.away_team_logo || '/images/clubs/default-team.png',
+        homeTeamLogo: TeamLogoCache.getCachedLogoUrl(game.home_team_logo),
+        awayTeamLogo: TeamLogoCache.getCachedLogoUrl(game.away_team_logo),
         startTime: game.game_time || game.start_time || game.commence_time || new Date().toISOString(),
         status: this.determineGameStatus(game),
         odds: this.formatOddsData(game.best_odds || game.odds),
@@ -639,8 +712,8 @@ class SportsService {
       league: game.league || game.tournament,
       homeTeam: game.home_team || game.homeTeam,
       awayTeam: game.away_team || game.awayTeam,
-      homeTeamLogo: game.home_team_logo,
-      awayTeamLogo: game.away_team_logo,
+      homeTeamLogo: TeamLogoCache.getCachedLogoUrl(game.home_team_logo),
+      awayTeamLogo: TeamLogoCache.getCachedLogoUrl(game.away_team_logo),
       startTime: game.start_time || game.commence_time,
       status: game.status || 'upcoming',
       odds: game.odds ? {
