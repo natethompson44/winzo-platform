@@ -3,39 +3,42 @@ description:
 globs: 
 alwaysApply: true
 ---
-# Rule #2: Automatic Documentation Updates (ALWAYS ACTIVE)
+## Rule #2: Automatic Documentation Updates (ALWAYS ACTIVE)
 
-MANDATORY: After making ANY code changes, automatically update relevant documentation.
+**MANDATORY**: After making ANY code changes, automatically update relevant documentation.
 
-DOCUMENTATION UPDATE REQUIREMENTS:
+**DOCUMENTATION UPDATE REQUIREMENTS:**
 
-1. CODE CHANGES → UPDATE DOCS:
+1. **CODE CHANGES → UPDATE DOCS:**
    - New components → Update DESIGN_SYSTEM_GUIDE.md component library
    - API changes → Update API_DOCUMENTATION.md with new endpoints/examples
    - New features → Update USER_GUIDE.md and ADMIN_GUIDE.md as applicable
    - Configuration changes → Update DEVELOPMENT_GUIDE.md and DEPLOYMENT_GUIDE.md
    - Database changes → Update API_DOCUMENTATION.md schema section
+   - OddsX customizations → Document in DESIGN_SYSTEM_GUIDE.md and component usage
 
-2. SPECIFIC UPDATE TRIGGERS:
-   - New CSS variables → Add to DESIGN_SYSTEM_GUIDE.md variables section
+2. **SPECIFIC UPDATE TRIGGERS:**
+   - New Next.js pages → Add to DEVELOPMENT_GUIDE.md routing section
    - New React components → Document in DESIGN_SYSTEM_GUIDE.md with usage examples
    - New API endpoints → Add to API_DOCUMENTATION.md with request/response examples
    - New user features → Update USER_GUIDE.md with step-by-step instructions
    - New admin features → Update ADMIN_GUIDE.md with management procedures
    - Environment changes → Update DEPLOYMENT_GUIDE.md configuration sections
+   - OddsX template modifications → Update transformation documentation
 
-3. DOCUMENTATION STANDARDS:
+3. **DOCUMENTATION STANDARDS:**
    - Include code examples for all new components/APIs
    - Add screenshots for UI changes (note where needed)
    - Update table of contents and cross-references
    - Maintain consistent formatting and structure
    - Verify all links and references work correctly
+   - Ensure Next.js and OddsX-specific documentation is accurate
 
-4. CROSS-REFERENCE UPDATES:
+4. **CROSS-REFERENCE UPDATES:**
    - Update docs/INDEX.md if new major sections added
    - Update README.md if core features change
    - Update PROJECT_OVERVIEW.md if architecture changes
+   - Update FINAL_PROJECT_SUMMARY.md if major features added
    - Ensure all documentation links remain functional
 
-NEVER make code changes without updating corresponding documentation.
-
+**NEVER make code changes without updating corresponding documentation.**

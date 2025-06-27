@@ -1,32 +1,54 @@
 ---
-description: For urgent production issues, deployment failures, or critical bugs.
+description: For urgent production issues, deployment failures, or critical bugs affecting the live WINZO platform.
 globs: 
 alwaysApply: false
 ---
-# Rule #5: Emergency Fixes and Hotfixes (USE AS NEEDED)
+## Rule #5: Emergency Fixes and Production Support (USE AS NEEDED)
 
-For urgent production issues, deployment failures, or critical bugs.
+**For urgent production issues, deployment failures, or critical bugs affecting the live WINZO platform.**
 
-EMERGENCY RESPONSE PROTOCOL:
-1. Identify root cause quickly using error logs and documentation
-2. Implement minimal, targeted fix without breaking existing functionality
-3. Test fix thoroughly in development environment
-4. Update relevant documentation immediately
-5. Deploy with careful monitoring
+**EMERGENCY RESPONSE PROTOCOL:**
 
-COMMON EMERGENCY SCENARIOS:
-- Netlify build failures (usually ESLint warnings treated as errors)
-- API integration issues (check API_DOCUMENTATION.md for correct endpoints)
-- Authentication problems (verify JWT configuration and user flow)
-- Mobile responsiveness issues (check design system breakpoints)
-- Database connection issues (verify environment variables)
+1. **IMMEDIATE ASSESSMENT:**
+   - Identify if issue affects frontend (Next.js), backend (Node.js), or integration
+   - Determine impact on core sports betting functionality
+   - Check if issue affects user authentication or financial transactions
+   - Assess mobile vs desktop impact for sports betting workflows
+   - Verify if issue is deployment-related (Netlify/Railway)
 
-HOTFIX STANDARDS:
-- Make minimal changes to reduce risk
-- Maintain code quality and documentation standards
-- Include rollback plan and testing verification
-- Update DEPLOYMENT_GUIDE.md with lessons learned
-- Schedule proper fix for next development cycle if needed
+2. **RAPID DEBUGGING:**
+   - Check Next.js build logs and static export process
+   - Review Netlify deployment logs and environment variables
+   - Verify Railway backend logs and database connectivity
+   - Test API integration between OddsX frontend and WINZO backend
+   - Check authentication flows and bet placement functionality
 
-NEVER compromise long-term code quality for short-term fixes.
+3. **EMERGENCY FIX STANDARDS:**
+   - Prioritize user safety and data integrity
+   - Implement minimal viable fixes to restore functionality
+   - Document emergency changes immediately
+   - Plan proper fix for next development cycle
+   - Maintain security standards even in emergency situations
 
+4. **CRITICAL SYSTEM COMPONENTS:**
+   - **Authentication System**: Login/logout/registration flows
+   - **Betting System**: Bet placement, odds display, bet slip functionality
+   - **Financial System**: Wallet balance, deposits, withdrawals
+   - **Sports Data**: Real-time odds, game information, live updates
+   - **Mobile Experience**: Touch-friendly sports betting interface
+
+5. **EMERGENCY DEPLOYMENT:**
+   - Use established deployment scripts (`deploy-production.sh`)
+   - Verify both frontend (Netlify) and backend (Railway) deployment
+   - Test critical user flows after emergency deployment
+   - Monitor error rates and user feedback post-deployment
+   - Communicate with stakeholders about issue resolution
+
+6. **POST-EMERGENCY ACTIONS:**
+   - Document root cause and resolution in appropriate documentation
+   - Plan comprehensive fix to replace emergency solution
+   - Review and improve monitoring and alerting systems
+   - Update emergency response procedures based on lessons learned
+   - Ensure quality standards are restored in follow-up work
+
+**Emergency fixes should restore functionality while maintaining user trust and platform security.**

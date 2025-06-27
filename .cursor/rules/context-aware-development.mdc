@@ -1,39 +1,52 @@
 ---
-description: Use this rule when making significant changes or adding new features.
+description: Use this rule when making significant changes or adding new features to the production-ready WINZO platform.
 globs: 
 alwaysApply: false
 ---
-# Rule #4: Context-Aware Development (USE AS NEEDED)
+## Rule #4: Context-Aware Development (USE AS NEEDED)
 
-When working on specific features or making complex changes, provide comprehensive context awareness.
+**Use this rule when making significant changes or adding new features to the production-ready WINZO platform.**
 
-FEATURE DEVELOPMENT CONTEXT:
-- Understand the complete user journey for the feature being modified
-- Consider impact on both desktop and mobile experiences
-- Ensure integration with existing authentication and state management
-- Maintain consistency with sports betting domain logic
-- Consider admin dashboard implications for user-facing changes
+**DEVELOPMENT CONTEXT AWARENESS:**
 
-INTEGRATION AWARENESS:
-- Frontend changes may require backend API updates
-- Design system changes affect all components using those variables
-- Database schema changes require API and frontend updates
-- Authentication changes affect all protected routes and components
-- Mobile optimizations may require separate component variants
+1. **ARCHITECTURE UNDERSTANDING:**
+   - Current platform uses OddsX Next.js template with WINZO backend integration
+   - All new features must work within Next.js 14 + TypeScript + Bootstrap 5 stack
+   - Preserve existing WINZO backend APIs and database structure
+   - Maintain sports betting workflow optimization and mobile-first design
+   - Consider static export requirements for Netlify deployment
 
-TESTING CONSIDERATIONS:
-- Unit tests for new components and utilities
-- Integration tests for API changes
-- Manual testing procedures for UI changes
-- Cross-browser compatibility verification
-- Mobile device testing requirements
+2. **FEATURE INTEGRATION:**
+   - New features should leverage OddsX component patterns where possible
+   - Integrate with existing authentication and bet slip contexts
+   - Maintain consistency with current sports betting user flows
+   - Consider impact on both desktop and mobile sports betting experience
+   - Ensure compatibility with existing WINZO backend endpoints
 
-PERFORMANCE IMPACT:
-- Bundle size implications of new dependencies
-- Database query optimization for new features
-- Caching strategies for frequently accessed data
-- Image optimization and lazy loading
-- API response time considerations
+3. **TECHNICAL CONSIDERATIONS:**
+   - Follow Next.js 14 best practices (App Router, TypeScript, performance)
+   - Use Bootstrap 5 styling system and OddsX design patterns
+   - Implement proper error boundaries and error handling
+   - Consider SEO implications for sports betting content
+   - Maintain production-ready code quality and testing standards
 
-Use this rule when making significant changes or adding new features.
+4. **USER EXPERIENCE:**
+   - Prioritize sports betting workflows and user journeys
+   - Maintain professional sports betting interface standards
+   - Consider real-time data updates and live betting requirements
+   - Ensure accessibility and responsive design standards
+   - Optimize for sports betting conversion and engagement metrics
 
+5. **BUSINESS IMPACT:**
+   - Consider impact on sports betting functionality and user engagement
+   - Maintain security standards for financial transactions
+   - Consider analytics and tracking requirements
+   - Ensure compliance with sports betting regulations and standards
+   - Maintain platform reliability and uptime requirements
+
+**When adding significant features:**
+- Review existing OddsX components for reusability
+- Plan integration with current authentication and state management
+- Consider mobile sports betting user experience
+- Plan API integration with existing WINZO backend
+- Document new features in appropriate guides

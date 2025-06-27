@@ -3,43 +3,47 @@ description:
 globs: 
 alwaysApply: true
 ---
-# Rule #3: Repository Cleanliness and Consistency (ALWAYS ACTIVE)
+## Rule #3: Repository Cleanliness and Production Standards (ALWAYS ACTIVE)
 
-MAINTAIN PRISTINE REPOSITORY STATE:
+**MAINTAIN PRISTINE REPOSITORY STATE FOR PRODUCTION PLATFORM:**
 
-1. FILE ORGANIZATION:
-   - Keep winzo-frontend/src/ organized by feature and component type
-   - Maintain clean winzo-backend/src/ structure (routes, models, services, middleware)
-   - Store all documentation in docs/ with proper categorization
-   - Archive old/temporary files in docs/archive/ rather than deleting
+1. **FILE ORGANIZATION:**
+   - Keep `oddsx/oddsx-react/` organized by Next.js conventions and OddsX patterns
+   - Maintain clean `winzo-backend/src/` structure (routes, models, services, middleware)
+   - Store all documentation in `docs/` with proper categorization
+   - Archive old/temporary files in `docs/archive/` rather than deleting
+   - Maintain `winzo-frontend/` as clean reference (no active development)
 
-2. CODE CONSISTENCY:
-   - Follow established patterns from existing codebase
-   - Use CSS variables from design system (never hardcode colors/spacing)
-   - Maintain TypeScript interfaces and type safety
-   - Follow established naming conventions and file structure
-   - Ensure all imports use consistent path patterns
+2. **CODE CONSISTENCY:**
+   - Follow Next.js 14 and TypeScript best practices
+   - Use Bootstrap 5 classes and design system patterns consistently
+   - Maintain OddsX component architecture and naming conventions
+   - Follow established patterns from existing OddsX-based codebase
+   - Ensure all imports use Next.js conventions and path patterns
+   - Maintain integration with existing WINZO backend APIs
 
-3. QUALITY STANDARDS:
-   - Fix ESLint warnings immediately (CI=true treats warnings as errors)
+3. **PRODUCTION QUALITY STANDARDS:**
+   - Fix ESLint warnings immediately (Next.js build treats warnings as errors)
    - Maintain TypeScript strict mode compliance
-   - Ensure responsive design works on all breakpoints
-   - Test API integrations and error handling
-   - Verify build process completes successfully
+   - Ensure responsive design works on all breakpoints for sports betting
+   - Test API integrations and error handling with backend
+   - Verify Next.js build and static export completes successfully
+   - Maintain OddsX component functionality and sports betting workflows
 
-4. DOCUMENTATION HYGIENE:
+4. **DOCUMENTATION HYGIENE:**
    - Remove outdated or redundant documentation
    - Consolidate duplicate information
    - Maintain accurate cross-references and links
    - Keep code examples current and functional
    - Update version numbers and dates where applicable
+   - Ensure OddsX transformation documentation remains current
 
-5. DEPLOYMENT READINESS:
-   - Ensure changes work in both development and production
-   - Verify environment variables are properly configured
-   - Test build process before committing
+5. **DEPLOYMENT READINESS:**
+   - Ensure changes work in both development and production (Next.js)
+   - Verify environment variables are properly configured for Netlify
+   - Test build process and static export before committing
    - Maintain compatibility with Netlify/Railway deployment
    - Update deployment documentation for any infrastructure changes
+   - Ensure OddsX-based frontend deploys correctly
 
-ALWAYS leave the repository in a better state than you found it.
-
+**ALWAYS leave the repository in a better state than you found it.**
