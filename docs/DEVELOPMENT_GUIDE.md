@@ -578,73 +578,95 @@ if (isAuthEndpoint && typeof window !== 'undefined') {
 }
 ```
 
-#### Problem: Network Errors Causing Logout
+#### Problem: JavaScript Errors Crashing Sports Pages
 
 **Symptoms**:
-- User gets logged out during network issues
-- Temporary server downtime logs users out
+- American Football page shows "Application error: a client-side exception has occurred"
+- Console errors: `TypeError: e.map is not a function`
+- Page completely fails to load
 
-**Solution**:
-The AuthContext now handles network errors gracefully:
+**Root Cause**: 
+The `formatLiveGamesData` function expected an array but received non-array data from API responses.
+
+**Solution** (FIXED in current version):
+Enhanced data validation in sports service:
 ```typescript
-// Only remove token for actual auth failures (401), not network errors
-if (error.response?.status === 401) {
-  localStorage.removeItem('authToken');
-} else {
-  // Keep token for network errors - user might still be authenticated
-  console.error('Auth check failed due to network/server error:', error);
+private formatLiveGamesData(rawGames: any): Game[] {
+  // Critical fix: Ensure rawGames is an array before calling .map()
+  if (!rawGames) {
+    console.warn('formatLiveGamesData: rawGames is null or undefined, returning empty array');
+    return [];
+  }
+  
+  if (!Array.isArray(rawGames)) {
+    console.warn('formatLiveGamesData: rawGames is not an array, attempting to extract array from response');
+    
+    // Handle common API response patterns
+    if (rawGames.data && Array.isArray(rawGames.data)) {
+      rawGames = rawGames.data;
+    } else if (rawGames.games && Array.isArray(rawGames.games)) {
+      rawGames = rawGames.games;
+    } else if (rawGames.results && Array.isArray(rawGames.results)) {
+      rawGames = rawGames.results;
+    } else {
+      console.error('formatLiveGamesData: Unable to find array in response structure:', rawGames);
+      return [];
+    }
+  }
+  
+  // ... rest of processing with safety checks
 }
 ```
 
-#### Debugging Authentication Issues
+#### Problem: Incorrect Page Titles
 
-1. **Check Browser Console**:
-   ```javascript
-   // Check if token exists
-   localStorage.getItem('authToken')
-   
-   // Check API client base URL
-   console.log('API Base URL:', process.env.NEXT_PUBLIC_API_URL)
-   ```
+**Symptoms**:
+- Basketball page shows "Top Soccer" instead of "Top Basketball"
+- Ice Hockey page shows "Top Soccer" instead of "Top Ice Hockey"
+- Multiple sports pages have incorrect titles
 
-2. **Monitor Network Tab**:
-   - Look for 401 responses from `/auth/` endpoints
-   - Check if `Authorization` header is present in requests
-   - Verify API endpoints are returning expected responses
+**Root Cause**: 
+Copy-paste errors in component templates where "Top Soccer" was not updated to the correct sport name.
 
-3. **Backend Token Validation**:
-   ```bash
-   # Test token validity directly
-   curl -H "Authorization: Bearer YOUR_TOKEN" \
-        https://winzo-platform-production.up.railway.app/api/auth/me
-   ```
+**Solution** (FIXED in current version):
+Updated all sport page titles to display correctly:
+- Basketball: "Top Basketball" ✅
+- Ice Hockey: "Top Ice Hockey" ✅
+- Cricket: "Top Cricket" ✅
+- Tennis: "Top Tennis" ✅
+- NBA 2K: "Top NBA 2K" ✅
+- eCricket: "Top eCricket" ✅
 
-#### Common Authentication Patterns
+#### Enhanced Error Handling for Sports Data
 
-**Protected Route Component**:
-```tsx
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) return <LoadingSpinner />;
-  if (!isAuthenticated) return <LoginPage />;
-  
-  return <>{children}</>;
-};
-```
+**New Features** (Added in current version):
+- Comprehensive error logging with sport-specific emoji identifiers (🏈, ⚽, 🏀, 🏒)
+- Graceful fallback to sample data when APIs fail
+- Detailed error messages for different failure scenarios
+- Protection against session loss during sports data fetching
+- Enhanced sample data with proper market structures (spreads, totals, moneylines)
 
-**API Request with Auth**:
+**Error Categories Handled**:
 ```typescript
-// API client automatically adds auth header
-const response = await apiClient.get('/user/profile');
+// Authentication errors (401) - Does not cause logout
+if (error.response?.status === 401) {
+  console.warn('Authentication required for data - preserving session');
+}
 
-// Manual auth header (if needed)
-const response = await fetch('/api/protected', {
-  headers: {
-    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-    'Content-Type': 'application/json'
-  }
-});
+// API not implemented (404)
+if (error.response?.status === 404) {
+  console.warn('Sports endpoint not found - API may not be implemented yet');
+}
+
+// Network errors
+if (error.code === 'NETWORK_ERROR' || !error.response) {
+  console.warn('Network error - using fallback data');
+}
+
+// Data format errors
+if (error.message?.includes('Invalid data format')) {
+  console.warn('Data format error - using sample data');
+}
 ```
 
 ## Build & Deployment

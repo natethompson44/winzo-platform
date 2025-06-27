@@ -351,32 +351,54 @@ export default function UpCmingAmericanFootball() {
 
   const fetchNFLGames = async () => {
     try {
+      setLoading(true);
       setError(null);
+      
+      console.log('🏈 Fetching NFL games...');
       const games = await sportsService.getNFLGames({
         limit: 10
       });
-      setNflGames(games as NFLGame[]);
-      setLastUpdate(new Date());
-    } catch (err: any) {
-      console.error('Failed to fetch NFL games:', err);
       
-      // Handle different types of errors gracefully
+      console.log('🏈 NFL games fetched:', games);
+      
+      if (games && Array.isArray(games)) {
+        setNflGames(games as NFLGame[]);
+        setLastUpdate(new Date());
+        
+        if (games.length === 0) {
+          setError('No NFL games available at the moment. Please check back later.');
+        }
+      } else {
+        console.warn('🏈 Invalid games data received:', games);
+        throw new Error('Invalid data format received from API');
+      }
+    } catch (err: any) {
+      console.error('🏈 Failed to fetch NFL games:', err);
+      
+      // Handle different types of errors gracefully without causing crashes
       let errorMessage = 'Failed to load NFL games. Showing sample data.';
+      let shouldUseFallback = true;
+      
       if (err?.response?.status === 401) {
-        errorMessage = 'Authentication required for live data. Showing sample games.';
-      } else if (err?.code === 'NETWORK_ERROR') {
+        errorMessage = 'Authentication may be required for live data. Showing sample games.';
+        console.warn('🏈 Authentication required for NFL data - but this should not cause logout');
+      } else if (err?.response?.status === 404) {
+        errorMessage = 'NFL data service not available. Showing sample games.';
+      } else if (err?.code === 'NETWORK_ERROR' || !err?.response) {
         errorMessage = 'Network error. Showing sample data while offline.';
+      } else if (err?.message?.includes('Invalid data format')) {
+        errorMessage = 'Data format error. Showing sample games while we fix this.';
       }
       
       setError(errorMessage);
       
-      // Fallback to sample data structure that matches our interface
+      // Enhanced fallback data with proper structure
       const sampleGames: NFLGame[] = [
         {
-          id: '1',
+          id: 'sample-nfl-1',
           sport_key: 'americanfootball_nfl',
           sport_icon: '/images/icon/america-football.png',
-          league_name: 'NFL',
+          league_name: 'NFL Sample',
           game_time: 'Today, 20:20',
           home_team: 'Philadelphia Eagles',
           away_team: 'Dallas Cowboys',
@@ -385,8 +407,20 @@ export default function UpCmingAmericanFootball() {
           markets: {
             h2h: {
               outcomes: {
-                'Philadelphia Eagles': [{ price: -180, bookmaker: 'draftkings' }],
-                'Dallas Cowboys': [{ price: 160, bookmaker: 'draftkings' }]
+                'Philadelphia Eagles': [{ price: -180, bookmaker: 'sample' }],
+                'Dallas Cowboys': [{ price: 160, bookmaker: 'sample' }]
+              }
+            },
+            spreads: {
+              outcomes: {
+                'Philadelphia Eagles': [{ price: -110, point: -3.5, bookmaker: 'sample' }],
+                'Dallas Cowboys': [{ price: -110, point: 3.5, bookmaker: 'sample' }]
+              }
+            },
+            totals: {
+              outcomes: {
+                'Over 47.5': [{ price: -105, point: 47.5, bookmaker: 'sample' }],
+                'Under 47.5': [{ price: -115, point: 47.5, bookmaker: 'sample' }]
               }
             }
           },
@@ -394,9 +428,36 @@ export default function UpCmingAmericanFootball() {
           bookmaker_count: 5,
           last_updated: new Date().toISOString(),
           featured: true
+        },
+        {
+          id: 'sample-nfl-2',
+          sport_key: 'americanfootball_nfl',
+          sport_icon: '/images/icon/america-football.png',
+          league_name: 'NFL Sample',
+          game_time: 'Tomorrow, 13:00',
+          home_team: 'Green Bay Packers',
+          away_team: 'Chicago Bears',
+          home_team_logo: '/images/clubs/nfl/green-bay-packers.png',
+          away_team_logo: '/images/clubs/nfl/chicago-bears.png',
+          markets: {
+            h2h: {
+              outcomes: {
+                'Green Bay Packers': [{ price: -250, bookmaker: 'sample' }],
+                'Chicago Bears': [{ price: 200, bookmaker: 'sample' }]
+              }
+            }
+          },
+          best_odds: {},
+          bookmaker_count: 4,
+          last_updated: new Date().toISOString(),
+          featured: false
         }
       ];
-      setNflGames(sampleGames);
+      
+      if (shouldUseFallback) {
+        setNflGames(sampleGames);
+        setLastUpdate(new Date());
+      }
     } finally {
       setLoading(false);
     }

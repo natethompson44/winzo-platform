@@ -311,28 +311,37 @@ GET /api/sports/nfl/games
   "success": true,
   "data": [
     {
-      "id": "game_id",
+      "id": "nfl_game_123",
       "sport_key": "americanfootball_nfl",
       "sport_icon": "/images/icon/america-football.png",
       "league_name": "NFL",
       "game_time": "Today, 20:20",
       "home_team": "Philadelphia Eagles",
       "away_team": "Dallas Cowboys",
-      "home_team_logo": "/images/clubs/philadelphia-eagles.png",
-      "away_team_logo": "/images/clubs/dallas-cowboys.png",
+      "home_team_logo": "/images/clubs/nfl/philadelphia-eagles.png",
+      "away_team_logo": "/images/clubs/nfl/dallas-cowboys.png",
       "markets": {
-        "h2h": { "outcomes": {}, "bookmakers": [] },
-        "spreads": { "outcomes": {}, "bookmakers": [] },
-        "totals": { "outcomes": {}, "bookmakers": [] }
-      },
-      "best_odds": {
         "h2h": {
-          "home": { "price": -140, "bookmaker": "draftkings" },
-          "away": { "price": 120, "bookmaker": "fanduel" }
+          "outcomes": {
+            "Philadelphia Eagles": [{"price": -180, "bookmaker": "draftkings"}],
+            "Dallas Cowboys": [{"price": 160, "bookmaker": "draftkings"}]
+          }
+        },
+        "spreads": {
+          "outcomes": {
+            "Philadelphia Eagles": [{"price": -110, "point": -3.5, "bookmaker": "draftkings"}],
+            "Dallas Cowboys": [{"price": -110, "point": 3.5, "bookmaker": "draftkings"}]
+          }
+        },
+        "totals": {
+          "outcomes": {
+            "Over 47.5": [{"price": -105, "point": 47.5, "bookmaker": "draftkings"}],
+            "Under 47.5": [{"price": -115, "point": 47.5, "bookmaker": "draftkings"}]
+          }
         }
       },
-      "bookmaker_count": 7,
-      "last_updated": "2025-06-27T01:20:45Z",
+      "bookmaker_count": 5,
+      "last_updated": "2025-01-27T15:30:00Z",
       "featured": true
     }
   ],
@@ -1029,3 +1038,102 @@ socket.on('bet_settled', (data) => {
 **Next Review**: Quarterly
 
 *This API documentation is automatically generated from code comments and updated with each release.* 
+
+## Enhanced Sports Endpoints Error Handling
+
+All sports endpoints now include comprehensive error handling to prevent authentication issues and page crashes:
+
+### NFL Games Endpoint
+```
+GET /sports/nfl/games
+```
+
+**Parameters:**
+- `week` (optional): NFL week number
+- `season` (optional): NFL season year (default: 2025)
+- `limit` (optional): Number of games to return (default: 20)
+
+**Enhanced Response Handling:**
+- Validates response structure before processing
+- Handles both nested and flat response formats
+- Provides fallback sample data on failures
+- Preserves user authentication session on API errors
+
+**Sample Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "nfl_game_123",
+      "sport_key": "americanfootball_nfl",
+      "sport_icon": "/images/icon/america-football.png",
+      "league_name": "NFL",
+      "game_time": "Today, 20:20",
+      "home_team": "Philadelphia Eagles",
+      "away_team": "Dallas Cowboys",
+      "home_team_logo": "/images/clubs/nfl/philadelphia-eagles.png",
+      "away_team_logo": "/images/clubs/nfl/dallas-cowboys.png",
+      "markets": {
+        "h2h": {
+          "outcomes": {
+            "Philadelphia Eagles": [{"price": -180, "bookmaker": "draftkings"}],
+            "Dallas Cowboys": [{"price": 160, "bookmaker": "draftkings"}]
+          }
+        },
+        "spreads": {
+          "outcomes": {
+            "Philadelphia Eagles": [{"price": -110, "point": -3.5, "bookmaker": "draftkings"}],
+            "Dallas Cowboys": [{"price": -110, "point": 3.5, "bookmaker": "draftkings"}]
+          }
+        },
+        "totals": {
+          "outcomes": {
+            "Over 47.5": [{"price": -105, "point": 47.5, "bookmaker": "draftkings"}],
+            "Under 47.5": [{"price": -115, "point": 47.5, "bookmaker": "draftkings"}]
+          }
+        }
+      },
+      "bookmaker_count": 5,
+      "last_updated": "2025-01-27T15:30:00Z",
+      "featured": true
+    }
+  ]
+}
+```
+
+### Error Handling Standards
+
+**Authentication Preservation:**
+- 401 errors on sports endpoints do NOT remove authentication tokens
+- User sessions are preserved during sports data failures
+- Only auth-specific endpoints (`/auth/`, `/user/`, `/admin/`) can trigger logout
+
+**Data Validation:**
+- All array responses are validated before processing
+- Graceful handling of malformed API responses
+- Automatic fallback to sample data when needed
+- Comprehensive logging for debugging
+
+**Error Response Format:**
+```json
+{
+  "success": false,
+  "message": "Detailed error description",
+  "error_code": "SPORTS_DATA_UNAVAILABLE",
+  "fallback_available": true
+}
+```
+
+### Similar Endpoints
+
+All sport-specific endpoints follow the same enhanced error handling pattern:
+
+- `GET /sports/soccer/games` - Soccer/Football games
+- `GET /sports/basketball/games` - Basketball/NBA games  
+- `GET /sports/icehockey/games` - Ice Hockey/NHL games
+
+**Common Parameters:**
+- `league` (optional): Specific league filter
+- `limit` (optional): Number of games to return
+- `status` (optional): Game status filter (`upcoming`, `live`, `finished`) 

@@ -95,16 +95,42 @@ class SportsService {
         limit: options?.limit || 20
       };
 
+      console.log('Fetching NFL games with params:', params);
       const response = await apiClient.get('/sports/nfl/games', { params });
       
+      console.log('NFL API response:', response);
+      
       if (response.success && response.data) {
-        return this.formatLiveGamesData(response.data);
+        // Enhanced response validation
+        if (response.data.success === false) {
+          console.warn('NFL API returned success:false, falling back to mock data:', response.data.message);
+          return this.getMockNFLGames();
+        }
+        
+        // Handle different response structures
+        let gamesData = response.data;
+        if (response.data.data) {
+          gamesData = response.data.data;
+        }
+        
+        console.log('Processing NFL games data:', gamesData);
+        return this.formatLiveGamesData(gamesData);
       }
       
-      // Fallback to mock data if API fails
+      console.warn('NFL API response not successful, falling back to mock data');
       return this.getMockNFLGames();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch NFL games:', error);
+      
+      // Provide more specific error information
+      if (error.response?.status === 401) {
+        console.warn('Authentication required for NFL data - this should not cause logout for non-auth endpoints');
+      } else if (error.response?.status === 404) {
+        console.warn('NFL games endpoint not found - API may not be implemented yet');
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        console.warn('Network error while fetching NFL games - using fallback data');
+      }
+      
       return this.getMockNFLGames();
     }
   }
@@ -122,16 +148,39 @@ class SportsService {
         limit: options?.limit || 20
       };
 
+      console.log('Fetching Soccer games with params:', params);
       const response = await apiClient.get('/sports/soccer/games', { params });
       
+      console.log('Soccer API response:', response);
+      
       if (response.success && response.data) {
-        return this.formatLiveGamesData(response.data);
+        if (response.data.success === false) {
+          console.warn('Soccer API returned success:false, falling back to mock data:', response.data.message);
+          return this.getMockSoccerGames();
+        }
+        
+        let gamesData = response.data;
+        if (response.data.data) {
+          gamesData = response.data.data;
+        }
+        
+        console.log('Processing Soccer games data:', gamesData);
+        return this.formatLiveGamesData(gamesData);
       }
       
-      // Fallback to mock data if API fails
+      console.warn('Soccer API response not successful, falling back to mock data');
       return this.getMockSoccerGames();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch Soccer games:', error);
+      
+      if (error.response?.status === 401) {
+        console.warn('Authentication required for Soccer data - this should not cause logout for non-auth endpoints');
+      } else if (error.response?.status === 404) {
+        console.warn('Soccer games endpoint not found - API may not be implemented yet');
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        console.warn('Network error while fetching Soccer games - using fallback data');
+      }
+      
       return this.getMockSoccerGames();
     }
   }
@@ -149,16 +198,39 @@ class SportsService {
         limit: options?.limit || 20
       };
 
+      console.log('Fetching Basketball games with params:', params);
       const response = await apiClient.get('/sports/basketball/games', { params });
       
+      console.log('Basketball API response:', response);
+      
       if (response.success && response.data) {
-        return this.formatLiveGamesData(response.data);
+        if (response.data.success === false) {
+          console.warn('Basketball API returned success:false, falling back to mock data:', response.data.message);
+          return this.getMockBasketballGames();
+        }
+        
+        let gamesData = response.data;
+        if (response.data.data) {
+          gamesData = response.data.data;
+        }
+        
+        console.log('Processing Basketball games data:', gamesData);
+        return this.formatLiveGamesData(gamesData);
       }
       
-      // Fallback to mock data if API fails
+      console.warn('Basketball API response not successful, falling back to mock data');
       return this.getMockBasketballGames();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch Basketball games:', error);
+      
+      if (error.response?.status === 401) {
+        console.warn('Authentication required for Basketball data - this should not cause logout for non-auth endpoints');
+      } else if (error.response?.status === 404) {
+        console.warn('Basketball games endpoint not found - API may not be implemented yet');
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        console.warn('Network error while fetching Basketball games - using fallback data');
+      }
+      
       return this.getMockBasketballGames();
     }
   }
@@ -176,16 +248,39 @@ class SportsService {
         limit: options?.limit || 20
       };
 
+      console.log('Fetching Ice Hockey games with params:', params);
       const response = await apiClient.get('/sports/icehockey/games', { params });
       
+      console.log('Ice Hockey API response:', response);
+      
       if (response.success && response.data) {
-        return this.formatLiveGamesData(response.data);
+        if (response.data.success === false) {
+          console.warn('Ice Hockey API returned success:false, falling back to mock data:', response.data.message);
+          return this.getMockIceHockeyGames();
+        }
+        
+        let gamesData = response.data;
+        if (response.data.data) {
+          gamesData = response.data.data;
+        }
+        
+        console.log('Processing Ice Hockey games data:', gamesData);
+        return this.formatLiveGamesData(gamesData);
       }
       
-      // Fallback to mock data if API fails
+      console.warn('Ice Hockey API response not successful, falling back to mock data');
       return this.getMockIceHockeyGames();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch Ice Hockey games:', error);
+      
+      if (error.response?.status === 401) {
+        console.warn('Authentication required for Ice Hockey data - this should not cause logout for non-auth endpoints');
+      } else if (error.response?.status === 404) {
+        console.warn('Ice Hockey games endpoint not found - API may not be implemented yet');
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        console.warn('Network error while fetching Ice Hockey games - using fallback data');
+      }
+      
       return this.getMockIceHockeyGames();
     }
   }
@@ -427,36 +522,71 @@ class SportsService {
   /**
    * Format live games data from the new API endpoints
    */
-  private formatLiveGamesData(rawGames: any[]): Game[] {
-    return rawGames.map(game => ({
-      id: game.id,
-      sport: game.sport_key || game.sport,
-      league: game.league_name || game.league,
-      homeTeam: game.home_team || game.homeTeam,
-      awayTeam: game.away_team || game.awayTeam,
-      homeTeamLogo: game.home_team_logo,
-      awayTeamLogo: game.away_team_logo,
-      startTime: game.game_time || game.start_time || game.commence_time,
-      status: this.determineGameStatus(game),
-      odds: this.formatOddsData(game.best_odds || game.odds),
-      score: game.score,
-      period: game.period,
-      timeInPeriod: game.time_in_period,
-      // Enhanced properties
-      sport_key: game.sport_key,
-      sport_icon: game.sport_icon,
-      league_name: game.league_name,
-      game_time: game.game_time,
-      home_team: game.home_team,
-      away_team: game.away_team,
-      home_team_logo: game.home_team_logo,
-      away_team_logo: game.away_team_logo,
-      markets: game.markets,
-      best_odds: game.best_odds,
-      bookmaker_count: game.bookmaker_count,
-      last_updated: game.last_updated,
-      featured: game.featured
-    }));
+  private formatLiveGamesData(rawGames: any): Game[] {
+    // Critical fix: Ensure rawGames is an array before calling .map()
+    if (!rawGames) {
+      console.warn('formatLiveGamesData: rawGames is null or undefined, returning empty array');
+      return [];
+    }
+    
+    if (!Array.isArray(rawGames)) {
+      console.warn('formatLiveGamesData: rawGames is not an array, attempting to extract array from response');
+      
+      // Common API response patterns
+      if (rawGames.data && Array.isArray(rawGames.data)) {
+        rawGames = rawGames.data;
+      } else if (rawGames.games && Array.isArray(rawGames.games)) {
+        rawGames = rawGames.games;
+      } else if (rawGames.results && Array.isArray(rawGames.results)) {
+        rawGames = rawGames.results;
+      } else {
+        console.error('formatLiveGamesData: Unable to find array in response structure:', rawGames);
+        return [];
+      }
+    }
+    
+    if (rawGames.length === 0) {
+      console.info('formatLiveGamesData: No games data available');
+      return [];
+    }
+
+    return rawGames.map((game: any) => {
+      // Add safety checks for game object
+      if (!game || typeof game !== 'object') {
+        console.warn('formatLiveGamesData: Invalid game object, skipping:', game);
+        return null;
+      }
+
+      return {
+        id: game.id || `game_${Date.now()}_${Math.random()}`,
+        sport: game.sport_key || game.sport || 'unknown',
+        league: game.league_name || game.league || 'Unknown League',
+        homeTeam: game.home_team || game.homeTeam || 'Home Team',
+        awayTeam: game.away_team || game.awayTeam || 'Away Team',
+        homeTeamLogo: game.home_team_logo || '/images/clubs/default-team.png',
+        awayTeamLogo: game.away_team_logo || '/images/clubs/default-team.png',
+        startTime: game.game_time || game.start_time || game.commence_time || new Date().toISOString(),
+        status: this.determineGameStatus(game),
+        odds: this.formatOddsData(game.best_odds || game.odds),
+        score: game.score,
+        period: game.period,
+        timeInPeriod: game.time_in_period,
+        // Enhanced properties
+        sport_key: game.sport_key,
+        sport_icon: game.sport_icon,
+        league_name: game.league_name,
+        game_time: game.game_time,
+        home_team: game.home_team,
+        away_team: game.away_team,
+        home_team_logo: game.home_team_logo,
+        away_team_logo: game.away_team_logo,
+        markets: game.markets,
+        best_odds: game.best_odds,
+        bookmaker_count: game.bookmaker_count || 0,
+        last_updated: game.last_updated || new Date().toISOString(),
+        featured: game.featured || false
+      };
+    }).filter(Boolean); // Remove any null entries from invalid game objects
   }
 
   /**
