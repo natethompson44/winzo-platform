@@ -59,11 +59,12 @@ class ApiClient {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          // Handle unauthorized - redirect to login
+          // Handle unauthorized - just clear token, let components handle the error
           if (typeof window !== 'undefined') {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
           }
+          // Don't auto-redirect - let components handle gracefully
+          console.warn('Authentication required for this request');
         }
         return Promise.reject(error);
       }

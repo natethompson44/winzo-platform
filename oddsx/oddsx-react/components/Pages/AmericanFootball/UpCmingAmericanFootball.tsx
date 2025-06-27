@@ -195,7 +195,7 @@ function NFLGameCard({ game }: { game: NFLGame }) {
                   {game.featured && (
                     <Image 
                       className="cpoint"
-                      src="/images/icon/star.png" 
+                      src="/images/icon/star2.png" 
                       width={16} 
                       height={16}
                       alt="Star" 
@@ -357,9 +357,18 @@ export default function UpCmingAmericanFootball() {
       });
       setNflGames(games as NFLGame[]);
       setLastUpdate(new Date());
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch NFL games:', err);
-      setError('Failed to load NFL games. Showing sample data.');
+      
+      // Handle different types of errors gracefully
+      let errorMessage = 'Failed to load NFL games. Showing sample data.';
+      if (err?.response?.status === 401) {
+        errorMessage = 'Authentication required for live data. Showing sample games.';
+      } else if (err?.code === 'NETWORK_ERROR') {
+        errorMessage = 'Network error. Showing sample data while offline.';
+      }
+      
+      setError(errorMessage);
       
       // Fallback to sample data structure that matches our interface
       const sampleGames: NFLGame[] = [
