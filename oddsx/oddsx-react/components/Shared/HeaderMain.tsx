@@ -1,18 +1,20 @@
 "use client";
 import Image from 'next/image'
-import Link from 'next/link'
+import NoPrefetchLink from './NoPrefetchLink'
 import React, { useEffect, useState } from 'react'
 import { IconAdjustmentsHorizontal, IconX, IconGift, IconUserCircle } from "@tabler/icons-react";
 import Language from './Language';
 import SideNav from './SideNav';
-import NavItem from './NavItem';
+import { naviTemData } from '@/public/data/navData';
 import { useAuth } from '@/contexts/AuthContext';
 import HeaderTwoChat from './HeaderTwoChat';
+import { usePathname } from 'next/navigation';
 
 export default function HeaderMain() {
     const [isCardExpanded, setIsCardExpanded] = useState(false);
     const [isMiddleExpanded, setIsMiddleExpanded] = useState(false);
     const { user, isAuthenticated, logout } = useAuth();
+    const path = usePathname();
 
     const toggleCard = () => {
         setIsCardExpanded(!isCardExpanded);
@@ -56,18 +58,22 @@ export default function HeaderMain() {
                     <div className={`collapse navbar-collapse justify-content-between  ${isCardExpanded ? "show" : "hide"}`} id="navbar-content">
                         <ul
                             className="navbar-nav2fixed navbar-nav d-flex align-items-lg-center gap-4 gap-sm-5  py-2 py-lg-0 align-self-center p2-bg">
-                            <NavItem />
+                            {naviTemData.map((navItemSingle) => (
+                                <li className="dropdown show-dropdown" key={navItemSingle.id}>
+                                    <NoPrefetchLink className={`navunik ${path == navItemSingle.href && 'active'}`} href={navItemSingle.href}>{navItemSingle.linkText}</NoPrefetchLink>
+                                </li>
+                            ))}
                             <li className="dropdown show-dropdown d-block d-sm-none">
                                 <div className="d-flex align-items-center flex-wrap gap-3">
                                     {isAuthenticated ? (
                                         <>
-                                            <Link href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Dashboard</Link>
+                                            <NoPrefetchLink href="/dashboard" className="cmn-btn second-alt px-xxl-11 rounded-2">Dashboard</NoPrefetchLink>
                                             <button onClick={handleLogout} className="cmn-btn px-xxl-11">Logout</button>
                                         </>
                                     ) : (
                                         <>
-                                            <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</Link>
-                                            <Link href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</Link>
+                                            <NoPrefetchLink href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</NoPrefetchLink>
+                                            <NoPrefetchLink href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</NoPrefetchLink>
                                         </>
                                     )}
                                 </div>
@@ -85,7 +91,7 @@ export default function HeaderMain() {
                                     <span className="fs-seven mb-1 d-block">Your balance</span>
                                     <span className="fw-bold d-block">${user?.wallet_balance?.toFixed(2) || '0.00'}</span>
                                 </div>
-                                <Link href="/dashboard" className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Dashboard</Link>
+                                <NoPrefetchLink href="/dashboard" className="cmn-btn px-xxl-6 d-none d-sm-block d-lg-none d-xxl-block">Dashboard</NoPrefetchLink>
                                 <div className="d-flex align-items-center gap-2 mt-1">
                                     <button type="button" className="py-1 px-2 n11-bg rounded-5 position-relative">
                                         <IconGift height={24} width={24} className="ti ti-gift fs-four" />
@@ -93,17 +99,17 @@ export default function HeaderMain() {
                                     </button>
                                     <div className="cart-area search-area d-flex">
                                         <HeaderTwoChat />
-                                        <Link href="/dashboard" className="py-1 px-2 n11-bg rounded-5 d-inline-flex align-items-center">
+                                        <NoPrefetchLink href="/dashboard" className="py-1 px-2 n11-bg rounded-5 d-inline-flex align-items-center">
                                             <IconUserCircle height={24} width={24} className="ti ti-user-circle fs-four" />
-                                        </Link>
+                                        </NoPrefetchLink>
                                     </div>
                                 </div>
                             </div>
                         ) : (
                             // Non-authenticated user UI
                             <>
-                                <Link href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</Link>
-                                <Link href="/create-acount" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</Link>
+                                <NoPrefetchLink href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</NoPrefetchLink>
+                                <NoPrefetchLink href="/create-acount" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</NoPrefetchLink>
                             </>
                         )}
                     </div>
@@ -116,10 +122,10 @@ export default function HeaderMain() {
                 <div id="div10" className="navigation left-nav-area box3  position-fixed">
                     <div
                         className="logo-area slide-toggle3 trader-list position-fixed top-0 d-flex align-items-center justify-content-center pt-6 pt-md-8 gap-sm-4 gap-md-5 gap-lg-7 px-4 px-lg-8">
-                        <Link className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
+                        <NoPrefetchLink className="navbar-brand d-center text-center gap-1 gap-lg-2 ms-lg-4" href="/">
                             <Image className="logo" width={32} height={34} src="/images/logo.png" alt="Logo" />
                             <Image className="logo d-none d-xl-block" width={64} height={24} src="/images/logo-text.png" alt="Logo" />
-                        </Link>
+                        </NoPrefetchLink>
                     </div>
                     <div className={`nav_aside px-5 p2-bg ${isMiddleExpanded ? "show" : "hide"}`}>
                         <div className="nav-clsoeicon d-flex justify-content-end">

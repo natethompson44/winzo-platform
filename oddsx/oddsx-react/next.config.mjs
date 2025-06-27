@@ -13,22 +13,27 @@ const nextConfig = {
     unoptimized: true,
   },
   
-  // 🚨 EMERGENCY FIX: Disable aggressive prefetching to stop 180+ request crisis
+  // 🚨 CRITICAL FIX: Comprehensive prefetch disabling
   experimental: {
     // Disable optimistic client cache that causes over-fetching
     optimisticClientCache: false,
-    // Disable server actions that trigger excessive RSC requests
-    serverActions: {
-      allowedOrigins: ['localhost:3000', 'winzo-platform.netlify.app']
-    },
+    // Force disable prefetch cache
+    clientRouterFilter: false,
   },
   
-  // 🚨 EMERGENCY FIX: Prefetching disabled on individual Link components
-  // This prevents all sports sections from being loaded simultaneously
+  // 🚨 CRITICAL FIX: Disable all automatic prefetching
+  compiler: {
+    // Remove prefetch hints from HTML
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
   
   // Environment variables
   env: {
     CUSTOM_KEY: 'winzo-platform',
+    // Disable Next.js prefetch behavior
+    NEXT_DISABLE_PREFETCH: 'true',
   },
   
   // WINZO branding
@@ -41,7 +46,7 @@ const nextConfig = {
   reactStrictMode: true,
   
   // Webpack configuration for path aliases
-  webpack: (config) => {
+  webpack: (config, { dev, isServer }) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': __dirname,
@@ -52,6 +57,28 @@ const nextConfig = {
       '@/services': path.join(__dirname, 'services'),
       '@/utils': path.join(__dirname, 'utils'),
     };
+    
+    // 🚨 CRITICAL FIX: Disable prefetch at webpack level
+    if (!isServer && !dev) {
+      config.optimization.splitChunks = {
+        ...config.optimization.splitChunks,
+        cacheGroups: {
+          ...config.optimization.splitChunks.cacheGroups,
+          // Prevent automatic chunking of route groups
+          default: false,
+          vendors: false,
+          // Only create chunks for explicit dynamic imports
+          common: {
+            name: 'common',
+            chunks: 'all',
+            minChunks: 2,
+            priority: 10,
+            enforce: true,
+          },
+        },
+      };
+    }
+    
     return config;
   },
   

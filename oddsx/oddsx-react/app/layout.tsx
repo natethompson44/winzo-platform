@@ -39,6 +39,10 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  other: {
+    'dns-prefetch-control': 'off',
+    'prefetch-control': 'none',
+  },
 };
 
 export const viewport: Viewport = {
@@ -54,6 +58,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta httpEquiv="x-dns-prefetch-control" content="off" />
+        <meta name="prefetch-control" content="none" />
+        <meta name="next-prefetch" content="false" />
+        
+        <meta name="next-router-prefetch" content="false" />
+        <meta name="next-link-prefetch" content="false" />
+        
+        <meta httpEquiv="Link" content="none" />
+      </head>
       <body className={inter.className}>
         <AuthProvider>
           <BetSlipProvider>
