@@ -67,13 +67,9 @@ export default function LogRegHeader() {
                     
                     <div className="right-area custom-pos position-relative d-flex gap-0 gap-lg-7 align-items-center me-5 me-xl-10">
                         <Language />
-                        <div className="d-flex gap-3 gap-xl-7 align-items-center">
+                        <div className="d-flex gap-3 gap-xl-7 align-items-center d-none d-sm-flex">
                             <NoPrefetchLink href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2">Log In</NoPrefetchLink>
                             <NoPrefetchLink href="/create-acount" className="cmn-btn px-xxl-11">Sign Up</NoPrefetchLink>
-                        </div>
-                        <div className="d-flex gap-3 gap-xl-7 align-items-center">
-                            <NoPrefetchLink href="/login" className="cmn-btn second-alt px-xxl-11 rounded-2 me-5 me-lg-0 d-none d-sm-block">Log In</NoPrefetchLink>
-                            <NoPrefetchLink href="/create-acount" className="cmn-btn d-none px-xxl-11 d-sm-block d-lg-none d-xl-block">Sign Up</NoPrefetchLink>
                         </div>
                     </div>
                     
