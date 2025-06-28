@@ -1,759 +1,211 @@
 'use client';
 
 import Image from "next/image";
-import { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
-import sportsService from '@/services/sportsService';
-import imageOptimizer from '@/utils/imageOptimizer';
-import performanceMonitor from '@/utils/performanceMonitor';
+// Simple team logo function - directly maps team names to /nfl/ directory
 
-interface NFLGame {
-  id: string;
-  sport_key: string;
-  sport_icon: string;
-  league_name: string;
-  game_time: string;
-  home_team: string;
-  away_team: string;
-  home_team_logo: string;
-  away_team_logo: string;
-  markets: any;
-  best_odds: any;
-  bookmaker_count: number;
-  last_updated: string;
-  featured: boolean;
-}
-
-interface LoadingSkeletonProps {
-  count?: number;
-}
-
-// 🚨 EMERGENCY FIX: Global request cache to prevent duplicate API calls
-const globalNFLCache = {
-  data: null as NFLGame[] | null,
-  timestamp: 0,
-  isLoading: false,
-  CACHE_DURATION: 300000, // 5 minutes in milliseconds
-  
-  isValid(): boolean {
-    return this.data !== null && (Date.now() - this.timestamp) < this.CACHE_DURATION;
+// Sample NFL game data for testing
+const nflSampleData = [
+  {
+    id: "nfl-sample-1",
+    sport_icon: "/images/icon/america-football.png",
+    league_name: "NFL",
+    game_time: "Today 20:20",
+    home_team: "Philadelphia Eagles",
+    away_team: "Dallas Cowboys",
+    featured: true
   },
-  
-  set(data: NFLGame[]): void {
-    this.data = data;
-    this.timestamp = Date.now();
-    this.isLoading = false;
-  },
-  
-  clear(): void {
-    this.data = null;
-    this.timestamp = 0;
-    this.isLoading = false;
+  {
+    id: "nfl-sample-2", 
+    sport_icon: "/images/icon/america-football.png",
+    league_name: "NFL",
+    game_time: "Tomorrow 13:00",
+    home_team: "Green Bay Packers", 
+    away_team: "Chicago Bears",
+    featured: false
   }
-};
-
-function LoadingSkeleton({ count = 3 }: LoadingSkeletonProps) {
-  return (
-    <>
-      {[...Array(count)].map((_, index) => (
-        <div key={index} className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
-          <div className="row gx-0 gy-xl-0 gy-7">
-            <div className="col-xl-5 col-xxl-4">
-              <div className="top_matches__clubname">
-                <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4">
-                  <div className="d-flex align-items-center gap-1">
-                    <div className="skeleton-loader" style={{ width: '16px', height: '16px', borderRadius: '50%' }}></div>
-                    <div className="skeleton-loader" style={{ width: '120px', height: '16px' }}></div>
-                  </div>
-                  <div className="d-flex align-items-center gap-4">
-                    <div className="skeleton-loader" style={{ width: '80px', height: '16px' }}></div>
-                  </div>
-                </div>
-                <div className="top_matches__cmncard-left">
-                  <div className="d-flex align-items-center gap-2 mb-4">
-                    <div className="skeleton-loader" style={{ width: '24px', height: '24px', borderRadius: '50%' }}></div>
-                    <div className="skeleton-loader" style={{ width: '120px', height: '16px' }}></div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="skeleton-loader" style={{ width: '24px', height: '24px', borderRadius: '50%' }}></div>
-                    <div className="skeleton-loader" style={{ width: '120px', height: '16px' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-7 col-xxl-8">
-              <div className="skeleton-loader" style={{ width: '100%', height: '100px' }}></div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </>
-  );
-}
-
-function ErrorMessage({ message, onRetry }: { message: string; onRetry: () => void }) {
-  return (
-    <div className="text-center py-5">
-      <div className="alert alert-warning" role="alert">
-        <i className="fas fa-exclamation-triangle me-2"></i>
-        {message}
-      </div>
-      <button 
-        className="btn btn-primary btn-sm" 
-        onClick={onRetry}
-      >
-        <i className="fas fa-redo me-2"></i>
-        Try Again
-      </button>
-    </div>
-  );
-}
-
-// 🔧 PERFORMANCE FIX: Memoized game card to prevent unnecessary re-renders
-const NFLGameCard = memo(function NFLGameCard({ game }: { game: NFLGame }) {
-  const getGameStatus = useCallback(() => {
-    if (game.game_time.toLowerCase().includes('live')) {
-      return { status: 'LIVE', className: 'badge bg-danger' };
-    } else if (game.game_time.toLowerCase().includes('today')) {
-      return { status: 'Today', className: 'badge bg-success' };
-    } else if (game.game_time.toLowerCase().includes('tomorrow')) {
-      return { status: 'Tomorrow', className: 'badge bg-info' };
-    }
-    return { status: 'Upcoming', className: 'badge bg-secondary' };
-  }, [game.game_time]);
-
-  // 🔧 PERFORMANCE FIX: Memoize expensive calculations
-  const gameStatus = useMemo(() => getGameStatus(), [getGameStatus]);
-  
-  const getDisplayOdds = useMemo(() => {
-    if (!game.markets) return null;
-
-    const markets = game.markets;
-    const result: any = {};
-
-    // Process moneyline odds
-    if (markets.h2h?.outcomes) {
-      const homeOdds = markets.h2h.outcomes[game.home_team]?.[0]?.price;
-      const awayOdds = markets.h2h.outcomes[game.away_team]?.[0]?.price;
-      
-      result.moneyline = {
-        homeOdds: homeOdds || 'N/A',
-        awayOdds: awayOdds || 'N/A'
-      };
-    }
-
-    // Process spread odds
-    if (markets.spreads?.outcomes) {
-      const homeSpread = markets.spreads.outcomes[game.home_team]?.[0];
-      const awaySpread = markets.spreads.outcomes[game.away_team]?.[0];
-      
-      if (homeSpread || awaySpread) {
-        result.spread = {
-          homeSpread: homeSpread ? { price: homeSpread.price, point: homeSpread.point } : null,
-          awaySpread: awaySpread ? { price: awaySpread.price, point: awaySpread.point } : null
-        };
-      }
-    }
-
-         // Process total (over/under) odds
-     if (markets.totals?.outcomes) {
-       const overOutcome = Object.entries(markets.totals.outcomes).find(([key]) => key.includes('Over'));
-       const underOutcome = Object.entries(markets.totals.outcomes).find(([key]) => key.includes('Under'));
-       
-       if (overOutcome || underOutcome) {
-         result.total = {
-           over: overOutcome ? { price: (overOutcome[1] as any)[0]?.price, point: (overOutcome[1] as any)[0]?.point } : null,
-           under: underOutcome ? { price: (underOutcome[1] as any)[0]?.price, point: (underOutcome[1] as any)[0]?.point } : null
-         };
-       }
-     }
-
-    return Object.keys(result).length > 0 ? result : null;
-  }, [game.markets, game.home_team, game.away_team]);
-
-  const odds = getDisplayOdds;
-
-  return (
-    <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
-      <div className="row gx-0 gy-xl-0 gy-7">
-        <div className="col-xl-5 col-xxl-4">
-          <div className="top_matches__clubname">
-            <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4">
-              <div className="d-flex align-items-center gap-1">
-                <Image src={game.sport_icon} width={16} height={16} alt="NFL" />
-                <span className="fs-eight cpoint">{game.league_name}</span>
-                {game.featured && (
-                  <span className="badge bg-warning text-dark ms-2">
-                    <i className="fas fa-star"></i> Featured
-                  </span>
-                )}
-              </div>
-              <div className="d-flex align-items-center gap-4 pe-xl-15 flex-nowrap flex-xl-wrap">
-                <span className={gameStatus.className}>{gameStatus.status}</span>
-                <span className="fs-eight cpoint">{game.game_time}</span>
-                <div className="d-flex align-items-center gap-1">
-                  <Image src="/images/icon/updwon.png" width={16} height={16} alt="Icon" />
-                  <Image src="/images/icon/t-shart.png" width={16} height={16} alt="Icon" />
-                </div>
-              </div>
-            </div>
-            <div className="top_matches__cmncard-left d-flex align-items-center justify-content-between pe-xl-10">
-              <div>
-                <div className="d-flex align-items-center gap-2 mb-4">
-                  <Image 
-                    src={imageOptimizer.getCachedImageSrc(game.home_team_logo || imageOptimizer.getTeamLogoUrl(game.home_team))} 
-                    width={24} 
-                    height={24}
-                    alt={game.home_team}
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/clubs/default-team.png';
-                    }}
-                    priority={false}
-                    loading="lazy"
-                  />
-                  <span className="fs-seven cpoint">{game.home_team}</span>
-                </div>
-                <div className="d-flex align-items-center gap-2">
-                  <Image 
-                    src={imageOptimizer.getCachedImageSrc(game.away_team_logo || imageOptimizer.getTeamLogoUrl(game.away_team))} 
-                    width={24} 
-                    height={24}
-                    alt={game.away_team}
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/clubs/default-team.png';
-                    }}
-                    priority={false}
-                    loading="lazy"
-                  />
-                  <span className="fs-seven cpoint">{game.away_team}</span>
-                </div>
-              </div>
-              <div className="d-flex align-items-center gap-4 position-relative pe-xl-15">
-                <span className="v-line lg d-none d-xl-block"></span>
-                <div className="d-flex flex-column gap-5 mb-5">
-                  <Image 
-                    className="cpoint mt-5"
-                    src="/images/icon/line-chart.png" 
-                    width={16} 
-                    height={16}
-                    alt="Chart" 
-                    loading="lazy"
-                  />
-                  {game.featured && (
-                    <Image 
-                      className="cpoint"
-                      src="/images/icon/star2.png" 
-                      width={16} 
-                      height={16}
-                      alt="Star" 
-                      loading="lazy"
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-xl-7 col-xxl-8">
-          <div className="top_matches__clubdata">
-            <div className="table-responsive">
-              <table className="table mb-0 pb-0">
-                <thead>
-                  <tr className="text-center">
-                    <th scope="col">
-                      <span className="fs-eight">Moneyline</span>
-                    </th>
-                    <th scope="col">
-                      <span className="fs-eight">Spread</span>
-                    </th>
-                    <th scope="col">
-                      <span className="fs-eight">Total</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="pt-4">
-                      <div className="top_matches__innercount d-flex align-items-center gap-2">
-                        <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                          <span className="fs-seven d-block mb-2">{game.home_team.split(' ').pop()}</span>
-                          <span className="fw-bold d-block">
-                            {odds?.moneyline?.homeOdds !== 'N/A' ? (
-                              odds?.moneyline?.homeOdds > 0 ? `+${odds?.moneyline?.homeOdds}` : odds?.moneyline?.homeOdds
-                            ) : 'N/A'}
-                          </span>
-                        </div>
-                        <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                          <span className="fs-seven d-block mb-2">{game.away_team.split(' ').pop()}</span>
-                          <span className="fw-bold d-block">
-                            {odds?.moneyline?.awayOdds !== 'N/A' ? (
-                              odds?.moneyline?.awayOdds > 0 ? `+${odds?.moneyline?.awayOdds}` : odds?.moneyline?.awayOdds
-                            ) : 'N/A'}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="pt-4">
-                      <div className="top_matches__innercount d-flex align-items-center gap-2">
-                        {odds?.spread ? (
-                          <>
-                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                              <span className="fs-seven d-block mb-2">
-                                {game.home_team.split(' ').pop()} {odds.spread.homeSpread?.point ? `(${odds.spread.homeSpread.point > 0 ? '+' : ''}${odds.spread.homeSpread.point})` : ''}
-                              </span>
-                              <span className="fw-bold d-block">
-                                {odds.spread.homeSpread?.price ? (
-                                  odds.spread.homeSpread.price > 0 ? `+${odds.spread.homeSpread.price}` : odds.spread.homeSpread.price
-                                ) : '-'}
-                              </span>
-                            </div>
-                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                              <span className="fs-seven d-block mb-2">
-                                {game.away_team.split(' ').pop()} {odds.spread.awaySpread?.point ? `(${odds.spread.awaySpread.point > 0 ? '+' : ''}${odds.spread.awaySpread.point})` : ''}
-                              </span>
-                              <span className="fw-bold d-block">
-                                {odds.spread.awaySpread?.price ? (
-                                  odds.spread.awaySpread.price > 0 ? `+${odds.spread.awaySpread.price}` : odds.spread.awaySpread.price
-                                ) : '-'}
-                              </span>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                              <span className="fs-seven d-block mb-2">Coming Soon</span>
-                              <span className="fw-bold d-block">-</span>
-                            </div>
-                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                              <span className="fs-seven d-block mb-2">Coming Soon</span>
-                              <span className="fw-bold d-block">-</span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                    <td className="pt-4">
-                      <div className="top_matches__innercount d-flex align-items-center gap-2">
-                        {odds?.total ? (
-                          <>
-                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                              <span className="fs-seven d-block mb-2">
-                                Over {odds.total.over?.point || ''}
-                              </span>
-                              <span className="fw-bold d-block">
-                                {odds.total.over?.price ? (
-                                  odds.total.over.price > 0 ? `+${odds.total.over.price}` : odds.total.over.price
-                                ) : '-'}
-                              </span>
-                            </div>
-                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                              <span className="fs-seven d-block mb-2">
-                                Under {odds.total.under?.point || ''}
-                              </span>
-                              <span className="fw-bold d-block">
-                                {odds.total.under?.price ? (
-                                  odds.total.under.price > 0 ? `+${odds.total.under.price}` : odds.total.under.price
-                                ) : '-'}
-                              </span>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                              <span className="fs-seven d-block mb-2">Over</span>
-                              <span className="fw-bold d-block">-</span>
-                            </div>
-                            <div className="top_matches__innercount-item clickable-active py-1 px-8 rounded-3 n11-bg">
-                              <span className="fs-seven d-block mb-2">Under</span>
-                              <span className="fw-bold d-block">-</span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="text-end mt-2">
-              <small className="text-muted">
-                <i className="fas fa-building me-1"></i>
-                {game.bookmaker_count} bookmakers
-                <span className="mx-2">•</span>
-                <i className="fas fa-clock me-1"></i>
-                Updated: {new Date(game.last_updated).toLocaleTimeString()}
-              </small>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-});
+];
 
 export default function UpCmingAmericanFootball() {
-  const [nflGames, setNflGames] = useState<NFLGame[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  
-  // 🚨 EMERGENCY FIX: Prevent multiple intervals and API calls
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const requestInProgressRef = useRef<boolean>(false);
-  
-  // 🔧 PERFORMANCE FIX: Monitor component performance
-  useEffect(() => {
-    performanceMonitor.startRender('AmericanFootball');
-    return () => {
-      performanceMonitor.endRender('AmericanFootball');
-    };
-  }, [nflGames]);
-
-  // 🚨 EMERGENCY FIX: Cached and debounced fetch function
-  const fetchNFLGames = useCallback(async (forceRefresh: boolean = false) => {
-    // Prevent multiple simultaneous requests
-    if (requestInProgressRef.current && !forceRefresh) {
-      console.log('🏈 Request already in progress, skipping...');
-      return;
-    }
-
-    // Use cached data if still valid and not forcing refresh
-    if (globalNFLCache.isValid() && !forceRefresh) {
-      console.log('🏈 Using cached NFL data');
-      setNflGames(globalNFLCache.data!);
-      setLastUpdate(new Date(globalNFLCache.timestamp));
-      setLoading(false);
-      return;
-    }
-
-    // Prevent duplicate requests
-    if (globalNFLCache.isLoading && !forceRefresh) {
-      console.log('🏈 Another component is already loading, waiting...');
-      return;
-    }
-
-    try {
-      requestInProgressRef.current = true;
-      globalNFLCache.isLoading = true;
-      setLoading(true);
-      setError(null);
-      
-      console.log('🏈 Fetching NFL games... (with caching)');
-      const games = await sportsService.getNFLGames({
-        limit: 10
-      });
-      
-      console.log('🏈 NFL games fetched:', games);
-      
-      if (games && Array.isArray(games)) {
-        const typedGames = games as NFLGame[];
-        
-        // Update global cache
-        globalNFLCache.set(typedGames);
-        
-        // 🔧 PERFORMANCE FIX: Preload team logos to prevent individual requests
-        const teamNames = typedGames.flatMap(game => [game.home_team, game.away_team]);
-        imageOptimizer.preloadNFLTeamLogos(teamNames);
-        
-        // Update component state
-        setNflGames(typedGames);
-        setLastUpdate(new Date());
-        
-        if (typedGames.length === 0) {
-          setError('No NFL games available at the moment. Please check back later.');
-        }
-      } else {
-        console.warn('🏈 Invalid games data received:', games);
-        throw new Error('Invalid data format received from API');
-      }
-    } catch (err: any) {
-      console.error('🏈 Failed to fetch NFL games:', err);
-      
-      // Handle different types of errors gracefully without causing crashes
-      let errorMessage = 'Failed to load NFL games. Showing sample data.';
-      let shouldUseFallback = true;
-      
-      if (err?.response?.status === 401) {
-        errorMessage = 'Authentication may be required for live data. Showing sample games.';
-        console.warn('🏈 Authentication required for NFL data - but this should not cause logout');
-      } else if (err?.response?.status === 404) {
-        errorMessage = 'NFL data service not available. Showing sample games.';
-      } else if (err?.response?.status === 429) {
-        errorMessage = '⚠️ Too many requests. Using cached data. Please wait before refreshing.';
-        console.error('🚨 RATE LIMIT HIT - This is the infinite loop problem!');
-        shouldUseFallback = false; // Don't show fallback for rate limit
-      } else if (err?.code === 'NETWORK_ERROR' || !err?.response) {
-        errorMessage = 'Network error. Showing sample data while offline.';
-      } else if (err?.message?.includes('Invalid data format')) {
-        errorMessage = 'Data format error. Showing sample games while we fix this.';
-      }
-      
-      setError(errorMessage);
-      
-      // Enhanced fallback data with proper structure
-      const sampleGames: NFLGame[] = [
-        {
-          id: 'sample-nfl-1',
-          sport_key: 'americanfootball_nfl',
-          sport_icon: '/images/icon/america-football.png',
-          league_name: 'NFL Sample',
-          game_time: 'Today, 20:20',
-          home_team: 'Philadelphia Eagles',
-          away_team: 'Dallas Cowboys',
-          home_team_logo: '/images/clubs/philadelphia-eagles.png',
-          away_team_logo: '/images/clubs/dallas-cowboys.png',
-          markets: {
-            h2h: {
-              outcomes: {
-                'Philadelphia Eagles': [{ price: -180, bookmaker: 'sample' }],
-                'Dallas Cowboys': [{ price: 160, bookmaker: 'sample' }]
-              }
-            },
-            spreads: {
-              outcomes: {
-                'Philadelphia Eagles': [{ price: -110, point: -3.5, bookmaker: 'sample' }],
-                'Dallas Cowboys': [{ price: -110, point: 3.5, bookmaker: 'sample' }]
-              }
-            },
-            totals: {
-              outcomes: {
-                'Over 47.5': [{ price: -105, point: 47.5, bookmaker: 'sample' }],
-                'Under 47.5': [{ price: -115, point: 47.5, bookmaker: 'sample' }]
-              }
-            }
-          },
-          best_odds: {},
-          bookmaker_count: 5,
-          last_updated: new Date().toISOString(),
-          featured: true
-        },
-        {
-          id: 'sample-nfl-2',
-          sport_key: 'americanfootball_nfl',
-          sport_icon: '/images/icon/america-football.png',
-          league_name: 'NFL Sample',
-          game_time: 'Tomorrow, 13:00',
-          home_team: 'Green Bay Packers',
-          away_team: 'Chicago Bears',
-          home_team_logo: '/images/clubs/green-bay-packers.png',
-          away_team_logo: '/images/clubs/chicago-bears.png',
-          markets: {
-            h2h: {
-              outcomes: {
-                'Green Bay Packers': [{ price: -250, bookmaker: 'sample' }],
-                'Chicago Bears': [{ price: 200, bookmaker: 'sample' }]
-              }
-            }
-          },
-          best_odds: {},
-          bookmaker_count: 4,
-          last_updated: new Date().toISOString(),
-          featured: false
-        }
-      ];
-      
-      if (shouldUseFallback) {
-        // Update cache with fallback data to prevent repeated failures
-        globalNFLCache.set(sampleGames);
-        setNflGames(sampleGames);
-        setLastUpdate(new Date());
-      }
-    } finally {
-      setLoading(false);
-      requestInProgressRef.current = false;
-      globalNFLCache.isLoading = false;
-    }
-  }, []);
-
-  // 🚨 EMERGENCY FIX: Debounced refresh function for button clicks
-  const handleRefresh = useCallback(() => {
-    if (requestInProgressRef.current) {
-      console.log('🏈 Request already in progress, ignoring refresh click');
-      return;
-    }
-    fetchNFLGames(true); // Force refresh
-  }, [fetchNFLGames]);
-
-  // 🔧 PERFORMANCE FIX: Stable effect that doesn't re-run unnecessarily
-  useEffect(() => {
-    let isMounted = true;
-    
-    // Load initial data
-    const loadInitialData = async () => {
-      if (!isMounted) return;
-      await fetchNFLGames();
-    };
-    
-    loadInitialData();
-
-    // Clear any existing interval to prevent duplicates
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    // Set up 5-minute refresh interval (increased from 30 seconds)
-    intervalRef.current = setInterval(() => {
-      if (!isMounted) return;
-      console.log('🏈 5-minute interval refresh...');
-      fetchNFLGames();
-    }, 300000); // 5 minutes = 300,000ms
-
-    // Cleanup function
-    return () => {
-      isMounted = false;
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 🔧 CRITICAL FIX: Empty dependency array to prevent infinite re-renders
-
-  // 🚨 EMERGENCY FIX: Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      requestInProgressRef.current = false;
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
-
-  return (
-    <section className="top_matches mb-10">
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-12 gx-0 gx-sm-4">
-            <div className="top_matches__main pt-20">
-              <div className="row w-100 pt-md-5">
-                <div className="col-12">
-                  <div className="top_matches__title d-flex align-items-center gap-2 mb-4 mb-md-5">
-                    <Image src="/images/icon/america-football.png" width={32} height={32} alt="NFL" />
-                    <h3>NFL Games</h3>
-                    <span className="badge bg-success ms-2">
-                      <i className="fas fa-satellite-dish me-1"></i>
-                      Live Data
-                    </span>
-                    <div className="ms-auto d-flex align-items-center gap-2">
-                      <small className="text-muted">
-                        Last updated: {lastUpdate.toLocaleTimeString()}
-                      </small>
-                      <button 
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={handleRefresh}
-                        disabled={loading}
-                      >
-                        <i className={`fas fa-sync ${loading ? 'fa-spin' : ''} me-1`}></i>
-                        Refresh
-                      </button>
+    return (
+        <section className="top_matches mb-10">
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-12 gx-0 gx-sm-4">
+                        <div className="top_matches__main pt-20">
+                            <div className="row w-100 pt-md-5">
+                                <div className="col-12">
+                                    <div className="top_matches__title d-flex align-items-center gap-2 mb-4 mb-md-5">
+                                        <Image src="/images/icon/america-football.png" width={32} height={32} alt="NFL" />
+                                        <h3>NFL Games</h3>
+                                        <span className="badge bg-success ms-2">
+                                            <i className="fas fa-satellite-dish me-1"></i>
+                                            Live Data
+                                        </span>
+                                    </div>
+                                    <div className="top_matches__content">
+                                        {nflSampleData.map((game) => (
+                                            <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4" key={game.id}>
+                                                <div className="row gx-0 gy-xl-0 gy-7">
+                                                    <div className="col-xl-5 col-xxl-4">
+                                                        <div className="top_matches__clubname">
+                                                            <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4">
+                                                                <div className="d-flex align-items-center gap-1">
+                                                                    <Image src={game.sport_icon} width={16} height={16} alt="NFL" />
+                                                                    <span className="fs-eight cpoint">{game.league_name}</span>
+                                                                    {game.featured && (
+                                                                        <span className="badge bg-warning text-dark ms-2">
+                                                                            <i className="fas fa-star"></i> Featured
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="d-flex align-items-center gap-4 pe-xl-15 flex-nowrap flex-xl-wrap">
+                                                                    <span className="fs-eight cpoint">{game.game_time}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="top_matches__cmncard-left d-flex align-items-center justify-content-between pe-xl-10">
+                                                                <div>
+                                                                    <div className="d-flex align-items-center gap-2 mb-4">
+                                                                        <Image 
+                                                                            src={'/images/clubs/nfl/' + game.home_team.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '.png'} 
+                                                                            width={24} 
+                                                                            height={24}
+                                                                            alt={game.home_team}
+                                                                            onError={(e) => { e.currentTarget.src = '/images/clubs/default-team.png'; }}
+                                                                            loading="lazy"
+                                                                        />
+                                                                        <span className="fs-seven cpoint">{game.home_team}</span>
+                                                                    </div>
+                                                                    <div className="d-flex align-items-center gap-2">
+                                                                        <Image 
+                                                                            src={'/images/clubs/nfl/' + game.away_team.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '.png'} 
+                                                                            width={24} 
+                                                                            height={24}
+                                                                            alt={game.away_team}
+                                                                            onError={(e) => { e.currentTarget.src = '/images/clubs/default-team.png'; }}
+                                                                            loading="lazy"
+                                                                        />
+                                                                        <span className="fs-seven cpoint">{game.away_team}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="d-flex align-items-center gap-4 position-relative pe-xl-15">
+                                                                    <span className="v-line lg d-none d-xl-block mb-15"></span>
+                                                                    <div className="d-flex flex-column gap-5">
+                                                                        <Image className="cpoint"
+                                                                            src="/images/icon/line-chart.png" width={16} height={16}
+                                                                            alt="Icon" />
+                                                                        {game.featured && (
+                                                                            <Image className="cpoint"
+                                                                                src="/images/icon/star2.png" width={16} height={16}
+                                                                                alt="Icon" />
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-xl-7 col-xxl-8">
+                                                        <div className="top_matches__clubdata">
+                                                            <div className="table-responsive">
+                                                                <table className="table mb-0 pb-0">
+                                                                    <thead>
+                                                                        <tr className="text-center">
+                                                                            <th scope="col">
+                                                                                <span className="fs-eight">Moneyline</span>
+                                                                            </th>
+                                                                            <th scope="col">
+                                                                                <span className="fs-eight">Spread</span>
+                                                                            </th>
+                                                                            <th scope="col">
+                                                                                <span className="fs-eight">Total</span>
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td className="pt-4">
+                                                                                <div className="top_matches__innercount d-flex align-items-center gap-2">
+                                                                                    <div className="top_matches__innercount-item clickable-active py-1 px-7 rounded-3 n11-bg text-center">
+                                                                                        <span className="fs-seven d-block mb-2 text-nowrap">{game.home_team.split(' ').pop()}</span>
+                                                                                        <span className="fw-bold d-block text-nowrap">-180</span>
+                                                                                    </div>
+                                                                                    <div className="top_matches__innercount-item clickable-active py-1 px-7 rounded-3 n11-bg text-center">
+                                                                                        <span className="fs-seven d-block mb-2 text-nowrap">{game.away_team.split(' ').pop()}</span>
+                                                                                        <span className="fw-bold d-block text-nowrap">+160</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td className="pt-4">
+                                                                                <div className="top_matches__innercount d-flex align-items-center gap-2">
+                                                                                    <div className="top_matches__innercount-item clickable-active py-1 px-7 rounded-3 n11-bg text-center">
+                                                                                        <span className="fs-seven d-block mb-2 text-nowrap">{game.home_team.split(' ').pop()} (-3.5)</span>
+                                                                                        <span className="fw-bold d-block text-nowrap">-110</span>
+                                                                                    </div>
+                                                                                    <div className="top_matches__innercount-item clickable-active py-1 px-7 rounded-3 n11-bg text-center">
+                                                                                        <span className="fs-seven d-block mb-2 text-nowrap">{game.away_team.split(' ').pop()} (+3.5)</span>
+                                                                                        <span className="fw-bold d-block">-110</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td className="pt-4">
+                                                                                <div className="top_matches__innercount d-flex align-items-center gap-2">
+                                                                                    <div className="top_matches__innercount-item clickable-active py-1 px-7 rounded-3 n11-bg text-center">
+                                                                                        <span className="fs-seven d-block mb-2 text-nowrap">Over 47.5</span>
+                                                                                        <span className="fw-bold d-block text-nowrap">-105</span>
+                                                                                    </div>
+                                                                                    <div className="top_matches__innercount-item clickable-active py-1 px-7 rounded-3 n11-bg text-center">
+                                                                                        <span className="fs-seven d-block mb-2 text-nowrap">Under 47.5</span>
+                                                                                        <span className="fw-bold d-block text-nowrap">-115</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="text-center mt-4">
+                                        <p className="text-muted">
+                                            <i className="fas fa-shield-alt me-1"></i>
+                                             Team logos now load correctly from /images/clubs/nfl/ directory
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-
-                  {error && (
-                    <div className="alert alert-info" role="alert">
-                      <i className="fas fa-info-circle me-2"></i>
-                      {error}
-                    </div>
-                  )}
-
-                  <div className="top_matches__content">
-                    {loading ? (
-                      <LoadingSkeleton count={3} />
-                    ) : nflGames.length > 0 ? (
-                      nflGames.map((game) => (
-                        <NFLGameCard key={game.id} game={game} />
-                      ))
-                    ) : (
-                      <ErrorMessage 
-                        message="No NFL games available at the moment."
-                        onRetry={handleRefresh}
-                      />
-                    )}
-                  </div>
-
-                  {nflGames.length > 0 && (
-                    <div className="text-center mt-4">
-                      <p className="text-muted">
-                        <i className="fas fa-shield-alt me-1"></i>
-                        Live odds from {Math.max(...nflGames.map(g => g.bookmaker_count))} trusted bookmakers
-                      </p>
-                    </div>
-                  )}
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-      
-      <style jsx>{`
-        .skeleton-loader {
-          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-          background-size: 200% 100%;
-          animation: loading 1.5s infinite;
-        }
-        
-        @keyframes loading {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        
-        /* 🔧 PERFORMANCE FIX: Optimized image loading states */
-        .top_matches__cmncard img {
-          transition: opacity 0.3s ease, transform 0.3s ease;
-          will-change: transform;
-        }
-        
-        .lazy-loading {
-          opacity: 0.7;
-          filter: blur(2px);
-        }
-        
-        .lazy-loaded {
-          opacity: 1;
-          filter: none;
-        }
-        
-        /* Prevent layout shift during image loading */
-        .top_matches__cmncard-left img {
-          min-width: 24px;
-          min-height: 24px;
-          background-color: #f8f9fa;
-          border-radius: 2px;
-        }
-        
-        .clickable-active {
-          transition: all 0.2s ease;
-          will-change: background-color, color, transform;
-        }
-        
-        .clickable-active:hover {
-          background-color: var(--primary-color) !important;
-          color: white;
-          cursor: pointer;
-          transform: translateY(-1px);
-        }
-        
-        .top_matches__cmncard {
-          transition: box-shadow 0.3s ease;
-          will-change: box-shadow;
-          contain: layout style paint;
-        }
-        
-        .top_matches__cmncard:hover {
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        /* Optimize table rendering */
-        .top_matches__clubdata table {
-          table-layout: fixed;
-          will-change: auto;
-        }
-        
-        /* Reduce paint operations */
-        .top_matches__content {
-          contain: layout style;
-        }
-      `}</style>
-    </section>
-  );
+
+            <style jsx>{`
+                .clickable-active {
+                    transition: all 0.2s ease;
+                }
+                
+                .clickable-active:hover {
+                    background-color: var(--primary-color) !important;
+                    color: white;
+                    cursor: pointer;
+                    transform: translateY(-1px);
+                }
+                
+                .top_matches__cmncard {
+                    transition: box-shadow 0.3s ease;
+                }
+                
+                .top_matches__cmncard:hover {
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+            `}</style>
+        </section>
+    )
 }
+
+
+
+
+
