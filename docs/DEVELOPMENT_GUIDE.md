@@ -1181,4 +1181,38 @@ ODDS_API_CACHE_DURATION_SCORES=60     # 1 minute
 - **Performance**: Faster user experience with cached data
 - **Scalability**: Platform can handle more concurrent users
 
-*This guide is a living document. For the latest updates, check the repository's development documentation.* 
+*This guide is a living document. For the latest updates, check the repository's development documentation.*
+
+## 🕐 Timezone Configuration
+
+**Default Timezone: CDT (Central Daylight Time)**
+
+All game times are displayed in Central Daylight Time (CDT) for consistency with major US sports scheduling.
+
+### Time Display Format
+- **Today**: "Today, 7:20 PM CDT"  
+- **Tomorrow**: "Tomorrow, 8:00 PM CDT"
+- **Future**: "Sep 4, 7:20 PM CDT"
+- **Live Games**: "Live"
+
+### Backend Implementation
+Game times are converted to CDT in `winzo-backend/src/services/OddsDataTransformer.js`:
+
+```javascript
+static formatGameTime(commenceTime) {
+  const timeFormatOptions = { 
+    timeZone: 'America/Chicago',  // CDT timezone
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true
+  };
+  
+  // Always display with "CDT" suffix for clarity
+  return `Today, ${timeStr} CDT`;
+}
+```
+
+### Frontend Display
+Times are displayed consistently across all sports pages using the formatted time from the API.
+
+**Example Fix**: Eagles vs Cowboys game showing "Sep 5, 12:20 AM" is now correctly displayed as "Sep 4, 7:20 PM CDT" 

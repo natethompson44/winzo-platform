@@ -248,33 +248,49 @@ class OddsDataTransformer {
   }
 
   /**
-   * Format game time for display
+   * Format game time for display in CDT (Central Daylight Time)
+   * Fixed: All game times now display in CDT as requested
    */
   static formatGameTime(commenceTime) {
     const gameTime = new Date(commenceTime);
     const now = new Date();
-    const diffMs = gameTime - now;
+    
+    // Convert both times to CDT for consistent comparison
+    const cdtOptions = { timeZone: 'America/Chicago' };
+    const gameTimeCDT = new Date(gameTime.toLocaleString('en-US', cdtOptions));
+    const nowCDT = new Date(now.toLocaleString('en-US', cdtOptions));
+    
+    const diffMs = gameTimeCDT - nowCDT;
     const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+
+    // Format options for CDT display
+    const timeFormatOptions = { 
+      timeZone: 'America/Chicago',
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true
+    };
+
+    const dateTimeFormatOptions = { 
+      timeZone: 'America/Chicago',
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true
+    };
 
     if (diffHours < 0) {
       return 'Live';
     } else if (diffHours < 24) {
-      return `Today, ${gameTime.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      })}`;
+      const timeStr = gameTime.toLocaleTimeString('en-US', timeFormatOptions);
+      return `Today, ${timeStr} CDT`;
     } else if (diffHours < 48) {
-      return `Tomorrow, ${gameTime.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      })}`;
+      const timeStr = gameTime.toLocaleTimeString('en-US', timeFormatOptions);
+      return `Tomorrow, ${timeStr} CDT`;
     } else {
-      return gameTime.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric',
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
+      const dateTimeStr = gameTime.toLocaleDateString('en-US', dateTimeFormatOptions);
+      return `${dateTimeStr} CDT`;
     }
   }
 

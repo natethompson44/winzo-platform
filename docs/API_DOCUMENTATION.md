@@ -383,7 +383,7 @@ GET /api/sports/soccer/games
       "sport_key": "soccer_epl",
       "sport_icon": "/images/icon/soccer-icon.png",
       "league_name": "Premier League",
-      "game_time": "Tomorrow, 15:00",
+      "game_time": "Tomorrow, 3:00 PM CDT",
       "home_team": "Manchester United",
       "away_team": "Liverpool",
       "home_team_logo": "/images/icon/man-utd.png",
