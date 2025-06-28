@@ -10,7 +10,22 @@ const nextConfig = {
   output: 'export',
   trailingSlash: true,
   images: {
-    unoptimized: true,
+    unoptimized: true, // Required for static export
+    // 🔧 PERFORMANCE FIX: Image optimization for static export
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    domains: [
+      'localhost',
+      'winzo-platform-production.up.railway.app',
+      'winzo-platform.netlify.app'
+    ],
+    // Preload critical images
+    loader: 'default',
+    path: '/_next/image',
   },
   
   // 🚨 CRITICAL FIX: Comprehensive prefetch disabling

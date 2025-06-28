@@ -1,8 +1,10 @@
 'use client';
 
 import Image from "next/image";
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
 import sportsService from '@/services/sportsService';
+import imageOptimizer from '@/utils/imageOptimizer';
+import performanceMonitor from '@/utils/performanceMonitor';
 
 interface NFLGame {
   id: string;
@@ -106,8 +108,9 @@ function ErrorMessage({ message, onRetry }: { message: string; onRetry: () => vo
   );
 }
 
-function NFLGameCard({ game }: { game: NFLGame }) {
-  const getGameStatus = () => {
+// 🔧 PERFORMANCE FIX: Memoized game card to prevent unnecessary re-renders
+const NFLGameCard = memo(function NFLGameCard({ game }: { game: NFLGame }) {
+  const getGameStatus = useCallback(() => {
     if (game.game_time.toLowerCase().includes('live')) {
       return { status: 'LIVE', className: 'badge bg-danger' };
     } else if (game.game_time.toLowerCase().includes('today')) {
@@ -116,44 +119,58 @@ function NFLGameCard({ game }: { game: NFLGame }) {
       return { status: 'Tomorrow', className: 'badge bg-info' };
     }
     return { status: 'Upcoming', className: 'badge bg-secondary' };
-  };
+  }, [game.game_time]);
 
-  const gameStatus = getGameStatus();
+  // 🔧 PERFORMANCE FIX: Memoize expensive calculations
+  const gameStatus = useMemo(() => getGameStatus(), [getGameStatus]);
+  
+  const getDisplayOdds = useMemo(() => {
+    if (!game.markets) return null;
 
-  // Extract odds data for display (enhanced with spreads and totals)
-  const getDisplayOdds = () => {
-    const markets = game.markets || {};
-    const homeTeam = game.home_team;
-    const awayTeam = game.away_team;
-    
-    // Moneyline odds
-    const moneyline = markets.h2h?.outcomes ? {
-      homeOdds: markets.h2h.outcomes[homeTeam]?.[0]?.price || 'N/A',
-      awayOdds: markets.h2h.outcomes[awayTeam]?.[0]?.price || 'N/A'
-    } : null;
-    
-    // Spread odds
-    const spread = markets.spreads?.outcomes ? {
-      homeSpread: markets.spreads.outcomes[homeTeam]?.[0] || null,
-      awaySpread: markets.spreads.outcomes[awayTeam]?.[0] || null
-    } : null;
-    
-    // Total odds
-    const total = markets.totals?.outcomes ? {
-      over: (() => {
-        const overKey = Object.keys(markets.totals.outcomes).find(key => key.toLowerCase().includes('over'));
-        return overKey ? markets.totals.outcomes[overKey]?.[0] : null;
-      })(),
-      under: (() => {
-        const underKey = Object.keys(markets.totals.outcomes).find(key => key.toLowerCase().includes('under'));
-        return underKey ? markets.totals.outcomes[underKey]?.[0] : null;
-      })()
-    } : null;
-    
-    return { moneyline, spread, total };
-  };
+    const markets = game.markets;
+    const result: any = {};
 
-  const odds = getDisplayOdds();
+    // Process moneyline odds
+    if (markets.h2h?.outcomes) {
+      const homeOdds = markets.h2h.outcomes[game.home_team]?.[0]?.price;
+      const awayOdds = markets.h2h.outcomes[game.away_team]?.[0]?.price;
+      
+      result.moneyline = {
+        homeOdds: homeOdds || 'N/A',
+        awayOdds: awayOdds || 'N/A'
+      };
+    }
+
+    // Process spread odds
+    if (markets.spreads?.outcomes) {
+      const homeSpread = markets.spreads.outcomes[game.home_team]?.[0];
+      const awaySpread = markets.spreads.outcomes[game.away_team]?.[0];
+      
+      if (homeSpread || awaySpread) {
+        result.spread = {
+          homeSpread: homeSpread ? { price: homeSpread.price, point: homeSpread.point } : null,
+          awaySpread: awaySpread ? { price: awaySpread.price, point: awaySpread.point } : null
+        };
+      }
+    }
+
+         // Process total (over/under) odds
+     if (markets.totals?.outcomes) {
+       const overOutcome = Object.entries(markets.totals.outcomes).find(([key]) => key.includes('Over'));
+       const underOutcome = Object.entries(markets.totals.outcomes).find(([key]) => key.includes('Under'));
+       
+       if (overOutcome || underOutcome) {
+         result.total = {
+           over: overOutcome ? { price: (overOutcome[1] as any)[0]?.price, point: (overOutcome[1] as any)[0]?.point } : null,
+           under: underOutcome ? { price: (underOutcome[1] as any)[0]?.price, point: (underOutcome[1] as any)[0]?.point } : null
+         };
+       }
+     }
+
+    return Object.keys(result).length > 0 ? result : null;
+  }, [game.markets, game.home_team, game.away_team]);
+
+  const odds = getDisplayOdds;
 
   return (
     <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
@@ -183,25 +200,29 @@ function NFLGameCard({ game }: { game: NFLGame }) {
               <div>
                 <div className="d-flex align-items-center gap-2 mb-4">
                   <Image 
-                    src={game.home_team_logo} 
+                    src={imageOptimizer.getCachedImageSrc(game.home_team_logo || imageOptimizer.getTeamLogoUrl(game.home_team))} 
                     width={24} 
                     height={24}
                     alt={game.home_team}
                     onError={(e) => {
                       e.currentTarget.src = '/images/clubs/default-team.png';
                     }}
+                    priority={false}
+                    loading="lazy"
                   />
                   <span className="fs-seven cpoint">{game.home_team}</span>
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <Image 
-                    src={game.away_team_logo} 
+                    src={imageOptimizer.getCachedImageSrc(game.away_team_logo || imageOptimizer.getTeamLogoUrl(game.away_team))} 
                     width={24} 
                     height={24}
                     alt={game.away_team}
                     onError={(e) => {
                       e.currentTarget.src = '/images/clubs/default-team.png';
                     }}
+                    priority={false}
+                    loading="lazy"
                   />
                   <span className="fs-seven cpoint">{game.away_team}</span>
                 </div>
@@ -215,6 +236,7 @@ function NFLGameCard({ game }: { game: NFLGame }) {
                     width={16} 
                     height={16}
                     alt="Chart" 
+                    loading="lazy"
                   />
                   {game.featured && (
                     <Image 
@@ -223,6 +245,7 @@ function NFLGameCard({ game }: { game: NFLGame }) {
                       width={16} 
                       height={16}
                       alt="Star" 
+                      loading="lazy"
                     />
                   )}
                 </div>
@@ -365,7 +388,7 @@ function NFLGameCard({ game }: { game: NFLGame }) {
       </div>
     </div>
   );
-}
+});
 
 export default function UpCmingAmericanFootball() {
   const [nflGames, setNflGames] = useState<NFLGame[]>([]);
@@ -376,6 +399,14 @@ export default function UpCmingAmericanFootball() {
   // 🚨 EMERGENCY FIX: Prevent multiple intervals and API calls
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const requestInProgressRef = useRef<boolean>(false);
+  
+  // 🔧 PERFORMANCE FIX: Monitor component performance
+  useEffect(() => {
+    performanceMonitor.startRender('AmericanFootball');
+    return () => {
+      performanceMonitor.endRender('AmericanFootball');
+    };
+  }, [nflGames]);
 
   // 🚨 EMERGENCY FIX: Cached and debounced fetch function
   const fetchNFLGames = useCallback(async (forceRefresh: boolean = false) => {
@@ -418,6 +449,10 @@ export default function UpCmingAmericanFootball() {
         
         // Update global cache
         globalNFLCache.set(typedGames);
+        
+        // 🔧 PERFORMANCE FIX: Preload team logos to prevent individual requests
+        const teamNames = typedGames.flatMap(game => [game.home_team, game.away_team]);
+        imageOptimizer.preloadNFLTeamLogos(teamNames);
         
         // Update component state
         setNflGames(typedGames);
@@ -538,10 +573,17 @@ export default function UpCmingAmericanFootball() {
     fetchNFLGames(true); // Force refresh
   }, [fetchNFLGames]);
 
-  // 🚨 EMERGENCY FIX: Proper interval management with 5-minute refresh
+  // 🔧 PERFORMANCE FIX: Stable effect that doesn't re-run unnecessarily
   useEffect(() => {
+    let isMounted = true;
+    
     // Load initial data
-    fetchNFLGames();
+    const loadInitialData = async () => {
+      if (!isMounted) return;
+      await fetchNFLGames();
+    };
+    
+    loadInitialData();
 
     // Clear any existing interval to prevent duplicates
     if (intervalRef.current) {
@@ -550,18 +592,21 @@ export default function UpCmingAmericanFootball() {
 
     // Set up 5-minute refresh interval (increased from 30 seconds)
     intervalRef.current = setInterval(() => {
+      if (!isMounted) return;
       console.log('🏈 5-minute interval refresh...');
       fetchNFLGames();
     }, 300000); // 5 minutes = 300,000ms
 
     // Cleanup function
     return () => {
+      isMounted = false;
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [fetchNFLGames]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 🔧 CRITICAL FIX: Empty dependency array to prevent infinite re-renders
 
   // 🚨 EMERGENCY FIX: Cleanup on unmount
   useEffect(() => {
@@ -652,20 +697,61 @@ export default function UpCmingAmericanFootball() {
           100% { background-position: -200% 0; }
         }
         
+        /* 🔧 PERFORMANCE FIX: Optimized image loading states */
+        .top_matches__cmncard img {
+          transition: opacity 0.3s ease, transform 0.3s ease;
+          will-change: transform;
+        }
+        
+        .lazy-loading {
+          opacity: 0.7;
+          filter: blur(2px);
+        }
+        
+        .lazy-loaded {
+          opacity: 1;
+          filter: none;
+        }
+        
+        /* Prevent layout shift during image loading */
+        .top_matches__cmncard-left img {
+          min-width: 24px;
+          min-height: 24px;
+          background-color: #f8f9fa;
+          border-radius: 2px;
+        }
+        
+        .clickable-active {
+          transition: all 0.2s ease;
+          will-change: background-color, color, transform;
+        }
+        
         .clickable-active:hover {
           background-color: var(--primary-color) !important;
           color: white;
           cursor: pointer;
           transform: translateY(-1px);
-          transition: all 0.2s ease;
         }
         
         .top_matches__cmncard {
           transition: box-shadow 0.3s ease;
+          will-change: box-shadow;
+          contain: layout style paint;
         }
         
         .top_matches__cmncard:hover {
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* Optimize table rendering */
+        .top_matches__clubdata table {
+          table-layout: fixed;
+          will-change: auto;
+        }
+        
+        /* Reduce paint operations */
+        .top_matches__content {
+          contain: layout style;
         }
       `}</style>
     </section>
