@@ -38,6 +38,15 @@ This index provides navigation to all WINZO platform documentation. Our document
 - Brand guidelines and voice
 - Accessibility standards
 
+#### [Image Organization Strategy](./IMAGE_ORGANIZATION_STRATEGY.md)
+**Strategic plan for organizing and replacing placeholder images**
+- Current image analysis and categorization
+- Directory structure optimization
+- Content replacement strategy
+- Legal compliance and sourcing guidelines
+- Implementation timeline and budget
+- Quality metrics and maintenance
+
 #### [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 **Production deployment procedures and best practices**
 - Environment configuration
@@ -95,6 +104,7 @@ This index provides navigation to all WINZO platform documentation. Our document
 #### Frontend Developers
 - [Development Guide](./DEVELOPMENT_GUIDE.md) - Setup and coding standards
 - [Design System Guide](./DESIGN_SYSTEM_GUIDE.md) - UI components and styling
+- [Image Organization Strategy](./IMAGE_ORGANIZATION_STRATEGY.md) - Image assets and organization
 - [API Documentation](./API_DOCUMENTATION.md) - Backend integration
 
 #### Backend Developers
