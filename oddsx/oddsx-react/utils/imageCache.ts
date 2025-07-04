@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from 'react';
-
 /**
  * Enhanced Image Cache Utility
  * Prevents duplicate image requests and improves performance
@@ -239,11 +237,16 @@ class ImageCache {
    * Clear only failed requests to allow retry
    */
   clearFailedRequests(): void {
-    for (const [key, value] of this.cache.entries()) {
+    const keysToDelete: string[] = [];
+    this.cache.forEach((value, key) => {
       if (value.failed) {
-        this.cache.delete(key);
+        keysToDelete.push(key);
       }
-    }
+    });
+    
+    keysToDelete.forEach(key => {
+      this.cache.delete(key);
+    });
   }
 
   /**
@@ -262,7 +265,7 @@ class ImageCache {
 export const imageCache = new ImageCache();
 
 /**
- * React hook for using image cache
+ * Utility functions for image cache
  */
 export function useImageCache() {
   return {
@@ -276,93 +279,6 @@ export function useImageCache() {
     clearFailedRequests: () => imageCache.clearFailedRequests(),
     getCacheInfo: () => imageCache.getCacheInfo()
   };
-}
-
-/**
- * Enhanced image component props
- */
-export interface CachedImageProps {
-  src: string;
-  alt: string;
-  className?: string;
-  width?: number;
-  height?: number;
-  fallbackSrc?: string;
-  onLoad?: () => void;
-  onError?: () => void;
-}
-
-/**
- * Performance optimized image component
- */
-export function CachedImage({ 
-  src, 
-  alt, 
-  className,
-  width,
-  height,
-  fallbackSrc,
-  onLoad,
-  onError 
-}: CachedImageProps) {
-  const [imageSrc, setImageSrc] = useState<string>(src);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [hasError, setHasError] = useState<boolean>(false);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    const loadImage = async () => {
-      try {
-        setIsLoading(true);
-        setHasError(false);
-        
-        // Check if image failed before
-        if (imageCache.hasImageFailed(src)) {
-          throw new Error('Image previously failed');
-        }
-
-        await imageCache.loadImage(src);
-        
-        if (!isCancelled) {
-          setImageSrc(src);
-          setIsLoading(false);
-          onLoad?.();
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          setHasError(true);
-          setIsLoading(false);
-          
-          if (fallbackSrc) {
-            setImageSrc(fallbackSrc);
-          }
-          
-          onError?.();
-        }
-      }
-    };
-
-    loadImage();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [src, fallbackSrc, onLoad, onError]);
-
-  return (
-    <img
-      src={imageSrc}
-      alt={alt}
-      className={className}
-      width={width}
-      height={height}
-      style={{
-        opacity: isLoading ? 0.5 : 1,
-        transition: 'opacity 0.2s ease'
-      }}
-    />
-  );
 }
 
 export default imageCache; 

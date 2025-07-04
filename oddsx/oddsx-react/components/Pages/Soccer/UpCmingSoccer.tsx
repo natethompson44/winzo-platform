@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect, useCallback } from 'react';
 import sportsService from '@/services/sportsService';
 import { getTeamLogo, getLeagueFallbackIcon } from '@/utils/teamLogos';
-import { useOptimizedImage } from '@/utils/imageCache';
+import { useImageCache } from '@/utils/imageCache';
 
 // TypeScript interface for Upcoming Soccer Game data
 interface UpcomingSoccerGame {
@@ -139,10 +139,10 @@ function UpcomingSoccerGameCard({ game }: { game: UpcomingSoccerGame }) {
   const awayTeamLogo = getTeamLogo(game.away_team, 'epl');
   const leagueFallback = getLeagueFallbackIcon('epl');
   
-  // OPTIMIZED: Use image cache for all images
-  const sportIcon = useOptimizedImage(game.sport_icon, '/images/icon/soccer-icon.png');
-  const homeImage = useOptimizedImage(homeTeamLogo, leagueFallback);
-  const awayImage = useOptimizedImage(awayTeamLogo, leagueFallback);
+  // Use direct image sources with fallbacks
+  const sportIcon = game.sport_icon || '/images/icon/soccer-icon.png';
+  const homeImage = homeTeamLogo || leagueFallback;
+  const awayImage = awayTeamLogo || leagueFallback;
 
   return (
     <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
@@ -152,11 +152,10 @@ function UpcomingSoccerGameCard({ game }: { game: UpcomingSoccerGame }) {
             <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4">
               <div className="d-flex align-items-center gap-1">
                 <Image 
-                  src={sportIcon.src}
+                  src={sportIcon}
                   width={16} 
                   height={16} 
                   alt="Soccer"
-                  onError={sportIcon.onError}
                 />
                 <span className="fs-eight cpoint">{game.league_name}</span>
               </div>
@@ -169,21 +168,19 @@ function UpcomingSoccerGameCard({ game }: { game: UpcomingSoccerGame }) {
               <div>
                 <div className="d-flex align-items-center gap-2 mb-4">
                   <Image 
-                    src={homeImage.src}
+                    src={homeImage}
                     width={24} 
                     height={24} 
                     alt={game.home_team}
-                    onError={homeImage.onError}
                   />
                   <span className="fs-seven cpoint">{game.home_team}</span>
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <Image 
-                    src={awayImage.src}
+                    src={awayImage}
                     width={24} 
                     height={24} 
                     alt={game.away_team}
-                    onError={awayImage.onError}
                   />
                   <span className="fs-seven cpoint">{game.away_team}</span>
                 </div>
