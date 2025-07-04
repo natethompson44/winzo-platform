@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useState, useEffect, useCallback } from 'react';
 import sportsService from '@/services/sportsService';
+import { getTeamLogo, getLeagueFallbackIcon } from '@/utils/teamLogos';
+import { useOptimizedImage } from '@/utils/imageCache';
 
 // TypeScript interface for Upcoming Soccer Game data
 interface UpcomingSoccerGame {
@@ -96,7 +98,7 @@ function UpcomingSoccerSkeleton() {
   );
 }
 
-// Upcoming soccer game card component
+// Optimized upcoming soccer game card component
 function UpcomingSoccerGameCard({ game }: { game: UpcomingSoccerGame }) {
   // Extract pre-match betting odds
   const getPreMatchOdds = () => {
@@ -132,6 +134,16 @@ function UpcomingSoccerGameCard({ game }: { game: UpcomingSoccerGame }) {
     return 'Starting soon';
   };
 
+  // OPTIMIZED: Use smart team logo system with league-specific fallbacks
+  const homeTeamLogo = getTeamLogo(game.home_team, 'epl'); // Dynamic league detection could be added
+  const awayTeamLogo = getTeamLogo(game.away_team, 'epl');
+  const leagueFallback = getLeagueFallbackIcon('epl');
+  
+  // OPTIMIZED: Use image cache for all images
+  const sportIcon = useOptimizedImage(game.sport_icon, '/images/icon/soccer-icon.png');
+  const homeImage = useOptimizedImage(homeTeamLogo, leagueFallback);
+  const awayImage = useOptimizedImage(awayTeamLogo, leagueFallback);
+
   return (
     <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
       <div className="row gx-0 gy-xl-0 gy-7">
@@ -140,10 +152,11 @@ function UpcomingSoccerGameCard({ game }: { game: UpcomingSoccerGame }) {
             <div className="top_matches__cmncard-right d-flex align-items-start justify-content-between pb-4 mb-4 gap-4">
               <div className="d-flex align-items-center gap-1">
                 <Image 
-                  src={game.sport_icon} 
+                  src={sportIcon.src}
                   width={16} 
                   height={16} 
                   alt="Soccer"
+                  onError={sportIcon.onError}
                 />
                 <span className="fs-eight cpoint">{game.league_name}</span>
               </div>
@@ -156,27 +169,21 @@ function UpcomingSoccerGameCard({ game }: { game: UpcomingSoccerGame }) {
               <div>
                 <div className="d-flex align-items-center gap-2 mb-4">
                   <Image 
-                    src={game.home_team_logo} 
+                    src={homeImage.src}
                     width={24} 
                     height={24} 
                     alt={game.home_team}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/images/clubs/default-team.png';
-                    }}
+                    onError={homeImage.onError}
                   />
                   <span className="fs-seven cpoint">{game.home_team}</span>
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <Image 
-                    src={game.away_team_logo} 
+                    src={awayImage.src}
                     width={24} 
                     height={24} 
                     alt={game.away_team}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/images/clubs/default-team.png';
-                    }}
+                    onError={awayImage.onError}
                   />
                   <span className="fs-seven cpoint">{game.away_team}</span>
                 </div>
