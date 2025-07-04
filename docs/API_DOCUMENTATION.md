@@ -363,52 +363,63 @@ GET /api/sports/nfl/games
 ```
 
 #### Soccer Games Endpoint
+
+**GET** `/api/sports/soccer/games`
+
+Returns live soccer odds for Premier League and other major leagues.
+
+#### Query Parameters
+- `league` (string): League identifier (default: 'epl')
+  - `epl` - English Premier League  
+  - `spain_la_liga` - Spanish La Liga
+  - `germany_bundesliga` - German Bundesliga
+  - `italy_serie_a` - Italian Serie A
+  - `france_ligue_one` - French Ligue 1
+- `limit` (number): Maximum number of games to return (default: 20)
+
+#### Example Request
+```bash
+GET /api/sports/soccer/games?league=epl&limit=10
 ```
-GET /api/sports/soccer/games
-```
 
-**Description**: Get Soccer games with 3-way betting markets optimized for Soccer page.
-
-**Query Parameters**:
-- `league` (optional): Soccer league (default: "epl"). Options: epl, la_liga, bundesliga, serie_a, ligue_one
-- `limit` (optional): Number of games to return (default: 20)
-
-**Response Format**:
+#### Example Response
 ```json
 {
   "success": true,
   "data": [
     {
-      "id": "game_id",
+      "id": "f37021de21572159764157dbf2e5ae62",
       "sport_key": "soccer_epl",
       "sport_icon": "/images/icon/soccer-icon.png",
       "league_name": "Premier League",
-      "game_time": "Tomorrow, 3:00 PM CDT",
-      "home_team": "Manchester United",
-      "away_team": "Liverpool",
-      "home_team_logo": "/images/icon/man-utd.png",
-      "away_team_logo": "/images/icon/liverpool.png",
+      "game_time": "Today, 2:00 PM CDT",
+      "home_team": "Liverpool",
+      "away_team": "Bournemouth", 
+      "home_team_logo": "/images/clubs/epl/liverpool.png",
+      "away_team_logo": "/images/clubs/epl/bournemouth.png",
       "markets": {
         "h2h": {
-          "outcomes": {},
-          "bookmakers": [],
+          "outcomes": {
+            "Liverpool": [{"bookmaker": "bet365", "price": 1.45}],
+            "Draw": [{"bookmaker": "bet365", "price": 4.20}],
+            "Bournemouth": [{"bookmaker": "bet365", "price": 6.50}]
+          },
+          "market_type": "moneyline",
           "three_way": {
-            "home": [],
-            "draw": [],
-            "away": []
+            "home": [{"bookmaker": "bet365", "price": 1.45}],
+            "draw": [{"bookmaker": "bet365", "price": 4.20}], 
+            "away": [{"bookmaker": "bet365", "price": 6.50}]
           }
         }
       },
       "best_odds": {
         "h2h": {
-          "summary": {
-            "home": { "price": 2.5, "bookmaker": "bet365" },
-            "draw": { "price": 3.2, "bookmaker": "williamhill" },
-            "away": { "price": 2.8, "bookmaker": "ladbrokes" }
-          }
+          "Liverpool": {"price": 1.45, "bookmaker": "bet365"},
+          "Draw": {"price": 4.20, "bookmaker": "bet365"},
+          "Bournemouth": {"price": 6.50, "bookmaker": "bet365"}
         }
       },
-      "bookmaker_count": 8,
+      "bookmaker_count": 40,
       "featured": true
     }
   ],
@@ -416,10 +427,41 @@ GET /api/sports/soccer/games
     "sport": "soccer",
     "league": "epl",
     "games_count": 10,
+    "last_updated": "2025-01-04T15:30:00.000Z",
     "data_source": "live_api"
   }
 }
 ```
+
+#### Technical Details
+
+**API Integration:**
+- **Regions**: `uk,eu,us` for comprehensive bookmaker coverage
+- **Markets**: `h2h` (3-way betting: home/draw/away)
+- **Format**: Decimal odds for better precision
+- **Caching**: 5-minute cache duration for live data
+
+**Performance Optimizations:**
+- Sport-specific fallback icons prevent logo performance issues
+- Request deduplication prevents multiple simultaneous API calls
+- Optimized team logo mappings for major European leagues
+
+#### Error Responses
+
+**422 Unprocessable Entity** (Fixed)
+```json
+{
+  "success": false,
+  "error": "Invalid sport key or API parameter",
+  "message": "Failed to fetch odds for soccer_epl",
+  "quota": {"used": 6, "remaining": 494}
+}
+```
+
+**Common Issues Fixed:**
+- ✅ Invalid markets (`asian_handicaps,over_under`) replaced with valid `h2h`
+- ✅ Logo performance optimized with sport-specific fallbacks
+- ✅ Request deduplication prevents API quota burnout
 
 #### Basketball Games Endpoint
 ```
