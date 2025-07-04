@@ -248,26 +248,26 @@ class OddsDataTransformer {
       return teamLogo;
     }
     
-    // Return cached default logo to prevent redundant requests
-    return this.getDefaultTeamLogo(teamName);
+    // Return sport-specific fallback to prevent redundant requests to default-team.png
+    return this.getDefaultTeamLogo(teamName, sport);
   }
 
   /**
-   * Generate default team logo with caching to prevent redundant requests
-   * PERFORMANCE FIX: Prevents hundreds of duplicate default-team.png requests
+   * Generate default team logo with better fallback strategy
+   * PERFORMANCE FIX: Use sport-specific fallbacks instead of single default
    */
-  static getDefaultTeamLogo(teamName) {
-    const cacheKey = 'default_logo';
+  static getDefaultTeamLogo(teamName, sport = 'generic') {
+    // Use sport-specific fallback icons instead of generic default-team.png
+    const sportFallbacks = {
+      'soccer': '/images/icon/soccer-icon.png',
+      'nfl': '/images/icon/american-football.png', 
+      'basketball': '/images/icon/basketball.png',
+      'hockey': '/images/icon/ice-hockey.png',
+      'generic': '/images/icon/default-sport.png'
+    };
     
-    // Return cached path to prevent redundant requests
-    if (this.defaultLogoCache.has(cacheKey)) {
-      return this.defaultLogoCache.get(cacheKey);
-    }
-    
-    const defaultPath = '/images/clubs/default-team.png';
-    this.defaultLogoCache.set(cacheKey, defaultPath);
-    
-    return defaultPath;
+    // Return sport-specific icon as fallback
+    return sportFallbacks[sport] || sportFallbacks['generic'];
   }
 
   /**

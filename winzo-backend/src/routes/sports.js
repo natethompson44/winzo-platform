@@ -113,8 +113,8 @@ router.get('/soccer/games', async (req, res) => {
     console.log(`Fetching Soccer games for ${league} using sport key: ${sportKey}`);
 
     const soccerData = await oddsApiService.getOdds(sportKey, {
-      regions: 'uk,eu',
-      markets: 'h2h,asian_handicaps,over_under',
+      regions: 'uk,eu,us',
+      markets: 'h2h',
       oddsFormat: 'decimal'
     });
 
