@@ -1,6 +1,7 @@
 import { promotionData } from '@/public/data/allPageData'
 import Image from 'next/image'
 import React from 'react'
+import Link from 'next/link'
 
 export default function Promotions() {
     return (
@@ -15,74 +16,66 @@ export default function Promotions() {
                                         <h3>Promotions for you</h3>
                                     </div>
 
-                                    {promotionData.map(({id, imgSrc, title, bonusvalue}) => (
-                                        <div className="col-xxl-6" key={id}>
-                                        <div
-                                            className="Promotions__card d-flex align-items-center justify-content-center justify-content-sm-between flex-wrap flex-sm-nowrap gap-6 p-4 p-lg-10 rounded-8 p3-bg">
-                                            <div className="Promotions__card-thumb text-center">
-                                                <Image src={imgSrc} width={308} height={203} alt="Icon" />
+                                    <div className="col-lg-6 col-xl-4">
+                                        <div className="cmn-card p-4 p-md-6 radius10">
+                                            <div className="mb-4 mb-md-6">
+                                                <div className="n4-bg radius10 d-center p-4 mb-4" style={{ height: '214px' }}>
+                                                    <div className="text-center">
+                                                        <h4 className="s1-color mb-2">🎯 Welcome Bonus</h4>
+                                                        <p className="text-muted">Get started with WINZO</p>
+                                                    </div>
+                                                </div>
+                                                <h4 className="mb-3">Welcome Sports Bonus</h4>
+                                                <p className="fs-seven">Join WINZO today and receive a generous welcome bonus to kickstart your sports betting journey.</p>
                                             </div>
-                                            <div className="Promotions__card-content text-center text-sm-start">
-                                                    <h3 className="mb-6">{title}</h3>
-                                                    <span className="fs-two mb-10 mb-md-15 d-block">{bonusvalue}</span>
-                                                <button type="button" className="cmn-btn px-5 py-3">Get Bonus</button>
-                                            </div>
+                                            <Link href="#" className="cmn-btn third-alt py-2 px-4 radius30">Claim Offer</Link>
                                         </div>
                                     </div>
-                                    ))}
-
-                                    {/* <div className="col-xxl-6">
-                                        <div
-                                            className="Promotions__card d-flex align-items-center justify-content-center justify-content-sm-between flex-wrap flex-sm-nowrap gap-6 p-4 p-lg-10 rounded-8 p3-bg">
-                                            <div className="Promotions__card-thumb text-center">
-                                                <Image src="/images/promotion2.png" width={335} height={214} alt="Icon" />
+                                    <div className="col-lg-6 col-xl-4">
+                                        <div className="cmn-card p-4 p-md-6 radius10">
+                                            <div className="mb-4 mb-md-6">
+                                                <div className="n4-bg radius10 d-center p-4 mb-4" style={{ height: '203px' }}>
+                                                    <div className="text-center">
+                                                        <h4 className="s1-color mb-2">⚽ Live Betting</h4>
+                                                        <p className="text-muted">Bet on live matches</p>
+                                                    </div>
+                                                </div>
+                                                <h4 className="mb-3">Live Match Betting</h4>
+                                                <p className="fs-seven">Experience the thrill of live betting with real-time odds updates and instant bet placement.</p>
                                             </div>
-                                            <div className="Promotions__card-content text-center text-sm-start">
-                                                <h3 className="mb-6">Cashback Bonus</h3>
-                                                <span className="fs-two mb-10 mb-md-15 d-block">20% up to €800</span>
-                                                <button type="button" className="cmn-btn px-5 py-3">Get Bonus</button>
-                                            </div>
+                                            <Link href="#" className="cmn-btn third-alt py-2 px-4 radius30">Bet Live</Link>
                                         </div>
                                     </div>
-                                    <div className="col-xxl-6">
-                                        <div
-                                            className="Promotions__card d-flex align-items-center justify-content-center justify-content-sm-between flex-wrap flex-sm-nowrap gap-6 p-4 p-lg-10 rounded-8 p3-bg">
-                                            <div className="Promotions__card-thumb text-center">
-                                                <Image src="/images/promotion1.png" width={308} height={203} alt="Icon" />
+                                    <div className="col-lg-6 col-xl-4">
+                                        <div className="cmn-card p-4 p-md-6 radius10">
+                                            <div className="mb-4 mb-md-6">
+                                                <div className="n4-bg radius10 d-center p-4 mb-4" style={{ height: '249px' }}>
+                                                    <div className="text-center">
+                                                        <h4 className="s1-color mb-2">🏆 Best Odds</h4>
+                                                        <p className="text-muted">Competitive markets</p>
+                                                    </div>
+                                                </div>
+                                                <h4 className="mb-3">Premium Sports Markets</h4>
+                                                <p className="fs-seven">Access comprehensive sports markets with competitive odds across all major leagues and tournaments.</p>
                                             </div>
-                                            <div className="Promotions__card-content text-center text-sm-start">
-                                                <h3 className="mb-6">Casino Welcome bonus</h3>
-                                                <span className="fs-two mb-10 mb-md-15 d-block">50% up to €900</span>
-                                                <button type="button" className="cmn-btn px-5 py-3">Get Bonus</button>
-                                            </div>
+                                            <Link href="#" className="cmn-btn third-alt py-2 px-4 radius30">Explore Markets</Link>
                                         </div>
                                     </div>
-                                    <div className="col-xxl-6">
-                                        <div
-                                            className="Promotions__card d-flex align-items-center justify-content-center justify-content-sm-between flex-wrap flex-sm-nowrap gap-6 p-4 p-lg-10 rounded-8 p3-bg">
-                                            <div className="Promotions__card-thumb text-center">
-                                                <Image src="/images/promotion4.png" width={294} height={249} alt="Icon" />
+                                    <div className="col-lg-6 col-xl-4">
+                                        <div className="cmn-card p-4 p-md-6 radius10">
+                                            <div className="mb-4 mb-md-6">
+                                                <div className="n4-bg radius10 d-center p-4 mb-4" style={{ height: '254px' }}>
+                                                    <div className="text-center">
+                                                        <h4 className="s1-color mb-2">📱 Mobile App</h4>
+                                                        <p className="text-muted">Bet on the go</p>
+                                                    </div>
+                                                </div>
+                                                <h4 className="mb-3">Mobile Experience</h4>
+                                                <p className="fs-seven">Enjoy seamless betting on mobile with our responsive platform optimized for all devices.</p>
                                             </div>
-                                            <div className="Promotions__card-content text-center text-sm-start">
-                                                <h3 className="mb-6">Weekend Reload Bonus</h3>
-                                                <span className="fs-two mb-10 mb-md-15 d-block">€700 + 50 Bonus Spins</span>
-                                                <button type="button" className="cmn-btn px-5 py-3">Get Bonus</button>
-                                            </div>
+                                            <Link href="#" className="cmn-btn third-alt py-2 px-4 radius30">Mobile Betting</Link>
                                         </div>
                                     </div>
-                                    <div className="col-xxl-6">
-                                        <div
-                                            className="Promotions__card d-flex align-items-center justify-content-center justify-content-sm-between flex-wrap flex-sm-nowrap gap-6 p-4 p-lg-10 rounded-8 p3-bg">
-                                            <div className="Promotions__card-thumb text-center">
-                                                <Image src="/images/promotion3.png" width={256} height={254} alt="Icon" />
-                                            </div>
-                                            <div className="Promotions__card-content text-center text-sm-start">
-                                                <h3 className="mb-6">Casino Welcome bonus</h3>
-                                                <span className="fs-two mb-10 mb-md-15 d-block">25% up to €4,000</span>
-                                                <button type="button" className="cmn-btn px-5 py-3">Get Bonus</button>
-                                            </div>
-                                        </div>
-                                    </div> */}
                                 </div>
                             </div>
                         </div>

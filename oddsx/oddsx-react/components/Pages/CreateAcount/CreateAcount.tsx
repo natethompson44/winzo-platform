@@ -106,7 +106,22 @@ export default function CreateAcount() {
                 <div className="row justify-content-between align-items-center">
                     <div className="col-6">
                         <div className="login_section__thumb d-none d-lg-block">
-                            <Image className="w-100" width={720} height={900} src="/images/create-acount.png" alt="Join WINZO" />
+                            <div className="w-100 h-100 d-flex align-items-center justify-content-center n4-bg rounded-3" style={{ minHeight: '900px' }}>
+                                <div className="text-center p-5">
+                                    <h2 className="s1-color mb-4">Join WINZO Today!</h2>
+                                    <p className="text-muted mb-4">Create your account to access premium sports betting with real-time odds and comprehensive analytics</p>
+                                    <div className="d-flex gap-3 justify-content-center mb-4">
+                                        <span className="badge s1-bg text-dark px-3 py-2">🎯 Live Betting</span>
+                                        <span className="badge s1-bg text-dark px-3 py-2">📊 Analytics</span>
+                                        <span className="badge s1-bg text-dark px-3 py-2">🏆 Best Odds</span>
+                                    </div>
+                                    <div className="text-muted small">
+                                        <p>✓ Professional sports betting platform</p>
+                                        <p>✓ Secure transactions and data protection</p>
+                                        <p>✓ 24/7 customer support</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className="col-lg-6 col-xl-5">
@@ -148,7 +163,7 @@ export default function CreateAcount() {
                                                         <div className="text-danger small mt-1">{errors.inviteCode}</div>
                                                     )}
                                                     <div className="text-muted small mt-1">
-                                                        Don&apos;t have an invite code? Contact support or use: WINZO123
+                                                        Don&apos;t have an invite code? Contact support for access.
                                                     </div>
                                                 </div>
                                                 <div className="mb-5 mb-md-6 position-relative">

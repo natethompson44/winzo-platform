@@ -84,7 +84,17 @@ export default function Login() {
                 <div className="row justify-content-between align-items-center">
                     <div className="col-6">
                         <div className="login_section__thumb d-none d-lg-block">
-                            <Image className="w-100" width={720} height={900} src="/images/login.png" alt="Login to WINZO" />
+                            <div className="w-100 h-100 d-flex align-items-center justify-content-center n4-bg rounded-3" style={{ minHeight: '900px' }}>
+                                <div className="text-center p-5">
+                                    <h2 className="s1-color mb-4">Welcome Back!</h2>
+                                    <p className="text-muted mb-4">Sign in to access your WINZO sports betting account</p>
+                                    <div className="d-flex gap-3 justify-content-center">
+                                        <span className="badge s1-bg text-dark px-3 py-2">⚽ Soccer</span>
+                                        <span className="badge s1-bg text-dark px-3 py-2">🏀 Basketball</span>
+                                        <span className="badge s1-bg text-dark px-3 py-2">🏈 Football</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className="col-lg-6 col-xl-5">
@@ -92,8 +102,8 @@ export default function Login() {
                             <div className="row justify-content-start">
                                 <div className="col-xxl-10">
                                     <div className="pb-10 pt-8 mb-7 mt-12 mt-lg-0 px-4 px-sm-10">
-                                        <h3 className="mb-6 mb-md-8">Welcome Back to WINZO</h3>
-                                        <p className="mb-10 mb-md-15">Sign in to your account to access professional sports betting with real-time odds and live betting features.</p>
+                                        <h3 className="mb-6 mb-md-8">Welcome to WINZO</h3>
+                                        <p className="mb-10 mb-md-15">Sign in to your sports betting account and access real-time odds, live betting, and comprehensive sports analytics.</p>
                                         <div className="login_section__form">
                                             <form onSubmit={handleSubmit}>
                                                 <div className="mb-5 mb-md-6">

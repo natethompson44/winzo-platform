@@ -142,24 +142,23 @@ REACT_APP_API_URL=http://localhost:5000
 REACT_APP_ENVIRONMENT=development
 ```
 
-## Testing
-### Automated Testing
+## 🧪 Testing
+
+### Frontend Testing
 ```bash
-# Run comprehensive test suite
-python3 test_winzo_platform.py
-# Test specific URL
-python3 test_winzo_platform.py --url http://localhost:5000
+cd oddsx/oddsx-react
+npm test
 ```
-### Manual Testing Checklist
-- [ ] User registration and login
-- [ ] Sports data loading and display
-- [ ] Odds clicking and bet slip functionality
-- [ ] Bet placement and confirmation
-- [ ] Wallet operations (deposit/withdrawal)
-- [ ] Betting history and filtering
-- [ ] Dashboard statistics and updates
-- [ ] Mobile responsive design
-- [ ] Error handling and edge cases
+
+### Backend Testing
+```bash
+cd winzo-backend
+npm test
+```
+
+### Authentication Testing
+- Admin access available through proper admin registration
+- All authentication requires valid invite codes for security
 
 ## API Endpoints
 ### Authentication
@@ -356,3 +355,51 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 For support, email support@winzo.com or create an issue in this repository.
 
 WINZO Platform - Built with ❤️ for sports betting enthusiasts
+
+## 📋 Documentation Overview
+
+### Production Platform Documentation
+- **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - Complete platform architecture and technology stack
+- **[DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)** - Development standards and workflows  
+- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - Complete backend API reference
+- **[DESIGN_SYSTEM_GUIDE.md](DESIGN_SYSTEM_GUIDE.md)** - UI components and design standards
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Production deployment procedures
+- **[USER_GUIDE.md](USER_GUIDE.md)** - Platform user documentation
+- **[ADMIN_GUIDE.md](ADMIN_GUIDE.md)** - Administrative features and management
+
+### Technical Architecture
+- **Frontend**: Next.js 14 with TypeScript and Bootstrap 5
+- **Backend**: Node.js Express with PostgreSQL  
+- **Deployment**: Netlify (frontend) + Railway (backend)
+- **Features**: Professional sports betting platform with real-time odds
+
+### Development Setup
+```bash
+# Backend setup
+cd winzo-backend
+npm install
+npm run dev
+
+# Frontend setup  
+cd oddsx/oddsx-react
+npm install
+npm run dev
+```
+
+### 🧪 Testing
+
+### Frontend Testing
+```bash
+cd oddsx/oddsx-react
+npm test
+```
+
+### Backend Testing
+```bash
+cd winzo-backend
+npm test
+```
+
+### Authentication Testing
+- Admin access available through proper admin registration
+- All authentication requires valid invite codes for security

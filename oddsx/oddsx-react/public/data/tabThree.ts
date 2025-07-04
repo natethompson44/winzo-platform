@@ -66,7 +66,7 @@ export const basketballUpCE = [
   {
     id: "2",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "NBA G League",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -74,10 +74,10 @@ export const basketballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Hellas Verona",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Maine Celtics",
+    clubNameTwo: "Westchester Knicks",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -87,7 +87,7 @@ export const basketballUpCE = [
   {
     id: "3",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "NBA G League",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -95,10 +95,10 @@ export const basketballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "South Bay Lakers",
+    clubNameTwo: "Santa Cruz Warriors",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -108,7 +108,7 @@ export const basketballUpCE = [
   {
     id: "4",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "NCAA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -116,10 +116,10 @@ export const basketballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/torino-fc.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "Torino FC",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Duke Blue Devils",
+    clubNameTwo: "North Carolina",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -129,7 +129,7 @@ export const basketballUpCE = [
   {
     id: "5",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "NCAA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -137,10 +137,10 @@ export const basketballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/cr-vasco.png",
-    clubtwo: "/images/icon/sc-corinthians.png",
-    clubNameOne: "CR Vasco da Gama RJ",
-    clubNameTwo: "SC Corinthians SP",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "UCLA Bruins",
+    clubNameTwo: "Arizona Wildcats",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -150,7 +150,7 @@ export const basketballUpCE = [
   {
     id: "6",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "EuroLeague",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -158,10 +158,10 @@ export const basketballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Hellas Verona",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Anadolu Efes",
+    clubNameTwo: "Fenerbahce Beko",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -171,7 +171,7 @@ export const basketballUpCE = [
   {
     id: "7",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "EuroLeague",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -179,10 +179,10 @@ export const basketballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Armani Milan",
+    clubNameTwo: "Virtus Bologna",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -192,7 +192,7 @@ export const basketballUpCE = [
   {
     id: "8",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "EuroLeague",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -200,10 +200,10 @@ export const basketballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/torino-fc.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "Torino FC",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Bayern Munich",
+    clubNameTwo: "Alba Berlin",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -213,7 +213,7 @@ export const basketballUpCE = [
   {
     id: "9",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "EuroLeague",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -221,10 +221,10 @@ export const basketballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/cr-vasco.png",
-    clubtwo: "/images/icon/sc-corinthians.png",
-    clubNameOne: "CR Vasco da Gama RJ",
-    clubNameTwo: "SC Corinthians SP",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Baskonia Vitoria",
+    clubNameTwo: "Valencia Basket",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -815,7 +815,7 @@ export const amricanFootballUpCE = [
   {
     id: "1",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA Regular Season",
+    titletwo: "NFL",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -823,10 +823,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/sivasspor.png",
-    clubtwo: "/images/icon/trabzonspor.png",
-    clubNameOne: "Sivasspor",
-    clubNameTwo: "Trabzonspor",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Kansas City Chiefs",
+    clubNameTwo: "Buffalo Bills",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -835,7 +835,7 @@ export const amricanFootballUpCE = [
   },{
     id: "2",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA Regular Season",
+    titletwo: "NFL",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -843,10 +843,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/istanbul-basaksehir.png",
-    clubtwo: "/images/icon/pendikspor.png",
-    clubNameOne: "Istanbul Basaksehir",
-    clubNameTwo: "Pendikspor",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Dallas Cowboys",
+    clubNameTwo: "New York Giants",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -856,7 +856,7 @@ export const amricanFootballUpCE = [
   {
     id: "3",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA NCAA",
+    titletwo: "NCAA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -864,10 +864,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Hellas Verona",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Alabama Crimson Tide",
+    clubNameTwo: "Georgia Bulldogs",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -876,8 +876,8 @@ export const amricanFootballUpCE = [
   },
   {
     id: "4",
-    basketball: "/images/icon/Uamerica-football.png",
-    titletwo: "USA Regular",
+    basketball: "/images/icon/america-football.png",
+    titletwo: "NCAA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -885,10 +885,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Ohio State Buckeyes",
+    clubNameTwo: "Michigan Wolverines",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -898,7 +898,7 @@ export const amricanFootballUpCE = [
   {
     id: "5",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA Regular",
+    titletwo: "NFL",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -906,10 +906,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "San Francisco 49ers",
+    clubNameTwo: "Los Angeles Rams",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -919,7 +919,7 @@ export const amricanFootballUpCE = [
   {
     id: "6",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA Regular",
+    titletwo: "NFL",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -927,10 +927,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/wolverhampton.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "Wolverhampton",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Green Bay Packers",
+    clubNameTwo: "Chicago Bears",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -940,7 +940,7 @@ export const amricanFootballUpCE = [
   {
     id: "7",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA Regular Season",
+    titletwo: "NFL",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -948,10 +948,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/sivasspor.png",
-    clubtwo: "/images/icon/trabzonspor.png",
-    clubNameOne: "Sivasspor",
-    clubNameTwo: "Trabzonspor",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Philadelphia Eagles",
+    clubNameTwo: "Washington Commanders",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -961,7 +961,7 @@ export const amricanFootballUpCE = [
   {
     id: "8",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA NCAA",
+    titletwo: "NCAA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -969,10 +969,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Hellas Verona",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Texas Longhorns",
+    clubNameTwo: "Oklahoma Sooners",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -981,8 +981,8 @@ export const amricanFootballUpCE = [
   },
   {
     id: "9",
-    basketball: "/images/icon/Uamerica-football.png",
-    titletwo: "USA Regular",
+    basketball: "/images/icon/america-football.png",
+    titletwo: "NCAA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -990,10 +990,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Clemson Tigers",
+    clubNameTwo: "Notre Dame",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -1003,7 +1003,7 @@ export const amricanFootballUpCE = [
   {
     id: "10",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA Regular",
+    titletwo: "NFL",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -1011,10 +1011,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Miami Dolphins",
+    clubNameTwo: "New England Patriots",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -1024,7 +1024,7 @@ export const amricanFootballUpCE = [
   {
     id: "11",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA Regular",
+    titletwo: "NFL",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -1032,10 +1032,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/wolverhampton.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "Wolverhampton",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Denver Broncos",
+    clubNameTwo: "Las Vegas Raiders",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -1045,7 +1045,7 @@ export const amricanFootballUpCE = [
   {
     id: "12",
     basketball: "/images/icon/america-football.png",
-    titletwo: "USA Regular Season",
+    titletwo: "NFL",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -1053,10 +1053,10 @@ export const amricanFootballUpCE = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/istanbul-basaksehir.png",
-    clubtwo: "/images/icon/pendikspor.png",
-    clubNameOne: "Istanbul Basaksehir",
-    clubNameTwo: "Pendikspor",
+    clubone: "/images/icon/america-football.png",
+    clubtwo: "/images/icon/america-football.png",
+    clubNameOne: "Seattle Seahawks",
+    clubNameTwo: "Arizona Cardinals",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",

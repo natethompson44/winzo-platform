@@ -33,7 +33,7 @@ export const basketballMatch = [
     {
       id: "1",
       basketball: "/images/icon/basketball.png",
-      titletwo: "International Euroleague",
+      titletwo: "NBA",
       times: "Today, 23:00",
       updown: "/images/icon/updwon.png",
       tShart: "/images/icon/t-shart.png",
@@ -41,10 +41,10 @@ export const basketballMatch = [
       douchance: "Double chance",
       ttl: "Total",
 
-      clubone: "/images/icon/istanbul-basaksehir.png",
-      clubtwo: "/images/icon/pendikspor.png",
+      clubone: "/images/icon/basketball-two.png",
+      clubtwo: "/images/icon/basketball-two.png",
       clubNameOne: "Boston Celtics",
-      clubNameTwo: "Real Madrid",
+      clubNameTwo: "Miami Heat",
 
       chart: "/images/icon/line-chart.png",
       star: "/images/icon/star2.png",
@@ -54,7 +54,7 @@ export const basketballMatch = [
   {
     id: "2",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "NBA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -62,10 +62,10 @@ export const basketballMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Hellas Verona",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Los Angeles Lakers",
+    clubNameTwo: "Golden State Warriors",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -75,7 +75,7 @@ export const basketballMatch = [
   {
     id: "3",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "NBA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -83,10 +83,10 @@ export const basketballMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Brooklyn Nets",
+    clubNameTwo: "New York Knicks",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -96,7 +96,7 @@ export const basketballMatch = [
   {
     id: "4",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "NBA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -104,10 +104,10 @@ export const basketballMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/torino-fc.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "Torino FC",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Chicago Bulls",
+    clubNameTwo: "Milwaukee Bucks",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -117,7 +117,7 @@ export const basketballMatch = [
   {
     id: "5",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "NBA",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -125,10 +125,10 @@ export const basketballMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/cr-vasco.png",
-    clubtwo: "/images/icon/sc-corinthians.png",
-    clubNameOne: "CR Vasco da Gama RJ",
-    clubNameTwo: "SC Corinthians SP",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Phoenix Suns",
+    clubNameTwo: "Denver Nuggets",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -138,7 +138,7 @@ export const basketballMatch = [
   {
     id: "6",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "EuroLeague",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -146,10 +146,10 @@ export const basketballMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Hellas Verona",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Real Madrid",
+    clubNameTwo: "FC Barcelona",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -159,7 +159,7 @@ export const basketballMatch = [
   {
     id: "7",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "EuroLeague",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -167,10 +167,10 @@ export const basketballMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/us-lecce.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "US Lecce",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Panathinaikos",
+    clubNameTwo: "Olympiakos",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -180,7 +180,7 @@ export const basketballMatch = [
   {
     id: "8",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "EuroLeague",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -188,10 +188,10 @@ export const basketballMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/bologna-fc.png",
-    clubtwo: "/images/icon/torino-fc.png",
-    clubNameOne: "Bologna FC",
-    clubNameTwo: "Torino FC",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "CSKA Moscow",
+    clubNameTwo: "Fenerbahce",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -201,7 +201,7 @@ export const basketballMatch = [
   {
     id: "9",
     basketball: "/images/icon/basketball.png",
-    titletwo: "Turkiye. Super Limelight",
+    titletwo: "EuroLeague",
     times: "Today, 23:00",
     updown: "/images/icon/updwon.png",
     tShart: "/images/icon/t-shart.png",
@@ -209,10 +209,10 @@ export const basketballMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/cr-vasco.png",
-    clubtwo: "/images/icon/sc-corinthians.png",
-    clubNameOne: "CR Vasco da Gama RJ",
-    clubNameTwo: "SC Corinthians SP",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
+    clubNameOne: "Zalgiris Kaunas",
+    clubNameTwo: "Maccabi Tel Aviv",
 
     chart: "/images/icon/line-chart.png",
     star: "/images/icon/star2.png",
@@ -468,8 +468,8 @@ export const iceHockeyMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/istanbul-basaksehir.png",
-    clubtwo: "/images/icon/pendikspor.png",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
     clubNameOne: "New York Rangers",
     clubNameTwo: "Detroit Red Wings",
 
@@ -489,8 +489,8 @@ export const iceHockeyMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/us-lecce.png",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
     clubNameOne: "Los Angeles Kings",
     clubNameTwo: "Washington Capitals",
 
@@ -510,8 +510,8 @@ export const iceHockeyMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/us-lecce.png",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
     clubNameOne: "Boston Bruins",
     clubNameTwo: "San Jose Sharks",
 
@@ -531,8 +531,8 @@ export const iceHockeyMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/hellas-verona.png",
-    clubtwo: "/images/icon/torino-fc.png",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
     clubNameOne: "Detroit Red Wings",
     clubNameTwo: "Chicago Blackhawks",
 
@@ -552,8 +552,8 @@ export const iceHockeyMatch = [
     douchance: "Double chance",
     ttl: "Total",
 
-    clubone: "/images/icon/sivasspor.png",
-    clubtwo: "/images/icon/trabzonspor.png",
+    clubone: "/images/icon/basketball-two.png",
+    clubtwo: "/images/icon/basketball-two.png",
     clubNameOne: "Montreal Canadiens",
     clubNameTwo: "Florida Panthers",
 
@@ -573,8 +573,8 @@ export const iceHockeyMatch = [
   douchance: "Double chance",
   ttl: "Total",
 
-  clubone: "/images/icon/istanbul-basaksehir.png",
-  clubtwo: "/images/icon/pendikspor.png",
+  clubone: "/images/icon/basketball-two.png",
+  clubtwo: "/images/icon/basketball-two.png",
   clubNameOne: "Philadelphia Flyers",
   clubNameTwo: "New Jersey Devils",
 
@@ -594,10 +594,10 @@ export const iceHockeyMatch = [
   douchance: "Double chance",
   ttl: "Total",
 
-  clubone: "/images/icon/hellas-verona.png",
-  clubtwo: "/images/icon/us-lecce.png",
-  clubNameOne: "Hellas Verona",
-  clubNameTwo: "US Lecce",
+  clubone: "/images/icon/basketball-two.png",
+  clubtwo: "/images/icon/basketball-two.png",
+  clubNameOne: "Toronto Maple Leafs",
+  clubNameTwo: "Seattle Kraken",
 
   chart: "/images/icon/line-chart.png",
   star: "/images/icon/star2.png",
@@ -615,10 +615,10 @@ export const iceHockeyMatch = [
   douchance: "Double chance",
   ttl: "Total",
 
-  clubone: "/images/icon/hellas-verona.png",
-  clubtwo: "/images/icon/us-lecce.png",
-  clubNameOne: "Toronto Maple Leafs",
-  clubNameTwo: "Seattle Kraken",
+  clubone: "/images/icon/basketball-two.png",
+  clubtwo: "/images/icon/basketball-two.png",
+  clubNameOne: "Bologna FC",
+  clubNameTwo: "Torino FC",
 
   chart: "/images/icon/line-chart.png",
   star: "/images/icon/star2.png",
@@ -636,8 +636,8 @@ export const iceHockeyMatch = [
   douchance: "Double chance",
   ttl: "Total",
 
-  clubone: "/images/icon/hellas-verona.png",
-  clubtwo: "/images/icon/torino-fc.png",
+  clubone: "/images/icon/basketball-two.png",
+  clubtwo: "/images/icon/basketball-two.png",
   clubNameOne: "Bologna FC",
   clubNameTwo: "Torino FC",
 

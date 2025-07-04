@@ -729,27 +729,27 @@ export const swedenData = [
 
 export const promotionData = [
   {
-    id: "4214386426",
-    imgSrc: "/images/promotion2.png",
-    title: "Cashback Bonus",
-    bonusvalue: "20% up to €800",
+    id: 1,
+    title: "Welcome Sports Bonus",
+    bonusvalue: "100% up to €500",
+    description: "Get started with WINZO sports betting"
   },
   {
-    id: "1421396001",
-    imgSrc: "/images/promotion1.png",
-    title: "Casino Welcome bonus",
-    bonusvalue: "50% up to €900",
+    id: 2,
+    title: "Live Betting Bonus",
+    bonusvalue: "25% cashback",
+    description: "Experience live match betting"
   },
   {
-    id: "1222123074",
-    imgSrc: "/images/promotion4.png",
-    title: "Weekend Reload Bonus",
-    bonusvalue: "€700 + 50 Bonus Spins",
+    id: 3,
+    title: "Weekly Reload",
+    bonusvalue: "50% up to €200",
+    description: "Weekly bonus for active players"
   },
   {
-    id: "2645786483",
-    imgSrc: "/images/promotion3.png",
-    title: "Casino Welcome bonus",
-    bonusvalue: "25% up to €4,000",
+    id: 4,
+    title: "VIP Rewards",
+    bonusvalue: "Exclusive benefits",
+    description: "Premium rewards for loyal customers"
   }
-]
+];

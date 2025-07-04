@@ -165,10 +165,10 @@ INSERT INTO bookmakers (key, title, active, region) VALUES
   ('williamhill', 'William Hill', true, 'us')
 ON CONFLICT (key) DO NOTHING;
 
--- Insert test user
-INSERT INTO users (username, email, password_hash, wallet_balance) VALUES
-  ('testuser2', 'test@winzo.com', '$2b$10$vfrl7oNfq8TYG5mwZDdEZ.taAPTKRYVXxSwVf8jw5vKbkjeghOiyu', 1000.00)
-ON CONFLICT (username) DO NOTHING;
+-- Insert sample data
+INSERT INTO users (username, email, password_hash, wallet_balance, is_verified) VALUES 
+('admin', 'admin@winzo.com', '$2b$10$vfrl7oNfq8TYG5mwZDdEZ.taAPTKRYVXxSwVf8jw5vKbkjeghOiyu', 1000.00, true);
+-- Note: admin password is 'admin123' (for development only)
 
 -- Add comments
 COMMENT ON TABLE users IS 'User accounts and wallet balances';

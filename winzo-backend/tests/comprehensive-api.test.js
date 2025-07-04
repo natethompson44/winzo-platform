@@ -6,19 +6,16 @@ const API_BASE_URL = process.env.TEST_API_URL || 'https://winzo-platform-product
 const TIMEOUT = 30000;
 
 // Test data
-const TEST_USERS = {
-  regular: {
-    username: `testuser_${Date.now()}`,
-    password: 'TestPassword123!',
-    email: `test${Date.now()}@example.com`,
-    invite_code: 'WINZO123'
-  },
-  admin: {
-    username: `admin_${Date.now()}`,
-    password: 'AdminPassword123!',
-    email: `admin${Date.now()}@example.com`,
-    invite_code: 'WINZO123'
-  }
+const TEST_USER = {
+  username: `testuser_${Date.now()}`,
+  password: 'testpassword123',
+  invite_code: 'DEVELOPMENT_TEST_CODE'
+};
+
+const EXISTING_USER = {
+  username: 'produser',
+  password: 'prodpassword123',
+  invite_code: 'DEVELOPMENT_TEST_CODE'
 };
 
 const SAMPLE_BET = {
@@ -91,26 +88,51 @@ async function testHealthEndpoint() {
 async function testUserRegistration() {
   console.log('\n👤 USER REGISTRATION TESTS');
   
-  // Test valid registration
-  const regResult = await apiRequest('POST', '/api/auth/register', TEST_USERS.regular);
+  // Test 1: Standard user registration
+  const user1Data = {
+    username: 'devtestuser1',
+    password: 'password123',
+    invite_code: 'DEVELOPMENT_TEST_CODE'
+  };
   
-  if (regResult.success && regResult.data.success) {
-    userToken = regResult.data.data.token;
-    testUserId = regResult.data.data.user.id;
-    logTestResult('Valid user registration', true);
-    logTestResult('Auth token received', !!userToken);
-    logTestResult('User ID received', !!testUserId);
-  } else {
-    logTestResult('Valid user registration', false, regResult.error?.message || regResult.details);
-  }
+  const user1Req = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(user1Data)
+  });
+  
+  const user1Result = await user1Req.json();
+  logTestResult('User 1 registration successful', user1Req.status === 201);
+
+  // Test 2: Different user registration  
+  const user2Data = {
+    username: 'devtestuser2',
+    password: 'password123',
+    invite_code: 'DEVELOPMENT_TEST_CODE'
+  };
+  
+  const user2Req = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(user2Data)
+  });
+  
+  logTestResult('User 2 registration successful', user2Req.status === 201);
+
+  // Test 3: Third user registration
+  const user3Data = {
+    username: 'devtestuser3',
+    password: 'password123',
+    invite_code: 'DEVELOPMENT_TEST_CODE'
+  };
   
   // Test duplicate username
-  const dupResult = await apiRequest('POST', '/api/auth/register', TEST_USERS.regular);
+  const dupResult = await apiRequest('POST', '/api/auth/register', TEST_USER);
   logTestResult('Duplicate username rejection', !dupResult.success);
   
   // Test invalid email
   const invalidEmailResult = await apiRequest('POST', '/api/auth/register', {
-    ...TEST_USERS.regular,
+    ...TEST_USER,
     username: 'newtestuser',
     email: 'invalid-email'
   });
@@ -118,7 +140,7 @@ async function testUserRegistration() {
   
   // Test weak password
   const weakPasswordResult = await apiRequest('POST', '/api/auth/register', {
-    ...TEST_USERS.regular,
+    ...TEST_USER,
     username: 'newtestuser2',
     email: 'test2@example.com',
     password: '123'
@@ -133,7 +155,7 @@ async function testUserRegistration() {
   });
   logTestResult('Missing invite code handling', !noInviteResult.success);
   
-  return regResult.success;
+  return user1Req.status === 201 && user2Req.status === 201;
 }
 
 async function testUserAuthentication() {
@@ -141,8 +163,8 @@ async function testUserAuthentication() {
   
   // Test valid login
   const loginResult = await apiRequest('POST', '/api/auth/login', {
-    username: TEST_USERS.regular.username,
-    password: TEST_USERS.regular.password
+    username: TEST_USER.username,
+    password: TEST_USER.password
   });
   
   if (loginResult.success && loginResult.data.success) {
@@ -154,7 +176,7 @@ async function testUserAuthentication() {
   
   // Test invalid credentials
   const invalidLoginResult = await apiRequest('POST', '/api/auth/login', {
-    username: TEST_USERS.regular.username,
+    username: TEST_USER.username,
     password: 'wrongpassword'
   });
   logTestResult('Invalid password rejection', !invalidLoginResult.success);

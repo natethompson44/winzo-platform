@@ -453,35 +453,33 @@ router.get('/security', auth, async (req, res) => {
 })
 
 /**
- * GET /api/user/sessions - Get active user sessions (mock for now)
+ * GET /api/user/sessions - Get active user sessions
  */
 router.get('/sessions', auth, async (req, res) => {
   try {
-    // This is a simplified version - in production you'd track sessions in database/redis
-    const sessions = [
-      {
-        id: 'current',
-        device: 'Current Session',
-        location: 'Unknown',
-        ip: req.ip || 'Unknown',
-        timestamp: new Date().toISOString(),
-        isCurrent: true
-      }
-    ]
+    // For production: implement actual session tracking
+    // Currently returning minimal session info
+    const currentSession = {
+      id: 'current',
+      created_at: new Date().toISOString(),
+      ip_address: req.ip || 'unknown',
+      user_agent: req.get('User-Agent') || 'unknown',
+      is_current: true
+    };
 
     res.json({
       success: true,
-      message: 'Active sessions retrieved successfully',
-      data: sessions
-    })
+      data: {
+        sessions: [currentSession]
+      }
+    });
   } catch (error) {
-    console.error('Error fetching sessions:', error)
+    console.error('Sessions fetch error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch sessions',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    })
+      error: 'Failed to fetch user sessions'
+    });
   }
-})
+});
 
 module.exports = router
