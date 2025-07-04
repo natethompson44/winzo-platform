@@ -323,6 +323,7 @@ export default function UpCmingSoccer() {
   const [error, setError] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState('epl');
 
+  // FIXED: Memoize fetchUpcomingGames to prevent unnecessary re-creation
   const fetchUpcomingGames = useCallback(async () => {
     try {
       setLoading(true);
@@ -363,7 +364,7 @@ export default function UpCmingSoccer() {
     } finally {
       setLoading(false);
     }
-  }, [selectedLeague]);
+  }, [selectedLeague]); // Only depend on selectedLeague
 
   useEffect(() => {
     fetchUpcomingGames();
@@ -371,7 +372,7 @@ export default function UpCmingSoccer() {
     // Set up updates every 60 seconds for upcoming matches
     const interval = setInterval(fetchUpcomingGames, 60000);
     return () => clearInterval(interval);
-  }, [selectedLeague, fetchUpcomingGames]); // Include fetchUpcomingGames in dependency array
+  }, [fetchUpcomingGames]);
 
   const availableLeagues = [
     { key: 'epl', name: 'Premier League', flag: '🇬🇧' },

@@ -318,6 +318,7 @@ export default function TopSoccer() {
   const [error, setError] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState('epl');
 
+  // FIXED: Memoize fetchSoccerGames to prevent unnecessary re-creation
   const fetchSoccerGames = useCallback(async () => {
     try {
       setLoading(true);
@@ -337,7 +338,7 @@ export default function TopSoccer() {
     } finally {
       setLoading(false);
     }
-  }, [selectedLeague]);
+  }, [selectedLeague]); // Only depend on selectedLeague
 
   useEffect(() => {
     fetchSoccerGames();
@@ -345,7 +346,7 @@ export default function TopSoccer() {
     // Set up real-time updates every 30 seconds
     const interval = setInterval(fetchSoccerGames, 30000);
     return () => clearInterval(interval);
-  }, [selectedLeague, fetchSoccerGames]); // Include fetchSoccerGames in dependency array
+  }, [fetchSoccerGames]); // Remove selectedLeague from here since it's in fetchSoccerGames deps
 
   const handleRetry = () => {
     fetchSoccerGames();

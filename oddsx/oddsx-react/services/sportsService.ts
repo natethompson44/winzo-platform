@@ -151,6 +151,41 @@ export interface Sports {
 
 class SportsService {
   
+  // Request deduplication cache to prevent multiple simultaneous requests
+  private static requestCache = new Map<string, Promise<any>>();
+  
+  /**
+   * Get request from cache or create new one if not exists
+   * This prevents multiple simultaneous requests for the same data
+   */
+  private static async getCachedRequest<T>(
+    cacheKey: string, 
+    requestFn: () => Promise<T>
+  ): Promise<T> {
+    // If request is already in progress, return the existing promise
+    if (this.requestCache.has(cacheKey)) {
+      console.log(`Request deduplication: Using cached request for ${cacheKey}`);
+      return this.requestCache.get(cacheKey)!;
+    }
+
+    // Create new request and cache it
+    const requestPromise = requestFn();
+    this.requestCache.set(cacheKey, requestPromise);
+
+    try {
+      const result = await requestPromise;
+      // Keep cache for 5 seconds to prevent rapid duplicate requests
+      setTimeout(() => {
+        this.requestCache.delete(cacheKey);
+      }, 5000);
+      return result;
+    } catch (error) {
+      // Remove from cache immediately on error
+      this.requestCache.delete(cacheKey);
+      throw error;
+    }
+  }
+  
   // ===== ENHANCED SPORT-SPECIFIC METHODS (PHASE 1) =====
 
   /**
@@ -209,53 +244,58 @@ class SportsService {
   }
 
   /**
-   * Get Soccer games for Soccer page
+   * Get Soccer games for Soccer page with request deduplication
    */
   async getSoccerGames(options?: {
     league?: string;
     limit?: number;
   }): Promise<Game[]> {
-    try {
-      const params = {
-        league: options?.league || 'epl',
-        limit: options?.limit || 20
-      };
-
-      console.log('Fetching Soccer games with params:', params);
-      const response = await apiClient.get('/sports/soccer/games', { params });
-      
-      console.log('Soccer API response:', response);
-      
-      if (response.success && response.data) {
-        if (response.data.success === false) {
-          console.warn('Soccer API returned success:false, falling back to mock data:', response.data.message);
-          return this.getMockSoccerGames();
+    const params = {
+      league: options?.league || 'epl',
+      limit: options?.limit || 20
+    };
+    
+    // Create cache key for deduplication
+    const cacheKey = `soccer_${params.league}_${params.limit}`;
+    
+    return SportsService.getCachedRequest(cacheKey, async () => {
+      try {
+        console.log('Fetching Soccer games with params:', params);
+        const response = await apiClient.get('/sports/soccer/games', { params });
+        
+        console.log('Soccer API response:', response);
+        
+        if (response.success && response.data) {
+          if (response.data.success === false) {
+            console.warn('Soccer API returned success:false, falling back to mock data:', response.data.message);
+            return this.getMockSoccerGames();
+          }
+          
+          let gamesData = response.data;
+          if (response.data.data) {
+            gamesData = response.data.data;
+          }
+          
+          console.log('Processing Soccer games data:', gamesData);
+          return this.formatLiveGamesData(gamesData);
         }
         
-        let gamesData = response.data;
-        if (response.data.data) {
-          gamesData = response.data.data;
+        console.warn('Soccer API response not successful, falling back to mock data');
+        return this.getMockSoccerGames();
+      } catch (error: any) {
+        console.error('Failed to fetch Soccer games:', error);
+        
+        if (error.response?.status === 401) {
+          console.warn('Authentication required for Soccer data - this should not cause logout for non-auth endpoints');
+        } else if (error.response?.status === 404) {
+          console.warn('Soccer games endpoint not found - API may not be implemented yet');
+        } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+          console.warn('Network error while fetching Soccer games - using fallback data');
         }
         
-        console.log('Processing Soccer games data:', gamesData);
-        return this.formatLiveGamesData(gamesData);
+        return this.getMockSoccerGames();
       }
-      
-      console.warn('Soccer API response not successful, falling back to mock data');
-      return this.getMockSoccerGames();
-    } catch (error: any) {
-      console.error('Failed to fetch Soccer games:', error);
-      
-      if (error.response?.status === 401) {
-        console.warn('Authentication required for Soccer data - this should not cause logout for non-auth endpoints');
-      } else if (error.response?.status === 404) {
-        console.warn('Soccer games endpoint not found - API may not be implemented yet');
-      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
-        console.warn('Network error while fetching Soccer games - using fallback data');
-      }
-      
-      return this.getMockSoccerGames();
-    }
+    });
   }
 
   /**

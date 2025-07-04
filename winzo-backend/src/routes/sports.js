@@ -81,8 +81,36 @@ router.get('/nfl/games', async (req, res) => {
 router.get('/soccer/games', async (req, res) => {
   try {
     const { league = 'epl', limit = 20 } = req.query;
-    const sportKey = league === 'epl' ? 'soccer_epl' : `soccer_${league}`;
-    console.log(`Fetching Soccer games for ${league}...`);
+    
+    // FIXED: Correct sport key mapping using EXACT keys from The Odds API documentation
+    const sportKeyMapping = {
+      'epl': 'soccer_epl',
+      'spain_la_liga': 'soccer_spain_la_liga',
+      'germany_bundesliga': 'soccer_germany_bundesliga', 
+      'italy_serie_a': 'soccer_italy_serie_a',
+      'france_ligue_one': 'soccer_france_ligue_one',
+      'uefa_champions_league': 'soccer_uefa_champs_league',
+      'fa_cup': 'soccer_fa_cup',
+      'efl_champ': 'soccer_efl_champ',
+      'mls': 'soccer_usa_mls',
+      // Additional leagues for comprehensive coverage
+      'australia_aleague': 'soccer_australia_aleague',
+      'brazil_campeonato': 'soccer_brazil_campeonato',
+      'argentina_primera_division': 'soccer_argentina_primera_division'
+    };
+    
+    const sportKey = sportKeyMapping[league];
+    
+    if (!sportKey) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid league parameter',
+        message: `League '${league}' is not supported. Available leagues: ${Object.keys(sportKeyMapping).join(', ')}`,
+        quota: oddsApiService.getQuotaStatus()
+      });
+    }
+    
+    console.log(`Fetching Soccer games for ${league} using sport key: ${sportKey}`);
 
     const soccerData = await oddsApiService.getOdds(sportKey, {
       regions: 'uk,eu',
@@ -105,6 +133,7 @@ router.get('/soccer/games', async (req, res) => {
       metadata: {
         sport: 'soccer',
         league,
+        sport_key: sportKey,
         games_count: transformedData.length,
         last_updated: new Date().toISOString(),
         data_source: 'live_api'
@@ -112,14 +141,35 @@ router.get('/soccer/games', async (req, res) => {
       quota: oddsApiService.getQuotaStatus()
     });
 
-    console.log(`Returned ${transformedData.length} transformed Soccer games`);
+    console.log(`Returned ${transformedData.length} transformed Soccer games for ${league}`);
   } catch (error) {
     console.error('Error in GET /api/sports/soccer/games:', error);
-    res.status(500).json({
+    
+    // Enhanced error handling with specific error types
+    let statusCode = 500;
+    let errorMessage = 'Failed to fetch Soccer games';
+    
+    if (error.message.includes('422')) {
+      statusCode = 422;
+      errorMessage = 'Invalid sport key or API parameter';
+      console.error('422 Error: Likely invalid sport key or missing data for this league');
+    } else if (error.message.includes('401')) {
+      statusCode = 401;
+      errorMessage = 'API authentication failed';
+    } else if (error.message.includes('429')) {
+      statusCode = 429;
+      errorMessage = 'API rate limit exceeded';
+    }
+    
+    res.status(statusCode).json({
       success: false,
-      error: 'Failed to fetch Soccer games',
+      error: errorMessage,
       message: error.message,
-      quota: oddsApiService.getQuotaStatus()
+      quota: oddsApiService.getQuotaStatus(),
+      debug_info: {
+        error_type: error.constructor.name,
+        timestamp: new Date().toISOString()
+      }
     });
   }
 });
