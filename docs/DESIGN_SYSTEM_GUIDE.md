@@ -13,6 +13,7 @@
 - [Usage Guidelines](#usage-guidelines)
 - [Brand Guidelines](#brand-guidelines)
 - [Dashboard Enhancements (Premium Sports Betting Experience)](#dashboard-enhancements-premium-sports-betting-experience)
+- [Team Logo System](#team-logo-system)
 
 ## Overview
 
@@ -865,6 +866,346 @@ const handleViewHistory = () => navigate('/history');
 - **Content Centering**: Automatic adjustment based on available space
 
 This ensures optimal viewing experience across all screen sizes while preventing content overlap and maintaining professional aesthetics.
+
+## Team Logo System
+
+**CRITICAL**: WINZO uses a strategic team logo management system to ensure optimal performance and user experience across all sports betting interfaces.
+
+### Logo Utility Functions
+
+#### **Core Utility: `utils/teamLogos.ts`**
+
+```javascript
+import { getTeamLogo, handleImageError, getLeagueFallbackIcon } from '@/utils/teamLogos';
+
+// ✅ CORRECT: Use utility function
+const teamLogo = getTeamLogo('Manchester United', 'epl');
+
+// ❌ INCORRECT: Direct logo paths
+const teamLogo = '/images/clubs/epl/manchester-united.png';
+```
+
+#### **Smart Image Error Handling**
+```jsx
+<Image 
+  src={getTeamLogo(teamName, league)}
+  width={24} 
+  height={24} 
+  alt={teamName}
+  onError={(e) => handleImageError(e, teamName, league)}
+/>
+```
+
+### League Status Indicators
+
+#### **Status Badge Components**
+```jsx
+// Live Tier - Premium leagues with full data
+<span className="badge bg-success">Live</span>
+
+// Preview Tier - Limited logo coverage
+<span className="badge bg-warning">Preview</span>
+
+// Coming Soon - Future development
+<span className="badge bg-secondary">Coming Soon</span>
+```
+
+#### **League Selection Component Pattern**
+```jsx
+{/* Primary Leagues (Full Data) */}
+<div className="mb-3">
+  <h6 className="mb-2 d-flex align-items-center gap-2">
+    <span className="badge bg-success">Live</span>
+    Premium Leagues
+  </h6>
+  <div className="d-flex flex-wrap gap-2">
+    {primaryLeagues.map((league) => (
+      <button
+        key={league.key}
+        className={`btn btn-sm ${selectedLeague === league.key ? 'btn-primary' : 'btn-outline-primary'}`}
+        onClick={() => setSelectedLeague(league.key)}
+      >
+        {league.flag} {league.name}
+      </button>
+    ))}
+  </div>
+</div>
+
+{/* Preview Leagues (Limited Data) */}
+<div className="mb-3">
+  <h6 className="mb-2 d-flex align-items-center gap-2">
+    <span className="badge bg-warning">Preview</span>
+    Additional Leagues
+    <small className="text-muted">(Limited team logos)</small>
+  </h6>
+  <div className="d-flex flex-wrap gap-2">
+    {previewLeagues.map((league) => (
+      <button
+        key={league.key}
+        className={`btn btn-sm ${selectedLeague === league.key ? 'btn-primary' : 'btn-outline-secondary'}`}
+        onClick={() => setSelectedLeague(league.key)}
+      >
+        {league.flag} {league.name}
+      </button>
+    ))}
+  </div>
+</div>
+
+{/* Coming Soon Leagues */}
+<div className="mb-3">
+  <h6 className="mb-2 d-flex align-items-center gap-2">
+    <span className="badge bg-secondary">Coming Soon</span>
+    Future Leagues
+  </h6>
+  <div className="d-flex flex-wrap gap-2">
+    {comingSoonLeagues.map((league) => (
+      <button
+        key={league.key}
+        className="btn btn-sm btn-outline-secondary"
+        disabled
+      >
+        {league.flag} {league.name}
+      </button>
+    ))}
+  </div>
+</div>
+```
+
+### Logo Performance Standards
+
+#### **Directory Structure Standards**
+```
+public/images/clubs/
+├── epl/                    # 20 teams, 100% complete ✅
+├── nfl/                    # 32 teams, 100% complete ✅  
+├── laliga/                 # 20 teams, ~60% complete ⚠️
+├── bundesliga/             # 18 teams, ~40% complete ⚠️
+├── seriea/                 # 20 teams, ~30% complete ⚠️
+├── ligue1/                 # 20 teams, ~20% complete 🚧
+└── default-team.png        # DEPRECATED ❌
+```
+
+#### **Fallback Icon Strategy**
+```javascript
+// League-specific fallback icons (prevents logo spam)
+const sportFallbacks = {
+  'epl': '/images/icon/epl-icon.png',           // EPL shield
+  'spain_la_liga': '/images/icon/laliga-icon.png',  // La Liga logo
+  'germany_bundesliga': '/images/icon/bundesliga-icon.png', // Bundesliga logo
+  'italy_serie_a': '/images/icon/seriea-icon.png',  // Serie A logo
+  'france_ligue_one': '/images/icon/ligue1-icon.png', // Ligue 1 logo
+  'soccer': '/images/icon/soccer-icon.png',     // Generic soccer
+  'default': '/images/icon/team-icon.png'       // Last resort
+};
+```
+
+#### **Performance Requirements**
+- **Image Size**: 64x64px maximum for team logos
+- **Format**: PNG with transparency
+- **Load Time**: <200ms for existing logos
+- **Fallback Time**: <50ms for fallback icons
+- **Failed Requests**: <1% rate for team logos
+
+### Component Integration Patterns
+
+#### **Soccer Game Card with Smart Logos**
+```jsx
+function SoccerGameCard({ game, selectedLeague }) {
+  // Get smart team logos with fallback
+  const homeTeamLogo = getTeamLogo(game.home_team, selectedLeague);
+  const awayTeamLogo = getTeamLogo(game.away_team, selectedLeague);
+
+  return (
+    <div className="top_matches__cmncard">
+      <div className="d-flex align-items-center gap-2">
+        <Image 
+          src={homeTeamLogo} 
+          width={24} 
+          height={24} 
+          alt={game.home_team}
+          onError={(e) => handleImageError(e, game.home_team, selectedLeague)}
+        />
+        <span>{game.home_team}</span>
+      </div>
+      {/* Away team similar pattern */}
+    </div>
+  );
+}
+```
+
+#### **League Data Quality Indicators**
+```jsx
+// Show data quality to users transparently
+function DataQualityIndicator({ league }) {
+  const qualities = {
+    'epl': { status: 'excellent', icon: '🟢', text: 'Complete data & logos' },
+    'spain_la_liga': { status: 'good', icon: '🟡', text: 'Live data, limited logos' },
+    'france_ligue_one': { status: 'limited', icon: '🔒', text: 'Coming soon' }
+  };
+  
+  const quality = qualities[league];
+  
+  return (
+    <div className="d-flex align-items-center gap-2">
+      <span>{quality.icon}</span>
+      <small className="text-muted">{quality.text}</small>
+    </div>
+  );
+}
+```
+
+### Error State Components
+
+#### **Smart Error Handling**
+```jsx
+function SoccerErrorState({ message, onRetry }) {
+  return (
+    <div className="text-center py-5">
+      <div className="mb-3">
+        <Image src="/images/icon/soccer-icon.png" width={48} height={48} alt="Soccer" />
+      </div>
+      <h5 className="mb-3">Unable to load soccer matches</h5>
+      <p className="text-muted mb-3">{message}</p>
+      <button className="btn btn-primary btn-sm" onClick={onRetry}>
+        <i className="fas fa-redo me-2"></i>Try Again
+      </button>
+    </div>
+  );
+}
+```
+
+#### **Empty State with Status Awareness**
+```jsx
+function NoMatchesState({ selectedLeague, availableLeagues }) {
+  const league = availableLeagues.find(l => l.key === selectedLeague);
+  
+  return (
+    <div className="text-center py-5">
+      <div className="mb-3">
+        <Image src="/images/icon/soccer-icon.png" width={48} height={48} alt="Soccer" />
+      </div>
+      <h5 className="mb-3">No matches available</h5>
+      <p className="text-muted">
+        No soccer matches are currently available for {league?.name}.
+        {league?.status === 'preview' && (
+          <><br/><small>This league is in preview mode with limited team logos.</small></>
+        )}
+      </p>
+    </div>
+  );
+}
+```
+
+### CSS Variables for League Theming
+
+#### **League-Specific Color Schemes**
+```css
+:root {
+  /* EPL - Premium Tier */
+  --epl-primary: #37003c;
+  --epl-secondary: #00ff85;
+  
+  /* La Liga - Preview Tier */
+  --laliga-primary: #ff6900;
+  --laliga-secondary: #ffffff;
+  
+  /* Bundesliga - Preview Tier */
+  --bundesliga-primary: #000000;
+  --bundesliga-secondary: #ff0000;
+  
+  /* Serie A - Preview Tier */
+  --seriea-primary: #0066cc;
+  --seriea-secondary: #ffffff;
+  
+  /* Status Colors */
+  --status-live: #198754;    /* Green for live leagues */
+  --status-preview: #ffc107; /* Yellow for preview leagues */
+  --status-coming: #6c757d;  /* Gray for coming soon */
+}
+```
+
+#### **Status-Based Button Styling**
+```css
+.btn-league-live {
+  border-color: var(--status-live);
+  color: var(--status-live);
+}
+
+.btn-league-live:hover {
+  background-color: var(--status-live);
+  border-color: var(--status-live);
+}
+
+.btn-league-preview {
+  border-color: var(--status-preview);
+  color: var(--status-preview);
+}
+
+.btn-league-coming-soon {
+  border-color: var(--status-coming);
+  color: var(--status-coming);
+  cursor: not-allowed;
+}
+```
+
+### Progressive Enhancement Guidelines
+
+#### **Mobile-First Logo Display**
+```css
+/* Responsive team logo sizing */
+.team-logo {
+  width: 20px;
+  height: 20px;
+}
+
+@media (min-width: 768px) {
+  .team-logo {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .team-logo {
+    width: 32px;
+    height: 32px;
+  }
+}
+```
+
+#### **Loading State for Logos**
+```jsx
+function TeamLogo({ teamName, league, size = 24 }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  
+  return (
+    <div className="position-relative">
+      {loading && (
+        <div 
+          className="bg-secondary rounded" 
+          style={{width: size, height: size}}
+        />
+      )}
+      <Image 
+        src={getTeamLogo(teamName, league)}
+        width={size} 
+        height={size} 
+        alt={teamName}
+        className={loading ? 'd-none' : ''}
+        onLoad={() => setLoading(false)}
+        onError={(e) => {
+          setError(true);
+          setLoading(false);
+          handleImageError(e, teamName, league);
+        }}
+      />
+    </div>
+  );
+}
+```
+
+This team logo system ensures **consistent performance**, **professional appearance**, and **sustainable resource usage** across all sports betting interfaces.
 
 ---
 

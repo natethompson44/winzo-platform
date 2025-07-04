@@ -11,6 +11,7 @@
 - [Build & Deployment](#build--deployment)
 - [Performance](#performance)
 - [Troubleshooting](#troubleshooting)
+- [Progressive League Rollout Strategy](#progressive-league-rollout-strategy)
 
 ## Getting Started
 
@@ -1216,3 +1217,190 @@ static formatGameTime(commenceTime) {
 Times are displayed consistently across all sports pages using the formatted time from the API.
 
 **Example Fix**: Eagles vs Cowboys game showing "Sep 5, 12:20 AM" is now correctly displayed as "Sep 4, 7:20 PM CDT" 
+
+## Progressive League Rollout Strategy
+
+**CRITICAL**: As of January 2025, WINZO implements a strategic **Progressive League Rollout** approach to ensure excellent user experience while managing API quotas and asset availability.
+
+### League Status Tiers
+
+#### **🟢 Live Tier** - Premium Experience
+- **Criteria**: 95%+ team logo coverage + comprehensive API data
+- **Current Leagues**: 
+  - **EPL (English Premier League)** ✅
+  - **NFL (American Football)** ✅
+- **Features**: 
+  - Real-time updates every 30 seconds
+  - Full team logo coverage
+  - Priority API quota allocation
+  - Enhanced betting markets
+
+#### **🟡 Preview Tier** - Limited Experience  
+- **Criteria**: Live API data but limited team logos
+- **Current Leagues**:
+  - **La Liga (Spain)** ⚠️ 
+  - **Bundesliga (Germany)** ⚠️
+  - **Serie A (Italy)** ⚠️
+- **Features**:
+  - Live odds data
+  - League-specific fallback icons for missing logos
+  - Manual refresh (no auto-updates)
+  - Basic betting markets
+
+#### **🔒 Coming Soon Tier** - Future Development
+- **Criteria**: Leagues awaiting logo asset completion
+- **Current Leagues**:
+  - **Ligue 1 (France)** 🚧
+  - **UEFA Champions League** 🚧
+- **Status**: Buttons disabled, shows "Coming Soon" indicator
+
+### Implementation Guidelines
+
+#### **Adding New Leagues**
+```javascript
+// 1. Add league to appropriate tier in TopSoccer.tsx
+const availableLeagues = [
+  { 
+    key: 'new_league', 
+    name: 'New League', 
+    flag: '🏆',
+    status: 'preview', // Start with preview
+    dataQuality: 'partial'
+  }
+];
+
+// 2. Add team mappings in utils/teamLogos.ts
+const leagueTeamMappings = {
+  'new_league': {
+    'Team Name': '/images/clubs/new_league/team-name.png',
+    // Add all teams...
+  }
+};
+
+// 3. Add sport key mapping in backend routes/sports.js
+const sportKeyMapping = {
+  'new_league': 'api_sport_key'
+};
+```
+
+#### **Promoting Leagues to Live Status**
+1. **Asset Requirement**: Minimum 95% team logo coverage
+2. **Update Status**: Change `status: 'preview'` to `status: 'live'`
+3. **Enable Auto-refresh**: Add to auto-update logic
+4. **Update Documentation**: Document the promotion
+
+#### **League-Specific Fallback System**
+```javascript
+// Smart fallback prevents default-team.png spam
+const sportFallbacks = {
+  'epl': '/images/icon/epl-icon.png',
+  'spain_la_liga': '/images/icon/laliga-icon.png',
+  'germany_bundesliga': '/images/icon/bundesliga-icon.png',
+  // League-specific fallbacks prevent performance issues
+};
+```
+
+### Team Logo Management
+
+#### **Directory Structure**
+```
+public/images/clubs/
+├── epl/                    # English Premier League (COMPLETE)
+│   ├── manchester-united.png
+│   ├── liverpool.png
+│   └── ...
+├── laliga/                 # Spanish La Liga (PARTIAL)
+│   ├── real-madrid.png
+│   ├── barcelona.png
+│   └── ...
+├── bundesliga/             # German Bundesliga (PARTIAL)
+├── seriea/                 # Italian Serie A (PARTIAL)
+├── ligue1/                 # French Ligue 1 (MINIMAL)
+└── default-team.png        # DEPRECATED - use league fallbacks
+```
+
+#### **Team Logo Utility Functions**
+```javascript
+import { getTeamLogo, handleImageError } from '@/utils/teamLogos';
+
+// Get team logo with smart fallback
+const teamLogo = getTeamLogo(teamName, league);
+
+// Handle image load errors
+<Image 
+  src={teamLogo}
+  onError={(e) => handleImageError(e, teamName, league)}
+/>
+```
+
+#### **Performance Best Practices**
+- ✅ **DO**: Use `getTeamLogo()` utility for all team logos
+- ✅ **DO**: Use league-specific fallbacks
+- ✅ **DO**: Cache failed logo requests
+- ❌ **DON'T**: Use direct paths to team logos
+- ❌ **DON'T**: Fall back to `default-team.png`
+- ❌ **DON'T**: Allow 100+ HTTP requests for missing logos
+
+### API Quota Management
+
+#### **Quota Allocation Strategy**
+- **EPL**: 40% of monthly quota (highest priority)
+- **NFL**: 35% of monthly quota (highest priority)  
+- **Preview Leagues**: 20% of monthly quota (shared)
+- **Emergency Reserve**: 5% (critical situations only)
+
+#### **Quota-Based Behavior**
+```javascript
+// Auto-scaling based on quota usage
+if (quotaUsage > 90%) {
+  // Only EPL and NFL get real-time updates
+  enabledLeagues = ['epl', 'americanfootball_nfl'];
+} else if (quotaUsage > 80%) {
+  // Reduce update frequency for preview leagues
+  updateInterval = 60000; // 1 minute instead of 30 seconds
+}
+```
+
+#### **Fallback Strategy**
+- **Quota Exhausted**: All leagues fall back to cached/mock data
+- **API Errors**: Individual leagues fall back gracefully
+- **Rate Limiting**: Implement exponential backoff
+
+### Development Workflow
+
+#### **Before Adding New Sports/Leagues**
+1. **Check API Support**: Verify sport key exists in The Odds API
+2. **Asset Planning**: Identify required team logos (typically 16-32 teams)
+3. **Fallback Design**: Create league-specific icon
+4. **Start with Preview**: Never launch directly to "Live" status
+
+#### **Asset Completion Process**
+1. **Download Team Logos**: Use automated scripts when possible
+2. **Optimize Images**: PNG format, 64x64px recommended  
+3. **Update Mappings**: Add to `utils/teamLogos.ts`
+4. **Test Fallbacks**: Verify missing logo behavior
+5. **Promote to Live**: Update status after 95% completion
+
+#### **Testing Requirements**
+- ✅ **Logo Coverage**: Test all teams in league
+- ✅ **Fallback Behavior**: Test missing logo scenarios
+- ✅ **Performance**: Verify no logo spam in Network tab
+- ✅ **Mobile Experience**: Test on touch devices
+- ✅ **API Integration**: Verify live data flow
+
+### Monitoring and Maintenance
+
+#### **Performance Metrics**
+- **Logo Load Times**: <200ms for existing logos
+- **Fallback Efficiency**: <50ms for fallback icons
+- **API Response Times**: <500ms for league data
+- **Failed Request Rate**: <1% for team logos
+
+#### **Monthly Review Process**
+1. **Quota Analysis**: Review API usage patterns
+2. **Asset Audit**: Identify missing team logos
+3. **Performance Review**: Check Core Web Vitals
+4. **User Feedback**: Monitor league preference requests
+5. **Promotion Planning**: Plan next leagues for "Live" status
+
+This progressive approach ensures **excellent user experience** while maintaining **sustainable resource usage** and **scalable architecture**. 
