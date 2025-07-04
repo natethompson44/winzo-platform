@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect, useCallback } from 'react';
 import sportsService from '@/services/sportsService';
+import { getTeamLogo, handleImageError } from '@/utils/teamLogos';
 
 // TypeScript interface for Soccer Game data
 interface SoccerGame {
@@ -112,7 +113,7 @@ function SoccerErrorState({ message, onRetry }: { message: string; onRetry: () =
 }
 
 // Soccer game card component with 3-way betting
-function SoccerGameCard({ game }: { game: SoccerGame }) {
+function SoccerGameCard({ game, selectedLeague }: { game: SoccerGame; selectedLeague: string }) {
   // Extract 3-way betting odds
   const get3WayOdds = () => {
     if (game.best_odds?.h2h) {
@@ -127,6 +128,10 @@ function SoccerGameCard({ game }: { game: SoccerGame }) {
   };
 
   const odds = get3WayOdds();
+  
+  // Get smart team logos with fallback
+  const homeTeamLogo = getTeamLogo(game.home_team, selectedLeague);
+  const awayTeamLogo = getTeamLogo(game.away_team, selectedLeague);
 
   return (
     <div className="top_matches__cmncard p2-bg p-4 rounded-3 mb-4">
@@ -168,27 +173,21 @@ function SoccerGameCard({ game }: { game: SoccerGame }) {
               <div>
                 <div className="d-flex align-items-center gap-2 mb-4">
                   <Image 
-                    src={game.home_team_logo} 
+                    src={homeTeamLogo} 
                     width={24} 
                     height={24} 
                     alt={game.home_team}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/images/clubs/default-team.png';
-                    }}
+                    onError={(e) => handleImageError(e, game.home_team, selectedLeague)}
                   />
                   <span className="fs-seven cpoint">{game.home_team}</span>
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <Image 
-                    src={game.away_team_logo} 
+                    src={awayTeamLogo} 
                     width={24} 
                     height={24} 
                     alt={game.away_team}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/images/clubs/default-team.png';
-                    }}
+                    onError={(e) => handleImageError(e, game.away_team, selectedLeague)}
                   />
                   <span className="fs-seven cpoint">{game.away_team}</span>
                 </div>
@@ -316,6 +315,60 @@ export default function TopSoccer() {
   const [soccerGames, setSoccerGames] = useState<SoccerGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // STRATEGIC CHANGE: Progressive League Rollout
+  // Only show leagues we have comprehensive data for
+  const availableLeagues = [
+    { 
+      key: 'epl', 
+      name: 'Premier League', 
+      flag: '🇬🇧',
+      status: 'live', // Live data + comprehensive logos
+      dataQuality: 'excellent'
+    },
+    { 
+      key: 'spain_la_liga', 
+      name: 'La Liga', 
+      flag: '🇪🇸',
+      status: 'preview', // Live data but limited logos
+      dataQuality: 'partial'
+    },
+    { 
+      key: 'germany_bundesliga', 
+      name: 'Bundesliga', 
+      flag: '🇩🇪',
+      status: 'preview',
+      dataQuality: 'partial'
+    },
+    { 
+      key: 'italy_serie_a', 
+      name: 'Serie A', 
+      flag: '🇮🇹',
+      status: 'preview',
+      dataQuality: 'partial'
+    },
+    { 
+      key: 'france_ligue_one', 
+      name: 'Ligue 1', 
+      flag: '🇫🇷',
+      status: 'coming_soon', // Coming soon
+      dataQuality: 'limited'
+    },
+    { 
+      key: 'uefa_champions_league', 
+      name: 'Champions League', 
+      flag: '🏆',
+      status: 'coming_soon',
+      dataQuality: 'limited'
+    }
+  ];
+
+  // Filter leagues based on data quality for main display
+  const primaryLeagues = availableLeagues.filter(league => league.status === 'live');
+  const previewLeagues = availableLeagues.filter(league => league.status === 'preview');
+  const comingSoonLeagues = availableLeagues.filter(league => league.status === 'coming_soon');
+
+  // Default to EPL (only fully ready league)
   const [selectedLeague, setSelectedLeague] = useState('epl');
 
   // FIXED: Memoize fetchSoccerGames to prevent unnecessary re-creation
@@ -352,15 +405,6 @@ export default function TopSoccer() {
     fetchSoccerGames();
   };
 
-  const availableLeagues = [
-    { key: 'epl', name: 'Premier League', flag: '🇬🇧' },
-    { key: 'spain_la_liga', name: 'La Liga', flag: '🇪🇸' },
-    { key: 'germany_bundesliga', name: 'Bundesliga', flag: '🇩🇪' },
-    { key: 'italy_serie_a', name: 'Serie A', flag: '🇮🇹' },
-    { key: 'france_ligue_one', name: 'Ligue 1', flag: '🇫🇷' },
-    { key: 'uefa_champions_league', name: 'Champions League', flag: '🏆' }
-  ];
-
   return (
     <section className="top_matches">
       <div className="container-fluid">
@@ -380,21 +424,69 @@ export default function TopSoccer() {
                     <span className="badge bg-success ms-2">Live Data</span>
                   </div>
 
-                  {/* League Selection */}
+                  {/* League Selection with Status Indicators */}
                   <div className="mb-4">
                     <div className="row">
                       <div className="col-12">
-                        <div className="d-flex flex-wrap gap-2 mb-3">
-                          {availableLeagues.map((league) => (
-                            <button
-                              key={league.key}
-                              className={`btn btn-sm ${selectedLeague === league.key ? 'btn-primary' : 'btn-outline-primary'}`}
-                              onClick={() => setSelectedLeague(league.key)}
-                            >
-                              {league.flag} {league.name}
-                            </button>
-                          ))}
+                        
+                        {/* Primary Leagues (Full Data) */}
+                        <div className="mb-3">
+                          <h6 className="mb-2 d-flex align-items-center gap-2">
+                            <span className="badge bg-success">Live</span>
+                            Premium Leagues
+                          </h6>
+                          <div className="d-flex flex-wrap gap-2">
+                            {primaryLeagues.map((league) => (
+                              <button
+                                key={league.key}
+                                className={`btn btn-sm ${selectedLeague === league.key ? 'btn-primary' : 'btn-outline-primary'}`}
+                                onClick={() => setSelectedLeague(league.key)}
+                              >
+                                {league.flag} {league.name}
+                              </button>
+                            ))}
+                          </div>
                         </div>
+
+                        {/* Preview Leagues (Limited Data) */}
+                        <div className="mb-3">
+                          <h6 className="mb-2 d-flex align-items-center gap-2">
+                            <span className="badge bg-warning">Preview</span>
+                            Additional Leagues
+                            <small className="text-muted">(Limited team logos)</small>
+                          </h6>
+                          <div className="d-flex flex-wrap gap-2">
+                            {previewLeagues.map((league) => (
+                              <button
+                                key={league.key}
+                                className={`btn btn-sm ${selectedLeague === league.key ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                onClick={() => setSelectedLeague(league.key)}
+                              >
+                                {league.flag} {league.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Coming Soon Leagues */}
+                        <div className="mb-3">
+                          <h6 className="mb-2 d-flex align-items-center gap-2">
+                            <span className="badge bg-secondary">Coming Soon</span>
+                            Future Leagues
+                          </h6>
+                          <div className="d-flex flex-wrap gap-2">
+                            {comingSoonLeagues.map((league) => (
+                              <button
+                                key={league.key}
+                                className="btn btn-sm btn-outline-secondary"
+                                disabled
+                              >
+                                {league.flag} {league.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -425,7 +517,7 @@ export default function TopSoccer() {
                     {!loading && !error && soccerGames.length > 0 && (
                       <>
                         {soccerGames.map((game) => (
-                          <SoccerGameCard key={game.id} game={game} />
+                          <SoccerGameCard key={game.id} game={game} selectedLeague={selectedLeague} />
                         ))}
                         
                         {/* Data source info */}
