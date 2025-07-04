@@ -1,0 +1,152 @@
+{
+  "ARI": {
+    "name": "Diamondbacks",
+    "filename": "diamondbacks.png",
+    "espnId": "29"
+  },
+  "ATH": {
+    "name": "Athletics",
+    "filename": "athletics.png",
+    "espnId": "11"
+  },
+  "ATL": {
+    "name": "Braves",
+    "filename": "braves.png",
+    "espnId": "15"
+  },
+  "BAL": {
+    "name": "Orioles",
+    "filename": "orioles.png",
+    "espnId": "1"
+  },
+  "BOS": {
+    "name": "Red Sox",
+    "filename": "red-sox.png",
+    "espnId": "2"
+  },
+  "CHC": {
+    "name": "Cubs",
+    "filename": "cubs.png",
+    "espnId": "16"
+  },
+  "CHW": {
+    "name": "White Sox",
+    "filename": "white-sox.png",
+    "espnId": "4"
+  },
+  "CIN": {
+    "name": "Reds",
+    "filename": "reds.png",
+    "espnId": "17"
+  },
+  "CLE": {
+    "name": "Guardians",
+    "filename": "guardians.png",
+    "espnId": "5"
+  },
+  "COL": {
+    "name": "Rockies",
+    "filename": "rockies.png",
+    "espnId": "27"
+  },
+  "DET": {
+    "name": "Tigers",
+    "filename": "tigers.png",
+    "espnId": "6"
+  },
+  "HOU": {
+    "name": "Astros",
+    "filename": "astros.png",
+    "espnId": "18"
+  },
+  "KC": {
+    "name": "Royals",
+    "filename": "royals.png",
+    "espnId": "7"
+  },
+  "LAA": {
+    "name": "Angels",
+    "filename": "angels.png",
+    "espnId": "3"
+  },
+  "LAD": {
+    "name": "Dodgers",
+    "filename": "dodgers.png",
+    "espnId": "19"
+  },
+  "MIA": {
+    "name": "Marlins",
+    "filename": "marlins.png",
+    "espnId": "28"
+  },
+  "MIL": {
+    "name": "Brewers",
+    "filename": "brewers.png",
+    "espnId": "8"
+  },
+  "MIN": {
+    "name": "Twins",
+    "filename": "twins.png",
+    "espnId": "9"
+  },
+  "NYM": {
+    "name": "Mets",
+    "filename": "mets.png",
+    "espnId": "21"
+  },
+  "NYY": {
+    "name": "Yankees",
+    "filename": "yankees.png",
+    "espnId": "10"
+  },
+  "PHI": {
+    "name": "Phillies",
+    "filename": "phillies.png",
+    "espnId": "22"
+  },
+  "PIT": {
+    "name": "Pirates",
+    "filename": "pirates.png",
+    "espnId": "23"
+  },
+  "SD": {
+    "name": "Padres",
+    "filename": "padres.png",
+    "espnId": "25"
+  },
+  "SF": {
+    "name": "Giants",
+    "filename": "giants.png",
+    "espnId": "26"
+  },
+  "SEA": {
+    "name": "Mariners",
+    "filename": "mariners.png",
+    "espnId": "12"
+  },
+  "STL": {
+    "name": "Cardinals",
+    "filename": "cardinals.png",
+    "espnId": "24"
+  },
+  "TB": {
+    "name": "Rays",
+    "filename": "rays.png",
+    "espnId": "30"
+  },
+  "TEX": {
+    "name": "Rangers",
+    "filename": "rangers.png",
+    "espnId": "13"
+  },
+  "TOR": {
+    "name": "Blue Jays",
+    "filename": "blue-jays.png",
+    "espnId": "14"
+  },
+  "WSH": {
+    "name": "Nationals",
+    "filename": "nationals.png",
+    "espnId": "20"
+  }
+}

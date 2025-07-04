@@ -1,0 +1,152 @@
+{
+  "ATL": {
+    "name": "Atlanta United FC",
+    "filename": "atlanta-united-fc.png",
+    "espnId": "18418"
+  },
+  "ATX": {
+    "name": "Austin FC",
+    "filename": "austin-fc.png",
+    "espnId": "20906"
+  },
+  "MTL": {
+    "name": "CF Montréal",
+    "filename": "cf-montral.png",
+    "espnId": "9720"
+  },
+  "CLT": {
+    "name": "Charlotte FC",
+    "filename": "charlotte-fc.png",
+    "espnId": "21300"
+  },
+  "CHI": {
+    "name": "Chicago Fire FC",
+    "filename": "chicago-fire-fc.png",
+    "espnId": "182"
+  },
+  "COL": {
+    "name": "Colorado Rapids",
+    "filename": "colorado-rapids.png",
+    "espnId": "184"
+  },
+  "CLB": {
+    "name": "Columbus Crew",
+    "filename": "columbus-crew.png",
+    "espnId": "183"
+  },
+  "DC": {
+    "name": "D.C. United",
+    "filename": "dc-united.png",
+    "espnId": "193"
+  },
+  "CIN": {
+    "name": "FC Cincinnati",
+    "filename": "fc-cincinnati.png",
+    "espnId": "18267"
+  },
+  "DAL": {
+    "name": "FC Dallas",
+    "filename": "fc-dallas.png",
+    "espnId": "185"
+  },
+  "HOU": {
+    "name": "Houston Dynamo FC",
+    "filename": "houston-dynamo-fc.png",
+    "espnId": "6077"
+  },
+  "MIA": {
+    "name": "Inter Miami CF",
+    "filename": "inter-miami-cf.png",
+    "espnId": "20232"
+  },
+  "LA": {
+    "name": "LA Galaxy",
+    "filename": "la-galaxy.png",
+    "espnId": "187"
+  },
+  "LAFC": {
+    "name": "LAFC",
+    "filename": "lafc.png",
+    "espnId": "18966"
+  },
+  "MIN": {
+    "name": "Minnesota United FC",
+    "filename": "minnesota-united-fc.png",
+    "espnId": "17362"
+  },
+  "NSH": {
+    "name": "Nashville SC",
+    "filename": "nashville-sc.png",
+    "espnId": "18986"
+  },
+  "NE": {
+    "name": "New England Revolution",
+    "filename": "new-england-revolution.png",
+    "espnId": "189"
+  },
+  "NYC": {
+    "name": "New York City FC",
+    "filename": "new-york-city-fc.png",
+    "espnId": "17606"
+  },
+  "NY": {
+    "name": "New York Red Bulls",
+    "filename": "new-york-red-bulls.png",
+    "espnId": "190"
+  },
+  "ORL": {
+    "name": "Orlando City SC",
+    "filename": "orlando-city-sc.png",
+    "espnId": "12011"
+  },
+  "PHI": {
+    "name": "Philadelphia Union",
+    "filename": "philadelphia-union.png",
+    "espnId": "10739"
+  },
+  "POR": {
+    "name": "Portland Timbers",
+    "filename": "portland-timbers.png",
+    "espnId": "9723"
+  },
+  "RSL": {
+    "name": "Real Salt Lake",
+    "filename": "real-salt-lake.png",
+    "espnId": "4771"
+  },
+  "SD": {
+    "name": "San Diego FC",
+    "filename": "san-diego-fc.png",
+    "espnId": "22529"
+  },
+  "SJ": {
+    "name": "San Jose Earthquakes",
+    "filename": "san-jose-earthquakes.png",
+    "espnId": "191"
+  },
+  "SEA": {
+    "name": "Seattle Sounders FC",
+    "filename": "seattle-sounders-fc.png",
+    "espnId": "9726"
+  },
+  "SKC": {
+    "name": "Sporting Kansas City",
+    "filename": "sporting-kansas-city.png",
+    "espnId": "186"
+  },
+  "STL": {
+    "name": "St. Louis CITY SC",
+    "filename": "st-louis-city-sc.png",
+    "espnId": "21812"
+  },
+  "TOR": {
+    "name": "Toronto FC",
+    "filename": "toronto-fc.png",
+    "espnId": "7318"
+  },
+  "VAN": {
+    "name": "Vancouver Whitecaps",
+    "filename": "vancouver-whitecaps.png",
+    "espnId": "9727"
+  }
+}

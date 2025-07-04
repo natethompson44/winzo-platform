@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import sportsService from '@/services/sportsService';
 
 // TypeScript interface for Soccer Game data
@@ -318,7 +318,7 @@ export default function TopSoccer() {
   const [error, setError] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState('epl');
 
-  const fetchSoccerGames = async () => {
+  const fetchSoccerGames = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -337,7 +337,7 @@ export default function TopSoccer() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedLeague]);
 
   useEffect(() => {
     fetchSoccerGames();
@@ -345,7 +345,7 @@ export default function TopSoccer() {
     // Set up real-time updates every 30 seconds
     const interval = setInterval(fetchSoccerGames, 30000);
     return () => clearInterval(interval);
-  }, [selectedLeague]);
+  }, [selectedLeague, fetchSoccerGames]); // Include fetchSoccerGames in dependency array
 
   const handleRetry = () => {
     fetchSoccerGames();

@@ -397,7 +397,7 @@ export default function SoccerLive() {
     // Set up real-time updates every 15 seconds for live matches
     const interval = setInterval(fetchLiveGames, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
 
   return (
     <section className="top_matches">

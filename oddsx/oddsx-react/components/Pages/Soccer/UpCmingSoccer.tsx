@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import sportsService from '@/services/sportsService';
 
 // TypeScript interface for Upcoming Soccer Game data
@@ -323,7 +323,7 @@ export default function UpCmingSoccer() {
   const [error, setError] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState('epl');
 
-  const fetchUpcomingGames = async () => {
+  const fetchUpcomingGames = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -363,7 +363,7 @@ export default function UpCmingSoccer() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedLeague]);
 
   useEffect(() => {
     fetchUpcomingGames();
@@ -371,7 +371,7 @@ export default function UpCmingSoccer() {
     // Set up updates every 60 seconds for upcoming matches
     const interval = setInterval(fetchUpcomingGames, 60000);
     return () => clearInterval(interval);
-  }, [selectedLeague]);
+  }, [selectedLeague, fetchUpcomingGames]); // Include fetchUpcomingGames in dependency array
 
   const availableLeagues = [
     { key: 'epl', name: 'Premier League', flag: '🇬🇧' },

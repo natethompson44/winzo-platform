@@ -1,0 +1,182 @@
+{
+  "MIL": {
+    "name": "AC Milan",
+    "filename": "ac-milan.png",
+    "espnId": "103"
+  },
+  "MON": {
+    "name": "AS Monaco",
+    "filename": "as-monaco.png",
+    "espnId": "174"
+  },
+  "ARS": {
+    "name": "Arsenal",
+    "filename": "arsenal.png",
+    "espnId": "359"
+  },
+  "AVL": {
+    "name": "Aston Villa",
+    "filename": "aston-villa.png",
+    "espnId": "362"
+  },
+  "ATA": {
+    "name": "Atalanta",
+    "filename": "atalanta.png",
+    "espnId": "105"
+  },
+  "ATM": {
+    "name": "Atlético Madrid",
+    "filename": "atltico-madrid.png",
+    "espnId": "1068"
+  },
+  "BAR": {
+    "name": "Barcelona",
+    "filename": "barcelona.png",
+    "espnId": "83"
+  },
+  "B04": {
+    "name": "Bayer Leverkusen",
+    "filename": "bayer-leverkusen.png",
+    "espnId": "131"
+  },
+  "MUN": {
+    "name": "Bayern Munich",
+    "filename": "bayern-munich.png",
+    "espnId": "132"
+  },
+  "BEN": {
+    "name": "Benfica",
+    "filename": "benfica.png",
+    "espnId": "1929"
+  },
+  "BOL": {
+    "name": "Bologna",
+    "filename": "bologna.png",
+    "espnId": "107"
+  },
+  "DOR": {
+    "name": "Borussia Dortmund",
+    "filename": "borussia-dortmund.png",
+    "espnId": "124"
+  },
+  "BRE": {
+    "name": "Brest",
+    "filename": "brest.png",
+    "espnId": "6997"
+  },
+  "CEL": {
+    "name": "Celtic",
+    "filename": "celtic.png",
+    "espnId": "256"
+  },
+  "BRU": {
+    "name": "Club Brugge",
+    "filename": "club-brugge.png",
+    "espnId": "570"
+  },
+  "DZG": {
+    "name": "Dinamo Zagreb",
+    "filename": "dinamo-zagreb.png",
+    "espnId": "597"
+  },
+  "FEY": {
+    "name": "Feyenoord Rotterdam",
+    "filename": "feyenoord-rotterdam.png",
+    "espnId": "142"
+  },
+  "GIR": {
+    "name": "Girona",
+    "filename": "girona.png",
+    "espnId": "9812"
+  },
+  "INT": {
+    "name": "Internazionale",
+    "filename": "internazionale.png",
+    "espnId": "110"
+  },
+  "JUV": {
+    "name": "Juventus",
+    "filename": "juventus.png",
+    "espnId": "111"
+  },
+  "LILL": {
+    "name": "Lille",
+    "filename": "lille.png",
+    "espnId": "166"
+  },
+  "LIV": {
+    "name": "Liverpool",
+    "filename": "liverpool.png",
+    "espnId": "364"
+  },
+  "MNC": {
+    "name": "Manchester City",
+    "filename": "manchester-city.png",
+    "espnId": "382"
+  },
+  "PSV": {
+    "name": "PSV Eindhoven",
+    "filename": "psv-eindhoven.png",
+    "espnId": "148"
+  },
+  "PSG": {
+    "name": "Paris Saint-Germain",
+    "filename": "paris-saint-germain.png",
+    "espnId": "160"
+  },
+  "RBL": {
+    "name": "RB Leipzig",
+    "filename": "rb-leipzig.png",
+    "espnId": "11420"
+  },
+  "SLZ": {
+    "name": "RB Salzburg",
+    "filename": "rb-salzburg.png",
+    "espnId": "2790"
+  },
+  "RMA": {
+    "name": "Real Madrid",
+    "filename": "real-madrid.png",
+    "espnId": "86"
+  },
+  "RSB": {
+    "name": "Red Star Belgrade",
+    "filename": "red-star-belgrade.png",
+    "espnId": "2290"
+  },
+  "STG": {
+    "name": "SK Sturm Graz",
+    "filename": "sk-sturm-graz.png",
+    "espnId": "3746"
+  },
+  "SHK": {
+    "name": "Shakhtar Donetsk",
+    "filename": "shakhtar-donetsk.png",
+    "espnId": "493"
+  },
+  "SLB": {
+    "name": "Slovan Bratislava",
+    "filename": "slovan-bratislava.png",
+    "espnId": "521"
+  },
+  "SPP": {
+    "name": "Sparta Prague",
+    "filename": "sparta-prague.png",
+    "espnId": "433"
+  },
+  "SCP": {
+    "name": "Sporting CP",
+    "filename": "sporting-cp.png",
+    "espnId": "2250"
+  },
+  "VFB": {
+    "name": "VfB Stuttgart",
+    "filename": "vfb-stuttgart.png",
+    "espnId": "134"
+  },
+  "YB": {
+    "name": "Young Boys",
+    "filename": "young-boys.png",
+    "espnId": "2722"
+  }
+}

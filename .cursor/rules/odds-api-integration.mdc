@@ -67,11 +67,21 @@ const transformedGame = {
   game_time: formatGameTime(apiGame.commence_time),
   home_team: apiGame.home_team,
   away_team: apiGame.away_team,
-  home_team_logo: getTeamLogo(apiGame.home_team),
-  away_team_logo: getTeamLogo(apiGame.away_team),
+  // CRITICAL: Use sport-specific subdirectories for team logos
+  home_team_logo: getTeamLogo(apiGame.home_team, sport), // /images/clubs/{sport}/team-name.png
+  away_team_logo: getTeamLogo(apiGame.away_team, sport), // /images/clubs/{sport}/team-name.png
   markets: transformMarkets(apiGame.bookmakers),
   best_odds: calculateBestOdds(apiGame.bookmakers)
 };
+
+// TEAM LOGO PATH REQUIREMENTS:
+// NFL: /images/clubs/nfl/[team-name].png
+// EPL: /images/clubs/epl/[team-name].png  
+// NBA: /images/clubs/nba/[team-name].png
+// NHL: /images/clubs/nhl/[team-name].png
+// MLB: /images/clubs/mlb/[team-name].png
+// LaLiga: /images/clubs/laliga/[team-name].png
+// ALL OTHER SPORTS: /images/clubs/{sport}/[team-name].png
 ```
 
 #### **API Integration Standards**
@@ -85,6 +95,13 @@ const transformedGame = {
 - **Loading States**: Show skeleton loaders during API calls
 - **Error States**: Graceful degradation with user-friendly messages
 - **Mobile First**: Ensure betting workflows work on mobile devices
+
+#### **Team Logo Integration** 
+- **Frontend Utility**: ALWAYS use `utils/teamLogos.ts` for logo path generation
+- **No Direct Paths**: Never hardcode logo paths in components
+- **Sport Subdirectories**: All team logos must use sport-specific folders
+- **Fallback Handling**: Use default-team.png for missing logos only
+- **Performance**: Prevent 100+ HTTP requests to default logos
 
 ### **Phase-Specific Guidelines**
 
@@ -123,6 +140,8 @@ const transformedGame = {
 - **Maintain**: `docs/DEVELOPMENT_GUIDE.md` with integration patterns
 - **Document**: All custom transformations and mappings
 - **Create**: Troubleshooting guides for common API issues
+- **Team Logos**: Keep `/images/clubs/README.md` updated with new sports
+- **Path Standards**: Document proper logo path structure for all sports
 
 ### **Emergency Procedures**
 - **API Downtime**: Automatic fallback to mock data

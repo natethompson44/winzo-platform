@@ -1,0 +1,162 @@
+{
+  "ANA": {
+    "name": "Ducks",
+    "filename": "ducks.png",
+    "espnId": "25"
+  },
+  "BOS": {
+    "name": "Bruins",
+    "filename": "bruins.png",
+    "espnId": "1"
+  },
+  "BUF": {
+    "name": "Sabres",
+    "filename": "sabres.png",
+    "espnId": "2"
+  },
+  "CGY": {
+    "name": "Flames",
+    "filename": "flames.png",
+    "espnId": "3"
+  },
+  "CAR": {
+    "name": "Hurricanes",
+    "filename": "hurricanes.png",
+    "espnId": "7"
+  },
+  "CHI": {
+    "name": "Blackhawks",
+    "filename": "blackhawks.png",
+    "espnId": "4"
+  },
+  "COL": {
+    "name": "Avalanche",
+    "filename": "avalanche.png",
+    "espnId": "17"
+  },
+  "CBJ": {
+    "name": "Blue Jackets",
+    "filename": "blue-jackets.png",
+    "espnId": "29"
+  },
+  "DAL": {
+    "name": "Stars",
+    "filename": "stars.png",
+    "espnId": "9"
+  },
+  "DET": {
+    "name": "Red Wings",
+    "filename": "red-wings.png",
+    "espnId": "5"
+  },
+  "EDM": {
+    "name": "Oilers",
+    "filename": "oilers.png",
+    "espnId": "6"
+  },
+  "FLA": {
+    "name": "Panthers",
+    "filename": "panthers.png",
+    "espnId": "26"
+  },
+  "LA": {
+    "name": "Kings",
+    "filename": "kings.png",
+    "espnId": "8"
+  },
+  "MIN": {
+    "name": "Wild",
+    "filename": "wild.png",
+    "espnId": "30"
+  },
+  "MTL": {
+    "name": "Canadiens",
+    "filename": "canadiens.png",
+    "espnId": "10"
+  },
+  "NSH": {
+    "name": "Predators",
+    "filename": "predators.png",
+    "espnId": "27"
+  },
+  "NJ": {
+    "name": "Devils",
+    "filename": "devils.png",
+    "espnId": "11"
+  },
+  "NYI": {
+    "name": "Islanders",
+    "filename": "islanders.png",
+    "espnId": "12"
+  },
+  "NYR": {
+    "name": "Rangers",
+    "filename": "rangers.png",
+    "espnId": "13"
+  },
+  "OTT": {
+    "name": "Senators",
+    "filename": "senators.png",
+    "espnId": "14"
+  },
+  "PHI": {
+    "name": "Flyers",
+    "filename": "flyers.png",
+    "espnId": "15"
+  },
+  "PIT": {
+    "name": "Penguins",
+    "filename": "penguins.png",
+    "espnId": "16"
+  },
+  "SJ": {
+    "name": "Sharks",
+    "filename": "sharks.png",
+    "espnId": "18"
+  },
+  "SEA": {
+    "name": "Kraken",
+    "filename": "kraken.png",
+    "espnId": "124292"
+  },
+  "STL": {
+    "name": "Blues",
+    "filename": "blues.png",
+    "espnId": "19"
+  },
+  "TB": {
+    "name": "Lightning",
+    "filename": "lightning.png",
+    "espnId": "20"
+  },
+  "TOR": {
+    "name": "Maple Leafs",
+    "filename": "maple-leafs.png",
+    "espnId": "21"
+  },
+  "UTA": {
+    "name": "Mammoth",
+    "filename": "mammoth.png",
+    "espnId": "129764"
+  },
+  "VAN": {
+    "name": "Canucks",
+    "filename": "canucks.png",
+    "espnId": "22"
+  },
+  "VGK": {
+    "name": "Golden Knights",
+    "filename": "golden-knights.png",
+    "espnId": "37"
+  },
+  "WSH": {
+    "name": "Capitals",
+    "filename": "capitals.png",
+    "espnId": "23"
+  },
+  "WPG": {
+    "name": "Jets",
+    "filename": "jets.png",
+    "espnId": "28"
+  }
+}

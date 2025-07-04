@@ -6,9 +6,14 @@ This directory contains team logos organized by sport for use in the WINZO sport
 
 ```
 clubs/
-├── nfl/                    # NFL team logos (32 teams)
-├── nba/                    # NBA team logos (30 teams)
-├── epl/                    # EPL team logos (20 teams)
+├── nfl/                    # NFL team logos (32 teams) ✅ COMPLETE
+├── nba/                    # NBA team logos (30 teams) ✅ COMPLETE
+├── nhl/                    # NHL team logos (32 teams) ✅ COMPLETE
+├── mlb/                    # MLB team logos (30 teams) ✅ COMPLETE
+├── epl/                    # EPL team logos (20 teams) ✅ COMPLETE
+├── champions-league/       # UEFA Champions League (36 teams) ✅ COMPLETE
+├── mls/                    # Major League Soccer (30 teams) ✅ COMPLETE
+├── [25+ other leagues]     # Ready for expansion
 ├── default-team.png        # Fallback logo for teams without specific logos
 └── README.md              # This file
 ```
@@ -37,6 +42,38 @@ Located in `epl/` directory:
 - **Source**: ESPN official team logos
 - **Total**: 20 teams for 2024-25 season
 
+## NHL Logos ✅ NEW
+
+Located in `nhl/` directory:
+- **Format**: PNG images in high resolution from ESPN
+- **Naming**: Kebab-case team names (e.g., `boston-bruins.png`)
+- **Source**: ESPN official team logos via live API
+- **Total**: 32 teams for 2024-25 season
+
+## MLB Logos ✅ NEW
+
+Located in `mlb/` directory:
+- **Format**: PNG images in high resolution from ESPN
+- **Naming**: Kebab-case team names (e.g., `new-york-yankees.png`)
+- **Source**: ESPN official team logos via live API
+- **Total**: 30 teams for 2025 season
+
+## Champions League Logos ✅ NEW
+
+Located in `champions-league/` directory:
+- **Format**: PNG images in high resolution from ESPN
+- **Naming**: Kebab-case team names (e.g., `real-madrid.png`)
+- **Source**: ESPN official team logos via live API
+- **Total**: 36 teams for 2024-25 season
+
+## MLS Logos ✅ NEW
+
+Located in `mls/` directory:
+- **Format**: PNG images in high resolution from ESPN
+- **Naming**: Kebab-case team names (e.g., `la-galaxy.png`)
+- **Source**: ESPN official team logos via live API
+- **Total**: 30 teams for 2025 season
+
 ### Team Mapping
 
 Each sport directory contains a `team-mapping.json` file with complete mappings:
@@ -58,17 +95,46 @@ const celtics = getTeamLogo('nba', 'BOS', nbaMapping);   // NBA
 const arsenal = getTeamLogo('epl', 'ARS', eplMapping);   // EPL
 ```
 
-## Future Expansion
+## Complete Sports Directory Structure
 
-This directory structure can accommodate additional sports and leagues:
-- `mlb/` - MLB team logos  
-- `nhl/` - NHL team logos
-- `laliga/` - La Liga team logos
-- `bundesliga/` - Bundesliga team logos
-- `seriea/` - Serie A team logos
-- `ligue1/` - Ligue 1 team logos
-- `champions-league/` - Champions League team logos
-- etc.
+This directory now includes all sports folders for future expansion:
+
+### Major Sports (API Supported)
+- `nfl/` - NFL team logos (32 teams) ✅ COMPLETE
+- `nba/` - NBA team logos (30 teams) ✅ COMPLETE  
+- `epl/` - EPL team logos (20 teams) ✅ COMPLETE
+- `nhl/` - NHL team logos (ready for expansion)
+- `mlb/` - MLB team logos (ready for expansion)
+- `tennis/` - Tennis tournament logos
+- `cricket/` - Cricket team logos
+- `boxing/` - Boxing organization logos
+- `mma/` - MMA organization logos
+- `aussie-rules/` - AFL team logos
+
+### Soccer Leagues
+- `epl/` - English Premier League ✅ COMPLETE
+- `laliga/` - Spanish La Liga
+- `bundesliga/` - German Bundesliga  
+- `seriea/` - Italian Serie A
+- `ligue1/` - French Ligue 1
+- `champions-league/` - UEFA Champions League
+- `mls/` - Major League Soccer
+
+### Specialty Sports
+- `rugby/` - Rugby team logos
+- `waterpolo/` - Water polo team logos
+- `handball/` - Handball team logos
+- `volleyball/` - Volleyball team logos
+- `cycling/` - Cycling team/event logos
+- `darts/` - Darts player/organization logos
+- `table-tennis/` - Table tennis player logos
+- `squash/` - Squash player logos
+- `wrestling/` - Wrestling organization logos
+- `floorball/` - Floorball team logos
+- `futsal/` - Futsal team logos
+- `kabaddi/` - Kabaddi team logos
+- `esports/` - eSports team logos
+- `golf/` - Golf tournament logos
 
 ## Notes
 
