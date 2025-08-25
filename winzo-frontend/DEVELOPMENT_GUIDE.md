@@ -245,6 +245,12 @@ When implementing features, reference the specific vision document:
 - `04_Layout_Vision.md` - Layout and grid systems
 - `05_Sports_Page_Vision.md` - Sports-specific features
 - `06_Deployment_Vision.md` - Deployment and hosting
+- `07_JavaScript_Architecture_Vision.md` - JavaScript patterns and structure
+- `08_User_Experience_Vision.md` - User flows and interaction design
+- `09_Data_Management_Vision.md` - State management and API integration
+- `10_Performance_Vision.md` - Optimization strategies and benchmarks
+- `11_Security_Vision.md` - Client-side security and data protection
+- `12_Testing_Vision.md` - Testing strategy and quality assurance
 
 ### Example Comment Format
 ```css
