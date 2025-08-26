@@ -3,159 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Winzo - Sports Betting Platform</title>
-    <meta name="description" content="Winzo - Your trusted sports betting platform with competitive odds and seamless betting experience">
-    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Winzo - Premium Sports Betting Platform">
+    <title>Winzo - Sports Betting</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="css/main.css" as="style">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Security headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
 </head>
-<body>
+<body class="home-page">
+    <!-- Skip Navigation -->
+    <a href="#main-content" class="skip-nav">Skip to main content</a>
+    
     <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <h1>Winzo</h1>
-                </div>
-                <nav class="navigation">
-                    <ul class="nav-menu">
-                        <li><a href="#" class="nav-link">Home</a></li>
-                        <li><a href="#" class="nav-link">Sports</a></li>
-                        <li><a href="#" class="nav-link">Account</a></li>
-                        <li><a href="#" class="nav-link">Login</a></li>
-                    </ul>
-                    <button class="hamburger-menu" aria-label="Toggle navigation menu">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </nav>
+    <header class="header" role="banner">
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html" aria-label="Winzo Home">Winzo</a>
             </div>
+            
+            <nav class="navigation" role="navigation" aria-label="Main navigation">
+                <button class="hamburger-menu" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                
+                <ul class="nav-menu" role="menubar">
+                    <li role="none">
+                        <a href="index.html" class="nav-link active" role="menuitem">Home</a>
+                    </li>
+                    <li role="none">
+                        <a href="football.html" class="nav-link" role="menuitem">Football</a>
+                    </li>
+                    <li role="none">
+                        <a href="basketball.html" class="nav-link" role="menuitem">Basketball</a>
+                    </li>
+                    <li role="none">
+                        <a href="baseball.html" class="nav-link" role="menuitem">Baseball</a>
+                    </li>
+                    <li role="none">
+                        <a href="login.html" class="nav-link guest-link" role="menuitem">Sign In</a>
+                    </li>
+                    <li role="none">
+                        <a href="#" class="nav-link guest-link" role="menuitem">Sign Up</a>
+                    </li>
+                    <li role="none">
+                        <a href="#" class="nav-link auth-link" role="menuitem" style="display: none;">My Account</a>
+                    </li>
+                    <li role="none">
+                        <a href="#" class="nav-link auth-link" role="menuitem" style="display: none;">Logout</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Hero Section -->
-            <section class="hero">
+    <main id="main-content" class="main-content" role="main">
+        <!-- Hero Section -->
+        <section class="hero-section" aria-labelledby="hero-title">
+            <div class="container">
                 <div class="hero-content">
-                    <h2>Welcome to Winzo</h2>
-                    <p>Your trusted sports betting platform with competitive odds and seamless betting experience</p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-primary btn-large">Get Started</button>
-                        <button class="btn btn-secondary btn-large">Learn More</button>
+                    <h1 id="hero-title" class="hero-title">Welcome to Winzo</h1>
+                    <p class="hero-subtitle">The most trusted sports betting platform</p>
+                    <div class="hero-actions">
+                        <a href="login.html" class="btn btn-primary">Get Started</a>
+                        <a href="#sports-section" class="btn btn-outline">Explore Sports</a>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Featured Sports Section -->
-            <section class="featured-sports">
-                <h3>Popular Sports</h3>
-                <div class="sports-grid">
-                    <div class="sport-card">
-                        <h4>Football</h4>
-                        <p>Place bets on your favorite teams</p>
-                        <a href="sport_template.html" class="btn btn-outline">View Odds</a>
-                    </div>
-                    <div class="sport-card">
-                        <h4>Basketball</h4>
-                        <p>Basketball betting opportunities</p>
-                        <a href="#" class="btn btn-outline">View Odds</a>
-                    </div>
-                    <div class="sport-card">
-                        <h4>Baseball</h4>
-                        <p>Baseball season betting</p>
-                        <a href="#" class="btn btn-outline">View Odds</a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Example Components Section -->
-            <section class="components-demo">
-                <h3>Component Examples</h3>
+        <!-- Sports Section -->
+        <section id="sports-section" class="sports-section section" aria-labelledby="sports-title">
+            <div class="container">
+                <h2 id="sports-title" class="section-title">Available Sports</h2>
                 
-                <!-- Button Examples -->
-                <div class="demo-section">
-                    <h4>Buttons</h4>
-                    <div class="button-examples">
-                        <button class="btn btn-primary">Primary Button</button>
-                        <button class="btn btn-secondary">Secondary Button</button>
-                        <button class="btn btn-outline">Outline Button</button>
-                        <button class="btn btn-primary btn-small">Small</button>
-                        <button class="btn btn-primary btn-large">Large</button>
-                        <button class="btn btn-primary" disabled>Disabled</button>
+                <div class="sports-grid">
+                    <!-- Football Card -->
+                    <div class="sport-card">
+                        <div class="sport-icon">🏈</div>
+                        <h3>Football</h3>
+                        <p>Live NFL odds and betting lines</p>
+                        <div class="sport-stats">
+                            <span class="stat">12 Live Games</span>
+                            <span class="stat">24 Upcoming</span>
+                        </div>
+                        <a href="football.html" class="btn btn-primary btn-small">View Football</a>
+                    </div>
+
+                    <!-- Basketball Card -->
+                    <div class="sport-card">
+                        <div class="sport-icon">🏀</div>
+                        <h3>Basketball</h3>
+                        <p>NBA and college basketball betting</p>
+                        <div class="sport-stats">
+                            <span class="stat">8 Live Games</span>
+                            <span class="stat">18 Upcoming</span>
+                        </div>
+                        <a href="basketball.html" class="btn btn-primary btn-small">View Basketball</a>
+                    </div>
+
+                    <!-- Baseball Card -->
+                    <div class="sport-card">
+                        <div class="sport-icon">⚾</div>
+                        <h3>Baseball</h3>
+                        <p>MLB and minor league baseball</p>
+                        <div class="sport-stats">
+                            <span class="stat">15 Live Games</span>
+                            <span class="stat">28 Upcoming</span>
+                        </div>
+                        <a href="baseball.html" class="btn btn-primary btn-small">View Baseball</a>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- Form Examples -->
-                <div class="demo-section">
-                    <h4>Form Elements</h4>
-                    <form class="demo-form">
-                        <div class="form-group">
-                            <label for="demo-email">Email</label>
-                            <input type="email" id="demo-email" class="form-input" placeholder="Enter your email">
-                        </div>
-                        <div class="form-group">
-                            <label for="demo-password">Password</label>
-                            <input type="password" id="demo-password" class="form-input" placeholder="Enter your password">
-                        </div>
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" class="form-checkbox">
-                                <span>Remember me</span>
-                            </label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                </div>
 
-                <!-- Layout Grid Example -->
-                <div class="demo-section">
-                    <h4>Layout Grid</h4>
-                    <div class="grid-demo">
-                        <div class="grid-item">Grid Item 1</div>
-                        <div class="grid-item">Grid Item 2</div>
-                        <div class="grid-item">Grid Item 3</div>
-                        <div class="grid-item">Grid Item 4</div>
-                        <div class="grid-item">Grid Item 5</div>
-                        <div class="grid-item">Grid Item 6</div>
-                    </div>
-                </div>
-            </section>
-        </div>
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>Winzo</h4>
-                    <p>Your trusted sports betting platform</p>
+                    <p>The most trusted sports betting platform</p>
                 </div>
+                
                 <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Terms</a></li>
-                        <li><a href="#">Privacy</a></li>
+                    <h4>Sports</h4>
+                    <ul class="footer-links">
+                        <li><a href="football.html">Football</a></li>
+                        <li><a href="basketball.html">Basketball</a></li>
+                        <li><a href="baseball.html">Baseball</a></li>
                     </ul>
                 </div>
+                
                 <div class="footer-section">
-                    <h4>Support</h4>
-                    <ul>
+                    <h4>Account</h4>
+                    <ul class="footer-links">
+                        <li><a href="login.html">Sign In</a></li>
+                        <li><a href="#">Sign Up</a></li>
                         <li><a href="#">Help Center</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Live Chat</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Responsible Gaming</a></li>
                     </ul>
                 </div>
             </div>
+            
             <div class="footer-bottom">
-                <p>&copy; 2024 Winzo. All rights reserved.</p>
+                <p>&copy; 2024 Winzo. All rights reserved. Bet responsibly.</p>
             </div>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
 </body>
 </html>

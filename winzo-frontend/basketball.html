@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{SPORT_NAME}} betting on Winzo - Live odds and real-time updates">
-    <title>{{SPORT_NAME}} Betting - Winzo</title>
+    <meta name="description" content="Basketball betting on Winzo - Live NBA odds and real-time updates">
+    <title>Basketball Betting - Winzo</title>
     
     <!-- Preload critical resources -->
     <link rel="preload" href="css/main.css" as="style">
@@ -15,7 +15,7 @@
     <!-- Security headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
 </head>
-<body class="sports-page sport-{{SPORT_CLASS}}">
+<body class="sports-page sport-basketball">
     <!-- Skip Navigation -->
     <a href="#main-content" class="skip-nav">Skip to main content</a>
     
@@ -41,7 +41,7 @@
                         <a href="football.html" class="nav-link" role="menuitem">Football</a>
                     </li>
                     <li role="none">
-                        <a href="basketball.html" class="nav-link" role="menuitem">Basketball</a>
+                        <a href="basketball.html" class="nav-link active" role="menuitem">Basketball</a>
                     </li>
                     <li role="none">
                         <a href="baseball.html" class="nav-link" role="menuitem">Baseball</a>
@@ -71,19 +71,19 @@
                 <div class="sport-header-content">
                     <div class="sport-title-section">
                         <h1 id="sport-title" class="sport-title">
-                            <span class="sport-icon">{{SPORT_ICON}}</span>
-                            {{SPORT_NAME}}
+                            <span class="sport-icon">🏀</span>
+                            Basketball
                         </h1>
                         <p class="sport-subtitle">Live odds and upcoming games</p>
                     </div>
                     
                     <div class="sport-stats">
                         <div class="stat-item">
-                            <span class="stat-number">{{LIVE_GAMES}}</span>
+                            <span class="stat-number">8</span>
                             <span class="stat-label">Live Games</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">{{UPCOMING_GAMES}}</span>
+                            <span class="stat-number">32</span>
                             <span class="stat-label">Upcoming</span>
                         </div>
                     </div>
