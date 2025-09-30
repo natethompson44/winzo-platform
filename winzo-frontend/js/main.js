@@ -62,6 +62,7 @@ function logout() {
  */
 function initializeApp() {
     updateNavigationForAuth();
+    fetchUserProfile(); // Fetch user profile and balance
     initNavigation();
     initBettingInteractions();
     initResponsiveBehavior();
@@ -129,6 +130,67 @@ function getSession() {
     } catch (error) {
         localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
         return null;
+    }
+}
+
+/**
+ * Fetch user profile and wallet balance from backend
+ */
+async function fetchUserProfile() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    
+    try {
+        const response = await fetch('/api/auth/me', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+                const user = result.data;
+                
+                // Update user balance display
+                const balanceElement = document.getElementById('user-balance');
+                if (balanceElement && user.wallet_balance !== undefined) {
+                    balanceElement.textContent = '$' + parseFloat(user.wallet_balance).toFixed(2);
+                }
+                
+                // Update welcome message
+                const welcomeElement = document.getElementById('user-welcome');
+                if (welcomeElement) {
+                    welcomeElement.textContent = `Welcome, ${user.username || user.name}`;
+                }
+                
+                // Store updated user data
+                localStorage.setItem('user', JSON.stringify(user));
+            }
+        } else if (response.status === 401) {
+            // Token expired or invalid, redirect to login
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+            redirectToLogin();
+        }
+    } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+        // Continue with cached user data if available
+        const cachedUser = localStorage.getItem('user');
+        if (cachedUser) {
+            try {
+                const user = JSON.parse(cachedUser);
+                const balanceElement = document.getElementById('user-balance');
+                if (balanceElement && user.wallet_balance !== undefined) {
+                    balanceElement.textContent = '$' + parseFloat(user.wallet_balance).toFixed(2);
+                }
+            } catch (parseError) {
+                console.error('Error parsing cached user data:', parseError);
+            }
+        }
     }
 }
 
@@ -214,6 +276,9 @@ function closeNavMenu() {
  * Betting interactions
  */
 function initBettingInteractions() {
+    // Load real sports data if we're on a sports page
+    loadSportsData();
+    
     const eventCards = document.querySelectorAll('.event-card');
     
     eventCards.forEach(card => {
@@ -255,23 +320,80 @@ function initBettingInteractions() {
     initBetSlip();
 }
 
-function handleQuickBet(eventId, cardElement) {
+async function handleQuickBet(eventId, cardElement) {
     // Show loading state
     showBettingFeedback(cardElement, 'Processing bet...', 'info');
     
-    // Simulate API call
-    setTimeout(() => {
-        showBettingFeedback(cardElement, 'Bet placed successfully!', 'success');
-        
-        // Update UI to show bet was placed
-        const betButtons = cardElement.querySelectorAll('.bet-actions .btn');
-        betButtons.forEach(btn => {
-            if (btn.textContent.trim() === 'Bet Now') {
-                btn.textContent = 'Bet Placed';
-                btn.disabled = true;
-            }
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showBettingFeedback(cardElement, 'Please log in to place bets', 'error');
+        return;
+    }
+    
+    // Get default bet amount (could be made configurable)
+    const defaultAmount = 10;
+    
+    // Find the first available odds for quick bet
+    const oddsButton = cardElement.querySelector('.odds-value:not([disabled])');
+    if (!oddsButton) {
+        showBettingFeedback(cardElement, 'No odds available', 'error');
+        return;
+    }
+    
+    const betType = oddsButton.closest('.odds-column').querySelector('h5').textContent.toLowerCase();
+    const teamName = oddsButton.closest('.odds-row').querySelector('.team-name').textContent;
+    const oddsValue = oddsButton.textContent.trim();
+    
+    try {
+        const response = await fetch('/api/sportsEnhanced/place-bet', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                eventId: eventId,
+                amount: defaultAmount,
+                market: betType,
+                outcome: teamName,
+                odds: oddsValue
+            })
         });
-    }, 1000);
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            showBettingFeedback(cardElement, `Bet placed successfully! $${defaultAmount} on ${teamName}`, 'success');
+            
+            // Update UI to show bet was placed
+            const betButtons = cardElement.querySelectorAll('.bet-actions .btn');
+            betButtons.forEach(btn => {
+                if (btn.textContent.trim() === 'Bet Now') {
+                    btn.textContent = 'Bet Placed';
+                    btn.disabled = true;
+                }
+            });
+            
+            // Refresh user balance
+            fetchUserProfile();
+        } else {
+            showBettingFeedback(cardElement, result.message || 'Bet placement failed', 'error');
+        }
+    } catch (error) {
+        console.error('Bet placement error:', error);
+        // Fallback to demo behavior
+        setTimeout(() => {
+            showBettingFeedback(cardElement, 'Bet placed successfully! (Demo mode)', 'success');
+            
+            const betButtons = cardElement.querySelectorAll('.bet-actions .btn');
+            betButtons.forEach(btn => {
+                if (btn.textContent.trim() === 'Bet Now') {
+                    btn.textContent = 'Bet Placed';
+                    btn.disabled = true;
+                }
+            });
+        }, 1000);
+    }
 }
 
 function handleAddToSlip(eventId, cardElement) {
@@ -655,6 +777,319 @@ function showNotification(message, type = 'info', duration = 3000) {
             }
         }, 300);
     }, duration);
+}
+
+/**
+ * Sports Data Loading
+ */
+
+// Sport key mapping from UI names to backend sport keys
+const sportKeyMap = {
+    football: 'americanfootball_nfl',
+    nfl: 'americanfootball_nfl',
+    basketball: 'basketball_nba',
+    nba: 'basketball_nba',
+    baseball: 'baseball_mlb',
+    mlb: 'baseball_mlb',
+    nhl: 'icehockey_nhl',
+    soccer: 'soccer_epl',
+    tennis: 'tennis_atp',
+    golf: 'golf',
+    ufc: 'boxing'
+};
+
+/**
+ * Convert decimal odds to American format
+ */
+function decimalToAmerican(decimal) {
+    decimal = parseFloat(decimal);
+    if (isNaN(decimal)) return null;
+    return decimal >= 2
+        ? '+' + Math.round((decimal - 1) * 100)
+        : Math.round(-100 / (decimal - 1));
+}
+
+/**
+ * Load sports data for the current page
+ */
+function loadSportsData() {
+    // Determine current sport from page URL or body class
+    const currentSport = getCurrentSport();
+    if (currentSport) {
+        loadGames(currentSport);
+    }
+}
+
+/**
+ * Get current sport from page context
+ */
+function getCurrentSport() {
+    const path = window.location.pathname;
+    const filename = path.split('/').pop().split('.')[0];
+    
+    // Map filename to sport
+    const sportMap = {
+        'football': 'football',
+        'basketball': 'basketball', 
+        'baseball': 'baseball'
+    };
+    
+    return sportMap[filename] || null;
+}
+
+/**
+ * Load games for a specific sport
+ */
+async function loadGames(sport) {
+    const gamesContainer = document.querySelector('.events-grid');
+    if (!gamesContainer) return;
+    
+    // Show loading state
+    gamesContainer.innerHTML = '<div class="loading-container"><i class="fa fa-spinner fa-spin fa-2x"></i><p>Loading games...</p></div>';
+    
+    const token = localStorage.getItem('token');
+    const sportKey = sportKeyMap[sport] || sport;
+    
+    try {
+        const response = await fetch(`/api/sportsEnhanced/${sportKey}/events`, {
+            method: 'GET',
+            headers: {
+                'Authorization': token ? `Bearer ${token}` : '',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data && result.data.events) {
+                const events = result.data.events;
+                const games = transformEventsToGames(events, sport);
+                displayGames(games, gamesContainer);
+            } else {
+                showNoGamesMessage(gamesContainer);
+            }
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Failed to load games:', error);
+        // Fallback to placeholder data
+        showNoGamesMessage(gamesContainer, 'Failed to load games. Please try again later.');
+    }
+}
+
+/**
+ * Transform backend events to game format
+ */
+function transformEventsToGames(events, sport) {
+    return events.map(event => {
+        const h2h = event.markets?.h2h || [];
+        const spreads = event.markets?.spread || [];
+        const totals = event.markets?.totals || [];
+        
+        return {
+            id: event.id,
+            sport: sport,
+            team1: event.homeTeam || event.home_team,
+            team2: event.awayTeam || event.away_team,
+            time: event.commenceTime || event.commence_time,
+            moneyline1: h2h[0] ? decimalToAmerican(h2h[0].decimalPrice || h2h[0].price) : null,
+            moneyline2: h2h[1] ? decimalToAmerican(h2h[1].decimalPrice || h2h[1].price) : null,
+            spread1: spreads[0] ? decimalToAmerican(spreads[0].decimalPrice || spreads[0].price) : null,
+            spread2: spreads[1] ? decimalToAmerican(spreads[1].decimalPrice || spreads[1].price) : null,
+            spreadLine: spreads[0] ? spreads[0].point : null,
+            totalOver: totals[0] ? decimalToAmerican(totals[0].decimalPrice || totals[0].price) : null,
+            totalUnder: totals[1] ? decimalToAmerican(totals[1].decimalPrice || totals[1].price) : null,
+            totalLine: totals[0] ? totals[0].point : null
+        };
+    });
+}
+
+/**
+ * Display games in the UI
+ */
+function displayGames(games, container) {
+    if (games.length === 0) {
+        showNoGamesMessage(container);
+        return;
+    }
+    
+    const gamesHTML = games.map(game => createGameHTML(game)).join('');
+    container.innerHTML = gamesHTML;
+    
+    // Re-initialize event listeners for new content
+    initBettingInteractionsForNewContent();
+}
+
+/**
+ * Create HTML for a single game
+ */
+function createGameHTML(game) {
+    const gameTime = new Date(game.time);
+    const isLive = gameTime <= new Date();
+    const status = isLive ? 'live' : 'upcoming';
+    const statusText = isLive ? 'Live' : 'Upcoming';
+    
+    return `
+        <div class="event-card" data-event-id="${game.id}" role="article">
+            <div class="event-header">
+                <div class="event-date">
+                    <span class="date">${formatGameDate(gameTime)}</span>
+                    <span class="time">${formatGameTime(gameTime)}</span>
+                </div>
+                <div class="event-status ${status}">${statusText}</div>
+            </div>
+
+            <div class="teams-section">
+                <div class="team team-home">
+                    <div class="team-logo">
+                        <div class="logo-placeholder">${game.team1.charAt(0)}</div>
+                    </div>
+                    <div class="team-info">
+                        <h4>${game.team1}</h4>
+                    </div>
+                </div>
+
+                <div class="vs-section">
+                    <span class="vs-text">VS</span>
+                </div>
+
+                <div class="team team-away">
+                    <div class="team-info">
+                        <h4>${game.team2}</h4>
+                    </div>
+                    <div class="team-logo">
+                        <div class="logo-placeholder">${game.team2.charAt(0)}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="odds-section" role="group" aria-label="Betting odds">
+                <div class="odds-grid">
+                    ${createOddsColumnHTML('Spread', [
+                        { name: game.team1, value: game.spreadLine ? `${game.spreadLine > 0 ? '+' : ''}${game.spreadLine}` : '-', odds: game.spread1 },
+                        { name: game.team2, value: game.spreadLine ? `${game.spreadLine > 0 ? '-' : '+'}${Math.abs(game.spreadLine)}` : '-', odds: game.spread2 }
+                    ])}
+                    
+                    ${createOddsColumnHTML('Total', [
+                        { name: 'Over', value: game.totalLine || '-', odds: game.totalOver },
+                        { name: 'Under', value: game.totalLine || '-', odds: game.totalUnder }
+                    ])}
+                    
+                    ${createOddsColumnHTML('Moneyline', [
+                        { name: game.team1, value: '', odds: game.moneyline1 },
+                        { name: game.team2, value: '', odds: game.moneyline2 }
+                    ])}
+                </div>
+                
+                <div class="bet-actions">
+                    <button class="btn btn-primary btn-small">Bet Now</button>
+                    <button class="btn btn-outline btn-small">Add to Slip</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Create HTML for odds column
+ */
+function createOddsColumnHTML(title, odds) {
+    return `
+        <div class="odds-column">
+            <h5>${title}</h5>
+            ${odds.map(odd => `
+                <div class="odds-row">
+                    <span class="team-name">${odd.name}</span>
+                    <button class="odds-value" ${odd.odds ? `aria-label="${odd.name} ${title} ${odd.odds}"` : 'disabled'}>
+                        ${odd.value} ${odd.odds || ''}
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+/**
+ * Format game date
+ */
+function formatGameDate(date) {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+        return 'Today';
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+        return 'Tomorrow';
+    } else {
+        return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+}
+
+/**
+ * Format game time
+ */
+function formatGameTime(date) {
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+/**
+ * Show no games message
+ */
+function showNoGamesMessage(container, message = 'No games available') {
+    container.innerHTML = `<div class="loading-container">${message}</div>`;
+}
+
+/**
+ * Initialize betting interactions for newly loaded content
+ */
+function initBettingInteractionsForNewContent() {
+    const eventCards = document.querySelectorAll('.event-card');
+    
+    eventCards.forEach(card => {
+        const betButtons = card.querySelectorAll('.bet-actions .btn');
+        const oddsButtons = card.querySelectorAll('.odds-value');
+        
+        // Remove existing listeners to avoid duplicates
+        betButtons.forEach(button => {
+            button.replaceWith(button.cloneNode(true));
+        });
+        
+        oddsButtons.forEach(button => {
+            button.replaceWith(button.cloneNode(true));
+        });
+        
+        // Re-add listeners
+        const newBetButtons = card.querySelectorAll('.bet-actions .btn');
+        const newOddsButtons = card.querySelectorAll('.odds-value');
+        
+        newBetButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const eventId = card.dataset.eventId;
+                const action = this.textContent.trim();
+                
+                if (action === 'Bet Now') {
+                    handleQuickBet(eventId, card);
+                } else if (action === 'Add to Slip') {
+                    handleAddToSlip(eventId, card);
+                }
+            });
+        });
+        
+        newOddsButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const eventId = card.dataset.eventId;
+                const oddsValue = this.textContent.trim();
+                const betType = this.closest('.odds-column').querySelector('h5').textContent;
+                const teamName = this.closest('.odds-row').querySelector('.team-name').textContent;
+                
+                handleOddsClick(eventId, betType, teamName, oddsValue, this);
+            });
+        });
+    });
 }
 
 /**

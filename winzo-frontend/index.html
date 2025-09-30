@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Winzo - Premium Sports Betting Platform">
+    <meta name="description" content="Winzo - Premier Sports Betting Platform">
     <title>Winzo - Sports Betting</title>
     
     <!-- Preload critical resources -->
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/main.css">
     
     <!-- Security headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
 </head>
 <body class="home-page">
     <!-- Skip Navigation -->
@@ -53,7 +53,10 @@
                         <a href="#" class="nav-link guest-link" role="menuitem">Sign Up</a>
                     </li>
                     <li role="none">
-                        <a href="#" class="nav-link auth-link" role="menuitem" style="display: none;">My Account</a>
+                        <a href="#" class="nav-link auth-link" role="menuitem" style="display: none;">
+                            <span id="user-welcome">My Account</span>
+                            <span id="user-balance" class="user-balance"></span>
+                        </a>
                     </li>
                     <li role="none">
                         <a href="#" class="nav-link auth-link" role="menuitem" style="display: none;">Logout</a>
@@ -66,65 +69,79 @@
     <!-- Main Content -->
     <main id="main-content" class="main-content" role="main">
         <!-- Hero Section -->
-        <section class="hero-section" aria-labelledby="hero-title">
+        <section class="hero-section">
             <div class="container">
                 <div class="hero-content">
-                    <h1 id="hero-title" class="hero-title">Welcome to Winzo</h1>
+                    <h1 class="hero-title">Welcome to Winzo</h1>
                     <p class="hero-subtitle">The most trusted sports betting platform</p>
                     <div class="hero-actions">
-                        <a href="login.html" class="btn btn-primary">Get Started</a>
-                        <a href="#sports-section" class="btn btn-outline">Explore Sports</a>
+                        <a href="football.html" class="btn btn-primary btn-large">Start Betting</a>
+                        <a href="login.html" class="btn btn-outline btn-large guest-link">Sign In</a>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Sports Section -->
-        <section id="sports-section" class="sports-section section" aria-labelledby="sports-title">
+        <section class="sports-section section">
             <div class="container">
-                <h2 id="sports-title" class="section-title">Available Sports</h2>
-                
+                <h2 class="section-title">Available Sports</h2>
                 <div class="sports-grid">
-                    <!-- Football Card -->
                     <div class="sport-card">
                         <div class="sport-icon">🏈</div>
                         <h3>Football</h3>
-                        <p>Live NFL odds and betting lines</p>
-                        <div class="sport-stats">
-                            <span class="stat">12 Live Games</span>
-                            <span class="stat">24 Upcoming</span>
-                        </div>
-                        <a href="football.html" class="btn btn-primary btn-small">View Football</a>
+                        <p>NFL games and college football</p>
+                        <a href="football.html" class="btn btn-primary">View Games</a>
                     </div>
-
-                    <!-- Basketball Card -->
+                    
                     <div class="sport-card">
                         <div class="sport-icon">🏀</div>
                         <h3>Basketball</h3>
-                        <p>NBA and college basketball betting</p>
-                        <div class="sport-stats">
-                            <span class="stat">8 Live Games</span>
-                            <span class="stat">18 Upcoming</span>
-                        </div>
-                        <a href="basketball.html" class="btn btn-primary btn-small">View Basketball</a>
+                        <p>NBA and college basketball</p>
+                        <a href="basketball.html" class="btn btn-primary">View Games</a>
                     </div>
-
-                    <!-- Baseball Card -->
+                    
                     <div class="sport-card">
                         <div class="sport-icon">⚾</div>
                         <h3>Baseball</h3>
-                        <p>MLB and minor league baseball</p>
-                        <div class="sport-stats">
-                            <span class="stat">15 Live Games</span>
-                            <span class="stat">28 Upcoming</span>
-                        </div>
-                        <a href="baseball.html" class="btn btn-primary btn-small">View Baseball</a>
+                        <p>MLB regular season and playoffs</p>
+                        <a href="baseball.html" class="btn btn-primary">View Games</a>
                     </div>
                 </div>
             </div>
         </section>
 
-
+        <!-- Features Section -->
+        <section class="features-section section">
+            <div class="container">
+                <h2 class="section-title">Why Choose Winzo?</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure & Trusted</h3>
+                        <p>Your funds and data are protected with industry-leading security</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Live Betting</h3>
+                        <p>Real-time odds updates and live in-game betting options</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">💰</div>
+                        <h3>Best Odds</h3>
+                        <p>Competitive odds across all major sports and leagues</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">📱</div>
+                        <h3>Mobile Ready</h3>
+                        <p>Optimized experience on all devices and screen sizes</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -149,7 +166,7 @@
                     <h4>Account</h4>
                     <ul class="footer-links">
                         <li><a href="login.html">Sign In</a></li>
-                        <li><a href="#">Sign Up</a></li>
+                        <li><a href="#" id="register-link">Sign Up</a></li>
                         <li><a href="#">Help Center</a></li>
                     </ul>
                 </div>

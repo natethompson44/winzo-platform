@@ -119,25 +119,46 @@ async function handleLogin(event) {
     setLoadingState(true);
     
     try {
-        // Simulate API call delay
-        await delay(1500);
+        // Call backend authentication API
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials)
+        });
         
-        // Check credentials
-        if (authenticateUser(credentials)) {
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
             showStatus('Welcome back! Redirecting...', 'success');
             
-            // Create session
-            createSession(credentials.username);
+            // Store JWT token and user data
+            localStorage.setItem('token', result.data.token);
+            localStorage.setItem('user', JSON.stringify(result.data.user));
+            
+            // Create session for compatibility
+            createSession(credentials.username, result.data.token);
             
             // Redirect after delay
             setTimeout(() => {
                 redirectToMainSite();
             }, 1000);
         } else {
-            showStatus('Invalid credentials. Please try again.', 'error');
+            showStatus(result.message || 'Invalid credentials. Please try again.', 'error');
         }
     } catch (error) {
-        showStatus('Authentication failed. Please try again.', 'error');
+        console.error('Login error:', error);
+        // Fallback to demo authentication if backend is not available
+        if (authenticateUser(credentials)) {
+            showStatus('Welcome back! (Demo mode)', 'success');
+            createSession(credentials.username);
+            setTimeout(() => {
+                redirectToMainSite();
+            }, 1000);
+        } else {
+            showStatus('Authentication failed. Please try again.', 'error');
+        }
     } finally {
         setLoadingState(false);
     }
@@ -167,28 +188,47 @@ async function handleRegistration(event) {
     setLoadingState(true);
     
     try {
-        // Simulate API call delay
-        await delay(2000);
+        // Call backend registration API
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(registrationData)
+        });
         
-        // Check invite code
-        if (registrationData.inviteCode !== AUTH_CONFIG.INVITE_CODE) {
-            showStatus('Invalid invitation code. Access is by invitation only.', 'error');
-            return;
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            showStatus('Access granted! Welcome to Winzo.', 'success');
+            
+            // Store JWT token and user data
+            localStorage.setItem('token', result.data.token);
+            localStorage.setItem('user', JSON.stringify(result.data.user));
+            
+            // Create session
+            createSession(registrationData.username, result.data.token);
+            
+            // Redirect after delay
+            setTimeout(() => {
+                redirectToMainSite();
+            }, 1500);
+        } else {
+            showStatus(result.message || 'Registration failed. Please try again.', 'error');
         }
         
-        // Simulate successful registration
-        showStatus('Access granted! Welcome to Winzo.', 'success');
-        
-        // Create session
-        createSession(registrationData.username);
-        
-        // Redirect after delay
-        setTimeout(() => {
-            redirectToMainSite();
-        }, 1500);
-        
     } catch (error) {
-        showStatus('Registration failed. Please try again.', 'error');
+        console.error('Registration error:', error);
+        // Fallback to demo registration if backend is not available
+        if (registrationData.inviteCode === AUTH_CONFIG.INVITE_CODE) {
+            showStatus('Access granted! Welcome to Winzo. (Demo mode)', 'success');
+            createSession(registrationData.username);
+            setTimeout(() => {
+                redirectToMainSite();
+            }, 1500);
+        } else {
+            showStatus('Registration failed. Please try again.', 'error');
+        }
     } finally {
         setLoadingState(false);
     }
@@ -364,9 +404,10 @@ function authenticateUser(credentials) {
 /**
  * Create user session
  */
-function createSession(username) {
+function createSession(username, token = null) {
     const session = {
         username: username,
+        token: token,
         loginTime: Date.now(),
         isValid: true,
         expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
