@@ -8,8 +8,8 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'winzo-secret-key-change-in-production';
 
 // Helper function to generate JWT token
-function generateToken(userId) {
-    return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1h' });
+function generateToken(userId, isAdmin = false) {
+    return jwt.sign({ userId, isAdmin }, JWT_SECRET, { expiresIn: '1h' });
 }
 
 // POST /api/register - Create a new user
@@ -40,14 +40,14 @@ router.post('/register', async (req, res) => {
 
         // Create new user in database
         const newUserResult = await query(
-            'INSERT INTO users (email, password_hash, balance) VALUES ($1, $2, $3) RETURNING id, email, balance, created_at',
+            'INSERT INTO users (email, password_hash, balance) VALUES ($1, $2, $3) RETURNING id, email, balance, is_admin, created_at',
             [email, passwordHash, 1000.00]
         );
 
         const newUser = newUserResult.rows[0];
 
         // Generate JWT token
-        const token = generateToken(newUser.id);
+        const token = generateToken(newUser.id, newUser.is_admin);
 
         res.status(201).json({
             success: true,
@@ -85,7 +85,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Find user by email in database
-        const userResult = await query('SELECT id, email, password_hash, balance, created_at FROM users WHERE email = $1', [email]);
+        const userResult = await query('SELECT id, email, password_hash, balance, is_admin, created_at FROM users WHERE email = $1', [email]);
         if (userResult.rows.length === 0) {
             return res.status(401).json({
                 success: false,
@@ -105,7 +105,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Generate JWT token
-        const token = generateToken(user.id);
+        const token = generateToken(user.id, user.is_admin);
 
         res.json({
             success: true,
@@ -143,7 +143,7 @@ router.get('/profile', async (req, res) => {
         }
 
         // Find user in database
-        const userResult = await query('SELECT id, email, balance, created_at FROM users WHERE id = $1', [user.userId]);
+        const userResult = await query('SELECT id, email, balance, is_admin, created_at FROM users WHERE id = $1', [user.userId]);
         if (userResult.rows.length === 0) {
             return res.status(404).json({
                 success: false,

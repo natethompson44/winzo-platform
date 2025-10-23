@@ -77,6 +77,9 @@
                             <button id="withdraw-btn" class="bg-red-600 hover:bg-red-700 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all">
                                 Withdraw
                             </button>
+                            <button id="admin-btn" class="bg-purple-600 hover:bg-purple-700 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all hidden">
+                                Admin
+                            </button>
                         </div>
                     </div>
                     <button id="login-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all">
@@ -334,6 +337,131 @@
         </div>
     </div>
 
+    <!-- Admin Dashboard Modal -->
+    <div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-gray-800 rounded-lg p-4 sm:p-6 w-full max-w-6xl max-h-[95vh] overflow-hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-winzo-accent">Admin Dashboard</h3>
+                <button id="close-admin-modal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <div id="admin-content" class="overflow-y-auto max-h-[85vh] space-y-6">
+                <!-- System Health Card -->
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold text-white">System Health</h4>
+                        <button id="refresh-health-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm font-medium transition-all">
+                            Refresh
+                        </button>
+                    </div>
+                    <div id="health-content">
+                        <div id="health-loading" class="text-center py-4">
+                            <div class="loading-spinner w-6 h-6 border-2 border-winzo-primary border-t-transparent rounded-full mx-auto"></div>
+                            <p class="text-gray-400 mt-2 text-sm">Loading system health...</p>
+                        </div>
+                        <div id="health-data" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Health data will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Refresh Odds Card -->
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold text-white">Odds Management</h4>
+                        <button id="refresh-odds-btn" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm font-medium transition-all">
+                            Refresh Odds Cache
+                        </button>
+                    </div>
+                    <p class="text-gray-400 text-sm">Manually refresh the odds cache to fetch the latest data from the API.</p>
+                </div>
+
+                <!-- Users Table -->
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold text-white">Users</h4>
+                        <button id="refresh-users-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm font-medium transition-all">
+                            Refresh
+                        </button>
+                    </div>
+                    <div id="users-content">
+                        <div id="users-loading" class="text-center py-8">
+                            <div class="loading-spinner w-8 h-8 border-2 border-winzo-primary border-t-transparent rounded-full mx-auto"></div>
+                            <p class="text-gray-400 mt-2">Loading users...</p>
+                        </div>
+                        <div id="users-table" class="hidden overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-gray-600">
+                                        <th class="text-left py-2 px-3">Email</th>
+                                        <th class="text-left py-2 px-3">Balance</th>
+                                        <th class="text-left py-2 px-3">Total Bets</th>
+                                        <th class="text-left py-2 px-3">Winnings</th>
+                                        <th class="text-left py-2 px-3">Losses</th>
+                                        <th class="text-left py-2 px-3">Admin</th>
+                                        <th class="text-left py-2 px-3">Joined</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-tbody">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="users-empty" class="text-center py-8 hidden">
+                            <div class="text-gray-400 text-lg mb-2">No users found</div>
+                        </div>
+                        <div id="users-error" class="text-center py-8 hidden">
+                            <div class="text-red-400 text-lg mb-2">Error loading users</div>
+                            <p class="text-gray-500 text-sm">Please try again later</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bets Table -->
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold text-white">All Bets</h4>
+                        <button id="refresh-bets-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm font-medium transition-all">
+                            Refresh
+                        </button>
+                    </div>
+                    <div id="bets-content">
+                        <div id="bets-loading" class="text-center py-8">
+                            <div class="loading-spinner w-8 h-8 border-2 border-winzo-primary border-t-transparent rounded-full mx-auto"></div>
+                            <p class="text-gray-400 mt-2">Loading bets...</p>
+                        </div>
+                        <div id="bets-table" class="hidden overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-gray-600">
+                                        <th class="text-left py-2 px-3">User</th>
+                                        <th class="text-left py-2 px-3">Match</th>
+                                        <th class="text-left py-2 px-3">Team</th>
+                                        <th class="text-left py-2 px-3">Odds</th>
+                                        <th class="text-left py-2 px-3">Stake</th>
+                                        <th class="text-left py-2 px-3">Payout</th>
+                                        <th class="text-left py-2 px-3">Status</th>
+                                        <th class="text-left py-2 px-3">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bets-tbody">
+                                    <!-- Bets will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="bets-empty" class="text-center py-8 hidden">
+                            <div class="text-gray-400 text-lg mb-2">No bets found</div>
+                        </div>
+                        <div id="bets-error" class="text-center py-8 hidden">
+                            <div class="text-red-400 text-lg mb-2">Error loading bets</div>
+                            <p class="text-gray-500 text-sm">Please try again later</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Bet Slip Button -->
     <button 
         id="bet-slip-toggle" 
@@ -440,17 +568,27 @@
             const userEmail = document.getElementById('user-email');
             const userBalance = document.getElementById('user-balance');
             const loginBtn = document.getElementById('login-btn');
+            const adminBtn = document.getElementById('admin-btn');
 
             if (currentUser) {
                 userEmail.textContent = currentUser.email;
                 userBalance.textContent = `$${(currentUser.balance || 0).toFixed(2)}`;
                 userInfo.classList.remove('hidden');
                 loginBtn.classList.add('hidden');
+                
+                // Show admin button if user is admin
+                if (currentUser.is_admin) {
+                    adminBtn.classList.remove('hidden');
+                } else {
+                    adminBtn.classList.add('hidden');
+                }
+                
                 // Load current balance from server
                 loadWalletBalance();
             } else {
                 userInfo.classList.add('hidden');
                 loginBtn.classList.remove('hidden');
+                adminBtn.classList.add('hidden');
             }
         }
 
@@ -1317,11 +1455,13 @@
             document.getElementById('deposit-btn').addEventListener('click', showDepositModal);
             document.getElementById('withdraw-btn').addEventListener('click', showWithdrawModal);
             document.getElementById('my-bets-btn').addEventListener('click', showMyBetsModal);
+            document.getElementById('admin-btn').addEventListener('click', showAdminModal);
             
             // Modal close buttons
             document.getElementById('close-deposit-modal').addEventListener('click', hideDepositModal);
             document.getElementById('close-withdraw-modal').addEventListener('click', hideWithdrawModal);
             document.getElementById('close-my-bets-modal').addEventListener('click', hideMyBetsModal);
+            document.getElementById('close-admin-modal').addEventListener('click', hideAdminModal);
             
             // Auth modal tabs
             document.getElementById('login-tab').addEventListener('click', () => switchAuthMode(true));
@@ -1435,6 +1575,18 @@
                     hideMyBetsModal();
                 }
             });
+
+            document.getElementById('admin-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideAdminModal();
+                }
+            });
+
+            // Admin dashboard event listeners
+            document.getElementById('refresh-health-btn').addEventListener('click', loadSystemHealth);
+            document.getElementById('refresh-users-btn').addEventListener('click', loadAdminUsers);
+            document.getElementById('refresh-bets-btn').addEventListener('click', loadAdminBets);
+            document.getElementById('refresh-odds-btn').addEventListener('click', refreshOddsCache);
         });
 
         // Cleanup on page unload
@@ -1443,6 +1595,213 @@
                 clearInterval(refreshInterval);
             }
         });
+
+        // Admin Dashboard Functions
+        function showAdminModal() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+            loadAdminData();
+        }
+
+        function hideAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        async function loadAdminData() {
+            await Promise.all([
+                loadSystemHealth(),
+                loadAdminUsers(),
+                loadAdminBets()
+            ]);
+        }
+
+        async function loadSystemHealth() {
+            const healthLoading = document.getElementById('health-loading');
+            const healthData = document.getElementById('health-data');
+            
+            try {
+                healthLoading.classList.remove('hidden');
+                healthData.classList.add('hidden');
+                
+                const response = await fetch(`${API_BASE_URL}/api/admin/health`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    healthData.innerHTML = `
+                        <div class="bg-gray-600 rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">Status</div>
+                            <div class="text-green-400 font-semibold">${data.status}</div>
+                        </div>
+                        <div class="bg-gray-600 rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">Uptime</div>
+                            <div class="text-white font-semibold">${data.uptime.formatted}</div>
+                        </div>
+                        <div class="bg-gray-600 rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">Users</div>
+                            <div class="text-white font-semibold">${data.database.user_count}</div>
+                        </div>
+                        <div class="bg-gray-600 rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">Memory</div>
+                            <div class="text-white font-semibold">${Math.round(data.system.memory_usage.heapUsed / 1024 / 1024)}MB</div>
+                        </div>
+                    `;
+                    healthData.classList.remove('hidden');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error loading system health:', error);
+                healthData.innerHTML = '<div class="text-red-400 text-center py-4">Error loading system health</div>';
+                healthData.classList.remove('hidden');
+            } finally {
+                healthLoading.classList.add('hidden');
+            }
+        }
+
+        async function loadAdminUsers() {
+            const usersLoading = document.getElementById('users-loading');
+            const usersTable = document.getElementById('users-table');
+            const usersEmpty = document.getElementById('users-empty');
+            const usersError = document.getElementById('users-error');
+            const usersTbody = document.getElementById('users-tbody');
+            
+            try {
+                usersLoading.classList.remove('hidden');
+                usersTable.classList.add('hidden');
+                usersEmpty.classList.add('hidden');
+                usersError.classList.add('hidden');
+                
+                const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.data.length === 0) {
+                        usersEmpty.classList.remove('hidden');
+                    } else {
+                        usersTbody.innerHTML = result.data.map(user => `
+                            <tr class="border-b border-gray-600 hover:bg-gray-600">
+                                <td class="py-2 px-3">${user.email}</td>
+                                <td class="py-2 px-3">$${user.balance.toFixed(2)}</td>
+                                <td class="py-2 px-3">${user.total_bets}</td>
+                                <td class="py-2 px-3 text-green-400">$${user.total_winnings.toFixed(2)}</td>
+                                <td class="py-2 px-3 text-red-400">$${user.total_losses.toFixed(2)}</td>
+                                <td class="py-2 px-3">
+                                    ${user.is_admin ? '<span class="bg-purple-600 text-white px-2 py-1 rounded text-xs">Admin</span>' : '<span class="text-gray-400">-</span>'}
+                                </td>
+                                <td class="py-2 px-3 text-xs text-gray-400">${new Date(user.created_at).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('');
+                        usersTable.classList.remove('hidden');
+                    }
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                usersError.classList.remove('hidden');
+            } finally {
+                usersLoading.classList.add('hidden');
+            }
+        }
+
+        async function loadAdminBets() {
+            const betsLoading = document.getElementById('bets-loading');
+            const betsTable = document.getElementById('bets-table');
+            const betsEmpty = document.getElementById('bets-empty');
+            const betsError = document.getElementById('bets-error');
+            const betsTbody = document.getElementById('bets-tbody');
+            
+            try {
+                betsLoading.classList.remove('hidden');
+                betsTable.classList.add('hidden');
+                betsEmpty.classList.add('hidden');
+                betsError.classList.add('hidden');
+                
+                const response = await fetch(`${API_BASE_URL}/api/admin/bets`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.data.length === 0) {
+                        betsEmpty.classList.remove('hidden');
+                    } else {
+                        betsTbody.innerHTML = result.data.map(bet => `
+                            <tr class="border-b border-gray-600 hover:bg-gray-600">
+                                <td class="py-2 px-3 text-sm">${bet.user_email}</td>
+                                <td class="py-2 px-3 text-sm">${bet.match}</td>
+                                <td class="py-2 px-3 text-sm">${bet.team}</td>
+                                <td class="py-2 px-3 text-sm">${bet.odds}</td>
+                                <td class="py-2 px-3 text-sm">$${bet.stake.toFixed(2)}</td>
+                                <td class="py-2 px-3 text-sm">$${bet.potential_payout.toFixed(2)}</td>
+                                <td class="py-2 px-3">
+                                    <span class="px-2 py-1 rounded text-xs ${
+                                        bet.status === 'won' ? 'bg-green-600 text-white' :
+                                        bet.status === 'lost' ? 'bg-red-600 text-white' :
+                                        'bg-yellow-600 text-white'
+                                    }">${bet.status}</span>
+                                </td>
+                                <td class="py-2 px-3 text-xs text-gray-400">${new Date(bet.created_at).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('');
+                        betsTable.classList.remove('hidden');
+                    }
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error loading bets:', error);
+                betsError.classList.remove('hidden');
+            } finally {
+                betsLoading.classList.add('hidden');
+            }
+        }
+
+        async function refreshOddsCache() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/refresh-odds`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAuthSuccess('Odds cache refreshed successfully!');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error refreshing odds cache:', error);
+                showAuthError('Failed to refresh odds cache');
+            }
+        }
+
+        function showAuthError(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
     </script>
 </body>
 </html>

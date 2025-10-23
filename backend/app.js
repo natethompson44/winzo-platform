@@ -10,6 +10,7 @@ const { initializeDatabase } = require('./db');
 const { router: userRoutes } = require('./routes/users');
 const betRoutes = require('./routes/bets');
 const walletRoutes = require('./routes/wallet');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,6 +53,13 @@ let oddsCache = {
     data: null,
     timestamp: null
 };
+
+// Function to clear odds cache (for admin use)
+function clearOddsCache() {
+    oddsCache.data = null;
+    oddsCache.timestamp = null;
+    console.log('Odds cache cleared by admin');
+}
 
 // Helper function to check if cache is valid
 function isCacheValid() {
@@ -255,6 +263,17 @@ app.get('/api/health', (req, res) => {
 app.use('/api', userRoutes);
 app.use('/api', betRoutes);
 app.use('/api', walletRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Admin endpoint to clear odds cache
+app.post('/api/admin/refresh-odds', (req, res) => {
+    clearOddsCache();
+    res.json({
+        success: true,
+        message: 'Odds cache cleared successfully',
+        timestamp: new Date().toISOString()
+    });
+});
 
 // Serve the main HTML file
 app.get('/', (req, res) => {

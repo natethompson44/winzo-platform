@@ -8,8 +8,12 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     balance NUMERIC(10,2) DEFAULT 1000.00,
+    is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Add is_admin column to existing users table if it doesn't exist
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
 
 -- Create bets table
 CREATE TABLE IF NOT EXISTS bets (
