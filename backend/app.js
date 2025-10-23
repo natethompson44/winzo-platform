@@ -123,7 +123,8 @@ function formatGameDate(commenceTime) {
     const date = new Date(commenceTime);
     return date.toLocaleDateString('en-US', { 
         month: 'short', 
-        day: 'numeric' 
+        day: 'numeric',
+        timeZone: 'America/Chicago'
     });
 }
 
@@ -134,7 +135,8 @@ function formatGameTime(commenceTime) {
     return date.toLocaleTimeString('en-US', { 
         hour: 'numeric', 
         minute: '2-digit',
-        hour12: true 
+        hour12: true,
+        timeZone: 'America/Chicago'
     });
 }
 
