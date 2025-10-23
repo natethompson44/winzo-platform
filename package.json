@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node backend/app.js",
     "dev": "node backend/app.js",
+    "build": "echo 'No build step required'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["nfl", "odds", "betting", "express", "api"],

@@ -1,3 +1,10 @@
-#OddsAPI Key: ae09b5ce0e57ca5b0ae4ccd0f852ba12
+Variables added to Railway:
+    PORT="3000"
+    ODDS_API_KEY="ae09b5ce0e57ca5b0ae4ccd0f852ba12"
+    JWT_SECRET="ZRC3xah6pcrrnr7mdu"
+    NODE_ENV="production"
+    CORS_ORIGIN="https://winzo-sports.netlify.app"
+----------
+
 
 Add to readme everything we did in this chat. dont include any future stuff. only what we did in this chat

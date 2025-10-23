@@ -393,8 +393,166 @@ Mock data file containing:
 - **Windows Compatible**: PowerShell scripts following Windows environment requirements
 - **Zero Breaking Changes**: Frontend maintains all original functionality
 
+### JWT Authentication System Implementation (October 2024)
+**Objective**: Extend the WINZO MVP backend to support basic user accounts with JWT authentication, allowing users to register, login, and save their bets to their accounts.
+
+#### ✅ Completed Tasks
+1. **Backend Dependencies**
+   - Added `bcrypt` for password hashing (10 salt rounds)
+   - Added `jsonwebtoken` for JWT token generation
+   - Added `express-jwt` for JWT middleware and route protection
+   - Updated `package.json` with new authentication dependencies
+
+2. **Authentication Routes (`/backend/routes/users.js`)**
+   - `POST /api/register` - Create new user accounts with email + password validation
+   - `POST /api/login` - Verify credentials and return JWT token with 1-hour expiration
+   - `GET /api/profile` - Return current user info (requires valid JWT token)
+   - Implemented password hashing with bcrypt before storage
+   - Added input validation and error handling for all endpoints
+
+3. **Bet Management Routes (`/backend/routes/bets.js`)**
+   - `POST /api/bet` - Save bets for authenticated users with match, team, odds, stake, and payout data
+   - `GET /api/bets` - Retrieve user's betting history (requires valid JWT token)
+   - Added comprehensive input validation for bet data
+   - Implemented user-specific bet storage and retrieval
+
+4. **JWT Middleware Integration (`/backend/app.js`)**
+   - Added JWT secret configuration with environment variable support
+   - Implemented `express-jwt` middleware for protected routes
+   - Configured route exclusions for public endpoints (`/api/register`, `/api/login`, `/api/odds`, `/api/health`, `/`)
+   - Added proper error handling for JWT token validation
+
+5. **Frontend Authentication UI**
+   - Added login/register modal with Tailwind CSS styling matching existing dark theme
+   - Implemented tab-based switching between login and register modes
+   - Added real-time form validation and error message display
+   - Created success notifications for user actions (registration, login, logout)
+   - Added loading states during authentication requests
+
+6. **User Interface Updates**
+   - Updated header to show user email and logout button when authenticated
+   - Added "Login / Register" button for unauthenticated users
+   - Implemented responsive design for mobile-friendly authentication flow
+   - Maintained consistent WINZO branding and color scheme
+
+7. **JWT Token Management**
+   - Implemented localStorage-based token persistence
+   - Added automatic token validation on page load
+   - Created token expiration handling (1-hour JWT expiration)
+   - Implemented secure token storage and retrieval functions
+
+8. **Bet Integration with Authentication**
+   - Updated bet placement to use authenticated API when user is logged in
+   - Added automatic login prompt for unauthenticated users attempting to place bets
+   - Implemented bet data saving to user accounts with proper API integration
+   - Maintained existing bet slip functionality while adding authentication layer
+
+9. **In-Memory Data Storage**
+   - Implemented in-memory storage for users and bets (ready for database integration)
+   - Added user ID generation and management
+   - Created bet ID generation and user association
+   - Added timestamp tracking for user creation and bet placement
+
+#### 🔧 Technical Implementation Details
+- **Password Security**: bcrypt hashing with 10 salt rounds for secure password storage
+- **JWT Configuration**: 1-hour token expiration with HS256 algorithm
+- **Route Protection**: JWT middleware protecting `/api/profile` and `/api/bet` endpoints
+- **Error Handling**: Comprehensive error responses for authentication failures
+- **Data Validation**: Input validation for email, password, and bet data
+- **Token Management**: Secure localStorage operations with error handling
+
+#### 📊 API Endpoints Added
+```javascript
+// Authentication Endpoints
+POST /api/register
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+// Response: { "success": true, "token": "jwt_token", "user": {...} }
+
+POST /api/login
+{
+  "email": "user@example.com", 
+  "password": "securepassword"
+}
+// Response: { "success": true, "token": "jwt_token", "user": {...} }
+
+GET /api/profile
+// Headers: Authorization: Bearer jwt_token
+// Response: { "success": true, "user": {...} }
+
+// Bet Management Endpoints
+POST /api/bet
+{
+  "match": "Team A vs Team B",
+  "team": "Team A",
+  "odds": 2.5,
+  "stake": 100,
+  "potential_payout": 250
+}
+// Headers: Authorization: Bearer jwt_token
+// Response: { "success": true, "bet": {...} }
+
+GET /api/bets
+// Headers: Authorization: Bearer jwt_token
+// Response: { "success": true, "bets": [...] }
+```
+
+#### 🎯 Frontend Authentication Flow
+1. **User Registration**: Email + password → JWT token + user data stored
+2. **User Login**: Email + password → JWT token + user data retrieved
+3. **Persistent Session**: Token stored in localStorage, auto-login on page refresh
+4. **Bet Placement**: Authenticated users save bets to account, unauthenticated users prompted to login
+5. **User Management**: Email display in header, logout functionality
+
+#### ✅ Testing Results
+- **Registration**: Successfully creates new user accounts with hashed passwords
+- **Login**: Properly validates credentials and returns JWT tokens
+- **Profile Access**: JWT-protected endpoint working with token validation
+- **Bet Saving**: Authenticated bet placement saves to user accounts
+- **Token Persistence**: Login state maintained across browser refreshes
+- **Error Handling**: Proper error messages for invalid credentials and network issues
+- **UI Integration**: Seamless authentication flow integrated with existing betting interface
+
+#### 📁 Updated Project Structure
+```
+/
+├── backend/
+│   ├── app.js              # Express server with JWT middleware
+│   └── routes/
+│       ├── users.js        # Authentication endpoints
+│       └── bets.js          # Bet management endpoints
+├── scripts/
+│   └── setup-backend.ps1   # Windows PowerShell setup script
+├── index.html              # Frontend with authentication UI
+├── odds.json               # Fallback odds data
+├── package.json            # Dependencies (updated with auth packages)
+├── render.yaml             # Render deployment config
+├── railway.toml            # Railway deployment config
+└── README.md               # This documentation file
+```
+
+#### 🚀 Key Achievements
+- **Complete Authentication System**: Registration, login, and session management
+- **Secure Password Handling**: bcrypt hashing with proper salt rounds
+- **JWT Token Security**: 1-hour expiration with secure storage
+- **Protected Routes**: JWT middleware protecting sensitive endpoints
+- **User-Specific Bet Storage**: Bets tied to user accounts with proper data association
+- **Seamless UI Integration**: Authentication flow integrated with existing betting interface
+- **Mobile-Friendly Design**: Responsive authentication modal with Tailwind styling
+- **Production Ready**: Environment variable support for JWT secrets
+
+#### 🔒 Security Features Implemented
+- **Password Hashing**: bcrypt with 10 salt rounds
+- **JWT Token Security**: HS256 algorithm with 1-hour expiration
+- **Route Protection**: JWT middleware protecting sensitive endpoints
+- **Input Validation**: Email format and password requirements
+- **Error Handling**: Secure error messages without information leakage
+- **Token Management**: Secure localStorage operations with cleanup
+
 ---
 
 *Last Updated: October 2024*
-*Version: 2.0.0*
-*Status: Backend Integration Complete*
+*Version: 3.0.0*
+*Status: JWT Authentication System Complete*
