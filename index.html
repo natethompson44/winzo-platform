@@ -144,11 +144,11 @@
                     </div>
                     <div class="flex justify-between mb-2">
                         <span>Stake:</span>
-                        <span id="stake-display" class="font-semibold">₹0</span>
+                        <span id="stake-display" class="font-semibold">$0</span>
                     </div>
                     <div class="flex justify-between text-lg font-bold text-winzo-accent">
                         <span>Potential Payout:</span>
-                        <span id="potential-payout">₹0</span>
+                        <span id="potential-payout">$0</span>
                     </div>
                 </div>
                 
@@ -476,6 +476,27 @@
         let selectedBets = [];
         let betSlipVisible = false;
         let refreshInterval = null;
+        
+        // Odds conversion functions
+        function decimalToAmerican(decimalOdds) {
+            if (decimalOdds >= 2.0) {
+                return Math.round((decimalOdds - 1) * 100);
+            } else {
+                return Math.round(-100 / (decimalOdds - 1));
+            }
+        }
+        
+        function americanToDecimal(americanOdds) {
+            if (americanOdds > 0) {
+                return (americanOdds / 100) + 1;
+            } else {
+                return (100 / Math.abs(americanOdds)) + 1;
+            }
+        }
+        
+        function formatAmericanOdds(americanOdds) {
+            return americanOdds > 0 ? `+${americanOdds}` : `${americanOdds}`;
+        }
         
         // Authentication state
         let currentUser = null;
@@ -958,7 +979,7 @@
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
                         <div class="text-center">
                             <div class="text-xs text-gray-400">Odds</div>
-                            <div class="font-semibold text-winzo-accent text-sm sm:text-base">${bet.odds.toFixed(2)}</div>
+                            <div class="font-semibold text-winzo-accent text-sm sm:text-base">${formatAmericanOdds(decimalToAmerican(bet.odds))}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-xs text-gray-400">Stake</div>
@@ -1000,13 +1021,13 @@
                     throw new Error('Invalid API response format');
                 }
                 
-                // Process backend data (already processed by backend)
+                // Process backend data (convert American odds to decimal for calculations)
                 const processedGames = result.data.map(game => ({
                     id: game.id,
                     homeTeam: game.home_team,
                     awayTeam: game.away_team,
-                    homeOdds: game.home_odds,
-                    awayOdds: game.away_odds,
+                    homeOdds: americanToDecimal(game.home_odds),
+                    awayOdds: americanToDecimal(game.away_odds),
                     date: game.date,
                     time: game.time,
                     commenceTime: game.commenceTime
@@ -1063,8 +1084,8 @@
                 const data = await response.json();
                 games = data.games.map(game => ({
                     ...game,
-                    homeOdds: parseFloat(game.homeOdds),
-                    awayOdds: parseFloat(game.awayOdds)
+                    homeOdds: americanToDecimal(parseFloat(game.homeOdds)),
+                    awayOdds: americanToDecimal(parseFloat(game.awayOdds))
                 }));
                 renderGames();
                 return games;
@@ -1076,8 +1097,8 @@
                         id: 1,
                         homeTeam: "Kansas City Chiefs",
                         awayTeam: "Buffalo Bills",
-                        homeOdds: 1.85,
-                        awayOdds: 2.10,
+                        homeOdds: americanToDecimal(-118),
+                        awayOdds: americanToDecimal(+110),
                         date: "Today",
                         time: "8:00 PM"
                     },
@@ -1085,8 +1106,8 @@
                         id: 2,
                         homeTeam: "Dallas Cowboys",
                         awayTeam: "Philadelphia Eagles",
-                        homeOdds: 2.20,
-                        awayOdds: 1.75,
+                        homeOdds: americanToDecimal(+120),
+                        awayOdds: americanToDecimal(-133),
                         date: "Today",
                         time: "4:25 PM"
                     }
@@ -1171,7 +1192,7 @@
                             data-odds="${game.homeOdds}"
                         >
                             <div class="text-sm font-medium">${game.homeTeam}</div>
-                            <div class="text-lg font-bold text-winzo-accent">${game.homeOdds}</div>
+                            <div class="text-lg font-bold text-winzo-accent">${formatAmericanOdds(decimalToAmerican(game.homeOdds))}</div>
                         </button>
                         <button 
                             class="bet-button bg-gray-700 hover:bg-winzo-primary p-4 rounded-lg border border-gray-600 hover:border-winzo-primary transition-all"
@@ -1181,7 +1202,7 @@
                             data-odds="${game.awayOdds}"
                         >
                             <div class="text-sm font-medium">${game.awayTeam}</div>
-                            <div class="text-lg font-bold text-winzo-accent">${game.awayOdds}</div>
+                            <div class="text-lg font-bold text-winzo-accent">${formatAmericanOdds(decimalToAmerican(game.awayOdds))}</div>
                         </button>
                     </div>
                 `;
@@ -1256,7 +1277,7 @@
                 betElement.innerHTML = `
                     <div>
                         <div class="font-medium">${bet.teamName}</div>
-                        <div class="text-sm text-gray-400">Odds: ${bet.odds}</div>
+                        <div class="text-sm text-gray-400">Odds: ${formatAmericanOdds(decimalToAmerican(bet.odds))}</div>
                     </div>
                     <button 
                         onclick="removeBet(${index})"
@@ -1314,8 +1335,8 @@
             
             if (selectedBets.length === 0) {
                 document.getElementById('total-odds').textContent = '-';
-                document.getElementById('stake-display').textContent = '₹0';
-                document.getElementById('potential-payout').textContent = '₹0';
+                document.getElementById('stake-display').textContent = '$0';
+                document.getElementById('potential-payout').textContent = '$0';
                 document.getElementById('place-bet').disabled = true;
                 return;
             }
@@ -1325,8 +1346,8 @@
             const potentialPayout = stake * totalOdds;
 
             document.getElementById('total-odds').textContent = totalOdds.toFixed(2);
-            document.getElementById('stake-display').textContent = `₹${stake.toFixed(2)}`;
-            document.getElementById('potential-payout').textContent = `₹${potentialPayout.toFixed(2)}`;
+            document.getElementById('stake-display').textContent = `$${stake.toFixed(2)}`;
+            document.getElementById('potential-payout').textContent = `$${potentialPayout.toFixed(2)}`;
             
             // Enable/disable place bet button
             document.getElementById('place-bet').disabled = stake <= 0 || selectedBets.length === 0;
@@ -1744,7 +1765,7 @@
                                 <td class="py-2 px-3 text-sm">${bet.user_email}</td>
                                 <td class="py-2 px-3 text-sm">${bet.match}</td>
                                 <td class="py-2 px-3 text-sm">${bet.team}</td>
-                                <td class="py-2 px-3 text-sm">${bet.odds}</td>
+                                <td class="py-2 px-3 text-sm">${formatAmericanOdds(decimalToAmerican(bet.odds))}</td>
                                 <td class="py-2 px-3 text-sm">$${bet.stake.toFixed(2)}</td>
                                 <td class="py-2 px-3 text-sm">$${bet.potential_payout.toFixed(2)}</td>
                                 <td class="py-2 px-3">

@@ -48,6 +48,23 @@ const API_KEY = 'ae09b5ce0e57ca5b0ae4ccd0f852ba12';
 const API_URL = `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?regions=us&markets=h2h&apiKey=${API_KEY}`;
 const CACHE_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
+// Odds conversion functions
+function decimalToAmerican(decimalOdds) {
+    if (decimalOdds >= 2.0) {
+        return Math.round((decimalOdds - 1) * 100);
+    } else {
+        return Math.round(-100 / (decimalOdds - 1));
+    }
+}
+
+function americanToDecimal(americanOdds) {
+    if (americanOdds > 0) {
+        return (americanOdds / 100) + 1;
+    } else {
+        return (100 / Math.abs(americanOdds)) + 1;
+    }
+}
+
 // In-memory cache
 let oddsCache = {
     data: null,
@@ -118,8 +135,8 @@ function processOddsData(apiData) {
             matchup: `${awayTeam} vs ${homeTeam}`,
             home_team: homeTeam,
             away_team: awayTeam,
-            home_odds: parseFloat(homeOdds.toFixed(2)),
-            away_odds: parseFloat(awayOdds.toFixed(2)),
+            home_odds: decimalToAmerican(parseFloat(homeOdds.toFixed(2))),
+            away_odds: decimalToAmerican(parseFloat(awayOdds.toFixed(2))),
             date: formatGameDate(game.commence_time),
             time: formatGameTime(game.commence_time),
             commenceTime: game.commence_time
@@ -162,8 +179,8 @@ async function loadFallbackData() {
             matchup: `${game.awayTeam} vs ${game.homeTeam}`,
             home_team: game.homeTeam,
             away_team: game.awayTeam,
-            home_odds: parseFloat(game.homeOdds),
-            away_odds: parseFloat(game.awayOdds),
+            home_odds: americanToDecimal(parseFloat(game.homeOdds)),
+            away_odds: americanToDecimal(parseFloat(game.awayOdds)),
             date: game.date,
             time: game.time
         }));

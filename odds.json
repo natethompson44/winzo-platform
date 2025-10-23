@@ -4,8 +4,8 @@
       "id": 1,
       "homeTeam": "Kansas City Chiefs",
       "awayTeam": "Buffalo Bills",
-      "homeOdds": 1.85,
-      "awayOdds": 2.10,
+      "homeOdds": -118,
+      "awayOdds": +110,
       "date": "2024-01-15",
       "time": "8:00 PM"
     },
@@ -13,8 +13,8 @@
       "id": 2,
       "homeTeam": "Dallas Cowboys",
       "awayTeam": "Philadelphia Eagles",
-      "homeOdds": 2.20,
-      "awayOdds": 1.75,
+      "homeOdds": +120,
+      "awayOdds": -133,
       "date": "2024-01-15",
       "time": "4:25 PM"
     },
@@ -22,8 +22,8 @@
       "id": 3,
       "homeTeam": "Miami Dolphins",
       "awayTeam": "New England Patriots",
-      "homeOdds": 1.95,
-      "awayOdds": 2.05,
+      "homeOdds": -105,
+      "awayOdds": +105,
       "date": "2024-01-16",
       "time": "1:00 PM"
     },
@@ -31,8 +31,8 @@
       "id": 4,
       "homeTeam": "San Francisco 49ers",
       "awayTeam": "Seattle Seahawks",
-      "homeOdds": 1.70,
-      "awayOdds": 2.40,
+      "homeOdds": -143,
+      "awayOdds": +140,
       "date": "2024-01-16",
       "time": "4:05 PM"
     },
@@ -40,8 +40,8 @@
       "id": 5,
       "homeTeam": "Green Bay Packers",
       "awayTeam": "Detroit Lions",
-      "homeOdds": 2.50,
-      "awayOdds": 1.60,
+      "homeOdds": +150,
+      "awayOdds": -167,
       "date": "2024-01-17",
       "time": "8:15 PM"
     },
@@ -49,8 +49,8 @@
       "id": 6,
       "homeTeam": "Los Angeles Rams",
       "awayTeam": "Arizona Cardinals",
-      "homeOdds": 1.45,
-      "awayOdds": 3.20,
+      "homeOdds": -222,
+      "awayOdds": +220,
       "date": "2024-01-17",
       "time": "4:25 PM"
     }
