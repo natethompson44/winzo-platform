@@ -223,7 +223,11 @@
         let isLoginMode = true;
         
         // API Configuration - Now using backend proxy
-        const API_URL = '/api/odds';
+        // Get API base URL from environment or use Railway URL
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : 'https://winzo-platform-production.up.railway.app';
+        const API_URL = `${API_BASE_URL}/api/odds`;
         const CACHE_DURATION = 60 * 1000; // 60 seconds in milliseconds
         const CACHE_KEY = 'nfl_odds_cache';
         const CACHE_TIMESTAMP_KEY = 'nfl_odds_timestamp';
@@ -316,7 +320,7 @@
 
         async function register(email, password) {
             try {
-                const response = await fetch('/api/register', {
+                const response = await fetch(`${API_BASE_URL}/api/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -345,7 +349,7 @@
 
         async function login(email, password) {
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch(`${API_BASE_URL}/api/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -770,7 +774,7 @@
                         potential_payout: payout
                     };
 
-                    const response = await fetch('/api/bet', {
+                    const response = await fetch(`${API_BASE_URL}/api/bet`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
