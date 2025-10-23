@@ -551,8 +551,190 @@ GET /api/bets
 - **Error Handling**: Secure error messages without information leakage
 - **Token Management**: Secure localStorage operations with cleanup
 
+### Railway Deployment & Production Setup (October 2024)
+**Objective**: Deploy the WINZO MVP to production with Railway backend and Netlify frontend, resolving deployment issues and ensuring proper cross-origin communication.
+
+#### ✅ Completed Tasks
+
+1. **Railway Deployment Issues Resolution**
+   - **Problem Identified**: Railway deployment failing due to bcrypt native module compatibility issue
+   - **Error**: `Error: /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: invalid ELF header`
+   - **Root Cause**: bcrypt native binaries compiled for Windows but Railway runs on Linux
+   - **Solution**: Replaced `bcrypt` with `bcryptjs` (pure JavaScript implementation)
+   - **Result**: Railway deployment now succeeds without native module compilation issues
+
+2. **Package.json Dependencies Update**
+   - Removed: `"bcrypt": "^5.1.1"`
+   - Added: `"bcryptjs": "^2.4.3"`
+   - Updated import statement in `backend/routes/users.js`: `const bcrypt = require('bcryptjs')`
+   - Maintained identical API compatibility (drop-in replacement)
+
+3. **Frontend-Backend Connection Fix**
+   - **Problem**: Frontend using relative URLs (`/api/odds`) trying to call API on Netlify domain
+   - **Solution**: Updated frontend to use absolute Railway URL
+   - **Implementation**: 
+     ```javascript
+     const API_BASE_URL = window.location.hostname === 'localhost' 
+         ? 'http://localhost:3000' 
+         : 'https://winzo-platform-production-d306.up.railway.app';
+     ```
+   - **Updated All API Calls**: `/api/register`, `/api/login`, `/api/bet`, `/api/odds`
+
+4. **CORS Configuration Enhancement**
+   - **Problem**: Cross-origin requests from Netlify to Railway blocked
+   - **Solution**: Updated CORS middleware in `backend/app.js`
+   - **Implementation**:
+     ```javascript
+     app.use(cors({
+         origin: process.env.CORS_ORIGIN || 'https://winzo-sports.netlify.app',
+         credentials: true
+     }));
+     ```
+   - **Environment Variable**: `CORS_ORIGIN="https://winzo-sports.netlify.app"`
+
+5. **Railway Configuration Optimization**
+   - **Fixed Path Reference**: Updated `backend/app.js` to serve `index.html` from correct location
+   - **Path Fix**: `path.join(__dirname, '..', 'index.html')` instead of `path.join(__dirname, 'index.html')`
+   - **Package.json Structure**: Added `"build": "echo 'No build step required'"` script
+   - **Health Check**: Verified `/api/health` endpoint working correctly
+
+6. **Timezone Configuration**
+   - **User Request**: Set game times to Central Time for better NFL viewing experience
+   - **Implementation**: Updated `formatGameDate()` and `formatGameTime()` functions
+   - **Configuration**: Added `timeZone: 'America/Chicago'` to both functions
+   - **Result**: All game times now display in Central Time with proper AM/PM format
+
+7. **Deployment Testing & Validation**
+   - **Local Testing**: Created PowerShell test scripts for deployment validation
+   - **bcryptjs Testing**: Verified user registration and login work with new library
+   - **Cross-Origin Testing**: Confirmed Netlify ↔ Railway communication working
+   - **Health Check Testing**: Verified `/api/health` endpoint responds correctly
+
+#### 🔧 Technical Implementation Details
+
+**Railway URL Configuration**:
+- **Production URL**: `https://winzo-platform-production-d306.up.railway.app`
+- **Port**: 3000 (Railway auto-assigned)
+- **Environment**: Production with proper CORS origin configuration
+
+**Frontend API Integration**:
+```javascript
+// Dynamic API base URL based on environment
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000' 
+    : 'https://winzo-platform-production-d306.up.railway.app';
+
+// All API calls updated to use base URL
+const response = await fetch(`${API_BASE_URL}/api/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+});
+```
+
+**Timezone Implementation**:
+```javascript
+// Central Time formatting for game times
+function formatGameTime(commenceTime) {
+    const date = new Date(commenceTime);
+    return date.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'America/Chicago'  // Central Time
+    });
+}
+```
+
+#### 📊 Deployment Architecture
+
+**Production Setup**:
+- **Frontend**: Netlify (`https://winzo-sports.netlify.app`)
+- **Backend**: Railway (`https://winzo-platform-production-d306.up.railway.app`)
+- **Database**: In-memory (ready for database integration)
+- **API**: The Odds API for live NFL odds
+- **CORS**: Configured for cross-origin requests
+
+**Environment Variables**:
+```bash
+# Railway Environment Variables
+PORT=3000
+ODDS_API_KEY=ae09b5ce0e57ca5b0ae4ccd0f852ba12
+JWT_SECRET=ZRC3xah6pcrrnr7mdu
+NODE_ENV=production
+CORS_ORIGIN=https://winzo-sports.netlify.app
+```
+
+#### ✅ Testing Results
+
+**Deployment Validation**:
+- ✅ **Railway Server**: Successfully deployed and running
+- ✅ **Health Endpoint**: `/api/health` responding correctly
+- ✅ **CORS Configuration**: Netlify frontend can communicate with Railway backend
+- ✅ **Authentication**: User registration and login working with bcryptjs
+- ✅ **API Integration**: Live NFL odds fetching and caching working
+- ✅ **Timezone Display**: Games showing in Central Time
+- ✅ **Cross-Origin Requests**: All API calls working from Netlify to Railway
+
+**Functional Testing**:
+- ✅ **User Registration**: New users can create accounts
+- ✅ **User Login**: Existing users can authenticate
+- ✅ **Bet Placement**: Authenticated users can save bets
+- ✅ **Odds Display**: Live NFL odds loading and displaying correctly
+- ✅ **Time Display**: Game times showing in Central Time zone
+- ✅ **Error Handling**: Graceful fallbacks when API is unavailable
+
+#### 🚀 Key Achievements
+
+**Production Deployment**:
+- **Full-Stack Application**: Frontend on Netlify, Backend on Railway
+- **Cross-Origin Communication**: Properly configured CORS for production
+- **Native Module Compatibility**: Resolved bcrypt deployment issues with bcryptjs
+- **Timezone Optimization**: Central Time display for better NFL viewing experience
+- **Health Monitoring**: `/api/health` endpoint for deployment monitoring
+- **Environment Configuration**: Proper environment variables for production
+
+**Technical Improvements**:
+- **Deployment Reliability**: Fixed Railway deployment issues
+- **Cross-Platform Compatibility**: bcryptjs works on all platforms
+- **Production CORS**: Properly configured for Netlify ↔ Railway communication
+- **Timezone Accuracy**: Games display in appropriate timezone for NFL
+- **Error Resolution**: Comprehensive testing and validation of all fixes
+
+#### 📁 Final Production Structure
+
+```
+Production Deployment:
+├── Frontend (Netlify)
+│   └── https://winzo-sports.netlify.app
+│       ├── index.html (updated with Railway API URLs)
+│       └── Static assets
+├── Backend (Railway)
+│   └── https://winzo-platform-production-d306.up.railway.app
+│       ├── Express.js server
+│       ├── JWT authentication
+│       ├── NFL odds API integration
+│       └── Central Time formatting
+└── External APIs
+    └── The Odds API (live NFL odds)
+```
+
+#### 🔒 Security & Performance
+
+**Security Features**:
+- **JWT Authentication**: Secure token-based authentication
+- **CORS Protection**: Properly configured cross-origin requests
+- **Password Security**: bcryptjs hashing for password storage
+- **Environment Variables**: Secure configuration management
+
+**Performance Optimizations**:
+- **API Caching**: 60-second cache for NFL odds
+- **Fallback System**: Multiple fallback levels for reliability
+- **CDN Resources**: TailwindCSS loaded from CDN
+- **Efficient Rendering**: Optimized frontend performance
+
 ---
 
 *Last Updated: October 2024*
-*Version: 3.0.0*
-*Status: JWT Authentication System Complete*
+*Version: 4.0.0*
+*Status: Production Deployment Complete - Railway + Netlify*
