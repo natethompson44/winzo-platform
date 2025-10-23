@@ -58,9 +58,18 @@
             <div class="flex justify-between items-center mb-2">
                 <h1 class="text-2xl font-bold">🏈 WINZO American Football</h1>
                 <div id="auth-section" class="flex items-center space-x-4">
-                    <div id="user-info" class="hidden">
-                        <span id="user-email" class="text-sm font-medium"></span>
-                        <button id="logout-btn" class="ml-2 text-sm underline hover:no-underline">Logout</button>
+                    <div id="user-info" class="hidden flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg">💰</span>
+                            <span id="user-balance" class="text-sm font-medium text-winzo-accent">$0.00</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span id="user-email" class="text-sm font-medium"></span>
+                            <button id="logout-btn" class="text-sm underline hover:no-underline">Logout</button>
+                        </div>
+                        <button id="deposit-btn" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm font-medium transition-all">
+                            Deposit $100
+                        </button>
                     </div>
                     <button id="login-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded text-sm font-medium transition-all">
                         Login / Register
@@ -306,12 +315,16 @@
         function updateAuthUI() {
             const userInfo = document.getElementById('user-info');
             const userEmail = document.getElementById('user-email');
+            const userBalance = document.getElementById('user-balance');
             const loginBtn = document.getElementById('login-btn');
 
             if (currentUser) {
                 userEmail.textContent = currentUser.email;
+                userBalance.textContent = `$${(currentUser.balance || 0).toFixed(2)}`;
                 userInfo.classList.remove('hidden');
                 loginBtn.classList.add('hidden');
+                // Load current balance from server
+                loadWalletBalance();
             } else {
                 userInfo.classList.add('hidden');
                 loginBtn.classList.remove('hidden');
@@ -435,6 +448,73 @@
                 registerTab.className = 'flex-1 py-2 px-4 bg-winzo-primary text-white rounded-r-lg font-medium';
             }
             hideAuthError();
+        }
+
+        // Wallet functions
+        async function loadWalletBalance() {
+            if (!authToken) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/wallet`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    const userBalance = document.getElementById('user-balance');
+                    userBalance.textContent = `$${result.balance.toFixed(2)}`;
+                    
+                    // Update currentUser balance
+                    if (currentUser) {
+                        currentUser.balance = result.balance;
+                        storeAuth(authToken, currentUser);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading wallet balance:', error);
+            }
+        }
+
+        async function depositFunds(amount) {
+            if (!authToken) return false;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/deposit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ amount })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update balance display
+                    const userBalance = document.getElementById('user-balance');
+                    userBalance.textContent = `$${result.balance.toFixed(2)}`;
+                    
+                    // Update currentUser balance
+                    if (currentUser) {
+                        currentUser.balance = result.balance;
+                        storeAuth(authToken, currentUser);
+                    }
+                    
+                    showAuthSuccess(result.message);
+                    return true;
+                } else {
+                    showAuthError(result.error);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Deposit error:', error);
+                showAuthError('Network error. Please try again.');
+                return false;
+            }
         }
 
         // API functions - Updated to use backend
@@ -786,9 +866,21 @@
                     const result = await response.json();
                     
                     if (result.success) {
-                        showAuthSuccess(`Bet placed successfully!\n\nStake: ₹${stake.toFixed(2)}\nTotal Odds: ${totalOdds.toFixed(2)}\nPotential Payout: ₹${payout.toFixed(2)}\n\nBet saved to your account.`);
+                        // Update balance display if new balance is provided
+                        if (result.new_balance !== undefined) {
+                            const userBalance = document.getElementById('user-balance');
+                            userBalance.textContent = `$${result.new_balance.toFixed(2)}`;
+                            
+                            // Update currentUser balance
+                            if (currentUser) {
+                                currentUser.balance = result.new_balance;
+                                storeAuth(authToken, currentUser);
+                            }
+                        }
+                        
+                        showAuthSuccess(`Bet placed successfully!\n\nStake: $${stake.toFixed(2)}\nTotal Odds: ${totalOdds.toFixed(2)}\nPotential Payout: $${payout.toFixed(2)}\n\nBet saved to your account.`);
                     } else {
-                        showAuthError(result.error || 'Failed to save bet');
+                        showAuthError(result.error || result.message || 'Failed to save bet');
                         return;
                     }
                 } catch (error) {
@@ -840,6 +932,7 @@
             // Authentication event listeners
             document.getElementById('login-btn').addEventListener('click', showAuthModal);
             document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('deposit-btn').addEventListener('click', () => depositFunds(100));
             document.getElementById('close-auth-modal').addEventListener('click', hideAuthModal);
             
             // Auth modal tabs

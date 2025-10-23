@@ -46,6 +46,7 @@ router.post('/register', async (req, res) => {
             id: nextUserId++,
             email: email,
             password_hash: passwordHash,
+            balance: 1000, // Default starting balance
             created_at: new Date().toISOString()
         };
 
@@ -61,6 +62,7 @@ router.post('/register', async (req, res) => {
             user: {
                 id: newUser.id,
                 email: newUser.email,
+                balance: newUser.balance,
                 created_at: newUser.created_at
             }
         });
@@ -115,6 +117,7 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
+                balance: user.balance,
                 created_at: user.created_at
             }
         });
@@ -155,6 +158,7 @@ router.get('/profile', (req, res) => {
             user: {
                 id: userData.id,
                 email: userData.email,
+                balance: userData.balance,
                 created_at: userData.created_at
             }
         });
@@ -168,4 +172,5 @@ router.get('/profile', (req, res) => {
     }
 });
 
-module.exports = router;
+// Export users array and nextUserId for wallet functionality
+module.exports = { router, users, nextUserId };

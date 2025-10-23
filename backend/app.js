@@ -6,8 +6,9 @@ const path = require('path');
 const { expressjwt: jwt } = require('express-jwt');
 
 // Import route modules
-const userRoutes = require('./routes/users');
+const { router: userRoutes } = require('./routes/users');
 const betRoutes = require('./routes/bets');
+const walletRoutes = require('./routes/wallet');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -252,6 +253,7 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api', userRoutes);
 app.use('/api', betRoutes);
+app.use('/api', walletRoutes);
 
 // Serve the main HTML file
 app.get('/', (req, res) => {

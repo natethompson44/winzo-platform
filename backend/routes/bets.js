@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+// Import users array from users.js
+const { users } = require('./users');
+
 // In-memory storage for bets (in production, use a proper database)
 const bets = [];
 let nextBetId = 1;
@@ -36,6 +39,26 @@ router.post('/bet', (req, res) => {
             });
         }
 
+        // Check if user has sufficient balance
+        const userData = users.find(u => u.id === user.userId);
+        if (!userData) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const stakeAmount = parseFloat(stake);
+        const currentBalance = userData.balance || 0;
+
+        if (currentBalance < stakeAmount) {
+            return res.status(400).json({
+                success: false,
+                error: 'Insufficient funds',
+                message: `Current balance: $${currentBalance.toFixed(2)}, Required stake: $${stakeAmount.toFixed(2)}`
+            });
+        }
+
         // Create new bet
         const newBet = {
             id: nextBetId++,
@@ -43,12 +66,15 @@ router.post('/bet', (req, res) => {
             match: match,
             team: team,
             odds: parseFloat(odds),
-            stake: parseFloat(stake),
+            stake: stakeAmount,
             potential_payout: parseFloat(potential_payout),
             created_at: new Date().toISOString()
         };
 
         bets.push(newBet);
+
+        // Deduct stake from user's balance
+        userData.balance = currentBalance - stakeAmount;
 
         res.status(201).json({
             success: true,
@@ -61,7 +87,8 @@ router.post('/bet', (req, res) => {
                 stake: newBet.stake,
                 potential_payout: newBet.potential_payout,
                 created_at: newBet.created_at
-            }
+            },
+            new_balance: userData.balance
         });
 
     } catch (error) {
