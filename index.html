@@ -703,14 +703,20 @@
                     <div class="grid grid-cols-2 gap-3">
                         <button 
                             class="bet-button bg-gray-700 hover:bg-winzo-primary p-4 rounded-lg border border-gray-600 hover:border-winzo-primary transition-all"
-                            onclick="selectBet(${game.id}, 'home', '${game.homeTeam}', ${game.homeOdds})"
+                            data-game-id="${game.id}"
+                            data-team="home"
+                            data-team-name="${game.homeTeam}"
+                            data-odds="${game.homeOdds}"
                         >
                             <div class="text-sm font-medium">${game.homeTeam}</div>
                             <div class="text-lg font-bold text-winzo-accent">${game.homeOdds}</div>
                         </button>
                         <button 
                             class="bet-button bg-gray-700 hover:bg-winzo-primary p-4 rounded-lg border border-gray-600 hover:border-winzo-primary transition-all"
-                            onclick="selectBet(${game.id}, 'away', '${game.awayTeam}', ${game.awayOdds})"
+                            data-game-id="${game.id}"
+                            data-team="away"
+                            data-team-name="${game.awayTeam}"
+                            data-odds="${game.awayOdds}"
                         >
                             <div class="text-sm font-medium">${game.awayTeam}</div>
                             <div class="text-lg font-bold text-winzo-accent">${game.awayOdds}</div>
@@ -718,6 +724,31 @@
                     </div>
                 `;
                 container.appendChild(gameCard);
+            });
+            
+            // Attach event delegation for bet buttons
+            attachBetButtonListeners();
+        }
+
+        // Attach event listeners to bet buttons using event delegation
+        function attachBetButtonListeners() {
+            const container = document.getElementById('games-container');
+            
+            // Remove any existing listener to prevent duplicates
+            const newContainer = container.cloneNode(true);
+            container.parentNode.replaceChild(newContainer, container);
+            
+            // Add single event listener to container
+            newContainer.addEventListener('click', function(e) {
+                const button = e.target.closest('.bet-button');
+                if (!button) return;
+                
+                const gameId = parseInt(button.dataset.gameId);
+                const team = button.dataset.team;
+                const teamName = button.dataset.teamName;
+                const odds = parseFloat(button.dataset.odds);
+                
+                selectBet(gameId, team, teamName, odds);
             });
         }
 
