@@ -1,0 +1,15 @@
+# Render.com deployment configuration
+# This file tells Render how to build and run the WINZO NFL Backend
+
+# Build command
+npm install
+
+# Start command  
+npm start
+
+# Environment variables (set these in Render dashboard)
+# PORT - automatically set by Render
+# NODE_ENV=production
+
+# Health check endpoint
+# GET /api/health

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WINZO American Football Betting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        winzo: {
+                            primary: '#FF6B35',
+                            secondary: '#1A1A1A',
+                            accent: '#FFD700'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
+            min-height: 100vh;
+        }
+        .bet-card {
+            transition: all 0.3s ease;
+        }
+        .bet-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.2);
+        }
+        .bet-button {
+            transition: all 0.2s ease;
+        }
+        .bet-button:hover {
+            transform: scale(1.05);
+        }
+        .bet-button:active {
+            transform: scale(0.95);
+        }
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-winzo-primary to-winzo-accent p-4 shadow-lg">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-bold text-center">🏈 WINZO American Football</h1>
+            <p class="text-center text-sm opacity-90">Live NFL Betting</p>
+            <div id="last-updated" class="text-center text-xs opacity-75 mt-1"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 pb-24">
+        <!-- Games Section -->
+        <section id="games-section">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-winzo-accent">Today's NFL Games</h2>
+                <div id="loading-indicator" class="hidden">
+                    <div class="loading-spinner w-5 h-5 border-2 border-winzo-primary border-t-transparent rounded-full"></div>
+                </div>
+            </div>
+            <div id="games-container" class="space-y-4">
+                <!-- Games will be loaded here -->
+            </div>
+            <div id="error-message" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg mb-4">
+                <p class="font-medium">Unable to load live odds</p>
+                <p class="text-sm mt-1">Using fallback data. Please check your internet connection.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bet Slip (Fixed Bottom) -->
+    <div id="bet-slip" class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 transform translate-y-full transition-transform duration-300 z-50">
+        <div class="container mx-auto p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-winzo-accent">Bet Slip</h3>
+                <button id="close-bet-slip" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <div id="selected-bets" class="space-y-3 mb-4">
+                <!-- Selected bets will appear here -->
+            </div>
+            
+            <div id="bet-controls" class="space-y-4">
+                <div>
+                    <label for="stake-input" class="block text-sm font-medium mb-2">Stake Amount</label>
+                    <input 
+                        type="number" 
+                        id="stake-input" 
+                        placeholder="Enter stake amount" 
+                        min="1" 
+                        step="0.01"
+                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-winzo-primary focus:border-transparent"
+                    >
+                </div>
+                
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <div class="flex justify-between mb-2">
+                        <span>Total Odds:</span>
+                        <span id="total-odds" class="font-semibold">-</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>Stake:</span>
+                        <span id="stake-display" class="font-semibold">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold text-winzo-accent">
+                        <span>Potential Payout:</span>
+                        <span id="potential-payout">₹0</span>
+                    </div>
+                </div>
+                
+                <button 
+                    id="place-bet" 
+                    class="w-full bg-gradient-to-r from-winzo-primary to-winzo-accent text-white font-bold py-4 px-6 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                >
+                    Place Bet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Bet Slip Button -->
+    <button 
+        id="bet-slip-toggle" 
+        class="fixed bottom-6 right-6 bg-winzo-primary text-white w-14 h-14 rounded-full shadow-lg hover:bg-winzo-accent transition-colors z-40"
+        style="display: none;"
+    >
+        <span class="text-lg font-bold" id="bet-count">0</span>
+    </button>
+
+    <script>
+        // Global variables
+        let games = [];
+        let selectedBets = [];
+        let betSlipVisible = false;
+        let refreshInterval = null;
+        
+        // API Configuration - Now using backend proxy
+        const API_URL = '/api/odds';
+        const CACHE_DURATION = 60 * 1000; // 60 seconds in milliseconds
+        const CACHE_KEY = 'nfl_odds_cache';
+        const CACHE_TIMESTAMP_KEY = 'nfl_odds_timestamp';
+
+        // Cache management functions
+        function getCachedOdds() {
+            try {
+                const cachedData = localStorage.getItem(CACHE_KEY);
+                const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+                
+                if (!cachedData || !timestamp) {
+                    return null;
+                }
+                
+                const now = Date.now();
+                const cacheAge = now - parseInt(timestamp);
+                
+                if (cacheAge < CACHE_DURATION) {
+                    return JSON.parse(cachedData);
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('Error reading cache:', error);
+                return null;
+            }
+        }
+
+        function setCachedOdds(data) {
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+                localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+            } catch (error) {
+                console.error('Error setting cache:', error);
+            }
+        }
+
+        // API functions - Updated to use backend
+        async function fetchLiveOdds() {
+            try {
+                showLoading(true);
+                hideError();
+                
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                if (!Array.isArray(result.data)) {
+                    throw new Error('Invalid API response format');
+                }
+                
+                // Process backend data (already processed by backend)
+                const processedGames = result.data.map(game => ({
+                    id: game.id,
+                    homeTeam: game.home_team,
+                    awayTeam: game.away_team,
+                    homeOdds: game.home_odds,
+                    awayOdds: game.away_odds,
+                    date: game.date,
+                    time: game.time,
+                    commenceTime: game.commenceTime
+                }));
+                
+                games = processedGames;
+                setCachedOdds(games);
+                updateLastUpdated();
+                renderGames();
+                showLoading(false);
+                
+                // Log cache status
+                if (result.cached) {
+                    console.log('Served cached data from backend');
+                } else if (result.fallback) {
+                    console.log('Backend served fallback data');
+                } else {
+                    console.log('Served fresh data from backend');
+                }
+                
+                return games;
+                
+            } catch (error) {
+                console.error('Error fetching live odds:', error);
+                showLoading(false);
+                showError();
+                return await loadFallbackData();
+            }
+        }
+
+        function formatGameDate(commenceTime) {
+            if (!commenceTime) return 'TBD';
+            const date = new Date(commenceTime);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function formatGameTime(commenceTime) {
+            if (!commenceTime) return 'TBD';
+            const date = new Date(commenceTime);
+            return date.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        }
+
+        // Fallback data loading
+        async function loadFallbackData() {
+            try {
+                const response = await fetch('odds.json');
+                const data = await response.json();
+                games = data.games.map(game => ({
+                    ...game,
+                    homeOdds: parseFloat(game.homeOdds),
+                    awayOdds: parseFloat(game.awayOdds)
+                }));
+                renderGames();
+                return games;
+            } catch (error) {
+                console.error('Error loading fallback data:', error);
+                // Ultimate fallback
+                games = [
+                    {
+                        id: 1,
+                        homeTeam: "Kansas City Chiefs",
+                        awayTeam: "Buffalo Bills",
+                        homeOdds: 1.85,
+                        awayOdds: 2.10,
+                        date: "Today",
+                        time: "8:00 PM"
+                    },
+                    {
+                        id: 2,
+                        homeTeam: "Dallas Cowboys",
+                        awayTeam: "Philadelphia Eagles",
+                        homeOdds: 2.20,
+                        awayOdds: 1.75,
+                        date: "Today",
+                        time: "4:25 PM"
+                    }
+                ];
+                renderGames();
+                return games;
+            }
+        }
+
+        // UI helper functions
+        function showLoading(show) {
+            const indicator = document.getElementById('loading-indicator');
+            if (show) {
+                indicator.classList.remove('hidden');
+            } else {
+                indicator.classList.add('hidden');
+            }
+        }
+
+        function showError() {
+            document.getElementById('error-message').classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+
+        function updateLastUpdated() {
+            const lastUpdated = document.getElementById('last-updated');
+            const now = new Date();
+            lastUpdated.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        // Main data loading function
+        async function loadGames() {
+            // First try to load from cache
+            const cachedData = getCachedOdds();
+            if (cachedData) {
+                games = cachedData;
+                renderGames();
+                updateLastUpdated();
+            }
+            
+            // Always try to fetch fresh data
+            await fetchLiveOdds();
+        }
+
+        // Auto-refresh function
+        function startAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            
+            refreshInterval = setInterval(async () => {
+                await fetchLiveOdds();
+            }, CACHE_DURATION);
+        }
+
+        // Render games to the page
+        function renderGames() {
+            const container = document.getElementById('games-container');
+            container.innerHTML = '';
+
+            if (games.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-8">No games available</p>';
+                return;
+            }
+
+            games.forEach(game => {
+                const gameCard = document.createElement('div');
+                gameCard.className = 'bet-card bg-gray-800 rounded-lg p-4 border border-gray-700';
+                gameCard.innerHTML = `
+                    <div class="text-center mb-3">
+                        <div class="text-sm text-gray-400">${game.date} at ${game.time}</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button 
+                            class="bet-button bg-gray-700 hover:bg-winzo-primary p-4 rounded-lg border border-gray-600 hover:border-winzo-primary transition-all"
+                            onclick="selectBet(${game.id}, 'home', '${game.homeTeam}', ${game.homeOdds})"
+                        >
+                            <div class="text-sm font-medium">${game.homeTeam}</div>
+                            <div class="text-lg font-bold text-winzo-accent">${game.homeOdds}</div>
+                        </button>
+                        <button 
+                            class="bet-button bg-gray-700 hover:bg-winzo-primary p-4 rounded-lg border border-gray-600 hover:border-winzo-primary transition-all"
+                            onclick="selectBet(${game.id}, 'away', '${game.awayTeam}', ${game.awayOdds})"
+                        >
+                            <div class="text-sm font-medium">${game.awayTeam}</div>
+                            <div class="text-lg font-bold text-winzo-accent">${game.awayOdds}</div>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(gameCard);
+            });
+        }
+
+        // Select a bet
+        function selectBet(gameId, team, teamName, odds) {
+            // Check if this bet is already selected
+            const existingBet = selectedBets.find(bet => bet.gameId === gameId);
+            
+            if (existingBet) {
+                // Remove existing bet
+                selectedBets = selectedBets.filter(bet => bet.gameId !== gameId);
+            } else {
+                // Add new bet
+                selectedBets.push({
+                    gameId: gameId,
+                    team: team,
+                    teamName: teamName,
+                    odds: odds
+                });
+            }
+
+            updateBetSlip();
+            updateBetSlipToggle();
+        }
+
+        // Update bet slip display
+        function updateBetSlip() {
+            const container = document.getElementById('selected-bets');
+            container.innerHTML = '';
+
+            if (selectedBets.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-4">No bets selected</p>';
+                return;
+            }
+
+            selectedBets.forEach((bet, index) => {
+                const betElement = document.createElement('div');
+                betElement.className = 'bg-gray-700 p-3 rounded-lg flex justify-between items-center';
+                betElement.innerHTML = `
+                    <div>
+                        <div class="font-medium">${bet.teamName}</div>
+                        <div class="text-sm text-gray-400">Odds: ${bet.odds}</div>
+                    </div>
+                    <button 
+                        onclick="removeBet(${index})"
+                        class="text-red-400 hover:text-red-300 text-xl"
+                    >
+                        &times;
+                    </button>
+                `;
+                container.appendChild(betElement);
+            });
+
+            calculatePayout();
+        }
+
+        // Remove a bet
+        function removeBet(index) {
+            selectedBets.splice(index, 1);
+            updateBetSlip();
+            updateBetSlipToggle();
+        }
+
+        // Update bet slip toggle button
+        function updateBetSlipToggle() {
+            const toggle = document.getElementById('bet-slip-toggle');
+            const count = document.getElementById('bet-count');
+            
+            if (selectedBets.length > 0) {
+                toggle.style.display = 'block';
+                count.textContent = selectedBets.length;
+            } else {
+                toggle.style.display = 'none';
+            }
+        }
+
+        // Calculate potential payout (parlay style)
+        function calculatePayout() {
+            const stakeInput = document.getElementById('stake-input');
+            const stake = parseFloat(stakeInput.value) || 0;
+            
+            if (selectedBets.length === 0) {
+                document.getElementById('total-odds').textContent = '-';
+                document.getElementById('stake-display').textContent = '₹0';
+                document.getElementById('potential-payout').textContent = '₹0';
+                document.getElementById('place-bet').disabled = true;
+                return;
+            }
+
+            // Calculate total odds (multiply all odds)
+            const totalOdds = selectedBets.reduce((acc, bet) => acc * bet.odds, 1);
+            const potentialPayout = stake * totalOdds;
+
+            document.getElementById('total-odds').textContent = totalOdds.toFixed(2);
+            document.getElementById('stake-display').textContent = `₹${stake.toFixed(2)}`;
+            document.getElementById('potential-payout').textContent = `₹${potentialPayout.toFixed(2)}`;
+            
+            // Enable/disable place bet button
+            document.getElementById('place-bet').disabled = stake <= 0 || selectedBets.length === 0;
+        }
+
+        // Show/hide bet slip
+        function toggleBetSlip() {
+            const betSlip = document.getElementById('bet-slip');
+            betSlipVisible = !betSlipVisible;
+            
+            if (betSlipVisible) {
+                betSlip.style.transform = 'translateY(0)';
+            } else {
+                betSlip.style.transform = 'translateY(100%)';
+            }
+        }
+
+        // Place bet (mock function)
+        function placeBet() {
+            if (selectedBets.length === 0) return;
+            
+            const stake = parseFloat(document.getElementById('stake-input').value);
+            const totalOdds = selectedBets.reduce((acc, bet) => acc * bet.odds, 1);
+            const payout = stake * totalOdds;
+            
+            alert(`Bet placed successfully!\n\nStake: ₹${stake.toFixed(2)}\nTotal Odds: ${totalOdds.toFixed(2)}\nPotential Payout: ₹${payout.toFixed(2)}\n\nThis is a demo - no real money was bet.`);
+            
+            // Clear the bet slip
+            selectedBets = [];
+            document.getElementById('stake-input').value = '';
+            updateBetSlip();
+            updateBetSlipToggle();
+            toggleBetSlip();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGames();
+            startAutoRefresh();
+            
+            // Bet slip toggle
+            document.getElementById('bet-slip-toggle').addEventListener('click', toggleBetSlip);
+            document.getElementById('close-bet-slip').addEventListener('click', toggleBetSlip);
+            
+            // Stake input
+            document.getElementById('stake-input').addEventListener('input', calculatePayout);
+            
+            // Place bet button
+            document.getElementById('place-bet').addEventListener('click', placeBet);
+            
+            // Close bet slip when clicking outside
+            document.getElementById('bet-slip').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    toggleBetSlip();
+                }
+            });
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>
