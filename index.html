@@ -57,21 +57,29 @@
         <div class="container mx-auto">
             <div class="flex justify-between items-center mb-2">
                 <h1 class="text-2xl font-bold">🏈 WINZO American Football</h1>
-                <div id="auth-section" class="flex items-center space-x-4">
-                    <div id="user-info" class="hidden flex items-center space-x-4">
-                        <div class="flex items-center space-x-2">
+                <div id="auth-section" class="flex items-center space-x-2 sm:space-x-4">
+                    <div id="user-info" class="hidden flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                        <div class="flex items-center space-x-2 bg-gray-800 px-3 py-2 rounded-lg">
                             <span class="text-lg">💰</span>
-                            <span id="user-balance" class="text-sm font-medium text-winzo-accent">$0.00</span>
+                            <span id="user-balance" class="text-sm font-bold text-winzo-accent">$0.00</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span id="user-email" class="text-sm font-medium"></span>
+                            <span id="user-email" class="text-sm font-medium hidden sm:inline"></span>
                             <button id="logout-btn" class="text-sm underline hover:no-underline">Logout</button>
                         </div>
-                        <button id="deposit-btn" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm font-medium transition-all">
-                            Deposit $100
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="my-bets-btn" class="bg-blue-600 hover:bg-blue-700 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all">
+                                My Bets
+                            </button>
+                            <button id="deposit-btn" class="bg-green-600 hover:bg-green-700 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all">
+                                Deposit
+                            </button>
+                            <button id="withdraw-btn" class="bg-red-600 hover:bg-red-700 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all">
+                                Withdraw
+                            </button>
+                        </div>
                     </div>
-                    <button id="login-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded text-sm font-medium transition-all">
+                    <button id="login-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all">
                         Login / Register
                     </button>
                 </div>
@@ -207,6 +215,122 @@
                     </div>
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-gray-800 rounded-lg p-4 sm:p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-winzo-accent">Deposit Funds</h3>
+                <button id="close-deposit-modal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <form id="deposit-form" class="space-y-4">
+                <div>
+                    <label for="deposit-amount" class="block text-sm font-medium mb-2">Amount ($)</label>
+                    <input 
+                        type="number" 
+                        id="deposit-amount" 
+                        required
+                        min="1"
+                        step="0.01"
+                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-winzo-primary focus:border-transparent"
+                        placeholder="Enter amount to deposit"
+                    >
+                </div>
+                
+                <div id="deposit-error" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">
+                    <p id="deposit-error-message"></p>
+                </div>
+                
+                <button 
+                    type="submit" 
+                    id="deposit-submit"
+                    class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <span id="deposit-submit-text">Deposit</span>
+                    <div id="deposit-loading" class="hidden">
+                        <div class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto"></div>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-gray-800 rounded-lg p-4 sm:p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-winzo-accent">Withdraw Funds</h3>
+                <button id="close-withdraw-modal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <form id="withdraw-form" class="space-y-4">
+                <div>
+                    <label for="withdraw-amount" class="block text-sm font-medium mb-2">Amount ($)</label>
+                    <input 
+                        type="number" 
+                        id="withdraw-amount" 
+                        required
+                        min="1"
+                        step="0.01"
+                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-winzo-primary focus:border-transparent"
+                        placeholder="Enter amount to withdraw"
+                    >
+                </div>
+                
+                <div class="bg-gray-700 p-3 rounded-lg">
+                    <div class="text-sm text-gray-400">Available Balance:</div>
+                    <div id="available-balance" class="text-lg font-bold text-winzo-accent">$0.00</div>
+                </div>
+                
+                <div id="withdraw-error" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">
+                    <p id="withdraw-error-message"></p>
+                </div>
+                
+                <button 
+                    type="submit" 
+                    id="withdraw-submit"
+                    class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <span id="withdraw-submit-text">Withdraw</span>
+                    <div id="withdraw-loading" class="hidden">
+                        <div class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto"></div>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- My Bets Modal -->
+    <div id="my-bets-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-gray-800 rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-winzo-accent">My Bets</h3>
+                <button id="close-my-bets-modal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <div id="my-bets-content" class="overflow-y-auto max-h-[70vh]">
+                <div id="my-bets-loading" class="text-center py-8">
+                    <div class="loading-spinner w-8 h-8 border-2 border-winzo-primary border-t-transparent rounded-full mx-auto"></div>
+                    <p class="text-gray-400 mt-2">Loading your bets...</p>
+                </div>
+                
+                <div id="my-bets-list" class="space-y-3 hidden">
+                    <!-- Bets will be loaded here -->
+                </div>
+                
+                <div id="my-bets-empty" class="text-center py-8 hidden">
+                    <div class="text-gray-400 text-lg mb-2">No bets placed yet</div>
+                    <p class="text-gray-500 text-sm">Start betting on today's games to see your history here!</p>
+                </div>
+                
+                <div id="my-bets-error" class="text-center py-8 hidden">
+                    <div class="text-red-400 text-lg mb-2">Error loading bets</div>
+                    <p class="text-gray-500 text-sm">Please try again later</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -477,6 +601,73 @@
             }
         }
 
+        // Modal management functions
+        function showDepositModal() {
+            document.getElementById('deposit-modal').classList.remove('hidden');
+            document.getElementById('deposit-amount').focus();
+            hideDepositError();
+        }
+
+        function hideDepositModal() {
+            document.getElementById('deposit-modal').classList.add('hidden');
+            document.getElementById('deposit-form').reset();
+            hideDepositError();
+        }
+
+        function showWithdrawModal() {
+            // Update available balance before showing modal
+            updateAvailableBalance();
+            document.getElementById('withdraw-modal').classList.remove('hidden');
+            document.getElementById('withdraw-amount').focus();
+            hideWithdrawError();
+        }
+
+        function hideWithdrawModal() {
+            document.getElementById('withdraw-modal').classList.add('hidden');
+            document.getElementById('withdraw-form').reset();
+            hideWithdrawError();
+        }
+
+        function showMyBetsModal() {
+            document.getElementById('my-bets-modal').classList.remove('hidden');
+            loadMyBets();
+        }
+
+        function hideMyBetsModal() {
+            document.getElementById('my-bets-modal').classList.add('hidden');
+        }
+
+        function updateAvailableBalance() {
+            if (currentUser && currentUser.balance !== undefined) {
+                const availableBalance = document.getElementById('available-balance');
+                availableBalance.textContent = `$${currentUser.balance.toFixed(2)}`;
+            }
+        }
+
+        // Error handling functions
+        function showDepositError(message) {
+            const errorDiv = document.getElementById('deposit-error');
+            const errorMessage = document.getElementById('deposit-error-message');
+            errorMessage.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function hideDepositError() {
+            document.getElementById('deposit-error').classList.add('hidden');
+        }
+
+        function showWithdrawError(message) {
+            const errorDiv = document.getElementById('withdraw-error');
+            const errorMessage = document.getElementById('withdraw-error-message');
+            errorMessage.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function hideWithdrawError() {
+            document.getElementById('withdraw-error').classList.add('hidden');
+        }
+
+        // Deposit function
         async function depositFunds(amount) {
             if (!authToken) return false;
             
@@ -506,14 +697,147 @@
                     showAuthSuccess(result.message);
                     return true;
                 } else {
-                    showAuthError(result.error);
+                    showDepositError(result.error);
                     return false;
                 }
             } catch (error) {
                 console.error('Deposit error:', error);
-                showAuthError('Network error. Please try again.');
+                showDepositError('Network error. Please try again.');
                 return false;
             }
+        }
+
+        // Withdraw function
+        async function withdrawFunds(amount) {
+            if (!authToken) return false;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/withdraw`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ amount })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update balance display
+                    const userBalance = document.getElementById('user-balance');
+                    userBalance.textContent = `$${result.balance.toFixed(2)}`;
+                    
+                    // Update currentUser balance
+                    if (currentUser) {
+                        currentUser.balance = result.balance;
+                        storeAuth(authToken, currentUser);
+                    }
+                    
+                    showAuthSuccess(result.message);
+                    return true;
+                } else {
+                    showWithdrawError(result.error);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Withdraw error:', error);
+                showWithdrawError('Network error. Please try again.');
+                return false;
+            }
+        }
+
+        // Load user's bets
+        async function loadMyBets() {
+            if (!authToken) return;
+            
+            const loadingDiv = document.getElementById('my-bets-loading');
+            const listDiv = document.getElementById('my-bets-list');
+            const emptyDiv = document.getElementById('my-bets-empty');
+            const errorDiv = document.getElementById('my-bets-error');
+            
+            // Show loading state
+            loadingDiv.classList.remove('hidden');
+            listDiv.classList.add('hidden');
+            emptyDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/bets`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    const bets = result.bets;
+                    
+                    if (bets.length === 0) {
+                        loadingDiv.classList.add('hidden');
+                        emptyDiv.classList.remove('hidden');
+                    } else {
+                        renderMyBets(bets);
+                        loadingDiv.classList.add('hidden');
+                        listDiv.classList.remove('hidden');
+                    }
+                } else {
+                    throw new Error(result.error || 'Failed to load bets');
+                }
+            } catch (error) {
+                console.error('Error loading bets:', error);
+                loadingDiv.classList.add('hidden');
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        // Render user's bets
+        function renderMyBets(bets) {
+            const container = document.getElementById('my-bets-list');
+            container.innerHTML = '';
+
+            bets.forEach(bet => {
+                const betElement = document.createElement('div');
+                betElement.className = 'bg-gray-700 p-4 rounded-lg border border-gray-600';
+                
+                const statusColor = bet.status === 'won' ? 'text-green-400' : 
+                                  bet.status === 'lost' ? 'text-red-400' : 'text-yellow-400';
+                const statusText = bet.status === 'won' ? 'Won' : 
+                                 bet.status === 'lost' ? 'Lost' : 'Pending';
+                
+                betElement.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3">
+                        <div class="flex-1 mb-2 sm:mb-0">
+                            <div class="font-medium text-white mb-1 text-sm sm:text-base">${bet.match}</div>
+                            <div class="text-xs sm:text-sm text-gray-300">Team: ${bet.team}</div>
+                        </div>
+                        <div class="text-left sm:text-right">
+                            <div class="text-xs sm:text-sm text-gray-400">${new Date(bet.created_at).toLocaleDateString()}</div>
+                            <div class="text-xs text-gray-500">${new Date(bet.created_at).toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400">Odds</div>
+                            <div class="font-semibold text-winzo-accent text-sm sm:text-base">${bet.odds.toFixed(2)}</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400">Stake</div>
+                            <div class="font-semibold text-white text-sm sm:text-base">$${bet.stake.toFixed(2)}</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400">Potential Payout</div>
+                            <div class="font-semibold text-green-400 text-sm sm:text-base">$${bet.potential_payout.toFixed(2)}</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400">Status</div>
+                            <div class="font-semibold ${statusColor} text-sm sm:text-base">${statusText}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(betElement);
+            });
         }
 
         // API functions - Updated to use backend
@@ -929,6 +1253,11 @@
                         }
                         
                         showAuthSuccess(`Bet placed successfully!\n\nStake: $${stake.toFixed(2)}\nTotal Odds: ${totalOdds.toFixed(2)}\nPotential Payout: $${payout.toFixed(2)}\n\nBet saved to your account.`);
+                        
+                        // Refresh My Bets if the modal is open
+                        if (!document.getElementById('my-bets-modal').classList.contains('hidden')) {
+                            loadMyBets();
+                        }
                     } else {
                         showAuthError(result.error || result.message || 'Failed to save bet');
                         return;
@@ -982,8 +1311,17 @@
             // Authentication event listeners
             document.getElementById('login-btn').addEventListener('click', showAuthModal);
             document.getElementById('logout-btn').addEventListener('click', logout);
-            document.getElementById('deposit-btn').addEventListener('click', () => depositFunds(100));
             document.getElementById('close-auth-modal').addEventListener('click', hideAuthModal);
+            
+            // Wallet event listeners
+            document.getElementById('deposit-btn').addEventListener('click', showDepositModal);
+            document.getElementById('withdraw-btn').addEventListener('click', showWithdrawModal);
+            document.getElementById('my-bets-btn').addEventListener('click', showMyBetsModal);
+            
+            // Modal close buttons
+            document.getElementById('close-deposit-modal').addEventListener('click', hideDepositModal);
+            document.getElementById('close-withdraw-modal').addEventListener('click', hideWithdrawModal);
+            document.getElementById('close-my-bets-modal').addEventListener('click', hideMyBetsModal);
             
             // Auth modal tabs
             document.getElementById('login-tab').addEventListener('click', () => switchAuthMode(true));
@@ -1019,10 +1357,82 @@
                 }
             });
             
-            // Close auth modal when clicking outside
+            // Deposit form submission
+            document.getElementById('deposit-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const amount = parseFloat(document.getElementById('deposit-amount').value);
+                const submitBtn = document.getElementById('deposit-submit');
+                const submitText = document.getElementById('deposit-submit-text');
+                const loading = document.getElementById('deposit-loading');
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitText.classList.add('hidden');
+                loading.classList.remove('hidden');
+                
+                try {
+                    const success = await depositFunds(amount);
+                    if (success) {
+                        hideDepositModal();
+                    }
+                } finally {
+                    // Hide loading state
+                    submitBtn.disabled = false;
+                    submitText.classList.remove('hidden');
+                    loading.classList.add('hidden');
+                }
+            });
+            
+            // Withdraw form submission
+            document.getElementById('withdraw-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const amount = parseFloat(document.getElementById('withdraw-amount').value);
+                const submitBtn = document.getElementById('withdraw-submit');
+                const submitText = document.getElementById('withdraw-submit-text');
+                const loading = document.getElementById('withdraw-loading');
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitText.classList.add('hidden');
+                loading.classList.remove('hidden');
+                
+                try {
+                    const success = await withdrawFunds(amount);
+                    if (success) {
+                        hideWithdrawModal();
+                    }
+                } finally {
+                    // Hide loading state
+                    submitBtn.disabled = false;
+                    submitText.classList.remove('hidden');
+                    loading.classList.add('hidden');
+                }
+            });
+            
+            // Close modals when clicking outside
             document.getElementById('auth-modal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     hideAuthModal();
+                }
+            });
+            
+            document.getElementById('deposit-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideDepositModal();
+                }
+            });
+            
+            document.getElementById('withdraw-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideWithdrawModal();
+                }
+            });
+            
+            document.getElementById('my-bets-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideMyBetsModal();
                 }
             });
         });

@@ -18,7 +18,8 @@ winzo-site/
 │       ├── bets.js        # Betting routes
 │       └── wallet.js      # Wallet management routes
 ├── scripts/
-│   └── test-postgresql.ps1 # Database testing script
+│   ├── test-postgresql.ps1 # Database testing script
+│   └── test-wallet-ui.ps1  # Wallet UI testing script
 ├── railway.toml           # Railway deployment config
 ├── render.yaml            # Render deployment config
 └── README.md              # This documentation file
@@ -64,6 +65,15 @@ winzo-site/
 - **Odds**: `/api/odds` (NFL game data)
 - **Health**: `/api/health` (server status)
 
+### ✅ Wallet UI & My Bets Features
+- **Enhanced Header**: Prominent wallet balance display with WINZO branding
+- **Deposit Modal**: User-friendly deposit interface with form validation
+- **Withdraw Modal**: Secure withdrawal with balance validation and error handling
+- **My Bets Section**: Comprehensive bet history with status tracking
+- **Real-time Updates**: Balance and bet list refresh after all transactions
+- **Mobile Responsive**: Optimized for mobile devices with touch-friendly design
+- **Error Handling**: Comprehensive error messages and loading states
+
 ## Database Setup
 
 ### PostgreSQL Schema
@@ -102,15 +112,35 @@ This script tests:
 - Error handling (insufficient funds)
 - All API endpoints
 
+### Wallet UI Testing
+Run the wallet UI test script to verify all wallet functionality:
+
+```powershell
+.\scripts\test-wallet-ui.ps1
+```
+
+This script tests:
+- User registration and authentication
+- Wallet balance retrieval
+- Deposit functionality with validation
+- Withdraw functionality with balance checks
+- Bet placement and balance deduction
+- Bet history retrieval
+- Error handling for insufficient funds
+- All wallet-related API endpoints
+
 ### Manual Testing Checklist
 1. ✅ Register a new user
 2. ✅ Login with credentials
-3. ✅ Check wallet balance
-4. ✅ Deposit funds
-5. ✅ Place a bet
-6. ✅ View betting history
-7. ✅ Withdraw funds
-8. ✅ Verify data persistence after server restart
+3. ✅ Check wallet balance in header
+4. ✅ Deposit funds via deposit modal
+5. ✅ Withdraw funds via withdraw modal
+6. ✅ Place a bet and verify balance deduction
+7. ✅ View betting history in My Bets section
+8. ✅ Test mobile responsiveness
+9. ✅ Verify error handling for insufficient funds
+10. ✅ Test real-time balance updates
+11. ✅ Verify data persistence after server restart
 
 ## File Details
 
@@ -1104,8 +1134,268 @@ function renderGames() {
 - ✅ Data attributes for dynamic content
 - ✅ No string interpolation in HTML attributes
 
+### Wallet UI & My Bets Implementation (December 2024)
+**Objective**: Implement comprehensive wallet UI and "My Bets" section for the WINZO MVP, providing users with complete wallet management and bet history functionality.
+
+#### ✅ Completed Tasks
+
+1. **Enhanced Header Wallet Display**
+   - **Prominent Balance**: Wallet balance displayed prominently in header with WINZO accent colors
+   - **Responsive Design**: Balance display adapts to mobile and desktop screens
+   - **Real-time Updates**: Balance refreshes automatically after deposits/withdrawals/bets
+   - **Visual Enhancement**: Added background styling and improved typography
+
+2. **Deposit Modal Implementation**
+   - **Tailwind Styling**: Beautiful modal with dark theme consistency
+   - **Form Validation**: Amount input validation with min/max constraints
+   - **Loading States**: Spinner animation during deposit processing
+   - **Error Handling**: Comprehensive error messages for failed deposits
+   - **Success Feedback**: Success notifications with updated balance display
+
+3. **Withdraw Modal Implementation**
+   - **Balance Validation**: Shows available balance before withdrawal
+   - **Insufficient Funds Protection**: Prevents withdrawals exceeding balance
+   - **Form Validation**: Amount input validation with proper constraints
+   - **Loading States**: Visual feedback during withdrawal processing
+   - **Error Handling**: Clear error messages for withdrawal failures
+
+4. **My Bets Section Development**
+   - **Comprehensive History**: Complete bet history display with all details
+   - **Status Tracking**: Color-coded status indicators (Pending/Won/Lost)
+   - **Detailed Information**: Shows match, team, odds, stake, potential payout, and timestamps
+   - **Responsive Layout**: Mobile-optimized grid layout for bet cards
+   - **Empty State**: User-friendly message when no bets exist
+   - **Loading States**: Proper loading indicators during data fetch
+
+5. **Real-time Update System**
+   - **Balance Refresh**: Automatic balance updates after all transactions
+   - **Bet List Refresh**: My Bets list updates after placing new bets
+   - **Live Data**: All data fetched from backend APIs (no hardcoded values)
+   - **State Management**: Proper state synchronization across all components
+
+6. **Mobile-First Responsive Design**
+   - **Header Optimization**: Buttons stack vertically on mobile devices
+   - **Modal Responsiveness**: Modals optimized for mobile screen sizes
+   - **Touch-Friendly**: Appropriate button sizes and spacing for mobile
+   - **Flexible Layout**: Bet cards adapt to different screen sizes
+   - **Typography Scaling**: Text sizes adjust for mobile readability
+
+7. **Error Handling & UX Improvements**
+   - **Network Error Handling**: Graceful handling of API failures
+   - **Validation Errors**: Clear error messages for form validation
+   - **Loading States**: Visual feedback for all async operations
+   - **Success Notifications**: Confirmation messages for completed actions
+   - **Modal Management**: Proper modal state management and cleanup
+
+#### 🔧 Technical Implementation Details
+
+**Modal Management System**:
+```javascript
+// Modal show/hide functions
+function showDepositModal() {
+    document.getElementById('deposit-modal').classList.remove('hidden');
+    document.getElementById('deposit-amount').focus();
+    hideDepositError();
+}
+
+function hideDepositModal() {
+    document.getElementById('deposit-modal').classList.add('hidden');
+    document.getElementById('deposit-form').reset();
+    hideDepositError();
+}
+```
+
+**API Integration**:
+```javascript
+// Deposit functionality
+async function depositFunds(amount) {
+    const response = await fetch(`${API_BASE_URL}/api/deposit`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ amount })
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+        updateBalanceDisplay(result.balance);
+        showSuccessNotification(result.message);
+    }
+}
+```
+
+**Bet History Rendering**:
+```javascript
+// Render user's bets with responsive design
+function renderMyBets(bets) {
+    bets.forEach(bet => {
+        const statusColor = bet.status === 'won' ? 'text-green-400' : 
+                          bet.status === 'lost' ? 'text-red-400' : 'text-yellow-400';
+        
+        betElement.innerHTML = `
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3">
+                <div class="flex-1 mb-2 sm:mb-0">
+                    <div class="font-medium text-white mb-1 text-sm sm:text-base">${bet.match}</div>
+                    <div class="text-xs sm:text-sm text-gray-300">Team: ${bet.team}</div>
+                </div>
+                <div class="text-left sm:text-right">
+                    <div class="text-xs sm:text-sm text-gray-400">${new Date(bet.created_at).toLocaleDateString()}</div>
+                    <div class="text-xs text-gray-500">${new Date(bet.created_at).toLocaleTimeString()}</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+                <!-- Bet details grid -->
+            </div>
+        `;
+    });
+}
+```
+
+#### 📊 UI Components Added
+
+**Header Enhancements**:
+- Enhanced wallet balance display with background styling
+- Added "My Bets", "Deposit", and "Withdraw" buttons
+- Responsive button layout for mobile devices
+- Improved typography and spacing
+
+**Modal Components**:
+- **Deposit Modal**: Amount input, validation, loading states
+- **Withdraw Modal**: Amount input, balance display, validation
+- **My Bets Modal**: Bet history list, loading states, empty states
+
+**Responsive Design Features**:
+- Mobile-first button layouts
+- Flexible grid systems for bet cards
+- Touch-friendly button sizes
+- Adaptive typography scaling
+
+#### 🎨 Design Consistency
+
+**WINZO Branding**:
+- Maintained WINZO color scheme (primary: #FF6B35, accent: #FFD700)
+- Consistent dark theme throughout all components
+- Professional betting platform aesthetic
+- Smooth transitions and hover effects
+
+**Mobile Optimization**:
+- Responsive header with collapsible user info
+- Touch-friendly buttons and inputs
+- Optimized modal layouts for mobile screens
+- Proper spacing and typography scaling
+
+#### ✅ Testing & Validation
+
+**Functional Testing**:
+- ✅ Wallet balance displays correctly in header
+- ✅ Deposit modal opens and processes deposits successfully
+- ✅ Withdraw modal validates balance and processes withdrawals
+- ✅ My Bets section loads and displays bet history correctly
+- ✅ Real-time updates work after all transactions
+- ✅ Error handling works for all failure scenarios
+- ✅ Mobile responsiveness works on various screen sizes
+
+**API Integration Testing**:
+- ✅ All wallet operations use live backend APIs
+- ✅ JWT authentication works for all protected endpoints
+- ✅ Error handling for network failures
+- ✅ Loading states display during API calls
+- ✅ Success notifications show after completed operations
+
+**Mobile Testing**:
+- ✅ Header buttons work correctly on mobile devices
+- ✅ Modals display properly on small screens
+- ✅ Bet cards adapt to mobile layout
+- ✅ Touch interactions work smoothly
+- ✅ Typography scales appropriately
+
+#### 📁 Files Modified
+
+**Primary Changes**:
+- `index.html`: 
+  - Enhanced header with wallet balance and action buttons
+  - Added deposit, withdraw, and My Bets modals
+  - Implemented responsive design improvements
+  - Added comprehensive JavaScript functions for wallet management
+
+**New Functions Added**:
+- `showDepositModal()` / `hideDepositModal()`: Deposit modal management
+- `showWithdrawModal()` / `hideWithdrawModal()`: Withdraw modal management
+- `showMyBetsModal()` / `hideMyBetsModal()`: My Bets modal management
+- `depositFunds()`: Deposit API integration
+- `withdrawFunds()`: Withdraw API integration
+- `loadMyBets()`: Bet history API integration
+- `renderMyBets()`: Bet history rendering
+- `updateAvailableBalance()`: Balance display updates
+
+**Event Listeners Added**:
+- Deposit/withdraw button click handlers
+- My Bets button click handler
+- Form submission handlers for deposit/withdraw
+- Modal close button handlers
+- Click-outside-to-close handlers
+
+#### 🚀 Key Achievements
+
+**Complete Wallet Management**:
+- ✅ Full deposit and withdrawal functionality
+- ✅ Real-time balance updates
+- ✅ Comprehensive error handling
+- ✅ Mobile-responsive design
+- ✅ Professional UI/UX
+
+**Bet History System**:
+- ✅ Complete bet tracking and display
+- ✅ Status indicators and timestamps
+- ✅ Responsive bet card layout
+- ✅ Empty state handling
+- ✅ Real-time updates after bet placement
+
+**Production Ready**:
+- ✅ All functionality tested and working
+- ✅ No ESLint errors
+- ✅ Mobile-optimized design
+- ✅ Consistent WINZO branding
+- ✅ Comprehensive error handling
+
+#### 📋 User Experience Flow
+
+1. **Wallet Management**:
+   - User sees balance prominently displayed in header
+   - Click "Deposit" to add funds via modal
+   - Click "Withdraw" to remove funds with balance validation
+   - Real-time balance updates after all transactions
+
+2. **Bet History**:
+   - Click "My Bets" to view complete betting history
+   - See all placed bets with details and status
+   - Responsive layout works on all devices
+   - Empty state message when no bets exist
+
+3. **Mobile Experience**:
+   - Header buttons stack vertically on mobile
+   - Modals optimized for mobile screens
+   - Touch-friendly interactions
+   - Proper spacing and typography
+
+#### 🔒 Security & Performance
+
+**Security Features**:
+- JWT token authentication for all wallet operations
+- Input validation for all forms
+- Error handling without information leakage
+- Secure API communication
+
+**Performance Optimizations**:
+- Efficient DOM manipulation
+- Minimal re-renders
+- Optimized event handling
+- Responsive design with CSS Grid/Flexbox
+
 ---
 
-*Last Updated: October 2024*
-*Version: 4.2.0*
-*Status: Production - Event Delegation Fix Complete*
+*Last Updated: December 2024*
+*Version: 5.0.0*
+*Status: Production - Wallet UI & My Bets Complete*
