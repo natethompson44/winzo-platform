@@ -55,7 +55,18 @@
     <!-- Header -->
     <header class="bg-gradient-to-r from-winzo-primary to-winzo-accent p-4 shadow-lg">
         <div class="container mx-auto">
-            <h1 class="text-2xl font-bold text-center">🏈 WINZO American Football</h1>
+            <div class="flex justify-between items-center mb-2">
+                <h1 class="text-2xl font-bold">🏈 WINZO American Football</h1>
+                <div id="auth-section" class="flex items-center space-x-4">
+                    <div id="user-info" class="hidden">
+                        <span id="user-email" class="text-sm font-medium"></span>
+                        <button id="logout-btn" class="ml-2 text-sm underline hover:no-underline">Logout</button>
+                    </div>
+                    <button id="login-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded text-sm font-medium transition-all">
+                        Login / Register
+                    </button>
+                </div>
+            </div>
             <p class="text-center text-sm opacity-90">Live NFL Betting</p>
             <div id="last-updated" class="text-center text-xs opacity-75 mt-1"></div>
         </div>
@@ -132,6 +143,64 @@
         </div>
     </div>
 
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="auth-modal-title" class="text-xl font-semibold text-winzo-accent">Login</h3>
+                <button id="close-auth-modal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <div id="auth-tabs" class="flex mb-6">
+                <button id="login-tab" class="flex-1 py-2 px-4 bg-winzo-primary text-white rounded-l-lg font-medium">
+                    Login
+                </button>
+                <button id="register-tab" class="flex-1 py-2 px-4 bg-gray-700 text-gray-300 rounded-r-lg font-medium hover:bg-gray-600">
+                    Register
+                </button>
+            </div>
+            
+            <form id="auth-form" class="space-y-4">
+                <div>
+                    <label for="auth-email" class="block text-sm font-medium mb-2">Email</label>
+                    <input 
+                        type="email" 
+                        id="auth-email" 
+                        required
+                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-winzo-primary focus:border-transparent"
+                        placeholder="Enter your email"
+                    >
+                </div>
+                
+                <div>
+                    <label for="auth-password" class="block text-sm font-medium mb-2">Password</label>
+                    <input 
+                        type="password" 
+                        id="auth-password" 
+                        required
+                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-winzo-primary focus:border-transparent"
+                        placeholder="Enter your password"
+                    >
+                </div>
+                
+                <div id="auth-error" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg">
+                    <p id="auth-error-message"></p>
+                </div>
+                
+                <button 
+                    type="submit" 
+                    id="auth-submit"
+                    class="w-full bg-gradient-to-r from-winzo-primary to-winzo-accent text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <span id="auth-submit-text">Login</span>
+                    <div id="auth-loading" class="hidden">
+                        <div class="loading-spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto"></div>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Floating Bet Slip Button -->
     <button 
         id="bet-slip-toggle" 
@@ -147,6 +216,11 @@
         let selectedBets = [];
         let betSlipVisible = false;
         let refreshInterval = null;
+        
+        // Authentication state
+        let currentUser = null;
+        let authToken = null;
+        let isLoginMode = true;
         
         // API Configuration - Now using backend proxy
         const API_URL = '/api/odds';
@@ -185,6 +259,178 @@
             } catch (error) {
                 console.error('Error setting cache:', error);
             }
+        }
+
+        // Authentication functions
+        function getStoredAuth() {
+            try {
+                const token = localStorage.getItem('auth_token');
+                const user = localStorage.getItem('auth_user');
+                if (token && user) {
+                    authToken = token;
+                    currentUser = JSON.parse(user);
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error reading auth from storage:', error);
+            }
+            return false;
+        }
+
+        function storeAuth(token, user) {
+            try {
+                localStorage.setItem('auth_token', token);
+                localStorage.setItem('auth_user', JSON.stringify(user));
+                authToken = token;
+                currentUser = user;
+            } catch (error) {
+                console.error('Error storing auth:', error);
+            }
+        }
+
+        function clearAuth() {
+            try {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('auth_user');
+                authToken = null;
+                currentUser = null;
+            } catch (error) {
+                console.error('Error clearing auth:', error);
+            }
+        }
+
+        function updateAuthUI() {
+            const userInfo = document.getElementById('user-info');
+            const userEmail = document.getElementById('user-email');
+            const loginBtn = document.getElementById('login-btn');
+
+            if (currentUser) {
+                userEmail.textContent = currentUser.email;
+                userInfo.classList.remove('hidden');
+                loginBtn.classList.add('hidden');
+            } else {
+                userInfo.classList.add('hidden');
+                loginBtn.classList.remove('hidden');
+            }
+        }
+
+        async function register(email, password) {
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    storeAuth(result.token, result.user);
+                    updateAuthUI();
+                    hideAuthModal();
+                    showAuthSuccess('Registration successful!');
+                    return true;
+                } else {
+                    showAuthError(result.error);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAuthError('Network error. Please try again.');
+                return false;
+            }
+        }
+
+        async function login(email, password) {
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    storeAuth(result.token, result.user);
+                    updateAuthUI();
+                    hideAuthModal();
+                    showAuthSuccess('Login successful!');
+                    return true;
+                } else {
+                    showAuthError(result.error);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAuthError('Network error. Please try again.');
+                return false;
+            }
+        }
+
+        async function logout() {
+            clearAuth();
+            updateAuthUI();
+            showAuthSuccess('Logged out successfully!');
+        }
+
+        function showAuthModal() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('auth-email').focus();
+        }
+
+        function hideAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('auth-form').reset();
+            hideAuthError();
+        }
+
+        function showAuthError(message) {
+            const errorDiv = document.getElementById('auth-error');
+            const errorMessage = document.getElementById('auth-error-message');
+            errorMessage.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function hideAuthError() {
+            document.getElementById('auth-error').classList.add('hidden');
+        }
+
+        function showAuthSuccess(message) {
+            // Simple success notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function switchAuthMode(isLogin) {
+            isLoginMode = isLogin;
+            const title = document.getElementById('auth-modal-title');
+            const submitText = document.getElementById('auth-submit-text');
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+
+            if (isLogin) {
+                title.textContent = 'Login';
+                submitText.textContent = 'Login';
+                loginTab.className = 'flex-1 py-2 px-4 bg-winzo-primary text-white rounded-l-lg font-medium';
+                registerTab.className = 'flex-1 py-2 px-4 bg-gray-700 text-gray-300 rounded-r-lg font-medium hover:bg-gray-600';
+            } else {
+                title.textContent = 'Register';
+                submitText.textContent = 'Register';
+                loginTab.className = 'flex-1 py-2 px-4 bg-gray-700 text-gray-300 rounded-l-lg font-medium hover:bg-gray-600';
+                registerTab.className = 'flex-1 py-2 px-4 bg-winzo-primary text-white rounded-r-lg font-medium';
+            }
+            hideAuthError();
         }
 
         // API functions - Updated to use backend
@@ -502,15 +748,56 @@
             }
         }
 
-        // Place bet (mock function)
-        function placeBet() {
+        // Place bet (updated to use authenticated API)
+        async function placeBet() {
             if (selectedBets.length === 0) return;
             
             const stake = parseFloat(document.getElementById('stake-input').value);
             const totalOdds = selectedBets.reduce((acc, bet) => acc * bet.odds, 1);
             const payout = stake * totalOdds;
             
-            alert(`Bet placed successfully!\n\nStake: ₹${stake.toFixed(2)}\nTotal Odds: ${totalOdds.toFixed(2)}\nPotential Payout: ₹${payout.toFixed(2)}\n\nThis is a demo - no real money was bet.`);
+            // If user is logged in, save bet to backend
+            if (currentUser && authToken) {
+                try {
+                    const betData = {
+                        match: selectedBets.map(bet => {
+                            const game = games.find(g => g.id === bet.gameId);
+                            return game ? `${game.awayTeam} vs ${game.homeTeam}` : 'Unknown Match';
+                        }).join(', '),
+                        team: selectedBets.map(bet => bet.teamName).join(', '),
+                        odds: totalOdds,
+                        stake: stake,
+                        potential_payout: payout
+                    };
+
+                    const response = await fetch('/api/bet', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify(betData)
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAuthSuccess(`Bet placed successfully!\n\nStake: ₹${stake.toFixed(2)}\nTotal Odds: ${totalOdds.toFixed(2)}\nPotential Payout: ₹${payout.toFixed(2)}\n\nBet saved to your account.`);
+                    } else {
+                        showAuthError(result.error || 'Failed to save bet');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error saving bet:', error);
+                    showAuthError('Failed to save bet. Please try again.');
+                    return;
+                }
+            } else {
+                // Show login prompt for unauthenticated users
+                showAuthError('Please log in to place bets');
+                showAuthModal();
+                return;
+            }
             
             // Clear the bet slip
             selectedBets = [];
@@ -522,6 +809,10 @@
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize authentication
+            getStoredAuth();
+            updateAuthUI();
+            
             loadGames();
             startAutoRefresh();
             
@@ -539,6 +830,52 @@
             document.getElementById('bet-slip').addEventListener('click', function(e) {
                 if (e.target === this) {
                     toggleBetSlip();
+                }
+            });
+            
+            // Authentication event listeners
+            document.getElementById('login-btn').addEventListener('click', showAuthModal);
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('close-auth-modal').addEventListener('click', hideAuthModal);
+            
+            // Auth modal tabs
+            document.getElementById('login-tab').addEventListener('click', () => switchAuthMode(true));
+            document.getElementById('register-tab').addEventListener('click', () => switchAuthMode(false));
+            
+            // Auth form submission
+            document.getElementById('auth-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                const submitBtn = document.getElementById('auth-submit');
+                const submitText = document.getElementById('auth-submit-text');
+                const loading = document.getElementById('auth-loading');
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitText.classList.add('hidden');
+                loading.classList.remove('hidden');
+                
+                try {
+                    let success = false;
+                    if (isLoginMode) {
+                        success = await login(email, password);
+                    } else {
+                        success = await register(email, password);
+                    }
+                } finally {
+                    // Hide loading state
+                    submitBtn.disabled = false;
+                    submitText.classList.remove('hidden');
+                    loading.classList.add('hidden');
+                }
+            });
+            
+            // Close auth modal when clicking outside
+            document.getElementById('auth-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideAuthModal();
                 }
             });
         });

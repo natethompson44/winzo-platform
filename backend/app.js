@@ -3,6 +3,11 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const fs = require('fs').promises;
 const path = require('path');
+const { expressjwt: jwt } = require('express-jwt');
+
+// Import route modules
+const userRoutes = require('./routes/users');
+const betRoutes = require('./routes/bets');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +16,26 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); // Serve static files from root directory
+
+// JWT Configuration
+const JWT_SECRET = process.env.JWT_SECRET || 'winzo-secret-key-change-in-production';
+
+// JWT middleware for protected routes
+const authenticateToken = jwt({
+    secret: JWT_SECRET,
+    algorithms: ['HS256'],
+    requestProperty: 'user'
+}).unless({
+    path: [
+        '/api/register',
+        '/api/login',
+        '/api/odds',
+        '/api/health',
+        '/'
+    ]
+});
+
+app.use(authenticateToken);
 
 // Configuration
 const API_KEY = 'ae09b5ce0e57ca5b0ae4ccd0f852ba12';
@@ -218,6 +243,10 @@ app.get('/api/health', (req, res) => {
         }
     });
 });
+
+// API Routes
+app.use('/api', userRoutes);
+app.use('/api', betRoutes);
 
 // Serve the main HTML file
 app.get('/', (req, res) => {
