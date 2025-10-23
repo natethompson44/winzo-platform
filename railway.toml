@@ -12,3 +12,6 @@ restartPolicyType = "on_failure"
 
 [env]
 NODE_ENV = "production"
+
+[env.production]
+DATABASE_URL = "${{ secrets.DATABASE_URL }}"

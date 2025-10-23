@@ -1,22 +1,37 @@
 # WINZO Sports Betting MVP - Development Documentation
 
 ## Project Overview
-A simple sports betting MVP page for WINZO focused on American Football (NFL). The application provides a clean, mobile-friendly interface for users to browse games, select bets, and calculate potential payouts using parlay-style betting.
+A comprehensive sports betting MVP for WINZO focused on American Football (NFL). The application provides a clean, mobile-friendly interface for users to browse games, select bets, manage their wallet, and place bets with persistent data storage.
 
 ## Project Structure
 ```
 winzo-site/
-├── index.html          # Main application file
-├── odds.json          # Mock football game data
-└── README.md          # This documentation file
+├── index.html              # Main frontend application
+├── odds.json              # Mock football game data
+├── package.json            # Node.js dependencies
+├── backend/
+│   ├── app.js             # Express.js server
+│   ├── db.js              # PostgreSQL database connection
+│   ├── init.sql           # Database schema
+│   └── routes/
+│       ├── users.js       # User authentication routes
+│       ├── bets.js        # Betting routes
+│       └── wallet.js      # Wallet management routes
+├── scripts/
+│   └── test-postgresql.ps1 # Database testing script
+├── railway.toml           # Railway deployment config
+├── render.yaml            # Render deployment config
+└── README.md              # This documentation file
 ```
 
 ## Technology Stack
 - **Frontend**: Plain HTML5, CSS3, JavaScript (ES6+)
 - **Styling**: TailwindCSS (CDN)
-- **Data**: JSON file with mock game data
-- **No Backend**: Pure client-side application
-- **No Frameworks**: Vanilla JavaScript for simplicity
+- **Backend**: Express.js with Node.js
+- **Database**: PostgreSQL with persistent storage
+- **Authentication**: JWT tokens
+- **Deployment**: Railway/Render with PostgreSQL
+- **Security**: bcryptjs for password hashing
 
 ## Features Implemented
 
@@ -34,12 +49,68 @@ winzo-site/
 - **Large Tap Targets**: 44px+ buttons for easy mobile interaction
 - **Smooth Animations**: Hover effects and transitions for better UX
 
-### ✅ Betting Features
-- **Multiple Bet Selection**: Users can select multiple games for parlay betting
-- **Stake Input**: Enter bet amount with real-time payout calculation
-- **Bet Management**: Easy removal of individual bets from bet slip
-- **Payout Calculator**: Live calculation as user types stake amount
-- **Mock Betting**: Place bet button shows confirmation with payout details
+### ✅ Database Features
+- **PostgreSQL Integration**: Persistent storage for users, bets, and transactions
+- **User Management**: Registration, login, and profile management with JWT authentication
+- **Betting System**: Place bets with automatic balance deduction and transaction recording
+- **Wallet Management**: Deposit and withdraw funds with transaction history
+- **Data Persistence**: All user data survives server restarts
+- **Transaction Safety**: Database transactions ensure data consistency
+
+### ✅ Backend API Endpoints
+- **Authentication**: `/api/register`, `/api/login`, `/api/profile`
+- **Betting**: `/api/bet`, `/api/bets` (betting history)
+- **Wallet**: `/api/wallet`, `/api/deposit`, `/api/withdraw`
+- **Odds**: `/api/odds` (NFL game data)
+- **Health**: `/api/health` (server status)
+
+## Database Setup
+
+### PostgreSQL Schema
+The application uses three main tables:
+
+1. **users**: Stores user accounts with email, password hash, and balance
+2. **bets**: Records all betting transactions with match details and odds
+3. **transactions**: Tracks all deposit and withdrawal activities
+
+### Environment Variables
+Required environment variables:
+```bash
+DATABASE_URL=postgresql://user:password@hostname:port/dbname
+JWT_SECRET=your-secret-key
+NODE_ENV=production
+CORS_ORIGIN=https://your-frontend-domain.com
+```
+
+### Database Initialization
+The database tables are automatically created when the server starts. You can also manually run the SQL schema from `backend/init.sql`.
+
+## Testing
+
+### Database Testing
+Run the comprehensive test script to verify all database operations:
+
+```powershell
+.\scripts\test-postgresql.ps1
+```
+
+This script tests:
+- User registration and login
+- Profile management
+- Wallet operations (deposit/withdraw)
+- Bet placement and history
+- Error handling (insufficient funds)
+- All API endpoints
+
+### Manual Testing Checklist
+1. ✅ Register a new user
+2. ✅ Login with credentials
+3. ✅ Check wallet balance
+4. ✅ Deposit funds
+5. ✅ Place a bet
+6. ✅ View betting history
+7. ✅ Withdraw funds
+8. ✅ Verify data persistence after server restart
 
 ## File Details
 

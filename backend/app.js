@@ -5,7 +5,8 @@ const fs = require('fs').promises;
 const path = require('path');
 const { expressjwt: jwt } = require('express-jwt');
 
-// Import route modules
+// Import database and route modules
+const { initializeDatabase } = require('./db');
 const { router: userRoutes } = require('./routes/users');
 const betRoutes = require('./routes/bets');
 const walletRoutes = require('./routes/wallet');
@@ -260,13 +261,27 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`🏈 WINZO NFL Backend running on port ${PORT}`);
-    console.log(`📊 API endpoint: http://localhost:${PORT}/api/odds`);
-    console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`🌐 Frontend: http://localhost:${PORT}`);
-});
+// Initialize database and start the server
+async function startServer() {
+    try {
+        // Initialize database tables
+        await initializeDatabase();
+        
+        // Start the server
+        app.listen(PORT, () => {
+            console.log(`🏈 WINZO NFL Backend running on port ${PORT}`);
+            console.log(`📊 API endpoint: http://localhost:${PORT}/api/odds`);
+            console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
+            console.log(`🌐 Frontend: http://localhost:${PORT}`);
+            console.log(`🗄️  Database: PostgreSQL connected and initialized`);
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
+    }
+}
+
+startServer();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

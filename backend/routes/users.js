@@ -1,11 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { query } = require('../db');
 const router = express.Router();
-
-// In-memory storage for users (in production, use a proper database)
-const users = [];
-let nextUserId = 1;
 
 // JWT secret (in production, use environment variable)
 const JWT_SECRET = process.env.JWT_SECRET || 'winzo-secret-key-change-in-production';
@@ -29,8 +26,8 @@ router.post('/register', async (req, res) => {
         }
 
         // Check if email already exists
-        const existingUser = users.find(user => user.email === email);
-        if (existingUser) {
+        const existingUserResult = await query('SELECT id FROM users WHERE email = $1', [email]);
+        if (existingUserResult.rows.length > 0) {
             return res.status(409).json({
                 success: false,
                 error: 'User with this email already exists'
@@ -41,16 +38,13 @@ router.post('/register', async (req, res) => {
         const saltRounds = 10;
         const passwordHash = await bcrypt.hash(password, saltRounds);
 
-        // Create new user
-        const newUser = {
-            id: nextUserId++,
-            email: email,
-            password_hash: passwordHash,
-            balance: 1000, // Default starting balance
-            created_at: new Date().toISOString()
-        };
+        // Create new user in database
+        const newUserResult = await query(
+            'INSERT INTO users (email, password_hash, balance) VALUES ($1, $2, $3) RETURNING id, email, balance, created_at',
+            [email, passwordHash, 1000.00]
+        );
 
-        users.push(newUser);
+        const newUser = newUserResult.rows[0];
 
         // Generate JWT token
         const token = generateToken(newUser.id);
@@ -62,7 +56,7 @@ router.post('/register', async (req, res) => {
             user: {
                 id: newUser.id,
                 email: newUser.email,
-                balance: newUser.balance,
+                balance: parseFloat(newUser.balance),
                 created_at: newUser.created_at
             }
         });
@@ -71,7 +65,8 @@ router.post('/register', async (req, res) => {
         console.error('Registration error:', error);
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: 'Internal server error',
+            message: error.message
         });
     }
 });
@@ -89,14 +84,16 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Find user by email
-        const user = users.find(u => u.email === email);
-        if (!user) {
+        // Find user by email in database
+        const userResult = await query('SELECT id, email, password_hash, balance, created_at FROM users WHERE email = $1', [email]);
+        if (userResult.rows.length === 0) {
             return res.status(401).json({
                 success: false,
                 error: 'Invalid email or password'
             });
         }
+
+        const user = userResult.rows[0];
 
         // Verify password
         const isValidPassword = await bcrypt.compare(password, user.password_hash);
@@ -117,7 +114,7 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
-                balance: user.balance,
+                balance: parseFloat(user.balance),
                 created_at: user.created_at
             }
         });
@@ -126,13 +123,14 @@ router.post('/login', async (req, res) => {
         console.error('Login error:', error);
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: 'Internal server error',
+            message: error.message
         });
     }
 });
 
 // GET /api/profile - Return current user info (requires valid token)
-router.get('/profile', (req, res) => {
+router.get('/profile', async (req, res) => {
     try {
         // User info is attached by JWT middleware
         const user = req.user;
@@ -144,21 +142,23 @@ router.get('/profile', (req, res) => {
             });
         }
 
-        // Find user in our storage
-        const userData = users.find(u => u.id === user.userId);
-        if (!userData) {
+        // Find user in database
+        const userResult = await query('SELECT id, email, balance, created_at FROM users WHERE id = $1', [user.userId]);
+        if (userResult.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 error: 'User not found'
             });
         }
 
+        const userData = userResult.rows[0];
+
         res.json({
             success: true,
             user: {
                 id: userData.id,
                 email: userData.email,
-                balance: userData.balance,
+                balance: parseFloat(userData.balance),
                 created_at: userData.created_at
             }
         });
@@ -167,10 +167,10 @@ router.get('/profile', (req, res) => {
         console.error('Profile error:', error);
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: 'Internal server error',
+            message: error.message
         });
     }
 });
 
-// Export users array and nextUserId for wallet functionality
-module.exports = { router, users, nextUserId };
+module.exports = { router };
