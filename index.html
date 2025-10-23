@@ -213,8 +213,7 @@
     <!-- Floating Bet Slip Button -->
     <button 
         id="bet-slip-toggle" 
-        class="fixed bottom-6 right-6 bg-winzo-primary text-white w-14 h-14 rounded-full shadow-lg hover:bg-winzo-accent transition-colors z-40"
-        style="display: none;"
+        class="fixed bottom-6 right-6 bg-winzo-primary text-white w-14 h-14 rounded-full shadow-lg hover:bg-winzo-accent transition-colors z-40 hidden"
     >
         <span class="text-lg font-bold" id="bet-count">0</span>
     </button>
@@ -724,12 +723,15 @@
 
         // Select a bet
         function selectBet(gameId, team, teamName, odds) {
+            console.log('selectBet triggered', { gameId, team, teamName, odds });
+            
             // Check if this bet is already selected
             const existingBet = selectedBets.find(bet => bet.gameId === gameId);
             
             if (existingBet) {
                 // Remove existing bet
                 selectedBets = selectedBets.filter(bet => bet.gameId !== gameId);
+                console.log('Removed existing bet, selectedBets:', selectedBets);
             } else {
                 // Add new bet
                 selectedBets.push({
@@ -738,6 +740,7 @@
                     teamName: teamName,
                     odds: odds
                 });
+                console.log('Added new bet, selectedBets:', selectedBets);
             }
 
             updateBetSlip();
@@ -777,21 +780,37 @@
 
         // Remove a bet
         function removeBet(index) {
+            console.log('removeBet called with index:', index, 'selectedBets before:', selectedBets);
             selectedBets.splice(index, 1);
+            console.log('selectedBets after removal:', selectedBets);
             updateBetSlip();
             updateBetSlipToggle();
         }
 
         // Update bet slip toggle button
         function updateBetSlipToggle() {
+            console.log('updateBetSlipToggle called, selectedBets.length:', selectedBets.length);
+            
             const toggle = document.getElementById('bet-slip-toggle');
             const count = document.getElementById('bet-count');
             
+            if (!toggle) {
+                console.error('bet-slip-toggle element not found!');
+                return;
+            }
+            
+            if (!count) {
+                console.error('bet-count element not found!');
+                return;
+            }
+            
             if (selectedBets.length > 0) {
-                toggle.style.display = 'block';
+                toggle.classList.remove('hidden');
                 count.textContent = selectedBets.length;
+                console.log('Showing bet slip toggle with count:', selectedBets.length);
             } else {
-                toggle.style.display = 'none';
+                toggle.classList.add('hidden');
+                console.log('Hiding bet slip toggle');
             }
         }
 
