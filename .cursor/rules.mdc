@@ -3,187 +3,53 @@ alwaysApply: true
 ---
 
 # ===============================
-# WINZO DEVELOPMENT RULES
+# WINZO DEVELOPMENT RULES - MIGRATION MODE
 # ===============================
+
+# MIGRATION IN PROGRESS
+- Currently migrating from vanilla JS/Express to TypeScript/React/tRPC stack
+- Follow MIGRATION_PROMPT.md for step-by-step instructions
+- These rules are temporarily simplified to avoid conflicts during migration
 
 # GENERAL
-- Always preserve existing working architecture and directory structure.
-- Never migrate to new frameworks, libraries, or frontend stacks.
-- Keep backend strictly Express.js + Node.js.
-- Keep frontend strictly HTML, TailwindCSS (CDN), and Vanilla JS.
-- Never add build tools (no Webpack, Vite, Next.js, React, etc.).
-- All new code must integrate seamlessly into the current MVP flow.
-- Maintain mobile-first, dark-theme, WINZO-branded UI consistency.
+- Follow the migration plan in MIGRATION_PROMPT.md exactly
+- Do not skip phases or execute out of order
+- Preserve all existing functionality during migration
+- Maintain Railway (backend) and Netlify (frontend) deployment setup
+- Keep all environment variables from .env file
 
-# CODE STYLE
-- Use ES6+ syntax with clear variable naming.
-- Always format JSON responses as `{ success: boolean, data?: any, message?: string }`.
-- Use async/await for all asynchronous operations.
-- Use try/catch with clean error handling and console logging for backend routes.
+# DATABASE
+- Converting from MySQL (reference) to PostgreSQL (current Railway setup)
+- Use Drizzle ORM with PostgreSQL dialect
+- Preserve all existing data structures
+- Test database migrations before deploying
 
-# BACKEND
-- The backend entry point is `backend/app.js`.
-- Use Express Router for modular routes in `backend/routes/`.
-- Always read environment variables using `process.env.<VAR_NAME>`.
-- Use JWT for authentication with HS256 algorithm.
-- Never remove or modify existing routes without reason.
-- Use in-memory data stores unless explicitly migrating to Postgres.
-- Cache odds data for 60 seconds max.
-- Keep CORS origin restricted to the deployed Netlify domain.
+# AUTHENTICATION
+- Adapting reference project's OAuth to work with existing JWT system
+- Maintain token-based authentication during transition
+- Can migrate to cookie-based auth later if desired
 
-# FRONTEND
-- The main frontend is `index.html` at the project root.
-- All frontend logic should stay in a single `<script>` tag.
-- Never use frameworks or external JS dependencies (no React, Vue, etc.).
-- Use Tailwind utility classes for all new UI elements.
-- Maintain responsive, mobile-friendly design.
-- API calls must use the constant:
-  ```js
-  const API_BASE_URL = window.location.hostname === 'localhost'
-      ? 'http://localhost:3000'
-      : 'https://winzo-platform-production-d306.up.railway.app';
-Token management must remain in localStorage.
+# DEPLOYMENT
+- Backend: Railway (https://winzo-platform-production-d306.up.railway.app)
+- Frontend: Netlify (https://winzo-sports.netlify.app)
+- Maintain CORS configuration for cross-origin requests
+- Keep /api/health endpoint for monitoring
 
-Authentication UI logic must remain consistent with current modal system.
+# CODE STYLE (Post-Migration)
+- Use TypeScript for all new code
+- Follow React best practices
+- Use tRPC for type-safe API calls
+- Maintain mobile-first, dark-theme UI
 
-DEPLOYMENT
+# ROLLBACK
+- If migration fails, use backup branch: backup-pre-migration
+- Keep old code intact until migration is verified successful
+- Test thoroughly before removing old files
 
-Keep all environment variables managed via Railway and Netlify dashboards.
-
-Never hardcode secrets in code.
-
-The production backend URL must remain consistent:
-https://winzo-platform-production-d306.up.railway.app
-
-The frontend must always deploy from index.html via Netlify.
-
-DEVELOPMENT PHILOSOPHY
-
-Optimize for simplicity, not completeness.
-
-Prioritize user flow and responsiveness over complexity.
-
-Every feature must be testable by a single user on production.
-
-Keep iteration cycles short: small changes, deploy, validate, repeat.
-
-FUTURE FEATURES GUIDELINES
-
-Wallets: extend user objects; never rewrite auth.
-
-Database: migrate data models, not endpoints.
-
-Payments: Stripe Test Mode only, modular integration.
-
-Admin Dashboard: separate /admin route with JWT role protection.
-
-LOGGING & MONITORING
-
-Log concise server events (start, auth errors, bets, odds refresh).
-
-Never log sensitive data (passwords, JWTs).
-
-Maintain /api/health endpoint for deployment monitoring.
-
-VERSION CONTROL
-
-Commit messages should follow format:
-[feature/fix/refactor]: short description
-
-Push to main branch triggers automatic deployment to Railway and Netlify.
-
-===============================
-END OF RULES
-===============================
-# ===============================
-# WINZO DEVELOPMENT RULES
-# ===============================
-
-# GENERAL
-- Always preserve existing working architecture and directory structure.
-- Never migrate to new frameworks, libraries, or frontend stacks.
-- Keep backend strictly Express.js + Node.js.
-- Keep frontend strictly HTML, TailwindCSS (CDN), and Vanilla JS.
-- Never add build tools (no Webpack, Vite, Next.js, React, etc.).
-- All new code must integrate seamlessly into the current MVP flow.
-- Maintain mobile-first, dark-theme, WINZO-branded UI consistency.
-
-# CODE STYLE
-- Use ES6+ syntax with clear variable naming.
-- Always format JSON responses as `{ success: boolean, data?: any, message?: string }`.
-- Use async/await for all asynchronous operations.
-- Use try/catch with clean error handling and console logging for backend routes.
-
-# BACKEND
-- The backend entry point is `backend/app.js`.
-- Use Express Router for modular routes in `backend/routes/`.
-- Always read environment variables using `process.env.<VAR_NAME>`.
-- Use JWT for authentication with HS256 algorithm.
-- Never remove or modify existing routes without reason.
-- Use in-memory data stores unless explicitly migrating to Postgres.
-- Cache odds data for 60 seconds max.
-- Keep CORS origin restricted to the deployed Netlify domain.
-
-# FRONTEND
-- The main frontend is `index.html` at the project root.
-- All frontend logic should stay in a single `<script>` tag.
-- Never use frameworks or external JS dependencies (no React, Vue, etc.).
-- Use Tailwind utility classes for all new UI elements.
-- Maintain responsive, mobile-friendly design.
-- API calls must use the constant:
-  ```js
-  const API_BASE_URL = window.location.hostname === 'localhost'
-      ? 'http://localhost:3000'
-      : 'https://winzo-platform-production-d306.up.railway.app';
-Token management must remain in localStorage.
-
-Authentication UI logic must remain consistent with current modal system.
-
-DEPLOYMENT
-
-Keep all environment variables managed via Railway and Netlify dashboards.
-
-Never hardcode secrets in code.
-
-The production backend URL must remain consistent:
-https://winzo-platform-production-d306.up.railway.app
-
-The frontend must always deploy from index.html via Netlify.
-
-DEVELOPMENT PHILOSOPHY
-
-Optimize for simplicity, not completeness.
-
-Prioritize user flow and responsiveness over complexity.
-
-Every feature must be testable by a single user on production.
-
-Keep iteration cycles short: small changes, deploy, validate, repeat.
-
-FUTURE FEATURES GUIDELINES
-
-Wallets: extend user objects; never rewrite auth.
-
-Database: migrate data models, not endpoints.
-
-Payments: Stripe Test Mode only, modular integration.
-
-Admin Dashboard: separate /admin route with JWT role protection.
-
-LOGGING & MONITORING
-
-Log concise server events (start, auth errors, bets, odds refresh).
-
-Never log sensitive data (passwords, JWTs).
-
-Maintain /api/health endpoint for deployment monitoring.
-
-VERSION CONTROL
-
-Commit messages should follow format:
-[feature/fix/refactor]: short description
-
-Push to main branch triggers automatic deployment to Railway and Netlify.
+# NOTES
+- These rules will be updated after successful migration
+- See MIGRATION_PROMPT.md for complete migration instructions
+- All changes should be committed to git for history tracking
 
 ===============================
 END OF RULES
