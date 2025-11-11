@@ -54,8 +54,8 @@ async function settleGame(gameId: number, homeScore: number, awayScore: number) 
   // Determine winner
   const winnerId = homeScore > awayScore ? game.homeTeamId : game.awayTeamId;
 
-  // Update game status
-  await db.updateGameStatus(gameId, "completed");
+  // Update game status with scores and winner
+  await db.updateGameStatus(gameId, "completed", winnerId, homeScore, awayScore);
 
   // Get all bets for this game
   const bets = await db.getBetsByGameId(gameId);
