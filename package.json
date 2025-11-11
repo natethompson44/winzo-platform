@@ -14,7 +14,8 @@
     "db:init": "node scripts/init-db.mjs",
     "db:seed-sports": "node scripts/seed-sports.mjs",
     "db:seed-teams": "node scripts/add-all-teams.mjs",
-    "db:setup": "node scripts/init-db.mjs && node scripts/seed-sports.mjs && node scripts/add-all-teams.mjs"
+    "db:setup": "node scripts/init-db.mjs && node scripts/seed-sports.mjs && node scripts/add-all-teams.mjs",
+    "db:drop-all": "node scripts/drop-all-tables.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",

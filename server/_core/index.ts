@@ -35,15 +35,22 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 
 async function startServer() {
   // Run database migrations first - CRITICAL: must complete before server starts
+  console.log("=".repeat(80));
+  console.log("[Server] 🚀 SERVER STARTING - RUNNING MIGRATIONS FIRST");
+  console.log("=".repeat(80));
+  
   try {
     console.log("[Server] 🔄 Initializing database migrations...");
     await runMigrations();
     console.log("[Server] ✅ Migrations complete, starting server...");
   } catch (error: any) {
-    console.error("[Server] ❌ CRITICAL: Migration failed:", error?.message || error);
+    console.error("=".repeat(80));
+    console.error("[Server] ❌❌❌ CRITICAL: Migration failed - SERVER WILL NOT START ❌❌❌");
+    console.error("[Server] Error:", error?.message || error);
     console.error("[Server] Stack:", error?.stack);
-    // Still start the server - migrations might have partially completed
-    // But log the error clearly
+    console.error("=".repeat(80));
+    // DON'T start the server if migrations fail - this is critical
+    throw error;
   }
 
   const app = express();

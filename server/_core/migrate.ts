@@ -108,7 +108,10 @@ CREATE TABLE "wallets" (
  * This ensures the database schema is up to date before the server starts handling requests
  */
 export async function runMigrations(): Promise<void> {
-  console.log("[Migration] 🚀 Migration function called");
+  // CRITICAL: Log immediately so we know this function is called
+  console.log("=".repeat(80));
+  console.log("[Migration] 🚀🚀🚀 MIGRATION FUNCTION CALLED 🚀🚀🚀");
+  console.log("=".repeat(80));
   
   if (!ENV.databaseUrl) {
     console.error("[Migration] ❌ DATABASE_URL not set, cannot run migrations!");
@@ -128,6 +131,65 @@ export async function runMigrations(): Promise<void> {
     // Test the connection
     await client`SELECT 1`;
     console.log("[Migration] ✅ Database connection test passed");
+    
+    // DIAGNOSTIC: Check what tables exist
+    console.log("[Migration] 🔍 Checking existing tables...");
+    const existingTables = await client`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      ORDER BY table_name
+    `;
+    const tableNames = existingTables.map((t: any) => t.table_name);
+    console.log("[Migration] 📊 Existing tables:", tableNames.join(", ") || "NONE");
+    
+    // CRITICAL: Check users table schema if it exists
+    if (tableNames.includes("users")) {
+      console.log("[Migration] 🔍 Checking users table schema...");
+      const usersColumns = await client`
+        SELECT column_name, data_type 
+        FROM information_schema.columns 
+        WHERE table_schema = 'public' AND table_name = 'users'
+        ORDER BY ordinal_position
+      `;
+      const columnNames = usersColumns.map((c: any) => c.column_name);
+      console.log("[Migration] 📊 Users table columns:", columnNames.join(", ") || "NONE");
+      
+      // If users table exists but doesn't have username column, DROP IT
+      if (!columnNames.includes("username")) {
+        console.error("[Migration] ❌❌❌ CRITICAL: users table exists but missing 'username' column!");
+        console.error("[Migration] Existing columns:", columnNames.join(", "));
+        console.error("[Migration] 🔧 Dropping incompatible tables and recreating...");
+        
+        // Drop all tables in correct order (respecting foreign keys)
+        const tablesToDrop = [
+          "parlayLegs", "bets", "transactions", "wallets", 
+          "games", "teams", "sports", "users"
+        ];
+        
+        for (const table of tablesToDrop) {
+          try {
+            await client.unsafe(`DROP TABLE IF EXISTS "${table}" CASCADE;`);
+            console.log(`[Migration] ✅ Dropped table: ${table}`);
+          } catch (error: any) {
+            console.warn(`[Migration] ⚠️  Error dropping ${table}:`, error.message);
+          }
+        }
+        
+        // Drop enum types
+        const enumsToDrop = ["bet_status", "game_status", "parlay_result", "role", "transaction_type"];
+        for (const enumType of enumsToDrop) {
+          try {
+            await client.unsafe(`DROP TYPE IF EXISTS "${enumType}" CASCADE;`);
+            console.log(`[Migration] ✅ Dropped type: ${enumType}`);
+          } catch (error: any) {
+            // Ignore errors - types might not exist
+          }
+        }
+        
+        console.log("[Migration] ✅ Old schema dropped, will recreate with correct schema");
+      }
+    }
     
     console.log("[Migration] 📋 Starting database migrations...");
     
