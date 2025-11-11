@@ -12,6 +12,7 @@ import { serveStatic, setupVite } from "./vite";
 import { startOddsSyncScheduler } from "../oddsSync";
 import { startScoreSyncScheduler } from "../scoreSync";
 import { ENV } from "./env";
+import { runMigrations } from "./migrate";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -33,6 +34,11 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  // Run database migrations first
+  console.log("[Server] Running database migrations...");
+  await runMigrations();
+  console.log("[Server] Migrations complete, starting server...");
+
   const app = express();
   const server = createServer(app);
   
