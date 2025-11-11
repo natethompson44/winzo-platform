@@ -45,9 +45,14 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app);
-  // Custom username/password auth routes
+  
+  // OAuth callback under /api/oauth/callback (only if OAuth is configured)
+  // Note: OAuth routes are registered but won't work without OAUTH_SERVER_URL
+  if (ENV.oAuthServerUrl) {
+    registerOAuthRoutes(app);
+  }
+  
+  // Custom username/password auth routes (primary authentication method)
   registerCustomAuthRoutes(app);
   
   // Health check endpoint

@@ -76,11 +76,20 @@ class OAuthService {
   }
 }
 
-const createOAuthHttpClient = (): AxiosInstance =>
-  axios.create({
+const createOAuthHttpClient = (): AxiosInstance => {
+  // Only create client if OAuth is configured
+  if (!ENV.oAuthServerUrl) {
+    // Return a dummy client that will fail gracefully
+    return axios.create({
+      baseURL: "http://localhost",
+      timeout: AXIOS_TIMEOUT_MS,
+    });
+  }
+  return axios.create({
     baseURL: ENV.oAuthServerUrl,
     timeout: AXIOS_TIMEOUT_MS,
   });
+};
 
 class SDKServer {
   private readonly client: AxiosInstance;
