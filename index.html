@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WINZO American Football Betting</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -345,8 +346,23 @@
                 <button id="close-admin-modal" class="text-gray-400 hover:text-white text-xl">&times;</button>
             </div>
             
+            <!-- Admin Dashboard Tabs -->
+            <div class="flex mb-6 bg-gray-700 rounded-lg p-1">
+                <button id="admin-overview-tab" class="flex-1 py-2 px-4 bg-winzo-primary text-white rounded-lg font-medium transition-all">
+                    Overview
+                </button>
+                <button id="admin-analytics-tab" class="flex-1 py-2 px-4 bg-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-500 transition-all">
+                    📊 Analytics
+                </button>
+                <button id="admin-logs-tab" class="flex-1 py-2 px-4 bg-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-500 transition-all">
+                    📋 Logs
+                </button>
+            </div>
+            
             <div id="admin-content" class="overflow-y-auto max-h-[85vh] space-y-6">
-                <!-- System Health Card -->
+                <!-- Overview Tab Content -->
+                <div id="admin-overview-content" class="space-y-6">
+                    <!-- System Health Card -->
                 <div class="bg-gray-700 rounded-lg p-4">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-lg font-semibold text-white">System Health</h4>
@@ -455,6 +471,165 @@
                         <div id="bets-error" class="text-center py-8 hidden">
                             <div class="text-red-400 text-lg mb-2">Error loading bets</div>
                             <p class="text-gray-500 text-sm">Please try again later</p>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Analytics Tab Content -->
+                <div id="admin-analytics-content" class="space-y-6 hidden">
+                    <!-- Analytics Summary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Total Users</p>
+                                    <p id="analytics-total-users" class="text-2xl font-bold text-white">-</p>
+                                </div>
+                                <div class="text-3xl">👥</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Total Bets</p>
+                                    <p id="analytics-total-bets" class="text-2xl font-bold text-white">-</p>
+                                </div>
+                                <div class="text-3xl">🎯</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Total Wagered</p>
+                                    <p id="analytics-total-wagered" class="text-2xl font-bold text-white">-</p>
+                                </div>
+                                <div class="text-3xl">💰</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Total Payouts</p>
+                                    <p id="analytics-total-payouts" class="text-2xl font-bold text-white">-</p>
+                                </div>
+                                <div class="text-3xl">🏆</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Payout Ratio</p>
+                                    <p id="analytics-payout-ratio" class="text-2xl font-bold text-white">-</p>
+                                </div>
+                                <div class="text-3xl">📊</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Active Users (24h)</p>
+                                    <p id="analytics-active-users" class="text-2xl font-bold text-white">-</p>
+                                </div>
+                                <div class="text-3xl">⚡</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Daily Bets Chart -->
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-lg font-semibold text-white">Daily Bets (Last 7 Days)</h4>
+                                <button id="refresh-analytics-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm font-medium transition-all">
+                                    Refresh
+                                </button>
+                            </div>
+                            <div class="relative h-64">
+                                <canvas id="daily-bets-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Daily Transactions Chart -->
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-lg font-semibold text-white">Daily Transactions (Last 7 Days)</h4>
+                            </div>
+                            <div class="relative h-64">
+                                <canvas id="daily-transactions-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Loading State -->
+                    <div id="analytics-loading" class="text-center py-8">
+                        <div class="loading-spinner w-8 h-8 border-2 border-winzo-primary border-t-transparent rounded-full mx-auto"></div>
+                        <p class="text-gray-400 mt-2">Loading analytics...</p>
+                    </div>
+
+                    <!-- Analytics Error State -->
+                    <div id="analytics-error" class="text-center py-8 hidden">
+                        <div class="text-red-400 text-lg mb-2">Error loading analytics</div>
+                        <p class="text-gray-500 text-sm">Please try again later</p>
+                    </div>
+                </div>
+
+                <!-- Logs Tab Content -->
+                <div id="admin-logs-content" class="space-y-6 hidden">
+                    <!-- Logs Controls -->
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-white">Event Logs</h4>
+                            <div class="flex space-x-2">
+                                <select id="logs-filter-type" class="bg-gray-600 text-white px-3 py-1 rounded text-sm">
+                                    <option value="">All Events</option>
+                                    <option value="bet_placed">Bets</option>
+                                    <option value="deposit">Deposits</option>
+                                    <option value="withdraw">Withdrawals</option>
+                                    <option value="login">Logins</option>
+                                    <option value="register">Registrations</option>
+                                </select>
+                                <button id="refresh-logs-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm font-medium transition-all">
+                                    Refresh
+                                </button>
+                                <button id="clear-logs-btn" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm font-medium transition-all">
+                                    Clear Logs
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs Table -->
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <div id="logs-content">
+                            <div id="logs-loading" class="text-center py-8">
+                                <div class="loading-spinner w-8 h-8 border-2 border-winzo-primary border-t-transparent rounded-full mx-auto"></div>
+                                <p class="text-gray-400 mt-2">Loading logs...</p>
+                            </div>
+                            <div id="logs-table" class="hidden overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-gray-600">
+                                            <th class="text-left py-2 px-3">Event</th>
+                                            <th class="text-left py-2 px-3">User</th>
+                                            <th class="text-left py-2 px-3">Amount</th>
+                                            <th class="text-left py-2 px-3">Details</th>
+                                            <th class="text-left py-2 px-3">Timestamp</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="logs-tbody">
+                                        <!-- Logs will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="logs-empty" class="text-center py-8 hidden">
+                                <div class="text-gray-400 text-lg mb-2">No logs found</div>
+                            </div>
+                            <div id="logs-error" class="text-center py-8 hidden">
+                                <div class="text-red-400 text-lg mb-2">Error loading logs</div>
+                                <p class="text-gray-500 text-sm">Please try again later</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1608,6 +1783,19 @@
             document.getElementById('refresh-users-btn').addEventListener('click', loadAdminUsers);
             document.getElementById('refresh-bets-btn').addEventListener('click', loadAdminBets);
             document.getElementById('refresh-odds-btn').addEventListener('click', refreshOddsCache);
+            
+            // Admin dashboard tab event listeners
+            document.getElementById('admin-overview-tab').addEventListener('click', () => switchAdminTab('overview'));
+            document.getElementById('admin-analytics-tab').addEventListener('click', () => switchAdminTab('analytics'));
+            document.getElementById('admin-logs-tab').addEventListener('click', () => switchAdminTab('logs'));
+            
+            // Analytics event listeners
+            document.getElementById('refresh-analytics-btn').addEventListener('click', loadAnalytics);
+            
+            // Logs event listeners
+            document.getElementById('refresh-logs-btn').addEventListener('click', () => loadLogs());
+            document.getElementById('clear-logs-btn').addEventListener('click', clearLogs);
+            document.getElementById('logs-filter-type').addEventListener('change', (e) => loadLogs(e.target.value));
         });
 
         // Cleanup on page unload
@@ -1625,6 +1813,12 @@
 
         function hideAdminModal() {
             document.getElementById('admin-modal').classList.add('hidden');
+            
+            // Clear analytics refresh interval
+            if (analyticsRefreshInterval) {
+                clearInterval(analyticsRefreshInterval);
+                analyticsRefreshInterval = null;
+            }
         }
 
         async function loadAdminData() {
@@ -1633,6 +1827,11 @@
                 loadAdminUsers(),
                 loadAdminBets()
             ]);
+            
+            // Set up auto-refresh for analytics if on analytics tab
+            if (currentAdminTab === 'analytics') {
+                loadAnalytics();
+            }
         }
 
         async function loadSystemHealth() {
@@ -1810,6 +2009,311 @@
             } catch (error) {
                 console.error('Error refreshing odds cache:', error);
                 showAuthError('Failed to refresh odds cache');
+            }
+        }
+
+        // Admin Dashboard Tab Management
+        let currentAdminTab = 'overview';
+        let analyticsCharts = {};
+        let analyticsRefreshInterval = null;
+
+        function switchAdminTab(tabName) {
+            // Update tab buttons
+            document.getElementById('admin-overview-tab').className = 
+                tabName === 'overview' ? 'flex-1 py-2 px-4 bg-winzo-primary text-white rounded-lg font-medium transition-all' :
+                'flex-1 py-2 px-4 bg-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-500 transition-all';
+            
+            document.getElementById('admin-analytics-tab').className = 
+                tabName === 'analytics' ? 'flex-1 py-2 px-4 bg-winzo-primary text-white rounded-lg font-medium transition-all' :
+                'flex-1 py-2 px-4 bg-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-500 transition-all';
+            
+            document.getElementById('admin-logs-tab').className = 
+                tabName === 'logs' ? 'flex-1 py-2 px-4 bg-winzo-primary text-white rounded-lg font-medium transition-all' :
+                'flex-1 py-2 px-4 bg-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-500 transition-all';
+
+            // Show/hide tab content
+            document.getElementById('admin-overview-content').classList.toggle('hidden', tabName !== 'overview');
+            document.getElementById('admin-analytics-content').classList.toggle('hidden', tabName !== 'analytics');
+            document.getElementById('admin-logs-content').classList.toggle('hidden', tabName !== 'logs');
+
+            currentAdminTab = tabName;
+
+            // Clear existing analytics refresh interval
+            if (analyticsRefreshInterval) {
+                clearInterval(analyticsRefreshInterval);
+                analyticsRefreshInterval = null;
+            }
+
+            // Load data for the active tab
+            if (tabName === 'analytics') {
+                loadAnalytics();
+                // Set up auto-refresh every 30 seconds
+                analyticsRefreshInterval = setInterval(loadAnalytics, 30000);
+            } else if (tabName === 'logs') {
+                loadLogs();
+            }
+        }
+
+        // Analytics Functions
+        async function loadAnalytics() {
+            const analyticsLoading = document.getElementById('analytics-loading');
+            const analyticsError = document.getElementById('analytics-error');
+            const analyticsContent = document.querySelector('#admin-analytics-content .space-y-6 > div:not(#analytics-loading):not(#analytics-error)');
+            
+            try {
+                analyticsLoading.classList.remove('hidden');
+                analyticsError.classList.add('hidden');
+                analyticsContent.forEach(el => el.classList.add('hidden'));
+                
+                const response = await fetch(`${API_BASE_URL}/api/admin/analytics`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    
+                    // Update summary cards
+                    document.getElementById('analytics-total-users').textContent = data.summary.total_users.toLocaleString();
+                    document.getElementById('analytics-total-bets').textContent = data.summary.total_bets.toLocaleString();
+                    document.getElementById('analytics-total-wagered').textContent = `$${data.summary.total_wagered.toLocaleString()}`;
+                    document.getElementById('analytics-total-payouts').textContent = `$${data.summary.total_payouts.toLocaleString()}`;
+                    document.getElementById('analytics-payout-ratio').textContent = `${data.summary.average_payout_ratio}x`;
+                    document.getElementById('analytics-active-users').textContent = data.summary.active_users_24h.toLocaleString();
+                    
+                    // Create charts
+                    createDailyBetsChart(data.charts.daily_stats);
+                    createDailyTransactionsChart(data.charts.daily_stats);
+                    
+                    // Show content
+                    analyticsContent.forEach(el => el.classList.remove('hidden'));
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                analyticsError.classList.remove('hidden');
+            } finally {
+                analyticsLoading.classList.add('hidden');
+            }
+        }
+
+        function createDailyBetsChart(dailyStats) {
+            const ctx = document.getElementById('daily-bets-chart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (analyticsCharts.dailyBets) {
+                analyticsCharts.dailyBets.destroy();
+            }
+            
+            const labels = dailyStats.map(stat => {
+                const date = new Date(stat.date);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            });
+            
+            analyticsCharts.dailyBets = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Bets',
+                        data: dailyStats.map(stat => stat.bets),
+                        backgroundColor: 'rgba(255, 107, 53, 0.8)',
+                        borderColor: 'rgba(255, 107, 53, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDailyTransactionsChart(dailyStats) {
+            const ctx = document.getElementById('daily-transactions-chart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (analyticsCharts.dailyTransactions) {
+                analyticsCharts.dailyTransactions.destroy();
+            }
+            
+            const labels = dailyStats.map(stat => {
+                const date = new Date(stat.date);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            });
+            
+            analyticsCharts.dailyTransactions = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Deposits',
+                        data: dailyStats.map(stat => stat.deposits),
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Withdrawals',
+                        data: dailyStats.map(stat => stat.withdrawals),
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Logs Functions
+        async function loadLogs(filterType = '') {
+            const logsLoading = document.getElementById('logs-loading');
+            const logsTable = document.getElementById('logs-table');
+            const logsEmpty = document.getElementById('logs-empty');
+            const logsError = document.getElementById('logs-error');
+            const logsTbody = document.getElementById('logs-tbody');
+            
+            try {
+                logsLoading.classList.remove('hidden');
+                logsTable.classList.add('hidden');
+                logsEmpty.classList.add('hidden');
+                logsError.classList.add('hidden');
+                
+                const url = filterType ? 
+                    `${API_BASE_URL}/api/logs?type=${filterType}` : 
+                    `${API_BASE_URL}/api/logs`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.data.events.length === 0) {
+                        logsEmpty.classList.remove('hidden');
+                    } else {
+                        logsTbody.innerHTML = result.data.events.map(log => `
+                            <tr class="border-b border-gray-600 hover:bg-gray-600">
+                                <td class="py-2 px-3">
+                                    <span class="px-2 py-1 rounded text-xs ${
+                                        log.event === 'bet_placed' ? 'bg-blue-600 text-white' :
+                                        log.event === 'deposit' ? 'bg-green-600 text-white' :
+                                        log.event === 'withdraw' ? 'bg-red-600 text-white' :
+                                        log.event === 'login' ? 'bg-purple-600 text-white' :
+                                        log.event === 'register' ? 'bg-yellow-600 text-white' :
+                                        'bg-gray-600 text-white'
+                                    }">${log.event.replace('_', ' ')}</span>
+                                </td>
+                                <td class="py-2 px-3 text-sm">${log.user}</td>
+                                <td class="py-2 px-3 text-sm">${log.amount ? `$${parseFloat(log.amount).toFixed(2)}` : '-'}</td>
+                                <td class="py-2 px-3 text-sm">
+                                    ${log.match ? `${log.match} - ${log.team}` : ''}
+                                    ${log.odds ? `(${formatAmericanOdds(decimalToAmerican(log.odds))})` : ''}
+                                </td>
+                                <td class="py-2 px-3 text-xs text-gray-400">${new Date(log.timestamp).toLocaleString()}</td>
+                            </tr>
+                        `).join('');
+                        logsTable.classList.remove('hidden');
+                    }
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                logsError.classList.remove('hidden');
+            } finally {
+                logsLoading.classList.add('hidden');
+            }
+        }
+
+        async function clearLogs() {
+            if (!confirm('Are you sure you want to clear all event logs? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/logs/clear`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAuthSuccess('Event logs cleared successfully!');
+                    loadLogs(); // Reload logs
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Error clearing logs:', error);
+                showAuthError('Failed to clear logs');
             }
         }
 

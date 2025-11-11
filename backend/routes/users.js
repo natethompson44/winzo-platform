@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { query } = require('../db');
+const { loginEventTracker, registerEventTracker } = require('../middleware/eventTracker');
 const router = express.Router();
 
 // JWT secret (in production, use environment variable)
@@ -13,7 +14,7 @@ function generateToken(userId, isAdmin = false) {
 }
 
 // POST /api/register - Create a new user
-router.post('/register', async (req, res) => {
+router.post('/register', registerEventTracker, async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -72,7 +73,7 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /api/login - Verify credentials and return JWT token
-router.post('/login', async (req, res) => {
+router.post('/login', loginEventTracker, async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -165,6 +166,62 @@ router.get('/profile', async (req, res) => {
 
     } catch (error) {
         console.error('Profile error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error',
+            message: error.message
+        });
+    }
+});
+
+// POST /api/users/update-admin - Update user admin status (requires admin privileges)
+router.post('/update-admin', async (req, res) => {
+    try {
+        // Check if the requesting user is admin
+        const requestingUser = req.user;
+        if (!requestingUser || !requestingUser.isAdmin) {
+            return res.status(403).json({
+                success: false,
+                error: 'Admin privileges required'
+            });
+        }
+
+        const { userId, isAdmin } = req.body;
+
+        // Validate input
+        if (!userId || typeof isAdmin !== 'boolean') {
+            return res.status(400).json({
+                success: false,
+                error: 'userId and isAdmin (boolean) are required'
+            });
+        }
+
+        // Check if target user exists
+        const userResult = await query('SELECT id, email, is_admin FROM users WHERE id = $1', [userId]);
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const user = userResult.rows[0];
+
+        // Update admin status
+        await query('UPDATE users SET is_admin = $1 WHERE id = $2', [isAdmin, userId]);
+
+        res.json({
+            success: true,
+            message: `User admin status updated to ${isAdmin}`,
+            user: {
+                id: user.id,
+                email: user.email,
+                is_admin: isAdmin
+            }
+        });
+
+    } catch (error) {
+        console.error('Update admin error:', error);
         res.status(500).json({
             success: false,
             error: 'Internal server error',

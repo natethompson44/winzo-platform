@@ -1,5 +1,6 @@
 const express = require('express');
 const { query, transaction } = require('../db');
+const { depositEventTracker, withdrawEventTracker } = require('../middleware/eventTracker');
 const router = express.Router();
 
 // GET /api/wallet - Return current balance (JWT-protected)
@@ -42,7 +43,7 @@ router.get('/wallet', async (req, res) => {
 });
 
 // POST /api/deposit - Add funds (JWT-protected)
-router.post('/deposit', async (req, res) => {
+router.post('/deposit', depositEventTracker, async (req, res) => {
     try {
         // User info is attached by JWT middleware
         const user = req.user;
@@ -114,7 +115,7 @@ router.post('/deposit', async (req, res) => {
 });
 
 // POST /api/withdraw - Subtract funds (JWT-protected)
-router.post('/withdraw', async (req, res) => {
+router.post('/withdraw', withdrawEventTracker, async (req, res) => {
     try {
         // User info is attached by JWT middleware
         const user = req.user;

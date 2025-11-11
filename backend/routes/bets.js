@@ -1,9 +1,10 @@
 const express = require('express');
 const { query, transaction } = require('../db');
+const { betEventTracker } = require('../middleware/eventTracker');
 const router = express.Router();
 
 // POST /api/bet - Allow logged-in users to save a bet
-router.post('/bet', async (req, res) => {
+router.post('/bet', betEventTracker, async (req, res) => {
     try {
         // User info is attached by JWT middleware
         const user = req.user;

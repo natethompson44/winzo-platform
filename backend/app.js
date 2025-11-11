@@ -11,6 +11,17 @@ const { router: userRoutes } = require('./routes/users');
 const betRoutes = require('./routes/bets');
 const walletRoutes = require('./routes/wallet');
 const adminRoutes = require('./routes/admin');
+const { router: analyticsRoutes } = require('./routes/analytics');
+const logsRoutes = require('./routes/logs');
+
+// Import event tracking middleware
+const { 
+    betEventTracker, 
+    depositEventTracker, 
+    withdrawEventTracker, 
+    loginEventTracker, 
+    registerEventTracker 
+} = require('./middleware/eventTracker');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -281,6 +292,8 @@ app.use('/api', userRoutes);
 app.use('/api', betRoutes);
 app.use('/api', walletRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin', analyticsRoutes);
+app.use('/api', logsRoutes);
 
 // Admin endpoint to clear odds cache
 app.post('/api/admin/refresh-odds', (req, res) => {
