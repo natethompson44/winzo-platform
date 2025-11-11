@@ -3,6 +3,69 @@
 ## Overview
 This prompt will guide the complete migration from the current vanilla JS/Express project to the modern TypeScript/React/tRPC reference project, ensuring zero breaking changes and maintaining all existing functionality while upgrading the architecture.
 
+## NEW CAPABILITIES IN REFERENCE PROJECT
+
+The reference project includes significant new features that must be properly migrated:
+
+### 1. **Custom Authentication System**
+- Username/password authentication (not just OAuth)
+- JWT-based sessions with secure cookies
+- User suspension checking
+- Password hashing with bcrypt
+- Login/logout endpoints at `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`
+
+### 2. **Betting Limits System**
+- Per-bet limits per user
+- Daily betting limits
+- Weekly betting limits
+- Automatic enforcement on bet placement
+- User suspension checking
+
+### 3. **Automatic Odds Synchronization**
+- Scheduled odds sync every 5 minutes
+- Fetches from The Odds API automatically
+- Creates/updates games in database
+- Maps sports to API keys (NFL, NBA, MLB, NHL)
+- Runs automatically on server start
+
+### 4. **Automatic Score Synchronization**
+- Fetches scores from ESPN API
+- Automatically settles bets when games complete
+- Updates game status to "completed"
+- Credits winnings to user wallets automatically
+- Runs every 5 minutes
+
+### 5. **Enhanced User Management**
+- Username/password instead of email-based auth
+- User suspension system (suspended field)
+- Three-tier role system: user, agent, owner
+- Betting limits per user (daily, weekly, per-bet)
+- Password change functionality
+
+### 6. **Enhanced Admin Features**
+- User management (create, update role, suspend users)
+- Wallet management (set balance, adjust balance)
+- Activity monitoring (view all transactions)
+- User details view with full betting/transaction history
+- Betting limits management per user
+
+### 7. **Enhanced Database Schema**
+- `username` field (unique, required)
+- `password` field (hashed with bcrypt)
+- `suspended` field (0 = active, 1 = suspended)
+- `dailyLimit`, `weeklyLimit`, `perBetLimit` fields
+- Role enum: `user`, `agent`, `owner` (not just user/admin)
+
+### 8. **New Utility Scripts**
+- `add-all-teams.mjs` - Add all teams for sports
+- `create-owner.mjs` - Create owner user account
+- `trigger-sync.mjs` - Manually trigger odds/score sync
+- `update-logos.mjs` - Update team logos
+
+### 9. **New Frontend Pages**
+- `CustomLogin.tsx` - Custom username/password login page
+- `Login.tsx` - Alternative login page
+
 ## Pre-Migration Checklist
 
 ### 1. Backup Current State
@@ -69,20 +132,36 @@ Convert from MySQL to PostgreSQL:
 - `decimal()` → `numeric()` or `decimal()`
 - `boolean()` → `boolean()` (same)
 
+**CRITICAL: New Schema Fields**
+The reference project has enhanced user schema with:
+- `username` (unique, required) - replaces email-based auth
+- `password` (hashed with bcrypt) - for custom authentication
+- `suspended` (integer: 0 = active, 1 = suspended)
+- `dailyLimit`, `weeklyLimit`, `perBetLimit` (integers, 0 = no limit)
+- Role enum: `user`, `agent`, `owner` (not just user/admin)
+
 **Key Changes:**
 ```typescript
 // OLD (MySQL)
 import { mysqlTable, int, mysqlEnum, timestamp } from "drizzle-orm/mysql-core";
 
 // NEW (PostgreSQL)
-import { pgTable, serial, pgEnum, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, pgEnum, timestamp, integer, varchar, text } from "drizzle-orm/pg-core";
 
-// Example conversion:
-// users table
+// Example conversion - users table with new fields:
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
-  // ... rest of fields
+  username: varchar("username", { length: 50 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
+  name: text("name"),
+  role: pgEnum("role", ["user", "agent", "owner"]).default("user").notNull(),
+  suspended: integer("suspended").default(0).notNull(), // 0 = active, 1 = suspended
+  dailyLimit: integer("dailyLimit").default(0), // 0 = no limit
+  weeklyLimit: integer("weeklyLimit").default(0), // 0 = no limit
+  perBetLimit: integer("perBetLimit").default(0), // 0 = no limit
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 ```
 
@@ -133,14 +212,21 @@ export async function getDb() {
 ### Step 2.4: Update Package Dependencies
 **File: `package.json`**
 
-Remove MySQL dependencies, add PostgreSQL:
+Remove MySQL dependencies, add PostgreSQL and new dependencies:
 ```json
 {
   "dependencies": {
     // Remove: "mysql2": "^3.15.0",
     // Add:
     "postgres": "^3.4.3",
-    "drizzle-orm": "^0.44.5" // Ensure PostgreSQL support
+    "drizzle-orm": "^0.44.5", // Ensure PostgreSQL support
+    "bcrypt": "^6.0.0", // For password hashing (already in reference)
+    "jsonwebtoken": "^9.0.2", // For JWT tokens (already in reference)
+    "axios": "^1.12.2" // For ESPN API calls (score sync)
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10"
   }
 }
 ```
@@ -149,50 +235,53 @@ Remove MySQL dependencies, add PostgreSQL:
 
 ## Phase 3: Authentication Adaptation
 
-### Step 3.1: Choose Authentication Strategy
+### Step 3.1: Custom Authentication System
 
-**Option A: Keep JWT (Recommended for Migration)**
-- Simpler migration
-- Maintains current auth flow
-- Less breaking changes
+**The reference project includes a complete custom authentication system:**
+- Username/password authentication (not email-based)
+- JWT-based sessions with secure cookies
+- User suspension checking
+- Password hashing with bcrypt
+- Login/logout endpoints at `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`
 
-**Option B: Migrate to OAuth + Cookies**
-- More secure
-- Better for production
-- Requires more changes
+**The system is already implemented in:**
+- `server/auth.ts` - Password hashing and user authentication
+- `server/customAuth.ts` - Express routes for login/logout/me
+- `server/_core/context.ts` - JWT verification from cookies
+- `client/src/pages/CustomLogin.tsx` - Login UI
 
-**For this migration, we'll adapt the reference project to use JWT tokens similar to current project.**
+### Step 3.2: Verify Custom Auth Routes
+**File: `server/_core/index.ts`**
 
-### Step 3.2: Update Authentication Context
-**File: `server/_core/context.ts`**
-
-Adapt to read JWT from Authorization header instead of cookies:
+Ensure custom auth routes are registered:
 ```typescript
-// Read JWT from Authorization header
-const authHeader = req.headers.authorization;
-const token = authHeader?.replace('Bearer ', '');
+import { registerCustomAuthRoutes } from "../customAuth";
 
-if (token) {
-  try {
-    const decoded = jwt.verify(token, ENV.cookieSecret);
-    // Set user from decoded token
-  } catch (error) {
-    // Invalid token
-  }
-}
+// In startServer function:
+registerCustomAuthRoutes(app);
 ```
 
-### Step 3.3: Update Frontend Auth
-**File: `client/src/_core/hooks/useAuth.ts`**
+### Step 3.3: Update Environment Variables
+**File: `server/_core/env.ts`**
 
-Adapt to use localStorage for JWT tokens:
+Ensure JWT secret is configured:
 ```typescript
-// Store token in localStorage
-localStorage.setItem('auth_token', token);
-
-// Read token from localStorage
-const token = localStorage.getItem('auth_token');
+export const ENV = {
+  // ... other vars
+  jwtSecret: process.env.JWT_SECRET ?? "",
+  cookieSecret: process.env.JWT_SECRET ?? "", // Same as jwtSecret
+};
 ```
+
+### Step 3.4: Frontend Authentication
+**The reference project uses cookie-based auth by default.**
+
+If you need to maintain localStorage-based auth from current project:
+- Update `client/src/pages/CustomLogin.tsx` to store token in localStorage
+- Update `server/_core/context.ts` to also check Authorization header
+- Update tRPC client to send token in headers
+
+**However, cookie-based auth is more secure and recommended.**
 
 ---
 
@@ -241,14 +330,31 @@ VITE_APP_ID=
 ### Step 5.1: Update Server Entry Point
 **File: `server/_core/index.ts`**
 
-Ensure CORS is properly configured:
+Ensure CORS is properly configured and schedulers are started:
 ```typescript
 import cors from "cors";
+import { startOddsSyncScheduler } from "../oddsSync";
+import { startScoreSyncScheduler } from "../scoreSync";
+import { registerCustomAuthRoutes } from "../customAuth";
 
 app.use(cors({
   origin: ENV.corsOrigin,
   credentials: true,
 }));
+
+// Register custom auth routes
+registerCustomAuthRoutes(app);
+
+// In server.listen callback:
+server.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}/`);
+  
+  // Start automatic odds synchronization (every 5 minutes)
+  startOddsSyncScheduler();
+  
+  // Start automatic score synchronization (every 5 minutes)
+  startScoreSyncScheduler();
+});
 ```
 
 ### Step 5.2: Update Odds API Integration
@@ -258,6 +364,22 @@ Verify it uses the correct API key from environment:
 ```typescript
 const API_KEY = process.env.ODDS_API_KEY;
 ```
+
+### Step 5.3: Automatic Synchronization Systems
+
+**Odds Sync (`server/oddsSync.ts`):**
+- Automatically fetches odds from The Odds API every 5 minutes
+- Creates new games and updates existing ones
+- Maps sports to API keys (NFL, NBA, MLB, NHL)
+- Runs on server start and continues in background
+
+**Score Sync (`server/scoreSync.ts`):**
+- Automatically fetches scores from ESPN API every 5 minutes
+- Settles bets when games complete
+- Updates game status and credits winnings
+- Runs on server start and continues in background
+
+**Both systems start automatically - no additional configuration needed.**
 
 ### Step 5.3: Update Railway Configuration
 **File: `railway.toml`**
@@ -383,7 +505,7 @@ npm run db:push
 
 ### Step 8.2: Verify Schema
 Check that all tables are created correctly in PostgreSQL:
-- users
+- users (with username, password, suspended, limits fields)
 - sports
 - teams
 - games
@@ -392,12 +514,36 @@ Check that all tables are created correctly in PostgreSQL:
 - bets
 - parlayLegs
 
-### Step 8.3: Seed Initial Data (Optional)
+### Step 8.3: Run Utility Scripts
+**Add Teams:**
+```bash
+node scripts/add-all-teams.mjs
+```
+
+**Create Owner Account:**
+```bash
+node scripts/create-owner.mjs
+# Follow prompts to create owner user
+```
+
+**Update Team Logos (Optional):**
+```bash
+node scripts/update-logos.mjs
+```
+
+### Step 8.4: Seed Initial Data (Optional)
 If reference project has seed script:
 ```bash
 pnpm run seed
 # or check scripts/seed.mjs
 ```
+
+### Step 8.5: Migrate Existing Users (If Any)
+If you have existing users in the current database, you'll need to:
+1. Convert email-based users to username-based
+2. Set default passwords (users will need to reset)
+3. Migrate roles (admin → owner or agent)
+4. Set default betting limits (0 = no limit)
 
 ---
 
@@ -409,21 +555,51 @@ pnpm run seed
 3. Check `/api/health` endpoint
 4. Test database connection
 5. Verify tRPC endpoints accessible
+6. **Verify odds sync starts** (check console logs)
+7. **Verify score sync starts** (check console logs)
 
 ### Step 9.2: Frontend Testing
 1. Build frontend: `pnpm build`
 2. Test production build locally
 3. Verify all routes work
-4. Test authentication flow
-5. Test betting functionality
+4. Test custom login page (`/login` or `/custom-login`)
+5. Test authentication flow
+6. Test betting functionality
 
-### Step 9.3: Integration Testing
+### Step 9.3: Authentication Testing
+1. **Test username/password login** via `/api/auth/login`
+2. **Test logout** via `/api/auth/logout`
+3. **Test /api/auth/me** endpoint
+4. Verify JWT cookies are set correctly
+5. Test user suspension (if applicable)
+
+### Step 9.4: Betting Limits Testing
+1. Create test user with betting limits
+2. Test per-bet limit enforcement
+3. Test daily limit enforcement
+4. Test weekly limit enforcement
+5. Test suspended user cannot bet
+
+### Step 9.5: Integration Testing
 1. Test user registration/login
 2. Test wallet deposit/withdrawal
-3. Test bet placement
+3. Test bet placement (with limits)
 4. Test parlay bets
-5. Test admin features
-6. Test odds fetching
+5. Test admin features (user management, wallet management)
+6. Test odds fetching (should be automatic)
+7. **Test automatic odds sync** (wait 5 minutes or trigger manually)
+8. **Test automatic score sync** (wait 5 minutes or trigger manually)
+
+### Step 9.6: Manual Sync Testing
+**Trigger odds sync manually:**
+```bash
+node scripts/trigger-sync.mjs
+```
+
+**Verify:**
+- Games are created/updated in database
+- Odds are current
+- Teams are matched correctly
 
 ---
 

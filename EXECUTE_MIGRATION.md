@@ -9,29 +9,42 @@ Copy and paste this prompt to execute the complete migration:
 **"Execute the complete migration from the current vanilla JS/Express project to the TypeScript/React/tRPC reference project located at `C:\Users\Natha\OneDrive\Documents\_Projects\winzo\_winzo-sports-betting_v2_REFERENCE`. Follow MIGRATION_PROMPT.md exactly, ensuring:**
 
 1. **Preserve all existing functionality** - no breaking changes
-2. **Convert MySQL schema to PostgreSQL** - adapt Drizzle schema for Railway PostgreSQL
+2. **Convert MySQL schema to PostgreSQL** - adapt Drizzle schema for Railway PostgreSQL with new fields (username, password, suspended, betting limits)
 3. **Maintain Railway/Netlify deployment** - keep existing URLs and configuration
 4. **Migrate all environment variables** - preserve .env values
-5. **Adapt authentication** - make JWT work with reference project structure
-6. **Test each phase** - verify before proceeding to next phase
-7. **Commit to git** - capture all changes in git history
+5. **Implement custom authentication** - username/password with JWT cookies (already in reference project)
+6. **Set up automatic systems** - odds sync and score sync schedulers
+7. **Configure betting limits** - per-bet, daily, weekly limits system
+8. **Test each phase** - verify before proceeding to next phase
+9. **Commit to git** - capture all changes in git history
+
+**NEW CAPABILITIES TO MIGRATE:**
+- Custom username/password authentication (not email-based)
+- Betting limits system (per-bet, daily, weekly)
+- Automatic odds synchronization (every 5 minutes)
+- Automatic score synchronization (every 5 minutes)
+- Enhanced user management (suspension, roles: user/agent/owner)
+- Enhanced admin features (user management, wallet management, activity monitoring)
 
 **Execute phases in this order:**
 - Phase 1: Copy reference project files
-- Phase 2: Convert database schema (MySQL → PostgreSQL)
-- Phase 3: Adapt authentication (JWT integration)
+- Phase 2: Convert database schema (MySQL → PostgreSQL) with new fields
+- Phase 3: Verify custom authentication system
 - Phase 4: Configure environment variables
-- Phase 5: Update backend configuration
+- Phase 5: Update backend configuration (including schedulers)
 - Phase 6: Configure frontend (Netlify build)
-- Phase 7: Install dependencies
-- Phase 8: Run database migrations
-- Phase 9: Test locally
+- Phase 7: Install dependencies (including bcrypt, axios)
+- Phase 8: Run database migrations and utility scripts
+- Phase 9: Test locally (auth, betting limits, sync systems)
 - Phase 10: Deploy and verify
 
 **Critical requirements:**
 - Zero breaking changes
 - All existing features must work
-- Database migration must preserve data structure
+- Database migration must include new schema fields
+- Custom authentication must work
+- Betting limits must be enforced
+- Automatic sync systems must start
 - Railway backend must deploy successfully
 - Netlify frontend must build and deploy
 - CORS must be properly configured
@@ -52,13 +65,13 @@ If you prefer to execute one phase at a time, use these prompts:
 "Execute Phase 2 from MIGRATION_PROMPT.md: Convert Drizzle schema from MySQL to PostgreSQL, update drizzle.config.ts, and modify server/db.ts to use PostgreSQL connection."
 
 ### Phase 3: Authentication
-"Execute Phase 3 from MIGRATION_PROMPT.md: Adapt reference project authentication to work with JWT tokens from Authorization header and localStorage."
+"Execute Phase 3 from MIGRATION_PROMPT.md: Verify custom authentication system (username/password with JWT cookies) is properly configured. The reference project already includes this - ensure routes are registered and environment variables are set."
 
 ### Phase 4: Environment
 "Execute Phase 4 from MIGRATION_PROMPT.md: Merge current .env with reference project requirements, update server/_core/env.ts."
 
 ### Phase 5: Backend Config
-"Execute Phase 5 from MIGRATION_PROMPT.md: Update server configuration for Railway deployment, ensure CORS is correct, verify odds API integration."
+"Execute Phase 5 from MIGRATION_PROMPT.md: Update server configuration for Railway deployment, ensure CORS is correct, register custom auth routes, and start odds/score sync schedulers."
 
 ### Phase 6: Frontend Config
 "Execute Phase 6 from MIGRATION_PROMPT.md: Create netlify.toml, update tRPC client to use Railway URL, configure Vite build output."
@@ -67,10 +80,10 @@ If you prefer to execute one phase at a time, use these prompts:
 "Execute Phase 7 from MIGRATION_PROMPT.md: Update package.json scripts, install all dependencies (pnpm or npm)."
 
 ### Phase 8: Database Migration
-"Execute Phase 8 from MIGRATION_PROMPT.md: Generate Drizzle migrations, verify schema creation in PostgreSQL, seed initial data if needed."
+"Execute Phase 8 from MIGRATION_PROMPT.md: Generate Drizzle migrations, verify schema creation in PostgreSQL (including new fields), run utility scripts (add-all-teams, create-owner), and migrate existing users if any."
 
 ### Phase 9: Testing
-"Execute Phase 9 from MIGRATION_PROMPT.md: Test backend locally, test frontend build, verify all features work (auth, betting, wallet, admin)."
+"Execute Phase 9 from MIGRATION_PROMPT.md: Test backend locally (verify schedulers start), test frontend build, verify all features work (custom auth, betting with limits, wallet, admin, automatic sync systems)."
 
 ### Phase 10: Deployment
 "Execute Phase 10 from MIGRATION_PROMPT.md: Deploy backend to Railway, deploy frontend to Netlify, verify CORS, test all endpoints."
@@ -95,20 +108,50 @@ Before running the migration, ensure:
 
 After migration completes, verify:
 
+### Core Functionality
 - [ ] Backend starts successfully: `pnpm dev`
 - [ ] Frontend builds successfully: `pnpm build`
 - [ ] Database schema created: Check Railway PostgreSQL
 - [ ] API endpoints accessible: Test /api/health
 - [ ] Frontend routes work: Test all pages
-- [ ] Authentication works: Test login/register
+
+### Authentication
+- [ ] Custom login works: Test `/api/auth/login` with username/password
+- [ ] Logout works: Test `/api/auth/logout`
+- [ ] User session persists: Test `/api/auth/me`
+- [ ] JWT cookies set correctly: Check browser cookies
+- [ ] User suspension works: Test suspended user cannot login
+
+### Betting System
 - [ ] Betting works: Test bet placement
+- [ ] Parlay bets work: Test multi-game parlays
+- [ ] Betting limits enforced: Test per-bet, daily, weekly limits
+- [ ] Suspended users blocked: Test suspended user cannot bet
+
+### Wallet System
 - [ ] Wallet works: Test deposit/withdrawal
-- [ ] Admin works: Test admin features
-- [ ] Odds API works: Test odds fetching
+- [ ] Transactions recorded: Check transaction history
+- [ ] Balance updates correctly: Verify after deposits/bets/wins
+
+### Admin Features
+- [ ] Admin dashboard accessible: Test admin routes
+- [ ] User management works: Create, update role, suspend users
+- [ ] Wallet management works: Set balance, adjust balance
+- [ ] Activity monitoring works: View all transactions
+- [ ] User details view works: See full user history
+
+### Automatic Systems
+- [ ] Odds sync running: Check console logs for sync messages
+- [ ] Score sync running: Check console logs for sync messages
+- [ ] Games created/updated: Verify games in database
+- [ ] Bets auto-settled: Test with completed games
+
+### Deployment
 - [ ] No console errors: Check browser console
 - [ ] CORS configured: No CORS errors
-- [ ] Railway deployment: Check logs
+- [ ] Railway deployment: Check logs, verify schedulers start
 - [ ] Netlify deployment: Check build logs
+- [ ] Production URLs work: Test deployed frontend/backend
 
 ---
 
