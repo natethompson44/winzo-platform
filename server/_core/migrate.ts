@@ -1,5 +1,9 @@
 import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import { ENV } from "./env";
+import { users, wallets, sports } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
+import bcrypt from "bcrypt";
 
 // Embedded migration SQL - this ensures it's always available even when bundled
 const MIGRATION_SQL = `
@@ -220,6 +224,12 @@ export async function runMigrations(): Promise<void> {
     if (errorCount > 0 && executedCount === 0) {
       console.error("[Migration] ⚠️  WARNING: All migrations failed or were skipped. Database may not be properly initialized.");
     }
+
+    // After migrations, seed initial data
+    console.log("[Migration] 🌱 Starting data seeding...");
+    await seedInitialData(client);
+    console.log("[Migration] ✅ Data seeding completed");
+    
   } catch (error: any) {
     console.error("[Migration] ❌ CRITICAL: Failed to run migrations:", error?.message || error);
     console.error("[Migration] Stack:", error?.stack);
@@ -230,5 +240,92 @@ export async function runMigrations(): Promise<void> {
       await client.end();
       console.log("[Migration] 🔌 Database connection closed");
     }
+  }
+}
+
+/**
+ * Seed initial data after migrations complete
+ */
+async function seedInitialData(client: ReturnType<typeof postgres>): Promise<void> {
+  const db = drizzle(client);
+  
+  try {
+    // 1. Seed Sports
+    console.log("[Migration] 📊 Seeding sports...");
+    const sportsData = [
+      { name: "Football", code: "NFL", icon: "🏈" },
+      { name: "Basketball", code: "NBA", icon: "🏀" },
+      { name: "Hockey", code: "NHL", icon: "🏒" },
+    ];
+    
+    for (const sport of sportsData) {
+      try {
+        const existing = await db.select().from(sports).where(eq(sports.code, sport.code));
+        if (existing.length === 0) {
+          await db.insert(sports).values(sport);
+          console.log(`[Migration] ✅ Added sport: ${sport.name} (${sport.code})`);
+        } else {
+          console.log(`[Migration] ⏭️  Sport ${sport.name} (${sport.code}) already exists`);
+        }
+      } catch (error: any) {
+        if (error.code === "23505") {
+          console.log(`[Migration] ⏭️  Sport ${sport.name} (${sport.code}) already exists`);
+        } else {
+          console.warn(`[Migration] ⚠️  Error seeding sport ${sport.name}:`, error?.message);
+        }
+      }
+    }
+
+    // 2. Create Owner Account
+    console.log("[Migration] 👤 Creating owner account...");
+    const username = "owner";
+    const password = "owner";
+    const name = "Platform Owner";
+    
+    try {
+      // Check if owner already exists
+      const existingOwner = await db.select().from(users).where(eq(users.username, username));
+      
+      if (existingOwner.length === 0) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const result = await db.insert(users).values({
+          username,
+          password: hashedPassword,
+          name,
+          role: "owner",
+        }).returning();
+        
+        const ownerId = result[0].id;
+        console.log(`[Migration] ✅ Owner account created (ID: ${ownerId})`);
+        console.log(`[Migration] 📝 Username: ${username}, Password: ${password}`);
+        
+        // Create wallet for owner
+        try {
+          await db.insert(wallets).values({
+            userId: ownerId,
+            balance: 0,
+          });
+          console.log(`[Migration] ✅ Owner wallet created`);
+        } catch (walletError: any) {
+          if (walletError.code !== "23505") {
+            console.warn(`[Migration] ⚠️  Error creating owner wallet:`, walletError?.message);
+          }
+        }
+      } else {
+        console.log(`[Migration] ⏭️  Owner account already exists`);
+        console.log(`[Migration] 📝 Username: ${username}, Password: ${password}`);
+      }
+    } catch (error: any) {
+      if (error.code === "23505") {
+        console.log(`[Migration] ⏭️  Owner account already exists`);
+        console.log(`[Migration] 📝 Username: ${username}, Password: ${password}`);
+      } else {
+        console.warn(`[Migration] ⚠️  Error creating owner account:`, error?.message);
+      }
+    }
+    
+  } catch (error: any) {
+    console.error("[Migration] ❌ Error during data seeding:", error?.message || error);
+    // Don't throw - seeding failures shouldn't prevent server startup
   }
 }
