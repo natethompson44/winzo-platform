@@ -6,6 +6,29 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
 
+// Get __dirname equivalent for ESM
+// In production/bundled code, always use process.cwd() since import.meta may not work
+const getDirname = () => {
+  // In production, always use process.cwd()
+  if (process.env.NODE_ENV === "production") {
+    return process.cwd();
+  }
+  
+  // In development, try to use import.meta.dirname, but fall back to process.cwd()
+  try {
+    // @ts-ignore - import.meta may not exist in some environments
+    if (typeof import.meta !== "undefined" && typeof import.meta.dirname !== "undefined") {
+      // @ts-ignore
+      return import.meta.dirname;
+    }
+  } catch {
+    // Ignore
+  }
+  
+  // Fallback to process.cwd() - works in all cases
+  return process.cwd();
+};
+
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
@@ -26,7 +49,7 @@ export async function setupVite(app: Express, server: Server) {
 
     try {
       const clientTemplate = path.resolve(
-        import.meta.dirname,
+        getDirname(),
         "../..",
         "client",
         "index.html"
@@ -49,9 +72,9 @@ export async function setupVite(app: Express, server: Server) {
 
 export function serveStatic(app: Express) {
   // In production, the dist/public folder is relative to the built index.js location
-  // Use process.cwd() as a fallback since import.meta.dirname may not work in bundled code
+  // Use process.cwd() since import.meta.dirname may not work in bundled code
   const distPath = process.env.NODE_ENV === "development"
-    ? path.resolve(import.meta.dirname, "../..", "dist", "public")
+    ? path.resolve(getDirname(), "../..", "dist", "public")
     : path.resolve(process.cwd(), "dist", "public");
     
   if (!fs.existsSync(distPath)) {
