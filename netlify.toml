@@ -1,0 +1,15 @@
+[build]
+  command = "npm install && npm run build"
+  publish = "dist/public"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Set this to your Railway backend URL in Netlify dashboard:
+  # VITE_API_URL = "https://winzo-platform-production-d306.up.railway.app"
+
+
