@@ -13,8 +13,8 @@ const client = postgres(connectionString);
 const db = drizzle(client);
 
 async function createOwner() {
-  const username = "admin";
-  const password = "admin123"; // Change this!
+  const username = "owner";
+  const password = "owner";
   const name = "Platform Owner";
   
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,11 +31,14 @@ async function createOwner() {
     console.log("Username:", username);
     console.log("Password:", password);
     console.log("⚠️  Please change the password after first login!");
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === "23505") { // PostgreSQL unique violation
-      console.log("Owner account already exists");
+      console.log("⚠️  Owner account already exists");
+      console.log("   Username:", username);
+      console.log("   Password:", password);
     } else {
-      console.error("Error creating owner:", error);
+      console.error("❌ Error creating owner:", error);
+      process.exit(1);
     }
   }
   
