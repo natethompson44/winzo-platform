@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_LOGO, APP_TITLE } from "@/const";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
@@ -81,9 +81,6 @@ export default function CustomLogin() {
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-winzo-orange to-gold bg-clip-text text-transparent">
               {APP_TITLE}
             </CardTitle>
-            <CardDescription className="text-base mt-2">
-              Premium Sports Betting Platform
-            </CardDescription>
           </div>
         </CardHeader>
         
